@@ -1,0 +1,54 @@
+Source: pt-web-portal
+Section: utils
+Priority: optional
+Maintainer: pi-top <deb-maintainers@pi-top.com>
+Build-Depends:
+ debhelper-compat (= 12),
+ dh-sequence-python3,
+ npm,
+# python3-* used for running tests
+ python3-flask,
+ python3-flask-cors,
+ python3-flask-sockets,
+ python3-gevent,
+ python3-gevent-websocket,
+ python3-pitopcommon,
+ python3-waitress,
+ python3-pytest,
+ python3-pytest-cov,
+ python3-pywifi,
+Standards-Version: 4.5.0
+Homepage: https://pi-top.com/
+
+Package: pt-web-portal
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ ${shlibs:Depends},
+# Needed for 'nice' command
+ coreutils (>= 8.0),
+ pt-web-ui (>> 1.0),
+ python3-flask,
+ python3-flask-cors,
+ python3-flask-sockets,
+ python3-gevent,
+ python3-gevent-websocket,
+# Used for PTLogger
+ python3-pitopcommon,
+ python3-waitress,
+ python3-pywifi,
+ raspi-config,
+ rsync,
+Recommends:
+ pt-tour,
+Replaces:
+ piwiz,
+Breaks:
+ piwiz,
+Conflicts:
+ piwiz,
+Description: pi-topOS First Time Setup
+ pi-topOS's first time setup wizard. Set up regional configuration,
+ Wi-Fi connection, agree to the pi-topOS EULA, and reboot into the full desktop.
+ This is the first experience of pi-topOS.

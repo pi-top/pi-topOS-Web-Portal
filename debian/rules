@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cd src/frontend && \
+		npm install && \
+		node_modules/react-scripts/bin/react-scripts.js build && \
+		mv build ../server/onboarding/
+
+	dh_auto_build
+
+override_dh_clean:
+	rm -rf src/server/onboarding/build
+	dh_clean
+
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --no-start --name=pt-device-registration
+	dh_installsystemd --no-enable --no-start --name=pt-os-setup
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+# 	cd src/frontend && \
+# 		yarn test:coverage
+	cd src/server && \
+		PYTHONPATH=onboarding python3 -m pytest -v --cov-report term-missing --cov=onboarding
+	dh_auto_test
+endif

@@ -1,0 +1,3 @@
+# Build files can get rather long and trigger a "source is missing" error
+pt-os-setup source: source-is-missing src/server/onboarding/build/*
+pt-os-setup source: odd-historical-debian-changelog-version 2.7.11-1 (for native)

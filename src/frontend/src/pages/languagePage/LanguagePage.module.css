@@ -1,0 +1,7 @@
+.banner {
+  height: 70vh;
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+}

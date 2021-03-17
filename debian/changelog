@@ -1,0 +1,423 @@
+pt-os-setup (3.3.0) buster; urgency=medium
+
+  * Increase expand filesystem timeout on first boot
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 22 Dec 2020 00:01:45 -0300
+
+pt-os-setup (3.2.2) buster; urgency=medium
+
+  * Use environment variables in systemd service
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 19:01:04 +0000
+
+pt-os-setup (3.2.1) buster; urgency=medium
+
+  * Enable test runs
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 11 Dec 2020 12:14:34 -0300
+
+pt-os-setup (3.2.0) buster; urgency=medium
+
+  * ptcommon -> pitopcommon
+  * Add pt-web-ui dependency
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 03 Nov 2020 16:10:05 +0000
+
+pt-os-setup (3.1.0) buster; urgency=medium
+
+  * Update button styling
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 22 Oct 2020 12:05:38 -0300
+
+pt-os-setup (3.0.0) buster; urgency=medium
+
+  * Migrate to native package
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 15 Oct 2020 17:17:46 +0100
+
+pt-os-setup (2.7.11-1) buster; urgency=medium
+
+  * Synchronize system clock on upgrade page
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 11 Sep 2020 17:12:54 -0300
+
+pt-os-setup (2.7.10-1) buster; urgency=medium
+
+  * Enable pt-sys-oled after resizing file system
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 10 Sep 2020 17:37:17 -0300
+
+pt-os-setup (2.7.9-1) buster; urgency=medium
+
+  * Cleanup installation folder
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 10 Sep 2020 09:15:21 -0300
+
+pt-os-setup (2.7.8-1) buster; urgency=medium
+
+  * Update copy
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 27 Aug 2020 17:04:35 -0400
+
+pt-os-setup (2.7.7-1) buster; urgency=medium
+
+  * Add privacy policy to regristration page
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 13 Aug 2020 09:25:10 -0400
+
+pt-os-setup (2.7.6-1) buster; urgency=medium
+
+  * Run Wait page services sequentially
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 12 Aug 2020 11:34:50 -0400
+
+pt-os-setup (2.7.5-1) buster; urgency=medium
+
+  * Enable mouse cursor after expanding file system
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 11 Aug 2020 11:24:53 -0400
+
+pt-os-setup (2.7.4-1) buster; urgency=medium
+
+  * Disable notifications on first install
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 07 Aug 2020 17:59:25 -0400
+
+pt-os-setup (2.7.3-1) buster; urgency=medium
+
+  * Fix flicker on first page transition
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 07 Aug 2020 11:32:48 -0400
+
+pt-os-setup (2.7.2-1) buster; urgency=medium
+
+  * Enable notifications on restart
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 06 Aug 2020 17:05:12 -0400
+
+pt-os-setup (2.7.1-1) buster; urgency=medium
+
+  * Expand filesystem on boot
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 03 Aug 2020 16:20:08 -0400
+
+pt-os-setup (2.6.6-1) buster; urgency=medium
+
+  * Increase logging while performing system upgrade
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 20 Jul 2020 16:14:09 -0400
+
+pt-os-setup (2.6.5-1) buster; urgency=medium
+
+  * Use Wifi page Skip button if no internet connection is available
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 15 Jul 2020 09:58:07 -0400
+
+pt-os-setup (2.6.4-1) buster; urgency=medium
+
+  * Update EULA page button label to 'Agree'
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 15 Jul 2020 08:45:10 -0400
+
+pt-os-setup (2.6.3-1) buster; urgency=medium
+
+  * Wait until wifi interface reconnects after reconfigure command
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 14 Jul 2020 19:46:28 -0400
+
+pt-os-setup (2.6.2-1) buster; urgency=medium
+
+  * Update wpa_supplicant.conf with wifi credentials
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 14 Jul 2020 10:15:25 -0400
+
+pt-os-setup (2.6.1-1) buster; urgency=medium
+
+  * Fix NaN condition check
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 13 Jul 2020 13:37:38 -0400
+
+pt-os-setup (2.6.0-1) buster; urgency=medium
+
+  * Expand filesystem on boot
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 13 Jul 2020 12:57:16 -0400
+
+pt-os-setup (2.5.5-1) buster; urgency=medium
+
+  * Don't update pt-os-setup during onboarding
+  * Skip upgrades if there's no available space on device
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 13 Jul 2020 12:37:28 -0400
+
+pt-os-setup (2.5.4-1) buster; urgency=medium
+
+  * Increase clock synchronization verification time
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 10 Jul 2020 22:56:52 -0400
+
+pt-os-setup (2.5.3-1) buster; urgency=medium
+
+  * Skip pt-os-updater skip on successful preparation
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 10 Jul 2020 20:02:41 -0400
+
+pt-os-setup (2.5.2-1) buster; urgency=medium
+
+  * Skip pt-os-updater on reboot
+
+ -- Jorge Capona <jorge@pi-top.com>  Fri, 10 Jul 2020 18:03:24 -0400
+
+pt-os-setup (2.5.1-1) buster; urgency=medium
+
+  * Synchronize system clock when connected to wifi
+  * Improve error management
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 09 Jul 2020 17:51:45 -0400
+
+pt-os-setup (2.5.0-1) buster; urgency=medium
+
+  * Perform system update if internet is available
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 08 Jul 2020 15:16:10 -0400
+
+pt-os-setup (2.4.1-1) buster; urgency=medium
+
+  * Fix enabling firmware updater service during last stage
+
+ -- Mike Roberts <mike@pi-top.com>  Thu, 25 Jun 2020 15:57:51 +0100
+
+pt-os-setup (2.4.0-1) buster; urgency=medium
+
+  * Now ignore updater services on start, which are disabled during OS build
+  * Enable OS updater service during last stage
+  * Enable firmware updater service during last stage
+
+ -- Mike Roberts <mike@pi-top.com>  Fri, 19 Jun 2020 13:57:44 +0100
+
+pt-os-setup (2.3.1-1) buster; urgency=medium
+
+  * Add 'pt-os-setup' argument to pt-web-ui command
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 17 Jun 2020 15:39:14 +0100
+
+pt-os-setup (2.3.0-1) buster; urgency=medium
+
+  * Add pt-web-ui dependency
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 28 May 2020 14:40:47 -0400
+
+pt-os-setup (1.15.0-1) buster; urgency=medium
+
+  * Log web console messages to journal
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 19 Mar 2020 15:24:32 -0300
+
+pt-os-setup (1.14.0-1) buster; urgency=medium
+
+  * Remove outdated import
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 13 Apr 2020 09:54:36 -0400
+
+pt-os-setup (2.2.0-1) buster; urgency=medium
+
+  * Stop Further Link on startup
+
+ -- Mike Roberts <mike@pi-top.com>  Thu, 02 Apr 2020 15:07:15 +0100
+
+pt-os-setup (2.1.1-1) buster; urgency=medium
+
+  * Update run_command debug prints
+  * Add coreutils dependency for 'nice'
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 24 Mar 2020 18:27:14 -0300
+
+pt-os-setup (2.1.0-1) buster; urgency=medium
+
+  * Run all finalise commands sequentially with low priority
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 24 Mar 2020 17:51:33 -0300
+
+pt-os-setup (2.0.3-1) buster; urgency=medium
+
+  * Use selected locale to set initial country and timezone
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 24 Mar 2020 15:22:47 -0300
+
+pt-os-setup (2.0.2-1) buster; urgency=medium
+
+  * Spinner on setting keyboard layout only
+  * Retain user email across page navigation
+  * Right-align build info
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 24 Mar 2020 14:24:39 -0300
+
+pt-os-setup (2.0.1-1) buster; urgency=medium
+
+  * Remove sync command on reboot
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 24 Mar 2020 10:47:52 -0300
+
+pt-os-setup (2.0.0-2) buster; urgency=medium
+
+  * Lintian: strip binary and exit on maintainer script errors
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 24 Mar 2020 08:57:45 +0000
+
+pt-os-setup (2.0.0-1) buster; urgency=medium
+
+  * Port to QWebEngine interface and web server
+  * Updated copy
+  * Consistent country names
+  * Clearer progress during finalisation
+  * Improved countries list order by priority countries then by A-Z and presentation
+  * New UI components
+  * Show OS build info in bottom right corner
+  * Show skip button for completed pages
+  * Improve 'test keyboard' area
+  * Default to 'over 13' on registration page
+  * Use raspi-config commands where possible
+  * Run 'sync' on reboot
+  * Increase mime database update timeout
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 24 Mar 2020 08:40:36 +0000
+
+pt-os-setup (1.5.1-1) buster; urgency=medium
+
+   * Device Registration: Set privacyAgreement independently of email address
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 09 Mar 2020 10:11:47 -0300
+
+pt-os-setup (1.5.0-1) buster; urgency=medium
+
+  * Send registration data, even if the user has not submitted their email, with
+    additional device information.
+
+ -- Ben Pring <ben@pi-top.com>  Wed, 29 Jan 2020 14:39:10 +0000
+
+pt-os-setup (1.4.3-1) buster; urgency=medium
+
+  * Fix issues expanding the file system
+
+ -- Ben Pring <ben@pi-top.com>  Mon, 25 Nov 2019 13:47:41 +0000
+
+pt-os-setup (1.4.2-1) buster; urgency=medium
+
+  * Expand the rootfs on final reboot
+
+ -- Ben Pring <ben@pi-top.com>  Fri, 22 Nov 2019 15:27:45 +0000
+
+pt-os-setup (1.4.1-1) buster; urgency=medium
+
+  * Add a small delay on start-up to avoid issues when the screen resolution changes
+  * Rebuild the mime database before reboot, in case we need to move back to
+    building in the cloud.
+
+ -- Ben Pring <ben@pi-top.com>  Fri, 15 Nov 2019 10:28:47 +0000
+
+pt-os-setup (1.4.0-1) buster; urgency=medium
+
+  * Revert the new reboot system back to how raspbian does it
+
+ -- Choudhry Amjad <choudhry@pi-top.com>  Mon, 21 Oct 2019 12:33:11 +0100
+
+pt-os-setup (1.3.2-1) buster; urgency=medium
+
+  * Change reboot in resizing script to a full reboot
+
+ -- Choudhry Amjad <choudhry@pi-top.com>  Fri, 18 Oct 2019 15:35:06 +0100
+
+pt-os-setup (1.3.1-1) buster; urgency=medium
+
+  * Run resize and reboot script when reboot is clicked
+
+ -- Choudhry Amjad <choudhry@pi-top.com>  Thu, 03 Oct 2019 16:13:54 +0100
+
+pt-os-setup (1.2.10-1) buster; urgency=medium
+
+  * Fix bug setting system locale when several locales are to be
+    generated, and locale-gen takes more than 30s.
+
+ -- Ben Pring <ben@pi-top.com>  Tue, 03 Sep 2019 09:38:03 +0100
+
+pt-os-setup (1.2.9-1) buster; urgency=medium
+
+  * Send 'unknown' as a serial number if we can't get an actual number
+  * No longer sequence device-registration service after device manager
+  * Add one minute delay before attempting device registration to make it
+    more likely to succeed first time
+
+ -- Ben Pring <ben@pi-top.com>  Mon, 02 Sep 2019 11:11:07 +0100
+
+pt-os-setup (1.2.8-1) buster; urgency=medium
+
+  * Turn off forcing HDMI resolution in /boot/config.txt
+  * Ensure application can only be run as root
+
+ -- Ben Pring <ben@pi-top.com>  Wed, 28 Aug 2019 11:38:51 +0100
+
+pt-os-setup (1.2.7-1) buster; urgency=medium
+
+  * Hide keyboard variants behind an advanced options link
+
+ -- Ben Pring <ben@pi-top.com>  Mon, 19 Aug 2019 14:00:03 +0100
+
+pt-os-setup (1.2.6-1) buster; urgency=medium
+
+  * pt-update -> pt-os-updater
+
+ -- Mike Roberts <mike@pi-top.com>  Sun, 11 Aug 2019 12:19:13 +0100
+
+pt-os-setup (1.2.5-1) buster; urgency=medium
+
+  * Always apply localisation settings when selecting a language.
+
+ -- Ben Pring <ben@pi-top.com>  Wed, 07 Aug 2019 14:25:48 +0100
+
+pt-os-setup (1.2.4-1) buster; urgency=medium
+
+  * Always show user-selected language on language page dropdown
+
+ -- Choudhry Amjad <choudhry@pi-top.com>  Mon, 05 Aug 2019 12:56:41 +0100
+
+pt-os-setup (1.2.3-1) buster; urgency=medium
+
+  * Update copy
+
+ -- Ben Pring <ben@pi-top.com>  Tue, 30 Jul 2019 16:46:21 +0100
+
+pt-os-setup (1.2.2-1) buster; urgency=medium
+
+  * Set all localisation settings based on language setting, for a few popular locales
+
+ -- Ben Pring <ben@pi-top.com>  Fri, 26 Jul 2019 13:20:55 +0100
+
+pt-os-setup (1.2.1-1) buster; urgency=medium
+
+  * Add support for selecting language, timezone and keyboard layout.
+
+ -- Ben Pring <ben@pi-top.com>  Wed, 10 Jul 2019 17:19:10 +0100
+
+pt-os-setup (1.1.1-2) buster; urgency=medium
+
+  * Move to Buster
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 25 Jun 2019 15:10:39 +0100
+
+pt-os-setup (1.1.1-1) stretch; urgency=low
+
+  * Take the safer approach to running the update service
+
+ -- Ben Pring <ben@pi-top.com>  Fri, 26 Apr 2019 13:30:53 +0100
+
+pt-os-setup (1.1.0-1) stretch; urgency=low
+
+  * Add new display detection and resolution reconfiguration
+
+ -- Mike Roberts <mike@pi-top.com>  Fri, 26 Apr 2019 15:12:50 +0800
+
+pt-os-setup (1.0.0-1) stretch; urgency=low
+
+  * Initial release
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 10 Sep 2018 16:56:08 +0100

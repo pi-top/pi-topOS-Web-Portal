@@ -1,0 +1,54 @@
+.root {
+  --bannerHeight: 50vh;
+}
+
+.termsContainer {
+  margin-top: 3vh;
+  height: 25vh;
+  overflow-y: scroll;
+  border-radius: 5px;
+  border: 1px solid var(--font80);
+  padding: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+.input {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  width: 100%;
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.checkbox {
+  margin-right: auto;
+
+  --checkboxFontSize: 16px;
+  --checkboxHeight: 24px;
+}
+
+.checkbox > label {
+  color: var(--green);
+  font-style: normal;
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+}
+
+.message {
+  composes: text from '../../globalStyles/Typography.module.css';
+  margin-right: auto;
+}
+
+.privacyPolicyButton {
+  color: var(--green);
+  font-weight: normal;
+  font-size: 16px;
+}

@@ -1,0 +1,22 @@
+.banner {
+  height: 70vh;
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+}
+
+.timezoneContainer {
+  margin-top: 10px;
+  width: 100%;
+  position: relative;
+}
+
+.message {
+  position: absolute;
+  right: 100%;
+  composes: text from '../../globalStyles/Typography.module.css';
+  color: var(--green);
+  font-size: 16px;
+  padding: 10px;
+}

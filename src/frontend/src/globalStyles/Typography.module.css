@@ -1,0 +1,92 @@
+.text {
+  color: var(--textColour, var(--font));
+  font-family: var(--fontFamily);
+  user-select: none;
+}
+
+.fontBodyLarge {
+  composes: text;
+  color: var(--textColourBodyLarge, var(--textColour, var(--font)));
+  font-size: 2rem;
+  line-height: 1.3;
+}
+
+.fontBody {
+  composes: text;
+  color: var(--textColourBody, var(--textColour, var(--font)));
+  font-size: 1.6rem;
+  line-height: 1.375;
+}
+
+.fontSub {
+  composes: text;
+  color: var(--textColourSub, var(--textColour, var(--font)));
+  font-size: 1.4rem;
+  line-height: 1.4285;
+}
+
+.fontError {
+  composes: text;
+  font-size: 12px;
+  padding: 20px;
+  color: var(--red, red);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Headings */
+.headings {
+  composes: text;
+  font-weight: 700;
+}
+
+/* Tier 1 Fonts */
+.fontH1T1 {
+  composes: headings;
+  color: var(--textColourH1T1, var(--textColour, var(--font)));
+  font-size: 3.2rem;
+  line-height: 1.1875;
+}
+
+.fontH2T1 {
+  composes: headings;
+  color: var(--textColourH2T1, var(--textColour, var(--font)));
+  font-size: 2rem;
+  line-height: 1.3;
+}
+
+/* Tier 2 Fonts */
+.fontH1T2 {
+  composes: headings;
+  color: var(--textColourH1T2, var(--textColour, var(--font)));
+  font-size: 6rem;
+  line-height: 1.1;
+}
+
+.fontH2T2 {
+  composes: headings;
+  color: var(--textColourH2T2, var(--textColour, var(--font)));
+  font-size: 3.2rem;
+  line-height: 1.1875;
+}
+
+.fontH3T2 {
+  composes: headings;
+  color: var(--textColourH3T2, var(--textColour, var(--font)));
+  font-size: 2.6rem;
+  line-height: 1.2308;
+}
+
+.fontH4T2 {
+  composes: headings;
+  color: var(--textColourH4T2, var(--textColour, var(--font)));
+  font-size: 2rem;
+  line-height: 1.3;
+}
+
+.fontIntro {
+  composes: text;
+  color: var(--textColourIntro, var(--textColour, var(--font)));
+  font-size: 3.2rem;
+  line-height: 1.1875;
+}

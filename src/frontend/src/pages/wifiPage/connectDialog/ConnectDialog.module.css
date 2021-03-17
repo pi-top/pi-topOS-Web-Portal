@@ -1,0 +1,58 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.password {
+  width: 320px;
+}
+
+.password label {
+  font-size: 12px;
+  font-weight: 200;
+  color: var(--noteGrey);
+}
+
+.checkbox {
+  margin-right: auto;
+  margin-top: 10px;
+  --checkboxFontSize: 16px;
+  --checkboxHeight: 24px;
+}
+
+.checkbox > label {
+  color: var(--green);
+  font-style: normal;
+}
+
+.actions {
+  position: relative;
+  width: 450px;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  composes: fontError from '../../../globalStyles/Typography.module.css';
+}
+
+.cancel {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  height: 20px;
+  color: var(--green);
+}
+
+.wifiIcon {
+  height: inherit;
+  width: inherit;
+}
+
+.successImage {
+  height: 125px;
+  margin: -10px;
+}

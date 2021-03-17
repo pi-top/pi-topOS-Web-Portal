@@ -1,0 +1,68 @@
+{
+    "PrepareStart": {
+        "type": "OS_PREPARE_UPGRADE",
+        "payload": {
+            "status": "START",
+            "percent": 0,
+            "message": "Preparing OS upgrade"
+        }
+    },
+    "PrepareFinish": {
+        "type": "OS_PREPARE_UPGRADE",
+        "payload": {
+            "status": "FINISH",
+            "percent": 100.0,
+            "message": "Finished preparing"
+        }
+    },
+    "PrepareError": {
+        "type": "OS_PREPARE_UPGRADE",
+        "payload": {
+            "status": "ERROR",
+            "percent": 0.0,
+            "message": "There was a problem during OS upgrade. Please continue, you'll be able to upgrade once the system reboots."
+        }
+    },
+    "Size": {
+        "type": "SIZE",
+        "payload": {
+            "size": {
+                "downloadSize": 100000,
+                "requiredSpace": 50000
+            },
+            "status": "STATUS"
+        }
+    },
+    "UpgradeStart": {
+        "type": "OS_UPGRADE",
+        "payload": {
+            "status": "START",
+            "percent": 0.0,
+            "message": "Starting install & upgrade process"
+        }
+    },
+    "UpgradeStatus": {
+        "type": "OS_UPGRADE",
+        "payload": {
+            "status": "STATUS",
+            "percent": 50.0,
+            "message": "dpkg-exec: Running dpkg"
+        }
+    },
+    "UpgradeFinish": {
+        "type": "OS_UPGRADE",
+        "payload": {
+            "status": "FINISH",
+            "percent": 0.0,
+            "message": "Finished upgrade"
+        }
+    },
+    "UpgradeError": {
+        "type": "OS_UPGRADE",
+        "payload": {
+            "status": "ERROR",
+            "percent": 0.0,
+            "message": "There was an error while upgrading packages."
+        }
+    }
+}

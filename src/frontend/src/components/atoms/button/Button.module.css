@@ -1,0 +1,39 @@
+.button {
+  composes: text from '../../../globalStyles/Typography.module.css';
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.button:not(:disabled) {
+  cursor: pointer;
+}
+
+.styled:disabled {
+  background-color: #ccefec;
+  border-color: #ccefec;
+}
+
+.styled:hover:enabled {
+  background-color: #00ad9f;
+  border-color: #00ad9f;
+}
+
+.styled {
+  composes: button;
+  background-color: var(--buttonBackground, var(--green));
+  border: 1px solid var(--buttonBorder, var(--green));
+  border-radius: var(--buttonBorderRadius, 20px);
+  color: var(--buttonColour, var(--white));
+  height: 40px;
+  min-width: 160px;
+  padding: 0 15px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.unstyled {
+  composes: button;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}

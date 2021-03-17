@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Image renders correctly 1`] = `
+<div>
+  <div
+    class="root"
+  >
+    <img
+      alt="fake-image"
+      class="image"
+      draggable="false"
+      src="fake-src"
+      style="max-height: 80%; max-width: 80%;"
+    />
+  </div>
+</div>
+`;

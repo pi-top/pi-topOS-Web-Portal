@@ -1,0 +1,10 @@
+[Unit]
+Description=pi-top product registration service
+Documentation=https://knowledgebase.pi-top.com/knowledge
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/pt-device-registration/device-registration
+
+[Install]
+WantedBy=multi-user.target

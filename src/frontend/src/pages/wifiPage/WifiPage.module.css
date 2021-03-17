@@ -1,0 +1,61 @@
+.banner {
+  height: 70vh;
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+}
+
+.timezoneContainer {
+  margin-top: 10px;
+  width: 100%;
+  position: relative;
+}
+
+.message {
+  position: absolute;
+  right: 100%;
+  composes: text from '../../globalStyles/Typography.module.css';
+  color: var(--green);
+  font-size: 16px;
+  padding: 10px;
+}
+
+.selectDetailsContainer {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  width: 200px;
+}
+
+.settingMessage {
+  composes: text from '../../globalStyles/Typography.module.css';
+  color: var(--green);
+  font-size: 16px;
+  padding: 5px 10px;
+}
+
+.wifiSelectContainer {
+  width: 100%;
+  position: relative;
+}
+
+.checkbox  {
+  margin-right: auto;
+  margin-top: 10px;
+  --checkboxFontSize: 16px;
+  --checkboxHeight: 24px;
+}
+
+.checkbox > label {
+  color: var(--green);
+  font-style: normal;
+}
+
+.refreshButton {
+  height: 30px;
+  width: 30px;
+}

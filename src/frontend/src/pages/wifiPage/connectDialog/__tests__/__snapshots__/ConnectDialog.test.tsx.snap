@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectDialog when a password protected network is received renders dialog message correctly 1`] = `
+<h3
+  class="messageContainer"
+  data-testid="dialog-message"
+>
+  The WiFi network 
+  <span
+    class="green"
+  >
+    network-name
+  </span>
+   
+  requires
+   a password
+</h3>
+`;
+
+exports[`ConnectDialog when an unprotected network is received renders dialog message correctly 1`] = `
+<h3
+  class="messageContainer"
+  data-testid="dialog-message"
+>
+  The WiFi network 
+  <span
+    class="green"
+  >
+    unprotected-network
+  </span>
+   
+  does not require
+   a password
+</h3>
+`;

@@ -1,0 +1,13 @@
+.root {
+  --bannerHeight: 55vh;
+  --contentWidth: 50vw;
+}
+
+.termsContainer {
+  margin-top: 3vh;
+  height: 25vh;
+  overflow-y: scroll;
+  border-radius: 5px;
+  border: 1px solid var(--font80);
+  padding: 10px;
+}

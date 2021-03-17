@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Flask = "*"
+Flask-Cors = "*"
+pywifi = "*"
+gevent-websocket = "*"
+pytest = "*"
+asyncio = "*"
+Flask-Sockets = "*"
+systemd-python = "*"
+pitopcommon = {git = "https://github.com/pi-top/pi-top-Python-Common-Library"}
+
+[dev-packages]
+pytest = "*"
+testpath = "*"
+pytest-mock = "*"
+pytest-cov = "*"
+Flask-Sockets = "*"
+websockets = "*"
+asyncio = "*"
+importlib-metadata = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

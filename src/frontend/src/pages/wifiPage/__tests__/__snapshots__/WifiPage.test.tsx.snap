@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WifiPage renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Connect me to 
+  <span
+    class="green"
+  >
+    WiFi
+  </span>
+</h1>
+`;
+
+exports[`WifiPage renders the correct banner image 1`] = `
+<img
+  alt="wifi-page-banner"
+  class="image"
+  draggable="false"
+  src="wifi-screen.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`WifiPage when networks are passed when option without a password is selected renders dialog message correctly 1`] = `
+<h3
+  class="messageContainer"
+  data-testid="dialog-message"
+>
+  The WiFi network 
+  <span
+    class="green"
+  >
+    unsecured-ssid
+  </span>
+   
+  does not require
+   a password
+</h3>
+`;

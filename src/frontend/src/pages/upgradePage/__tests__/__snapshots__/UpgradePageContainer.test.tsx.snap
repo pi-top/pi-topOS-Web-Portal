@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpgradePageContainer renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  OK, I need to be 
+  <span
+    class="green"
+  >
+    updated
+  </span>
+</h1>
+`;
+
+exports[`UpgradePageContainer renders the correct banner image 1`] = `
+<img
+  alt="upgrade-page-banner"
+  class="image"
+  draggable="false"
+  src="upgrade-page.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`UpgradePageContainer when the upgrade finishes renders progress bar correctly 1`] = `
+<div
+  class="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 2"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="2"
+      style="stroke-dasharray: 0px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: 0s, 0s;"
+    />
+  </svg>
+  <span
+    class="message"
+  >
+    Finished upgrade
+  </span>
+</div>
+`;
+
+exports[`UpgradePageContainer when the upgrade is being installed renders progress bar correctly 1`] = `
+<div
+  class="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 2"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="2"
+      style="stroke-dasharray: 50px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
+    />
+  </svg>
+  <span
+    class="message"
+  >
+    dpkg-exec: Running dpkg
+  </span>
+</div>
+`;
