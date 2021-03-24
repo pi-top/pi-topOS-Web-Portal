@@ -19,9 +19,9 @@ def test_list_keyboard_variants_correct_format(app):
 
 
 def test_current_keyboard(app, mocker):
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run',
+    run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': keyboard_query_data, 'stderr': b'', 'returncode': 0}))
 
     response = app.get('/current-keyboard-layout')
@@ -34,9 +34,9 @@ def test_current_keyboard(app, mocker):
 
 def test_set_keyboard_layout_success(app, mocker):
     valid_keyboard_layout = 'ad'
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run',
+    run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': b'', 'stderr': b'', 'returncode': 200}))
 
     successful_response = app.post(
@@ -55,9 +55,9 @@ def test_set_keyboard_layout_failure_wrong_type(app):
 
 # XXX: this should fail ... but we are not getting any errors from raspi-config
 def test_set_keyboard_layout_invalid_code(app, mocker, restore_files):
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run',
+    run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': b'', 'stderr': b'', 'returncode': 0}))
 
     no_locale_found_error = app.post(

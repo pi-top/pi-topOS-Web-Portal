@@ -3,7 +3,7 @@ import pytest
 from subprocess import Popen
 from time import sleep
 
-from onboarding import create_app
+from backend import create_app
 from tests.data.finalise_data import cmd_line_before
 from tests.data.keyboard_data import keyboard_file_before
 
@@ -30,8 +30,8 @@ def socket_app():
 def cleanup_files():
     yield
     cleanup_files = [
-        'onboarding/test/.silentBoot',
-        'onboarding/test/.licenceAgreed',
+        'backend/test/.silentBoot',
+        'backend/test/.licenceAgreed',
     ]
 
     for file in cleanup_files:
@@ -43,9 +43,9 @@ def cleanup_files():
 def restore_files():
     yield
     file_data = [
-        ('onboarding/test/cmdline.txt', cmd_line_before),
-        ('onboarding/test/keyboard', keyboard_file_before),
-        ('onboarding/test/registration.txt', ''),
+        ('backend/test/cmdline.txt', cmd_line_before),
+        ('backend/test/keyboard', keyboard_file_before),
+        ('backend/test/registration.txt', ''),
     ]
 
     for file_to_restore, original_data in file_data:
@@ -57,20 +57,20 @@ def restore_files():
 @pytest.fixture(scope="function")
 def wifi_manager_module():
     import sys
-    import onboarding.helpers.wifi_manager
+    import backend.helpers.wifi_manager
 
     create_app(test=True)
-    yield onboarding.helpers.wifi_manager
+    yield backend.helpers.wifi_manager
 
-    del sys.modules['onboarding.helpers.wifi_manager']
+    del sys.modules['backend.helpers.wifi_manager']
 
 
 @pytest.fixture(scope="function")
 def os_updater_module():
     import sys
-    import onboarding.helpers.os_updater
+    import backend.helpers.os_updater
 
     create_app(test=True)
-    yield onboarding.helpers.os_updater
+    yield backend.helpers.os_updater
 
-    del sys.modules['onboarding.helpers.os_updater']
+    del sys.modules['backend.helpers.os_updater']

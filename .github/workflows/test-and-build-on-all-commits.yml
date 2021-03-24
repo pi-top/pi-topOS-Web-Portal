@@ -52,7 +52,7 @@ jobs:
             --env RUN_PYTHON_TESTS=1 \
             --env PYTHON_TESTS_DIR=src/server/tests \
             --env PYTHON_TARGET_DIR=src/server \
-            --env PYTHON_COVERAGE_DIR=onboarding \
+            --env PYTHON_COVERAGE_DIR=backend \
             --env RUN_WEB_TESTS=1 \
             --env WEB_TESTS_DIR=src/frontend \
             pitop/test-run

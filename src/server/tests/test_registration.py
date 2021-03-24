@@ -29,4 +29,4 @@ def test_set_registration_creates_a_file(app, restore_files):
     email_str = 'hey@yo.com'
     app.post('/set-registration', json={'email': email_str})
     assert isfile(pi_top_registration_txt()) is True
-    assert_file_content('onboarding/test/registration.txt', email_str)
+    assert_file_content('backend/test/registration.txt', email_str)

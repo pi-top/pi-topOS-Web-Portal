@@ -21,9 +21,9 @@ def test_current_locale(app):
 
 def test_set_locale_success(app, mocker):
     valid_locale_code = 'en_US'
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run')
+    run_mock = mocker.patch('backend.helpers.command_runner.run')
 
     successful_response = app.post(
         '/set-locale', json={'locale_code': valid_locale_code})

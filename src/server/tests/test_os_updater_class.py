@@ -140,13 +140,13 @@ def test_lock_prevents_sends_error_message(os_updater_module):
 @pytest.mark.skip(reason="failing on CI, works on local")
 def test_upgrade_writes_last_checked_date_file(os_updater_module, mocker):
     os_path_exists = mocker.patch(
-        "onboarding.helpers.os_updater.os.path.exists", return_value=False)
+        "backend.helpers.os_updater.os.path.exists", return_value=False)
     os_makedirs = mocker.patch(
-        "onboarding.helpers.os_updater.os.makedirs", return_value=True)
+        "backend.helpers.os_updater.os.makedirs", return_value=True)
     os_isfile = mocker.patch(
-        "onboarding.helpers.os_updater.os.path.isfile", return_value=True)
+        "backend.helpers.os_updater.os.path.isfile", return_value=True)
     os_remove = mocker.patch(
-        "onboarding.helpers.os_updater.os.remove", return_value=True)
+        "backend.helpers.os_updater.os.remove", return_value=True)
     open_builtin = mocker.patch("builtins.open", create=True)
 
     os_updater_module.prepare_os_upgrade(create_update_callback([]))
