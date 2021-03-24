@@ -1,5 +1,0 @@
-pkg/pt-os-setup.desktop                     /usr/lib/pt-os-setup
-pkg/pwdpto.sh                               /usr/lib/pt-os-setup
-pkg/expand-fs.sh                            /usr/lib/pt-os-setup
-device-registration/device-registration     /usr/lib/pt-device-registration/
-src/server                                  /usr/lib/pt-os-setup

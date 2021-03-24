@@ -1,6 +1,5 @@
 import pytest
 
-from tests.utils import dotdict
 from tests.data.wifi_manager_data import network_profiles, wpa_cli_status
 
 
@@ -22,17 +21,17 @@ def test_get_status_responds_an_ifacestatus_enum(wifi_manager_module):
 
 def test_interface_is_inactive_on_instantiation(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
-    assert wifi_manager.is_connecting() == False
-    assert wifi_manager.is_connected() == False
-    assert wifi_manager.is_scanning() == False
+    assert wifi_manager.is_inactive() is True
+    assert wifi_manager.is_connecting() is False
+    assert wifi_manager.is_connected() is False
+    assert wifi_manager.is_scanning() is False
 
 
 def test_scan_and_get_results_output(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
     networks = wifi_manager.scan_and_get_results()
 
-    assert wifi_manager.is_inactive() == True
+    assert wifi_manager.is_inactive() is True
     assert type(networks) == list
     assert len(networks) == len(network_profiles)
     network_profile_keys = list(networks[0].__dict__.keys())
@@ -42,10 +41,10 @@ def test_scan_and_get_results_output(wifi_manager_module):
 
 def test_connect_success_updates_state(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
+    assert wifi_manager.is_inactive() is True
     wifi_manager.connect(
         ssid='Depto 606', password='this-is-not-my-real-password')
-    assert wifi_manager.is_connected() == True
+    assert wifi_manager.is_connected() is True
 
 
 def test_connect_verifies_data_with_scan_and_get_results(wifi_manager_module, mocker):
@@ -74,24 +73,24 @@ def test_disconnect_is_not_called_on_invalid_ssids(wifi_manager_module, mocker):
 
 def test_connect_fix_on_networks_without_security(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
+    assert wifi_manager.is_inactive() is True
     wifi_manager.connect(ssid='Free internet!', password=None)
-    assert wifi_manager.is_connected() == True
+    assert wifi_manager.is_connected() is True
 
 
 def test_connect_failure_on_invalid_ssid(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
-    assert wifi_manager.is_connected() == False
+    assert wifi_manager.is_inactive() is True
+    assert wifi_manager.is_connected() is False
     connect_output = wifi_manager.connect(
         ssid='unexistant network', password='this-is-a-password')
-    assert connect_output == None
-    assert wifi_manager.is_inactive() == True
-    assert wifi_manager.is_connected() == False
+    assert connect_output is None
+    assert wifi_manager.is_inactive() is True
+    assert wifi_manager.is_connected() is False
 
 
 def test_connect_excepts_on_failure(wifi_manager_module, mocker):
-    mocker.patch('onboarding.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.connect',
+    mocker.patch('backend.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.connect',
                  side_effect=Exception('Waited too long...'))
     wifi_manager = wifi_manager_module.WifiManager()
 
@@ -101,9 +100,9 @@ def test_connect_excepts_on_failure(wifi_manager_module, mocker):
 
 
 def test_ssid_connected_success(wifi_manager_module, mocker):
-    mocker.patch('onboarding.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas',
+    mocker.patch('backend.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas',
                  return_value=wpa_cli_status)
-    mocker.patch('onboarding.helpers.wifi_manager.WifiManager.get_status',
+    mocker.patch('backend.helpers.wifi_manager.WifiManager.get_status',
                  return_value=wifi_manager_module.IfaceStatus.CONNECTED)
 
     wifi_manager = wifi_manager_module.WifiManager()
@@ -111,7 +110,7 @@ def test_ssid_connected_success(wifi_manager_module, mocker):
 
 
 def test_ssid_connected_returns_empty_if_disconnected(wifi_manager_module, mocker):
-    mocker.patch('onboarding.helpers.wifi_manager.WifiManager.get_status',
+    mocker.patch('backend.helpers.wifi_manager.WifiManager.get_status',
                  return_value=wifi_manager_module.IfaceStatus.INACTIVE)
 
     wifi_manager = wifi_manager_module.WifiManager()
@@ -119,7 +118,7 @@ def test_ssid_connected_returns_empty_if_disconnected(wifi_manager_module, mocke
 
 
 def test_ssid_connected_returns_empty_on_exception(wifi_manager_module, mocker):
-    mocker.patch('onboarding.helpers.wifi_manager.WifiManager.get_status',
+    mocker.patch('backend.helpers.wifi_manager.WifiManager.get_status',
                  side_effect=Exception('Internal failure...'))
 
     wifi_manager = wifi_manager_module.WifiManager()
@@ -129,11 +128,11 @@ def test_ssid_connected_returns_empty_on_exception(wifi_manager_module, mocker):
 def test_disconnect_waits_until_inactive_to_return(wifi_manager_module, mocker):
     def set_status_to_inactive():
         mocker.patch(
-            'onboarding.helpers.wifi_manager.WifiManager.is_inactive', return_value=True)
+            'backend.helpers.wifi_manager.WifiManager.is_inactive', return_value=True)
 
     mocker.patch(
-        'onboarding.helpers.wifi_manager.WifiManager.is_inactive', return_value=False)
-    mocker.patch('onboarding.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.disconnect',
+        'backend.helpers.wifi_manager.WifiManager.is_inactive', return_value=False)
+    mocker.patch('backend.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.disconnect',
                  side_effect=set_status_to_inactive)
 
     wifi_manager = wifi_manager_module.WifiManager()
@@ -146,11 +145,11 @@ def test_disconnect_waits_until_inactive_to_return(wifi_manager_module, mocker):
 def test_disconnect_calls_interface_disconnect(wifi_manager_module, mocker):
     def set_status_to_inactive():
         mocker.patch(
-            'onboarding.helpers.wifi_manager.WifiManager.is_inactive', return_value=True)
+            'backend.helpers.wifi_manager.WifiManager.is_inactive', return_value=True)
 
     mocker.patch(
-        'onboarding.helpers.wifi_manager.WifiManager.is_inactive', return_value=False)
-    mocker.patch('onboarding.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.disconnect',
+        'backend.helpers.wifi_manager.WifiManager.is_inactive', return_value=False)
+    mocker.patch('backend.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.disconnect',
                  side_effect=set_status_to_inactive)
 
     wifi_manager = wifi_manager_module.WifiManager()

@@ -1,6 +1,5 @@
 from flask import json
 
-from tests.data.wifi_country_data import wifi_country_list, country_code_sample
 from tests.data.timezone_data import timezones_list
 from tests.utils import dotdict
 
@@ -21,9 +20,9 @@ def test_current_timezone(app):
 
 def test_set_locale_success(app, mocker):
     valid_timezone = 'America/Santiago'
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run',
+    run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': b'', 'stderr': b'', 'returncode': 0}))
 
     successful_response = app.post(

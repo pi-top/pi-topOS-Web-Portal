@@ -6,17 +6,6 @@ Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
  npm,
-# python3-* used for running tests
- python3-flask,
- python3-flask-cors,
- python3-flask-sockets,
- python3-gevent,
- python3-gevent-websocket,
- python3-pitopcommon,
- python3-waitress,
- python3-pytest,
- python3-pytest-cov,
- python3-pywifi,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com/
 
@@ -36,18 +25,22 @@ Depends:
  python3-gevent-websocket,
 # Used for PTLogger
  python3-pitopcommon,
- python3-waitress,
  python3-pywifi,
+ python3-waitress,
+ python3-websockets,
  raspi-config,
  rsync,
 Recommends:
  pt-tour,
 Replaces:
  piwiz,
+ pt-os-setup,
 Breaks:
  piwiz,
+ pt-os-setup,
 Conflicts:
  piwiz,
+ pt-os-setup,
 Description: pi-topOS First Time Setup
  pi-topOS's first time setup wizard. Set up regional configuration,
  Wi-Fi connection, agree to the pi-topOS EULA, and reboot into the full desktop.

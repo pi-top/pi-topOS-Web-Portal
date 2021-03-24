@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=pi-topOS First Time Setup
+Name[en_GB]=pi-topOS First Time Setup
+GenericName=pi-topOS First Time Setup
+GenericName[en_GB]=pi-topOS First Time Setup
+Comment=pi-topOS First Time Setup
+Comment[en_GB]=pi-topOS First Time Setup
+Exec=pt-web-ui pt-web-portal
+NotShowIn=GNOME;XFCE;
+StartupNotify=true
+Categories=Settings;DesktopSettings;GTK;X-LXDE-Settings;

@@ -26,7 +26,7 @@ To run frontend in development mode, move to the frontend dir and run
 
 to run server in development mode, move to server dir and run
 
-`pipenv run flask run --reload --port 8020`
+`pipenv run flask run --reload --port 80`
 
 ## Production
 

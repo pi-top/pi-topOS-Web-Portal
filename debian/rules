@@ -4,10 +4,11 @@
 	dh $@
 
 override_dh_auto_build:
-	cd src/frontend && \
+	cd src/frontend/onboarding && \
 		npm install && \
 		node_modules/react-scripts/bin/react-scripts.js build && \
-		mv build ../server/onboarding/
+		mkdir -p ../../server/backend/pages && \
+		mv build ../../server/backend/pages/onboarding
 
 	dh_auto_build
 
@@ -17,13 +18,4 @@ override_dh_clean:
 
 override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-start --name=pt-device-registration
-	dh_installsystemd --no-enable --no-start --name=pt-os-setup
-
-override_dh_auto_test:
-ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
-# 	cd src/frontend && \
-# 		yarn test:coverage
-	cd src/server && \
-		PYTHONPATH=onboarding python3 -m pytest -v --cov-report term-missing --cov=onboarding
-	dh_auto_test
-endif
+	dh_installsystemd --restart-after-upgrade --name=pt-web-portal

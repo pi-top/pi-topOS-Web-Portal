@@ -12,9 +12,9 @@ def test_list_wifi_countries_gets_correct_formats(app):
 
 
 def test_current_wifi_country_uses_raspi_config(app, mocker):
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run',
+    run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': country_code_sample, 'stderr': b'', 'returncode': 0}))
 
     response = app.get('/current-wifi-country')
@@ -29,9 +29,9 @@ def test_current_wifi_country_uses_raspi_config(app, mocker):
 
 def test_set_wifi_country_success(app, mocker):
     valid_country_code = 'CL'
-    environ_mock = mocker.patch('onboarding.helpers.command_runner.environ')
+    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
-    run_mock = mocker.patch('onboarding.helpers.command_runner.run',
+    run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': b'', 'stderr': b'', 'returncode': 200}))
 
     successful_response = app.post(

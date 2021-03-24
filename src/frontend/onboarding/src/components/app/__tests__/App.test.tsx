@@ -1,0 +1,644 @@
+import React from "react";
+import {
+  cleanup,
+  render,
+  wait,
+  fireEvent,
+  waitForElement,
+  act,
+} from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import { MemoryRouter } from "react-router-dom";
+import { getName } from "country-list";
+import { Server } from "mock-socket";
+
+import App from "../App";
+import { BuildInfo } from "../../../types/Build";
+import { createLocaleFromCode } from "../../../helpers/locales";
+import Messages from "../../../pages/upgradePage/__tests__/data/socketMessages.json";
+import { PageRoute } from "../../../types/Page";
+import { KeyCode } from "../../../../test/types/Keys";
+import queryReactSelect from "../../../../test/helpers/queryReactSelect";
+
+import getBuildInfo from "../../../services/getBuildInfo";
+import getLocales from "../../../services/getLocales";
+import getCurrentLocale from "../../../services/getCurrentLocale";
+import setLocale from "../../../services/setLocale";
+import getCountries from "../../../services/getCountries";
+import setCountry from "../../../services/setCountry";
+import getCurrentCountry from "../../../services/getCurrentCountry";
+import getTimezones from "../../../services/getTimezones";
+import getCurrentTimezone from "../../../services/getCurrentTimezone";
+import setTimezone from "../../../services/setTimezone";
+import getKeyboards from "../../../services/getKeyboards";
+import getKeyboardVariants from "../../../services/getKeyboardVariants";
+import getCurrentKeyboard from "../../../services/getCurrentKeyboard";
+import setKeyboard from "../../../services/setKeyboard";
+import setRegistration from "../../../services/setRegistration";
+import getAvailableSpace from "../../../services/getAvailableSpace";
+
+import getNetworks from "../../../services/getNetworks";
+import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
+import connectToNetwork from "../../../services/connectToNetwork";
+import expandFileSystem from "../../../services/expandFileSystem";
+
+jest.mock("../../../services/getNetworks");
+jest.mock("../../../services/isConnectedToNetwork");
+jest.mock("../../../services/connectToNetwork");
+jest.mock("../../../services/getBuildInfo");
+jest.mock("../../../services/getLocales");
+jest.mock("../../../services/getCurrentLocale");
+jest.mock("../../../services/setLocale");
+jest.mock("../../../services/getCountries");
+jest.mock("../../../services/getTimezones");
+jest.mock("../../../services/getCurrentCountry");
+jest.mock("../../../services/getCurrentTimezone");
+jest.mock("../../../services/setCountry");
+jest.mock("../../../services/setTimezone");
+jest.mock("../../../services/getKeyboards");
+jest.mock("../../../services/getKeyboardVariants");
+jest.mock("../../../services/getCurrentKeyboard");
+jest.mock("../../../services/setKeyboard");
+jest.mock("../../../services/setRegistration");
+jest.mock("../../../services/getAvailableSpace");
+jest.mock("../../../services/expandFileSystem");
+
+const expandFileSystemMock = expandFileSystem as jest.Mock;
+const getBuildInfoMock = getBuildInfo as jest.Mock;
+const getLocalesMock = getLocales as jest.Mock;
+const currentLocaleMock = getCurrentLocale as jest.Mock;
+const setLocaleMock = setLocale as jest.Mock;
+const getKeyboardsMock = getKeyboards as jest.Mock;
+const getKeyboardVariantsMock = getKeyboardVariants as jest.Mock;
+const currentKeyboardMock = getCurrentKeyboard as jest.Mock;
+const setKeyboardMock = setKeyboard as jest.Mock;
+const getCountriesMock = getCountries as jest.Mock;
+const getTimezonesMock = getTimezones as jest.Mock;
+const currentCountryMock = getCurrentCountry as jest.Mock;
+const getCurrentTimezoneMock = getCurrentTimezone as jest.Mock;
+const setCountryMock = setCountry as jest.Mock;
+const setCurrentTimezone = setTimezone as jest.Mock;
+const setRegistrationMock = setRegistration as jest.Mock;
+const getNetworksMock = getNetworks as jest.Mock;
+const isConnectedToNetworkMock = isConnectedToNetwork as jest.Mock;
+const connectToNetworkMock = connectToNetwork as jest.Mock;
+const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
+
+const keyboardVariants = {
+  us: {
+    "alt-intl": "Alternative international (former us_intl)",
+    "altgr-intl": "International (AltGr dead keys)",
+    chr: "Cherokee",
+    colemak: "Colemak",
+    dvorak: "Dvorak",
+    "dvorak-classic": "Classic Dvorak",
+    "dvorak-intl": "Dvorak international",
+    "dvorak-l": "Left handed Dvorak",
+    "dvorak-r": "Right handed Dvorak",
+    dvp: "Programmer Dvorak",
+    euro: "With EuroSign on 5",
+    intl: "International (with dead keys)",
+    mac: "Macintosh",
+    olpc2: "Group toggle on multiply/divide key",
+    rus: "Russian phonetic",
+    srp: "Serbian",
+  },
+};
+
+const buildInfo: BuildInfo = {
+  buildName: "test-build",
+  buildNumber: "1234567890",
+  buildDate: "01/01/2020",
+  buildRepo: "test-build-repo",
+  finalRepo: "final-test-build-repo",
+  buildHash: "094cdf6bc25b7429eb2820528f031afe",
+};
+
+const upgradePageText =
+  "100 kB of new packages need to be installed. This might take a few minutes.";
+
+const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
+  const result = render(
+    <MemoryRouter initialEntries={[pageRoute]}>
+      <App />
+    </MemoryRouter>
+  );
+
+  const waitForAltText = (altText: string) =>
+    waitForElement(() => result.getByAltText(altText));
+  const waitForText = (text: string) =>
+    waitForElement(() => result.getByText(text));
+
+  return {
+    ...result,
+    // queries
+    queryReactSelect: () => queryReactSelect(result.container),
+    // WaitFors
+    waitForSplashPage: () => waitForAltText("intro-screen"),
+    waitForLanguagePage: () => waitForAltText("language-screen-banner"),
+    waitForCountryPage: () => waitForAltText("country-screen"),
+    waitForKeyboardPage: () => waitForAltText("keyboard-screen"),
+    waitForTermsPage: () => waitForAltText("terms-screen-banner"),
+    waitForWifiPage: () => waitForAltText("wifi-page-banner"),
+    waitForUpgradePage: () => waitForText(upgradePageText),
+    waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
+    waitForRestartPage: () => waitForAltText("reboot-screen"),
+    // Actions
+    upgrade: async () => {
+      fireEvent.click(result.getByText("Update"));
+      await waitForText("Next");
+    },
+    registerEmail: (email: string) => {
+      const emailInput = result.getByPlaceholderText(
+        "Please enter your email..."
+      );
+      fireEvent.change(emailInput, {
+        target: { value: email },
+      });
+      fireEvent.submit(result.container.querySelector("#registration-form")!);
+    },
+  };
+};
+
+describe("App", () => {
+  let server: Server;
+
+  beforeAll(() => {
+    // app services
+    getBuildInfoMock.mockResolvedValue(buildInfo);
+    expandFileSystemMock.mockResolvedValue("OK");
+
+    // language page services
+    const currentLocale = createLocaleFromCode("en_GB");
+    getLocalesMock.mockResolvedValue([currentLocale]);
+    currentLocaleMock.mockResolvedValue(currentLocale.localeCode);
+    setLocaleMock.mockResolvedValue("OK");
+    getAvailableSpaceMock.mockResolvedValue(
+      Messages.Size.payload.size.requiredSpace +
+        Messages.Size.payload.size.downloadSize +
+        1000
+    );
+
+    const countries = {
+      US: getName("US")!,
+      GB: getName("GB")!,
+    };
+    getCountriesMock.mockResolvedValue(countries);
+    currentCountryMock.mockResolvedValue("");
+    getTimezonesMock.mockResolvedValue([
+      {
+        countryCode: "GB",
+        timezone: "GMT+0000",
+      },
+    ]);
+    getCurrentTimezoneMock.mockResolvedValue("GMT+0000");
+    setCurrentTimezone.mockResolvedValue("OK");
+    setCountryMock.mockResolvedValue("OK");
+    getKeyboardsMock.mockResolvedValue({ us: "United States" });
+    getKeyboardVariantsMock.mockResolvedValue(keyboardVariants);
+    currentKeyboardMock.mockResolvedValue({ layout: "us" });
+    setKeyboardMock.mockResolvedValue("OK");
+    setRegistrationMock.mockResolvedValue("OK");
+    getNetworksMock.mockResolvedValue([
+      { ssid: "wifi network", passwordRequired: false },
+    ]);
+    isConnectedToNetworkMock.mockResolvedValue({ connected: true });
+    connectToNetworkMock.mockResolvedValue("OK");
+
+    server = new Server("ws://127.0.0.1:80/os-upgrade");
+    server.on("connection", (socket) => {
+      socket.on("message", (data) => {
+        if (data === "prepare") {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+          socket.send(JSON.stringify(Messages.PrepareFinish));
+        }
+
+        if (data === "size") {
+          socket.send(JSON.stringify(Messages.Size));
+        }
+
+        if (data === "start") {
+          socket.send(JSON.stringify(Messages.UpgradeStart));
+          socket.send(JSON.stringify(Messages.UpgradeStatus));
+          socket.send(JSON.stringify(Messages.UpgradeFinish));
+        }
+      });
+    });
+  });
+  afterEach(() => cleanup());
+  afterAll(() => {
+    act(() => server.close());
+  });
+
+  it("does not render build information on mount", async () => {
+    const { queryByTestId } = mount();
+
+    expect(queryByTestId("build-info")).not.toBeInTheDocument();
+
+    await wait();
+  });
+
+  it("renders build information correctly when loaded", async () => {
+    const { queryByTestId, waitForSplashPage } = mount();
+    await waitForSplashPage();
+
+    expect(queryByTestId("build-info")).toMatchSnapshot();
+  });
+
+  it("renders SpashPage by default", async () => {
+    const { queryByAltText, waitForSplashPage } = mount();
+    await waitForSplashPage();
+
+    expect(queryByAltText("intro-screen")).toBeInTheDocument();
+  });
+
+  describe("SplashPage", () => {
+    it("navigates to LanguagePage on next button click", async () => {
+      const { getByText, waitForSplashPage, waitForLanguagePage } = mount(
+        PageRoute.Splash
+      );
+      await waitForSplashPage();
+
+      fireEvent.click(getByText("Yes"));
+      await waitForLanguagePage();
+    });
+  });
+
+  describe("LanguagePage", () => {
+    it("navigates to CountryPage on next button click", async () => {
+      const { getByText, waitForLanguagePage, waitForCountryPage } = mount(
+        PageRoute.Language
+      );
+      await waitForLanguagePage();
+
+      fireEvent.click(getByText("Next"));
+      await waitForCountryPage();
+    });
+
+    it("if already completed it allows skipping to CountryScreen", async () => {
+      const { getByText, waitForLanguagePage, waitForCountryPage } = mount(
+        PageRoute.Language
+      );
+      await waitForLanguagePage();
+
+      // complete LanguagePage and go to CountryPage
+      fireEvent.click(getByText("Next"));
+      await waitForCountryPage();
+
+      // go back to LanguagePage
+      fireEvent.click(getByText("Back"));
+      await waitForLanguagePage();
+
+      // skip to CountryPage
+      fireEvent.click(getByText("Skip"));
+      await waitForCountryPage();
+    });
+  });
+
+  describe("CountryPage", () => {
+    it("selects expected user country by default", async () => {
+      // Enter in at LanguagePage so expected user country is set
+      const { getByText, waitForLanguagePage, waitForCountryPage } = mount(
+        PageRoute.Language
+      );
+      await waitForLanguagePage();
+
+      fireEvent.click(getByText("Next"));
+      await waitForCountryPage();
+
+      expect(getByText(getName("GB")!)).toBeInTheDocument();
+    });
+
+    it("navigates to KeyboardPage on next button click", async () => {
+      const { getByText, waitForCountryPage, waitForKeyboardPage } = mount(
+        PageRoute.Country
+      );
+      await waitForCountryPage();
+
+      fireEvent.click(getByText("Next"));
+      await waitForKeyboardPage();
+    });
+
+    it("navigate to LanguagePage on back button click", async () => {
+      const { getByText, waitForCountryPage, waitForLanguagePage } = mount(
+        PageRoute.Country
+      );
+      await waitForCountryPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForLanguagePage();
+    });
+
+    it("allows skipping to Keyboard when already completed", async () => {
+      const { getByText, waitForCountryPage, waitForKeyboardPage } = mount(
+        PageRoute.Country
+      );
+      await waitForCountryPage();
+
+      // complete CountryPage by navigating to KeyboardPage
+      fireEvent.click(getByText("Next"));
+      await waitForKeyboardPage();
+
+      // go back to CountryPage
+      fireEvent.click(getByText("Back"));
+      await waitForCountryPage();
+
+      // skip to KeyboardPage
+      fireEvent.click(getByText("Skip"));
+      await waitForKeyboardPage();
+    });
+  });
+
+  describe("KeyboardPage", () => {
+    it("navigates to WifiPage on next button click", async () => {
+      const { getByText, waitForKeyboardPage, waitForTermsPage } = mount(
+        PageRoute.Keyboard
+      );
+      await waitForKeyboardPage();
+
+      fireEvent.click(getByText("Next"));
+      await waitForTermsPage();
+    });
+
+    it("navigate to CountryPage on back button click", async () => {
+      const { getByText, waitForKeyboardPage, waitForCountryPage } = mount(
+        PageRoute.Keyboard
+      );
+      await waitForKeyboardPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForCountryPage();
+    });
+
+    it("allows skipping to TermsPage when already completed", async () => {
+      const { getByText, waitForKeyboardPage, waitForTermsPage } = mount(
+        PageRoute.Keyboard
+      );
+      await waitForKeyboardPage();
+
+      // complete KeyboardPage by navigating to TermsPage
+      fireEvent.click(getByText("Next"));
+      await waitForTermsPage();
+
+      // go back to KeyboardPage
+      fireEvent.click(getByText("Back"));
+      await waitForKeyboardPage();
+
+      // skip to TermsPage
+      fireEvent.click(getByText("Skip"));
+      await waitForTermsPage();
+    });
+  });
+
+  describe("TermsPage", () => {
+    it("navigates to WifiPage on next button click", async () => {
+      const { getByText, waitForTermsPage, waitForWifiPage } = mount(
+        PageRoute.Terms
+      );
+      await waitForTermsPage();
+
+      fireEvent.click(getByText("Agree"));
+      await waitForWifiPage();
+    });
+
+    it("navigates to KeyboardPage on back button click", async () => {
+      const { getByText, waitForTermsPage, waitForKeyboardPage } = mount(
+        PageRoute.Terms
+      );
+      await waitForTermsPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForKeyboardPage();
+    });
+
+    it("allows skipping to WifiPage when already completed", async () => {
+      const { getByText, waitForTermsPage, waitForWifiPage } = mount(
+        PageRoute.Terms
+      );
+      await waitForTermsPage();
+
+      // complete TermsPage by navigating to WifiPage
+      fireEvent.click(getByText("Agree"));
+      await waitForWifiPage();
+
+      // go back to TermsPage
+      fireEvent.click(getByText("Back"));
+      await waitForTermsPage();
+
+      // skip to WifiPage
+      fireEvent.click(getByText("Skip"));
+      await waitForWifiPage();
+    });
+  });
+
+  describe("WifiPage", () => {
+    it("navigates to UpgradePage on next button click", async () => {
+      const { getByText, waitForWifiPage, waitForUpgradePage } = mount(
+        PageRoute.Wifi
+      );
+      await waitForWifiPage();
+
+      fireEvent.click(getByText("Next"));
+      await waitForUpgradePage();
+    });
+
+    it("navigates to TermsPage on back button click", async () => {
+      const { getByText, waitForWifiPage, waitForTermsPage } = mount(
+        PageRoute.Wifi
+      );
+      await waitForWifiPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForTermsPage();
+    });
+
+    it("allows skipping to UpgradePage if already completed", async () => {
+      const { getByText, waitForWifiPage, waitForUpgradePage } = mount(
+        PageRoute.Wifi
+      );
+      await waitForWifiPage();
+
+      // complete WifiPage by navigating to UpgradePage
+      fireEvent.click(getByText("Next"));
+      await waitForUpgradePage();
+
+      // go back to WifiPage
+      fireEvent.click(getByText("Back"));
+      await waitForWifiPage();
+
+      // skip to UpgradePage
+      fireEvent.click(getByText("Skip"));
+      await waitForUpgradePage();
+    });
+
+    describe("when not connected to internet", () => {
+      beforeEach(() => {
+        isConnectedToNetworkMock.mockResolvedValue({ connected: false });
+      });
+      afterEach(() => {
+        isConnectedToNetworkMock.mockResolvedValue({ connected: true });
+      });
+
+      it("it navigates to RegistrationPage on Next button click after succesfully joining", async () => {
+        const {
+          getByText,
+          waitForWifiPage,
+          queryByText,
+          queryReactSelect,
+        } = mount(PageRoute.Wifi);
+        await waitForWifiPage();
+
+        fireEvent.keyDown(queryReactSelect()!, {
+          keyCode: KeyCode.DownArrow,
+        });
+        fireEvent.click(getByText("wifi network"));
+
+        fireEvent.click(getByText("Join"));
+        await waitForElement(() => getByText("OK"));
+        fireEvent.click(getByText("OK"));
+
+        await wait();
+        expect(queryByText("Next")).toHaveProperty("disabled", false);
+      });
+
+      it("navigates to RegistrationPage on Skip button click", async () => {
+        const {
+          getByText,
+          waitForWifiPage,
+          waitForRegistrationPage,
+        } = mount(PageRoute.Wifi);
+        await waitForWifiPage();
+
+        fireEvent.click(getByText("Skip"));
+        await waitForRegistrationPage();
+      });
+    });
+  });
+
+  describe("UpgradePage", () => {
+    it("navigates to RegistrationPage on next button click", async () => {
+      const {
+        getByText,
+        waitForUpgradePage,
+        upgrade,
+        waitForRegistrationPage,
+      } = mount(PageRoute.Upgrade);
+      await waitForUpgradePage();
+
+      await upgrade();
+
+      fireEvent.click(getByText("Next"));
+      await waitForRegistrationPage();
+    });
+
+    it("navigates to WifiPage on back button click", async () => {
+      const { getByText, waitForUpgradePage, upgrade, waitForWifiPage } = mount(
+        PageRoute.Upgrade
+      );
+      await waitForUpgradePage();
+
+      await upgrade();
+
+      fireEvent.click(getByText("Back"));
+      await waitForWifiPage();
+    });
+
+    it("allows skipping to RegistrationScreen when already completed", async () => {
+      const {
+        getByText,
+        waitForUpgradePage,
+        upgrade,
+        waitForRegistrationPage,
+      } = mount(PageRoute.Upgrade);
+      await waitForUpgradePage();
+
+      await upgrade();
+
+      fireEvent.click(getByText("Next"));
+      await waitForRegistrationPage();
+    });
+  });
+
+  describe("RegistrationPage", () => {
+    it("navigates to RestartPage on next button click", async () => {
+      const {
+        waitForRegistrationPage,
+        registerEmail,
+        waitForRestartPage,
+      } = mount(PageRoute.Registration);
+      await waitForRegistrationPage();
+
+      await registerEmail("test@test.com");
+      await waitForRestartPage();
+    });
+
+    it("navigates to RestartPage on skip button click", async () => {
+      const { getByText, waitForRegistrationPage, waitForRestartPage } = mount(
+        PageRoute.Registration
+      );
+      await waitForRegistrationPage();
+
+      fireEvent.click(getByText("Skip"));
+      await waitForRestartPage();
+    });
+
+    it("navigates to UpgradePage on back button click when connected", async () => {
+      const { getByText, waitForRegistrationPage, waitForUpgradePage } = mount(
+        PageRoute.Registration
+      );
+      await waitForRegistrationPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForUpgradePage();
+    });
+
+    it("navigates to WifiPage on back button click when not connected", async () => {
+      // Entering at wifi page to complete the "no internet connection" flow
+      isConnectedToNetworkMock.mockResolvedValueOnce({ connected: false });
+
+      const {
+        getByText,
+        waitForWifiPage,
+        waitForRegistrationPage,
+      } = mount(PageRoute.Wifi);
+      await waitForWifiPage();
+
+      fireEvent.click(getByText("Skip"));
+      await waitForRegistrationPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForWifiPage();
+    });
+
+    it("retains user email address after navigating away", async () => {
+      const {
+        getByText,
+        waitForRegistrationPage,
+        waitForRestartPage,
+        registerEmail,
+        queryByDisplayValue,
+      } = mount(PageRoute.Registration);
+      await waitForRegistrationPage();
+
+      await registerEmail("test@test.com");
+      await waitForRestartPage();
+
+      fireEvent.click(getByText("Back"));
+      await wait();
+
+      expect(queryByDisplayValue("test@test.com")).toBeInTheDocument();
+    });
+  });
+
+  describe("RestartPage", () => {
+    it("navigates to RegistrationPage on back button click", async () => {
+      const { getByText, waitForRestartPage, waitForRegistrationPage } = mount(
+        PageRoute.Restart
+      );
+      await waitForRestartPage();
+
+      fireEvent.click(getByText("Back"));
+      await waitForRegistrationPage();
+    });
+  });
+});

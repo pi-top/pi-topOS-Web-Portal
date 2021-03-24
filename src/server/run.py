@@ -7,10 +7,10 @@ from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
 from pitopcommon.logger import PTLogger
-from onboarding import create_app
+from backend import create_app
 
 
-parser = ArgumentParser(description="pi-top onboarding backend server")
+parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
     "--no-journal",
     help="Prints output to stdout instead of journal.",
@@ -29,7 +29,7 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-PTLogger.setup_logging(logger_name="pt-os-setup",
+PTLogger.setup_logging(logger_name="pt-web-portal",
                        logging_level=args.log_level, log_to_journal=args.no_journal is False)
 
 
@@ -38,7 +38,7 @@ def is_root() -> bool:
 
 
 server = pywsgi.WSGIServer(
-    ("", 8020),
+    ("", 80),
     create_app(test=args.test_mode),
     handler_class=WebSocketHandler)
 server.serve_forever()

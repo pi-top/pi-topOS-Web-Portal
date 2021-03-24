@@ -1,0 +1,5 @@
+pkg/pt-web-portal.desktop                   /usr/lib/pt-web-portal
+pkg/pwdpto.sh                               /usr/lib/pt-web-portal
+pkg/expand-fs.sh                            /usr/lib/pt-web-portal
+device-registration/device-registration     /usr/lib/pt-device-registration/
+src/server                                  /usr/lib/pt-web-portal
