@@ -82,7 +82,7 @@ def abort_on_no_data(data):
 @app.route('/', methods=['GET'])
 def index():
     PTLogger.debug("Route '/'")
-    return send_from_directory('build', 'index.html')
+    return send_from_directory('pages/onboarding', 'index.html')
 
 
 @app.route('/FSMePro/<filename>', methods=['GET'])

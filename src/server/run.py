@@ -7,10 +7,10 @@ from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
 from pitopcommon.logger import PTLogger
-from onboarding import create_app
+from backend import create_app
 
 
-parser = ArgumentParser(description="pi-top onboarding backend server")
+parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
     "--no-journal",
     help="Prints output to stdout instead of journal.",
