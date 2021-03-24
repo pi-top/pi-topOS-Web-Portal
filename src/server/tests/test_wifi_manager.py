@@ -81,7 +81,7 @@ def test_get_is_connected_responds_with_correctly_when_connected(app, mocker):
                                      capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=10)
 
     assert response.status_code == 200
-    assert json.loads(response.data)["connected"] == True
+    assert json.loads(response.data)["connected"] is True
 
 
 def test_get_is_connected_responds_correctly_when_disconnected(app, mocker):
@@ -97,14 +97,14 @@ def test_get_is_connected_responds_correctly_when_disconnected(app, mocker):
                                      capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=10)
 
     assert response.status_code == 200
-    assert json.loads(response.data)["connected"] == False
+    assert json.loads(response.data)["connected"] is False
 
 
 def get_is_connected_to_ssid_response_when_connected_to_network(app, mocker):
     mocker.patch('onboarding.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas',
                  return_value=wpa_cli_status)
     mocker.patch('onboarding.helpers.wifi_manager.WifiManager.get_status',
-                 return_value=wifi_manager_module.IfaceStatus.CONNECTED)
+                 return_value=wifi_manager_module.IfaceStatus.CONNECTED)  # noqa: F821
     response = app.get('/current-wifi-ssid')
 
     assert response.status_code == 200
@@ -113,7 +113,7 @@ def get_is_connected_to_ssid_response_when_connected_to_network(app, mocker):
 
 def get_is_connected_to_ssid_response_when_not_connected_to_network(app, mocker):
     mocker.patch('onboarding.helpers.wifi_manager.WifiManager.get_status',
-                 return_value=wifi_manager_module.IfaceStatus.INACTIVE)
+                 return_value=wifi_manager_module.IfaceStatus.INACTIVE)  # noqa: F821
     response = app.get('/current-wifi-ssid')
 
     assert response.status_code == 200

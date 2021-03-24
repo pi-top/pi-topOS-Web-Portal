@@ -1,6 +1,5 @@
 import pytest
 
-from tests.utils import dotdict
 from tests.data.wifi_manager_data import network_profiles, wpa_cli_status
 
 
@@ -22,17 +21,17 @@ def test_get_status_responds_an_ifacestatus_enum(wifi_manager_module):
 
 def test_interface_is_inactive_on_instantiation(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
-    assert wifi_manager.is_connecting() == False
-    assert wifi_manager.is_connected() == False
-    assert wifi_manager.is_scanning() == False
+    assert wifi_manager.is_inactive() is True
+    assert wifi_manager.is_connecting() is False
+    assert wifi_manager.is_connected() is False
+    assert wifi_manager.is_scanning() is False
 
 
 def test_scan_and_get_results_output(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
     networks = wifi_manager.scan_and_get_results()
 
-    assert wifi_manager.is_inactive() == True
+    assert wifi_manager.is_inactive() is True
     assert type(networks) == list
     assert len(networks) == len(network_profiles)
     network_profile_keys = list(networks[0].__dict__.keys())
@@ -42,10 +41,10 @@ def test_scan_and_get_results_output(wifi_manager_module):
 
 def test_connect_success_updates_state(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
+    assert wifi_manager.is_inactive() is True
     wifi_manager.connect(
         ssid='Depto 606', password='this-is-not-my-real-password')
-    assert wifi_manager.is_connected() == True
+    assert wifi_manager.is_connected() is True
 
 
 def test_connect_verifies_data_with_scan_and_get_results(wifi_manager_module, mocker):
@@ -74,20 +73,20 @@ def test_disconnect_is_not_called_on_invalid_ssids(wifi_manager_module, mocker):
 
 def test_connect_fix_on_networks_without_security(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
+    assert wifi_manager.is_inactive() is True
     wifi_manager.connect(ssid='Free internet!', password=None)
-    assert wifi_manager.is_connected() == True
+    assert wifi_manager.is_connected() is True
 
 
 def test_connect_failure_on_invalid_ssid(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.is_inactive() == True
-    assert wifi_manager.is_connected() == False
+    assert wifi_manager.is_inactive() is True
+    assert wifi_manager.is_connected() is False
     connect_output = wifi_manager.connect(
         ssid='unexistant network', password='this-is-a-password')
-    assert connect_output == None
-    assert wifi_manager.is_inactive() == True
-    assert wifi_manager.is_connected() == False
+    assert connect_output is None
+    assert wifi_manager.is_inactive() is True
+    assert wifi_manager.is_connected() is False
 
 
 def test_connect_excepts_on_failure(wifi_manager_module, mocker):

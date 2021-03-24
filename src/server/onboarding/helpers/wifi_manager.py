@@ -145,7 +145,7 @@ class WifiManager:
                 for line in response.split('\n'):
                     if line.startswith('ssid='):
                         return line.replace('ssid=', '')
-        except:
+        except Exception:
             pass
         return ''
 
@@ -181,6 +181,6 @@ def is_connected_to_internet() -> bool:
         run_command("ping -c1 8.8.8.8", timeout=10, check=True)
         PTLogger.info("Connected to internet")
         return True
-    except:
+    except Exception:
         PTLogger.info("Not connected to internet")
         return False

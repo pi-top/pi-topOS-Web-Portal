@@ -4,24 +4,21 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+asyncio = "*"
 Flask = "*"
 Flask-Cors = "*"
-pywifi = "*"
-gevent-websocket = "*"
-pytest = "*"
-asyncio = "*"
 Flask-Sockets = "*"
-systemd-python = "*"
+gevent-websocket = "*"
 pitopcommon = {git = "https://github.com/pi-top/pi-top-Python-Common-Library"}
+pywifi = "*"
+systemd-python = "*"
+websockets = "*"
 
 [dev-packages]
 pytest = "*"
 testpath = "*"
 pytest-mock = "*"
 pytest-cov = "*"
-Flask-Sockets = "*"
-websockets = "*"
-asyncio = "*"
 importlib-metadata = "*"
 
 [requires]

@@ -1,6 +1,5 @@
 from pitopcommon.logger import PTLogger
 from re import search
-from fileinput import input as finput
 
 from .paths import supported_locales, locales_gen, default_locale
 from .command_runner import run_command

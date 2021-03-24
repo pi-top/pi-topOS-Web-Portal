@@ -1,7 +1,6 @@
 from threading import Thread
 from . import sockets
 from json import dumps as jdumps
-from time import sleep
 
 from pitopcommon.logger import PTLogger
 
@@ -50,7 +49,6 @@ from .helpers.finalise import (
     restore_files
 )
 from .helpers.wifi_manager import (
-    WifiManager,
     get_ssids,
     attempt_connection,
     current_wifi_ssid,
@@ -69,7 +67,6 @@ from .helpers.expand_fs import (
 )
 
 from .events import (
-    MessageType,
     create_emit_os_upgrade_message,
     create_emit_os_prepare_upgrade_message,
     create_emit_os_size_message
@@ -230,7 +227,7 @@ def post_wifi_credentials():
 
     try:
         attempt_connection(ssid, password)
-    except:
+    except Exception:
         return abort(401)
 
     return "OK"

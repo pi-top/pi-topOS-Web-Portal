@@ -149,7 +149,7 @@ def test_enable_further_link_service_success(app, mocker):
 def test_disable_startup_noise_success(app, cleanup_files):
     response = app.post('/disable-startup-noise')
 
-    assert os.path.isfile(startup_noise_breadcrumb()) == True
+    assert os.path.isfile(startup_noise_breadcrumb()) is True
     assert response.status_code == 200
     assert response.data == b'OK'
 
@@ -157,7 +157,7 @@ def test_disable_startup_noise_success(app, cleanup_files):
 def test_mark_eula_agreed_success(app):
     response = app.post('/mark-eula-agreed')
 
-    assert os.path.isfile(eula_agreed_breadcrumb()) == True
+    assert os.path.isfile(eula_agreed_breadcrumb()) is True
     assert response.status_code == 200
     assert response.data == b'OK'
 

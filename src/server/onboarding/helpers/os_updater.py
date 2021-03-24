@@ -3,9 +3,7 @@ from .system_clock import (
     is_system_clock_synchronized
 )
 import os
-from datetime import datetime, date
-from threading import Thread
-from enum import Enum, auto
+from datetime import date
 
 from pitopcommon.logger import PTLogger
 

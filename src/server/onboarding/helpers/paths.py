@@ -1,5 +1,4 @@
 
-from pitopcommon.logger import PTLogger
 from os import path
 from sys import platform
 

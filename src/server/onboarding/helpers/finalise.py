@@ -122,13 +122,6 @@ def reboot() -> None:
     run_command("reboot", timeout=30, lower_priority=True)
 
 
-def enable_firmware_updater_service():
-    PTLogger.info("Function: enable_firmware_updater()")
-
-    return run_command("systemctl enable pt-firmware-updater",
-                       timeout=30, lower_priority=True)
-
-
 def enable_pt_sys_oled():
     PTLogger.info("Function: enable_pt_sys_oled()")
 

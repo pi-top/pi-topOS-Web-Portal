@@ -1,6 +1,5 @@
 from flask import json
 
-from tests.data.wifi_country_data import wifi_country_list, country_code_sample
 from tests.data.timezone_data import timezones_list
 from tests.utils import dotdict
 
