@@ -5,10 +5,12 @@ from json import dumps as jdumps
 from pitopcommon.logger import PTLogger
 
 from flask import (
+    abort,
     current_app as app,
-    send_from_directory,
+    redirect,
     request,
-    abort
+    send_from_directory,
+    url_for,
 )
 
 from .helpers.build import os_build_info
@@ -82,7 +84,15 @@ def abort_on_no_data(data):
 @app.route('/', methods=['GET'])
 def index():
     PTLogger.debug("Route '/'")
-    return send_from_directory(app.static_folder, 'index.html')
+    #return send_from_directory(app.static_folder, 'index.html')
+    return redirect(url_for('onboarding'))
+
+
+
+@app.route('/onboarding', methods=['GET'])
+def onboarding_index():
+    PTLogger.debug("Route '/onboarding'")
+    return send_from_directory(app.static_folder + "/onboarding", 'index.html')
 
 
 @app.route('/FSMePro/<filename>', methods=['GET'])
