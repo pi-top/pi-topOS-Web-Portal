@@ -54,7 +54,7 @@ jobs:
             --env PYTHON_TARGET_DIR=src/server \
             --env PYTHON_COVERAGE_DIR=backend \
             --env RUN_WEB_TESTS=1 \
-            --env WEB_TESTS_DIR=src/frontend \
+            --env WEB_TESTS_DIR=src/frontend/onboarding \
             pitop/test-run
 
   build-debian-packages:
