@@ -51,7 +51,7 @@ export type Props = {
 };
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
-  const socket = useSocket("ws://127.0.0.1:8020/os-upgrade");
+  const socket = useSocket("ws://127.0.0.1:80/os-upgrade");
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);

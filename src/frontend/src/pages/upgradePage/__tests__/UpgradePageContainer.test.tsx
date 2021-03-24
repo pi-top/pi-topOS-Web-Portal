@@ -29,7 +29,7 @@ const createServer = () => {
   if (server) {
     server.close();
   }
-  return new Server("ws://127.0.0.1:8020/os-upgrade");
+  return new Server("ws://127.0.0.1:80/os-upgrade");
 };
 
 describe("UpgradePageContainer", () => {

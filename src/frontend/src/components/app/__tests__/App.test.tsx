@@ -205,7 +205,7 @@ describe("App", () => {
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
     connectToNetworkMock.mockResolvedValue("OK");
 
-    server = new Server("ws://127.0.0.1:8020/os-upgrade");
+    server = new Server("ws://127.0.0.1:80/os-upgrade");
     server.on("connection", (socket) => {
       socket.on("message", (data) => {
         if (data === "prepare") {

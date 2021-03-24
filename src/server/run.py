@@ -38,7 +38,7 @@ def is_root() -> bool:
 
 
 server = pywsgi.WSGIServer(
-    ("", 8020),
+    ("", 80),
     create_app(test=args.test_mode),
     handler_class=WebSocketHandler)
 server.serve_forever()

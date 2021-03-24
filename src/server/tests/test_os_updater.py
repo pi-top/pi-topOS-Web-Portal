@@ -3,7 +3,7 @@ import asyncio
 import websockets
 
 
-uri = "ws://localhost:8020/os-upgrade"
+uri = "ws://localhost:80/os-upgrade"
 
 
 async def send_command(command, wait_for=None, messages=[], timeout=5):
