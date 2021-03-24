@@ -84,9 +84,8 @@ def abort_on_no_data(data):
 @app.route('/', methods=['GET'])
 def index():
     PTLogger.debug("Route '/'")
-    #return send_from_directory(app.static_folder, 'index.html')
+    # return send_from_directory(app.static_folder, 'index.html')
     return redirect(url_for('onboarding'))
-
 
 
 @app.route('/onboarding', methods=['GET'])
