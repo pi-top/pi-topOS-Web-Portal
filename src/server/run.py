@@ -29,7 +29,7 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-PTLogger.setup_logging(logger_name="pt-os-setup",
+PTLogger.setup_logging(logger_name="pt-web-portal",
                        logging_level=args.log_level, log_to_journal=args.no_journal is False)
 
 

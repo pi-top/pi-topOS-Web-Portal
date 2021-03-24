@@ -31,7 +31,7 @@ def test_expand_fs_success(app, mocker):
 
     response = app.post('/expand-fs')
 
-    run_mock.assert_any_call(['nice', '-n', '10', '/usr/lib/pt-os-setup/expand-fs.sh'],
+    run_mock.assert_any_call(['nice', '-n', '10', '/usr/lib/pt-web-portal/expand-fs.sh'],
                              capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=120)
     assert response.status_code == 200
     assert response.data == b'OK'
@@ -89,7 +89,7 @@ def test_stop_onboarding_autostart_success(app, mocker):
     response = app.post('/stop-onboarding-autostart')
 
     remove_mock.assert_called_once_with(
-        '/etc/xdg/autostart/pt-os-setup.desktop')
+        '/etc/xdg/autostart/pt-web-portal.desktop')
     assert response.status_code == 200
     assert response.data == b'OK'
 

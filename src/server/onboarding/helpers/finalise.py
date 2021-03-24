@@ -35,7 +35,7 @@ def available_space() -> int:
 
 def expand_file_system() -> None:
     PTLogger.info("Function: expand_file_system()")
-    run_command("/usr/lib/pt-os-setup/expand-fs.sh",
+    run_command("/usr/lib/pt-web-portal/expand-fs.sh",
                 timeout=60, lower_priority=True)
 
 
@@ -61,7 +61,7 @@ def deprioritise_openbox_session() -> None:
 
 def stop_onboarding_autostart() -> None:
     PTLogger.info("Function: stop_onboarding_autostart()")
-    remove("/etc/xdg/autostart/pt-os-setup.desktop")
+    remove("/etc/xdg/autostart/pt-web-portal.desktop")
 
 
 def enable_device_registration_service() -> None:
@@ -139,7 +139,7 @@ def enable_mouse_cursor():
 def restore_files():
     PTLogger.info("Function: restore_files()")
 
-    run_command("rsync -av /usr/lib/pt-os-setup/bak/ /",
+    run_command("rsync -av /usr/lib/pt-web-portal/bak/ /",
                 timeout=30, lower_priority=True)
-    run_command("rm -r /usr/lib/pt-os-setup/bak/",
+    run_command("rm -r /usr/lib/pt-web-portal/bak/",
                 timeout=30, lower_priority=True)

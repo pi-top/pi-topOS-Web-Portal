@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 if [ -z "${2}" ]; then
-	if [[ -L /etc/xdg/autostart/pt-os-setup.desktop ]]; then
-		rm /etc/xdg/autostart/pt-os-setup.desktop
+	if [[ -L /etc/xdg/autostart/pt-web-portal.desktop ]]; then
+		rm /etc/xdg/autostart/pt-web-portal.desktop
 	fi
 
 	update-alternatives --install /usr/bin/x-session-manager x-session-manager /usr/bin/openbox-session 40
