@@ -1,5 +1,5 @@
 [Unit]
-Description=pi-topOS Onboarding Web Server
+Description=pi-topOS Web Server
 Documentation=https://knowledgebase.pi-top.com/knowledge
 
 [Service]
