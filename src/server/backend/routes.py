@@ -7,10 +7,8 @@ from pitopcommon.logger import PTLogger
 from flask import (
     abort,
     current_app as app,
-    redirect,
     request,
     send_from_directory,
-    url_for,
 )
 
 from .helpers.build import os_build_info
@@ -84,8 +82,7 @@ def abort_on_no_data(data):
 @app.route('/', methods=['GET'])
 def index():
     PTLogger.debug("Route '/'")
-    # return send_from_directory(app.static_folder, 'index.html')
-    return redirect(url_for('onboarding_index'))
+    return send_from_directory(app.static_folder + "/onboarding", 'index.html')
 
 
 @app.route('/onboarding', methods=['GET'])
