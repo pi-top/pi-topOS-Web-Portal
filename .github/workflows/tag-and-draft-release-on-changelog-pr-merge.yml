@@ -40,40 +40,6 @@ jobs:
           git tag --force "v${new_version}"
           git push --force --tags
 
-  build-python:
-    needs: [ add-version-tag ]
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-
-      - name: Build
-        # Create source distribution (sdist) and wheel (bdist_wheel)
-        # By default, both will be placed in dist/ under the current directory
-        run: |
-          python setup.py sdist bdist_wheel
-
-      - name: Upload Python distribution artifacts
-        uses: actions/upload-artifact@v2
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "${{ github.workspace }}/dist"
-
   build-debian:
     needs: [ add-version-tag ]
     runs-on: ubuntu-20.04
@@ -113,7 +79,7 @@ jobs:
 
   create-draft-release:
     runs-on: ubuntu-20.04
-    needs: [ build-debian, build-python ]
+    needs: [ build-debian ]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
