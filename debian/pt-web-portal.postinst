@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-if [ -z "${2}" ]; then
+if [ -z "${2}" ] && [ ! -f /etc/pi-top/.expandedFs ]; then
 	ln -sf /usr/lib/pt-web-portal/pt-web-portal.desktop /etc/xdg/autostart/pt-web-portal.desktop
 	update-alternatives --install /usr/bin/x-session-manager x-session-manager /usr/bin/openbox-session 99
 
