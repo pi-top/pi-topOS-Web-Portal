@@ -1,3 +1,13 @@
+pt-web-portal (0.1.1) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Refactor to use different frontend apps (#1)
+  * Fix onboarding app paths & page title/description (#3)
+  * Route / returns /onboarding index page
+  * Don't run postinst if pt-os-setup already expanded fs
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 09 Apr 2021 15:16:48 +0000
+
 pt-web-portal (0.1.0) buster; urgency=medium
 
   * First version
