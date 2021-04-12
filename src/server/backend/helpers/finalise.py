@@ -1,6 +1,6 @@
 from pitopcommon.logger import PTLogger
 from fileinput import input as finput
-from os import remove, utime
+from os import utime
 from pathlib import Path
 
 from .command_runner import run_command
@@ -61,7 +61,8 @@ def deprioritise_openbox_session() -> None:
 
 def stop_onboarding_autostart() -> None:
     PTLogger.info("Function: stop_onboarding_autostart()")
-    remove("/etc/xdg/autostart/pt-web-portal.desktop")
+    run_command("systemctl disable pt-os-setup",
+                timeout=30, lower_priority=True)
 
 
 def enable_device_registration_service() -> None:
