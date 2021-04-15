@@ -4,8 +4,8 @@ import json
 import os
 import requests
 from pathlib import Path
-from subprocess import call
 from time import sleep
+from threading import Thread
 
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
@@ -137,20 +137,7 @@ def create_device_registered_breadcrumb():
     return DEVICE_IS_REGISTERED_BREADCRUMB.touch()
 
 
-def main():
-    if device_is_registered():
-        return
-    try:
-        # TODO: run in thread
-        register_device()
-    except Exception as e:
-        print("There was an error registering device: {e}.")
-
-
-def register_device():
-
-    print("Waiting a minute before attempting device registration...")
-    sleep(60)
+def send_register_device_request():
 
     print("Getting device data to send...")
     data = get_registration_data()
@@ -180,8 +167,20 @@ def register_device():
     print("Creating breadcrumb to avoid registering again")
     create_device_registered_breadcrumb()
 
-    print("Exiting...")
+
+def register_device():
+    if device_is_registered():
+        print("Device already registered, skipping...")
+        return
+
+    try:
+        print("Waiting a minute before attempting device registration...")
+        sleep(60)
+        send_register_device_request()
+    except Exception as e:
+        print(f"There was an error registering device: {e}.")
 
 
-if __name__ == "__main__":
-    register_device()
+def register_device_in_background():
+    t = Thread(target=register_device, args=(), daemon=True)
+    t.start()

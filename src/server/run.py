@@ -8,6 +8,7 @@ from geventwebsocket.handler import WebSocketHandler
 
 from pitopcommon.logger import PTLogger
 from backend import create_app
+from backend.helpers.device_registration import register_device_in_background
 
 
 parser = ArgumentParser(description="pi-top backend server")
@@ -36,6 +37,8 @@ PTLogger.setup_logging(logger_name="pt-web-portal",
 def is_root() -> bool:
     return geteuid() == 0
 
+
+register_device_in_background()
 
 server = pywsgi.WSGIServer(
     ("", 80),

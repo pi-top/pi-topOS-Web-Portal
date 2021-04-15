@@ -5,7 +5,6 @@ import RestartPage from "./RestartPage";
 import configureTour from "../../services/configureTour";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
 import disableStartupNoise from "../../services/disableStartupNoise";
-import enableDeviceRegistrationService from "../../services/enableDeviceRegistrationService";
 import enableOSUpdaterService from "../../services/enableOSUpdaterService";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
@@ -76,12 +75,6 @@ export default ({
             safelyRunService(
               disableStartupNoise,
               "Stopped myself calling out with joy when you turn me on..."
-            )
-          )
-          .finally(() =>
-            safelyRunService(
-              enableDeviceRegistrationService,
-              "Reminded myself to finish registering you when I can..."
             )
           )
           .finally(() =>

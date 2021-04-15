@@ -36,7 +36,6 @@ from .helpers.finalise import (
     update_mime_database,
     deprioritise_openbox_session,
     stop_onboarding_autostart,
-    enable_device_registration_service,
     enable_os_updater_service,
     enable_firmware_updater_service,
     enable_further_link_service,
@@ -329,13 +328,6 @@ def post_deprioritise_openbox_session():
 def post_stop_onboarding_autostart():
     PTLogger.debug("Route '/stop-onboarding-autostart'")
     stop_onboarding_autostart()
-    return "OK"
-
-
-@app.route('/enable-device-registration-service', methods=['POST'])
-def post_enable_device_registration_service():
-    PTLogger.debug("Route '/enable-device-registration-service'")
-    enable_device_registration_service()
     return "OK"
 
 

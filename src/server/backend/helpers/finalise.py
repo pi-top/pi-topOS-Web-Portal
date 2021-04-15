@@ -65,12 +65,6 @@ def stop_onboarding_autostart() -> None:
                 timeout=30, lower_priority=True)
 
 
-def enable_device_registration_service() -> None:
-    PTLogger.info("Function: enable_device_registration_service()")
-    run_command("systemctl enable pt-device-registration",
-                timeout=30, lower_priority=True)
-
-
 def enable_os_updater_service():
     PTLogger.info("Function: enable_os_updater()")
 
