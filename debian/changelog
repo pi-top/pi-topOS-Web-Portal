@@ -1,9 +1,6 @@
 pt-web-portal (0.1.2) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Update GitHub workflow
-  * Update github workflow
-  * Update device registration logic (#6)
+  * Register device on pt-web-portal server startup
 
  -- pi-top <deb-maintainers@pi-top.com>  Thu, 15 Apr 2021 20:23:13 +0000
 
