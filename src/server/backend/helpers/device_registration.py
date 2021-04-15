@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 
-import os
-from time import sleep
-import requests
 import json
-from subprocess import call
+import os
+import requests
+from pathlib import Path
+from time import sleep
+from threading import Thread
+
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
 REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
 DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
 OS_INFO_FILE = "/etc/pt-issue"
 API_ENDPOINT = "https://backend.pi-top.com/utils/v1/device/register"
+DEVICE_IS_REGISTERED_BREADCRUMB = Path("/etc/pi-top/.device_registered")
 
 
 def field_is_in_json(json, fieldToFind):
@@ -126,16 +129,15 @@ def send_data_and_get_resp(data):
     return None, None
 
 
-def disable_registration_service():
-
-    call(["/bin/systemctl", "disable", "pt-device-registration"])
-    call(["/bin/systemctl", "mask", "pt-device-registration"])
+def device_is_registered():
+    return DEVICE_IS_REGISTERED_BREADCRUMB.is_file()
 
 
-def main():
+def create_device_registered_breadcrumb():
+    return DEVICE_IS_REGISTERED_BREADCRUMB.touch()
 
-    print("Waiting a minute before attempting device registration...")
-    sleep(60)
+
+def send_register_device_request():
 
     print("Getting device data to send...")
     data = get_registration_data()
@@ -162,11 +164,23 @@ def main():
             print("Retrying in 30s")
             sleep(30)
 
-    print("Disabling this service from now on...")
-    disable_registration_service()
-
-    print("Exiting...")
+    print("Creating breadcrumb to avoid registering again")
+    create_device_registered_breadcrumb()
 
 
-if __name__ == "__main__":
-    main()
+def register_device():
+    if device_is_registered():
+        print("Device already registered, skipping...")
+        return
+
+    try:
+        print("Waiting a minute before attempting device registration...")
+        sleep(60)
+        send_register_device_request()
+    except Exception as e:
+        print(f"There was an error registering device: {e}.")
+
+
+def register_device_in_background():
+    t = Thread(target=register_device, args=(), daemon=True)
+    t.start()

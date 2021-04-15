@@ -34,14 +34,10 @@ Recommends:
  pt-tour,
 Replaces:
  piwiz,
- pt-os-setup,
 Breaks:
  piwiz,
- pt-os-setup,
 Conflicts:
  piwiz,
- pt-os-setup,
-Description: pi-topOS First Time Setup
- pi-topOS's first time setup wizard. Set up regional configuration,
- Wi-Fi connection, agree to the pi-topOS EULA, and reboot into the full desktop.
- This is the first experience of pi-topOS.
+Description: pi-topOS Web Portal
+ pi-topOS's web portal. Provides means to interact and configure the device
+ over a web application.

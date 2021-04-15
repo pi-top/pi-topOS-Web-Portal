@@ -84,25 +84,16 @@ def test_deprioritise_openbox_session_success(app, mocker):
 
 
 def test_stop_onboarding_autostart_success(app, mocker):
-    remove_mock = mocker.patch('backend.helpers.finalise.remove')
-
-    response = app.post('/stop-onboarding-autostart')
-
-    remove_mock.assert_called_once_with(
-        '/etc/xdg/autostart/pt-web-portal.desktop')
-    assert response.status_code == 200
-    assert response.data == b'OK'
-
-
-def test_enable_device_registration_service_success(app, mocker):
     environ_mock = mocker.patch('backend.helpers.command_runner.environ')
     environ_mock.copy = dict
     run_mock = mocker.patch('backend.helpers.command_runner.run',
                             return_value=dotdict({'stdout': b'', 'stderr': b'', 'returncode': 0}))
 
-    response = app.post('/enable-device-registration-service')
-    run_mock.assert_called_once_with(['nice', '-n', '10', 'systemctl', 'enable', 'pt-device-registration'],
-                                     capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=30)
+    response = app.post('/stop-onboarding-autostart')
+
+    run_mock.assert_called_once_with(
+        ['nice', '-n', '10', 'systemctl', 'disable', 'pt-os-setup'],
+        capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=30)
     assert response.status_code == 200
     assert response.data == b'OK'
 

@@ -3,30 +3,33 @@ name: Test and Build Packages on All Commits
 on: push
 
 jobs:
-  # test-coverage:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2.2.0
+  test-coverage:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
 
-  #     - name: Run tests
-  #       run: |
-  #         docker run --rm \
-  #           --volume ${{ github.workspace }}:/src \
-  #           -e RUN_PYTHON_TESTS=1 \
-  #           -e PYTHON_TESTS_DIR=./tests \
-  #           -e PYTHON_TARGET_DIR=. \
-  #           -e PYTHON_COVERAGE_DIR=pitop \
-  #           pitop/test-run
+      - name: Run tests
+        run: |
+          docker run \
+            --rm \
+            --volume ${{ github.workspace }}:/src \
+            --env RUN_PYTHON_TESTS=1 \
+            --env PYTHON_TESTS_DIR=src/server/tests \
+            --env PYTHON_TARGET_DIR=src/server \
+            --env PYTHON_COVERAGE_DIR=backend \
+            --env RUN_WEB_TESTS=1 \
+            --env WEB_TESTS_DIR=src/frontend/onboarding \
+            pitop/test-run
 
-  #     - name: Upload test coverage report to Codecov
-  #       uses: codecov/codecov-action@v1
-  #       with:
-  #         files: ./coverage.xml
-  #         flags: unittests
-  #         env_vars: OS,PYTHON
-  #         fail_ci_if_error: true
-  #         verbose: true
+#      - name: Upload test coverage report to Codecov
+#        uses: codecov/codecov-action@v1
+#        with:
+#          files: ./coverage.xml
+#          flags: unittests
+#          env_vars: OS,PYTHON
+#          fail_ci_if_error: true
+#          verbose: true
 
   build-debian-packages:
     # needs: test-coverage
