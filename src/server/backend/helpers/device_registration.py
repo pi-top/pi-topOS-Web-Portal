@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 
-import os
-from time import sleep
-import requests
 import json
+import os
+import requests
+from pathlib import Path
 from subprocess import call
+from time import sleep
+
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
 REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
 DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
 OS_INFO_FILE = "/etc/pt-issue"
 API_ENDPOINT = "https://backend.pi-top.com/utils/v1/device/register"
+DEVICE_IS_REGISTERED_BREADCRUMB = Path("/etc/pi-top/.device_registered")
 
 
 def field_is_in_json(json, fieldToFind):
@@ -126,13 +129,25 @@ def send_data_and_get_resp(data):
     return None, None
 
 
-def disable_registration_service():
+def device_is_registered():
+    return DEVICE_IS_REGISTERED_BREADCRUMB.is_file()
 
-    call(["/bin/systemctl", "disable", "pt-device-registration"])
-    call(["/bin/systemctl", "mask", "pt-device-registration"])
+
+def create_device_registered_breadcrumb():
+    return DEVICE_IS_REGISTERED_BREADCRUMB.touch()
 
 
 def main():
+    if device_is_registered():
+        return
+    try:
+        # TODO: run in thread
+        register_device()
+    except Exception as e:
+        print("There was an error registering device: {e}.")
+
+
+def register_device():
 
     print("Waiting a minute before attempting device registration...")
     sleep(60)
@@ -162,11 +177,11 @@ def main():
             print("Retrying in 30s")
             sleep(30)
 
-    print("Disabling this service from now on...")
-    disable_registration_service()
+    print("Creating breadcrumb to avoid registering again")
+    create_device_registered_breadcrumb()
 
     print("Exiting...")
 
 
 if __name__ == "__main__":
-    main()
+    register_device()

@@ -17,5 +17,4 @@ override_dh_clean:
 	dh_clean
 
 override_dh_installsystemd:
-	dh_installsystemd --no-enable --no-start --name=pt-device-registration
 	dh_installsystemd --restart-after-upgrade --name=pt-web-portal
