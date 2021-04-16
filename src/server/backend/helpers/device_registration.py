@@ -13,7 +13,7 @@ REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
 DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
 OS_INFO_FILE = "/etc/pt-issue"
 API_ENDPOINT = "https://backend.pi-top.com/utils/v1/device/register"
-DEVICE_IS_REGISTERED_BREADCRUMB = Path("/etc/pi-top/.device_registered")
+DEVICE_IS_REGISTERED_BREADCRUMB = Path("/etc/pi-top/.deviceRegistered")
 
 
 def field_is_in_json(json, fieldToFind):
