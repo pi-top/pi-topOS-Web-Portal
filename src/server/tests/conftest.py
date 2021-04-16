@@ -30,8 +30,8 @@ def socket_app():
 def cleanup_files():
     yield
     cleanup_files = [
-        'backend/test/.silentBoot',
-        'backend/test/.licenceAgreed',
+        'tests/mocked_system_folder/.silentBoot',
+        'tests/mocked_system_folder/.licenceAgreed',
     ]
 
     for file in cleanup_files:
@@ -43,9 +43,9 @@ def cleanup_files():
 def restore_files():
     yield
     file_data = [
-        ('backend/test/cmdline.txt', cmd_line_before),
-        ('backend/test/keyboard', keyboard_file_before),
-        ('backend/test/registration.txt', ''),
+        ('tests/mocked_system_folder/cmdline.txt', cmd_line_before),
+        ('tests/mocked_system_folder/keyboard', keyboard_file_before),
+        ('tests/mocked_system_folder/registration.txt', ''),
     ]
 
     for file_to_restore, original_data in file_data:

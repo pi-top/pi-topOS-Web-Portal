@@ -11,7 +11,7 @@ def use_test_path():
 
 def get_test_file_path(filename):
     dirname = path.dirname(__file__)
-    return path.join(dirname, "../test/", filename)
+    return path.join(dirname, "../../tests/mocked_system_folder/", filename)
 
 
 def supported_locales():

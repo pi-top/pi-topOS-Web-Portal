@@ -167,9 +167,9 @@ def test_reboot_success(app, mocker):
 
 
 def test_unhide_all_boot_messages_success(app, restore_files):
-    assert_file_content('backend/test/cmdline.txt', cmd_line_before)
+    assert_file_content('tests/mocked_system_folder/cmdline.txt', cmd_line_before)
 
     response = app.post('/unhide-all-boot-messages')
     assert response.status_code == 200
     assert response.data == b'OK'
-    assert_file_content('backend/test/cmdline.txt', cmd_line_after)
+    assert_file_content('tests/mocked_system_folder/cmdline.txt', cmd_line_after)
