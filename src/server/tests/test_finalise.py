@@ -91,9 +91,17 @@ def test_stop_onboarding_autostart_success(app, mocker):
 
     response = app.post('/stop-onboarding-autostart')
 
-    run_mock.assert_called_once_with(
-        ['nice', '-n', '10', 'systemctl', 'disable', 'pt-os-setup'],
-        capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=30)
+    from unittest.mock import call
+
+    expected_calls = [
+        call(['nice', '-n', '10', 'systemctl', 'mask', 'pt-os-setup'],
+             capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=30),
+        call(['nice', '-n', '10', 'systemctl', 'disable', 'pt-os-setup'],
+             capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=30)
+    ]
+    run_mock.assert_has_calls(expected_calls, any_order=True)
+    assert run_mock.call_count == 2
+
     assert response.status_code == 200
     assert response.data == b'OK'
 

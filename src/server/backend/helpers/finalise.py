@@ -63,6 +63,8 @@ def stop_onboarding_autostart() -> None:
     PTLogger.info("Function: stop_onboarding_autostart()")
     run_command("systemctl disable pt-os-setup",
                 timeout=30, lower_priority=True)
+    run_command("systemctl mask pt-os-setup",
+                timeout=30, lower_priority=True)
 
 
 def enable_os_updater_service():
