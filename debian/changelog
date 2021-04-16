@@ -1,19 +1,8 @@
 pt-web-portal (0.1.3) buster; urgency=medium
 
-  [ Jorge Capona ]
   * Update device registered breadcrumb filename
-  * Update standards version to 4.5.1
-
-  [ Mike Roberts ]
-  * Drop unused Lintian overrides
-  * Don't package tests; add Lintian override
-  * Update READMEs
-
-  [ Jorge Capona ]
   * Log device registration process in journal
-  * Move folder used by tests to tests folder
-  * Fix lintian-overrides
-  * Update python tests dependencies
+  * Don't package tests
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 16 Apr 2021 19:13:02 +0000
 
