@@ -1,3 +1,0 @@
-# Build files can get rather long and trigger a "source is missing" error
-pt-web-portal source: source-is-missing src/server/onboarding/build/*
-pt-web-portal source: odd-historical-debian-changelog-version 2.7.11-1 (for native)
