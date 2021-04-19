@@ -1,6 +1,5 @@
 pt-web-portal (0.1.4) buster; urgency=medium
 
-  [ Jorge Capona ]
   * Update path to executable in systemd service
   * Mask pt-os-setup systemd service on request
   * Restore DBUS notification service file from correct folder
