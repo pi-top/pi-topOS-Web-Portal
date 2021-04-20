@@ -43,7 +43,7 @@ def is_root() -> bool:
 
 def package_is_installed(package_name):
     try:
-        run_command(f"dpkg -s {package_name}", timeout=2)
+        run_command(f"dpkg -s {package_name}", timeout=5, log_errors=False)
         return True
     except Exception:
         return False
@@ -51,7 +51,7 @@ def package_is_installed(package_name):
 
 def systemd_service_is_running(package_name):
     try:
-        run_command(f"systemctl is-active -q {package_name}", timeout=5)
+        run_command(f"systemctl is-active -q {package_name}", timeout=5, log_errors=False)
         return True
     except Exception:
         return False
@@ -66,7 +66,9 @@ def package_version(package_name):
         raise Exception(f"Unable to retrieve package {package_name} version: {e}")
 
 
-if systemd_service_is_running("pt-os-setup") and package_is_installed("pt-os-setup") and package_version("pt-os-setup") <= LooseVersion("3.3.0"):
+if systemd_service_is_running("pt-os-setup") and \
+   package_is_installed("pt-os-setup") and \
+   package_version("pt-os-setup") <= LooseVersion("3.3.0"):
     PTLogger.warning("pt-os-setup is already running a webserver, exiting...")
     exit(0)
 
