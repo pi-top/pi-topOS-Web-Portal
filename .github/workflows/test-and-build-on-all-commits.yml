@@ -14,6 +14,7 @@ jobs:
           docker run \
             --rm \
             --volume ${{ github.workspace }}:/src \
+            --env DEBUG=1 \
             --env RUN_PYTHON_TESTS=1 \
             --env PYTHON_TESTS_DIR=src/server/tests \
             --env PYTHON_TARGET_DIR=src/server \
