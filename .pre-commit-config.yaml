@@ -19,14 +19,14 @@ repos:
     - id: shfmt
 
 -   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.5.4
+    rev: v1.5.6
     hooks:
     - id: autopep8
       name: autopep8 - all checks, no tests
       args: ["-i", "--max-line-length=150", "--exclude", "src/server/tests/*"]
 
 -   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.5.4
+    rev: v1.5.6
     hooks:
     - id: autopep8
       # Default: E226,E24,W50,W690
@@ -34,7 +34,7 @@ repos:
       args: ["-i", "--max-line-length=150", "--ignore", "E226,E24,W50,W690,E402"]
 
 -   repo: https://gitlab.com/PyCQA/flake8
-    rev: 3.8.4
+    rev: 3.9.1
     hooks:
     - id: flake8
       name: flake8
