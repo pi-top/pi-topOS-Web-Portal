@@ -1,3 +1,10 @@
+pt-web-portal (0.1.5) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Create WifiManager object only when needed (#11)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 22 Apr 2021 01:07:58 +0000
+
 pt-web-portal (0.1.4) buster; urgency=medium
 
   * Update path to executable in systemd service
