@@ -1,3 +1,10 @@
+pt-web-portal (0.1.5) buster; urgency=medium
+
+  * Grab control of wireless network interface only when needed
+  * Restart systemd service on-failure
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 22 Apr 2021 01:07:58 +0000
+
 pt-web-portal (0.1.4) buster; urgency=medium
 
   * Update path to executable in systemd service
