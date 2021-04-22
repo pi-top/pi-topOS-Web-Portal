@@ -159,28 +159,37 @@ class OSUpdater:
 
 
 # Global instance
-os_updater = OSUpdater()
+os_updater = None
+
+
+def get_os_updater_instance():
+    global os_updater
+    if os_updater is None:
+        os_updater = OSUpdater()
+    return os_updater
 
 
 def prepare_os_upgrade(callback):
+    updater = get_os_updater_instance()
     try:
         if not is_system_clock_synchronized():
             synchronize_system_clock()
         callback(MessageType.START, "Preparing OS upgrade", 0.0)
-        os_updater.update(callback)
-        os_updater.stage_upgrade(callback)
-        if os_updater.cache.install_count == 0:
-            os_updater.skip_os_updater_on_reboot()
+        updater.update(callback)
+        updater.stage_upgrade(callback)
+        if updater.cache.install_count == 0:
+            updater.skip_os_updater_on_reboot()
         callback(MessageType.FINISH, "Finished preparing", 100.0)
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
 
 
 def os_upgrade_size(callback):
+    updater = get_os_updater_instance()
     try:
         callback(MessageType.STATUS, {
-            'downloadSize': os_updater.download_size(),
-            'requiredSpace': os_updater.required_space(),
+            'downloadSize': updater.download_size(),
+            'requiredSpace': updater.required_space(),
         })
     except Exception as e:
         PTLogger.info(f"os_upgrade_size: {e}")
@@ -191,8 +200,9 @@ def os_upgrade_size(callback):
 
 
 def start_os_upgrade(callback):
+    updater = get_os_updater_instance()
     try:
-        os_updater.upgrade(callback)
-        os_updater.skip_os_updater_on_reboot()
+        updater.upgrade(callback)
+        updater.skip_os_updater_on_reboot()
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
