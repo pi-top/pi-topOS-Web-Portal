@@ -151,28 +151,37 @@ class WifiManager:
 
 
 # Global instance
-wifi_manager = WifiManager()
+wifi_manager = None
+
+
+def get_wifi_manager_instance():
+    global wifi_manager
+    if wifi_manager is None:
+        wifi_manager = WifiManager()
+    return wifi_manager
 
 
 def get_ssids() -> List[Dict]:
+    wm = get_wifi_manager_instance()
     PTLogger.info("GETTING LIST OF SSIDS")
-    # wifi_manager.disconnect()
     return [{'ssid': r.ssid, 'passwordRequired': len(r.akm) != 0 and pywifi.const.AKM_TYPE_NONE not in r.akm}
-            for r in wifi_manager.scan_and_get_results()]
+            for r in wm.scan_and_get_results()]
 
 
 def attempt_connection(ssid, password, on_connection=None) -> None:
     PTLogger.info("Attempting to connect to {}".format(ssid))
-    wifi_manager.connect(ssid, password)
+    wm = get_wifi_manager_instance()
+    wm.connect(ssid, password)
 
-    if wifi_manager.is_connected() and on_connection:
+    if wm.is_connected() and on_connection:
         PTLogger.info("Executing on_connection callback")
         on_connection()
 
 
 def current_wifi_ssid() -> str:
     PTLogger.info("Attempting to determine to which SSID we're connected to")
-    return wifi_manager.ssid_connected()
+    wm = get_wifi_manager_instance()
+    return wm.ssid_connected()
 
 
 def is_connected_to_internet() -> bool:
