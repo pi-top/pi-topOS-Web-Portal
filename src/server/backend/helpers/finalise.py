@@ -138,5 +138,5 @@ def restore_files():
 
     run_command("rsync -av /usr/lib/pt-os-setup/bak/ /",
                 timeout=30, lower_priority=True)
-    run_command("rm -r /usr/lib/pt-os-setup/bak/",
+    run_command("rm -r /usr/lib/pt-os-setup/",
                 timeout=30, lower_priority=True)
