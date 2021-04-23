@@ -8,6 +8,7 @@ from time import sleep
 from threading import Thread
 
 from pitopcommon.logger import PTLogger
+from pitopcommon.command_runner import run_command
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
 REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
@@ -165,7 +166,19 @@ def send_register_device_request():
     create_device_registered_breadcrumb()
 
 
+def pt_os_setup_is_enabled():
+    try:
+        run_command("systemctl is-enabled -q pt-os-setup", timeout=5, log_errors=False)
+        return True
+    except Exception:
+        return False
+
+
 def register_device():
+    if pt_os_setup_is_enabled():
+        PTLogger.debug("Onboarding not completed, skipping device registration")
+        return
+
     if device_is_registered():
         PTLogger.debug("Device already registered, skipping...")
         return
