@@ -1,0 +1,14 @@
+.textarea {
+  border: none;
+  outline: none;
+  resize: none;
+}
+
+.input {
+  border: none;
+  font: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}

@@ -1,0 +1,14 @@
+.root {
+  composes: text from '../../globalStyles/Typography.module.css';
+  color: var(--font80);
+  padding: 10px 10px 10px 10px;
+}
+
+.root h2 {
+  color: var(--font);
+  margin: 0;
+}
+
+.root li {
+  margin: 8px 0;
+}

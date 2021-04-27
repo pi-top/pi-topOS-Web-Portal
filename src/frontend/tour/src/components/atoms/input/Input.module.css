@@ -1,0 +1,26 @@
+.label {
+  composes: fontBody from '../../../globalStyles/Typography.module.css';
+  display: block;
+}
+
+.input {
+  composes: text from '../../../globalStyles/Typography.module.css';
+  font-size: 16px;
+  background-color: var(--inputBackground, var(--lightGrey));
+  border: 1px solid var(--inputBorder, var(--inputBackground, var(--grey)));
+  border-radius: var(--inputBorderRadius, var(--rounded));
+  box-sizing: border-box;
+  color: var(--inputColour, var(--darkGrey));
+  padding: 10px;
+  transition: border ease-in-out 0.2s;
+  width: 100%;
+}
+
+.input:disabled {
+  opacity: var(--disabledInputOpacity, 0.5);
+}
+
+.helpText {
+  color: var(--inputColour, var(--darkGrey));
+  font-size: 26px;
+}
