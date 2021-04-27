@@ -1,6 +1,6 @@
 from pitopcommon.logger import PTLogger
 from fileinput import input as finput
-from os import utime
+from os import utime, remove
 from pathlib import Path
 
 from .command_runner import run_command
@@ -140,3 +140,35 @@ def restore_files():
                 timeout=30, lower_priority=True)
     run_command("rm -r /usr/lib/pt-os-setup/",
                 timeout=30, lower_priority=True)
+
+
+def disable_tour():
+    PTLogger.info("Function: disable_tour()")
+    try:
+        remove("/etc/xdg/autostart/pt-tour.desktop")
+    except FileNotFoundError:
+        PTLogger.debug("Tour already disabled.")
+
+
+def close_pt_browser():
+    PTLogger.info("Function: close_pt_browser()")
+    pids = run_command("pgrep pt-web-ui", timeout=5, check=False).split()
+    for pid in pids:
+        try:
+            run_command(f"kill -9 {pids}", timeout=5)
+        except Exception as e:
+            PTLogger.debug(f"Error killing PID {pid}: {e}")
+
+
+def python_sdk_docs_url():
+    PTLogger.info("Function: python_sdk_docs_url()")
+    return run_command("pi-top support links docs -p", timeout=5, check=False).strip()
+
+
+def onboarding_completed():
+    PTLogger.info("Function: onboarding_completed()")
+    try:
+        run_command("systemctl is-enabled -q pt-os-setup", timeout=5, log_errors=False)
+        return False
+    except Exception:
+        return True
