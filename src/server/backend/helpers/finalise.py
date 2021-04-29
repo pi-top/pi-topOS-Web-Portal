@@ -1,10 +1,11 @@
 from pitopcommon.logger import PTLogger
 from fileinput import input as finput
-from os import utime, remove, getenv
+from os import utime, remove
 from pathlib import Path
 
 from .command_runner import run_command
 from pitopcommon.command_runner import run_command_background
+from pitopcommon.current_session_info import get_user_using_display
 from .paths import (
     use_test_path,
     etc_pi_top,
@@ -158,7 +159,7 @@ def close_pt_browser():
         try:
             run_command(f"kill -9 {pid}", timeout=5)
         except Exception as e:
-            PTLogger.debug(f"Error killing PID {pid}: {e}")
+            PTLogger.error(f"Error killing PID {pid}: {e}")
 
 
 def python_sdk_docs_url():
@@ -177,7 +178,7 @@ def onboarding_completed():
 
 def open_further():
     PTLogger.info("Function: open_further()")
-    run_command_background("pt-further")
+    run_command_background(get_chromium_command("https://further.pi-top.com"))
 
 
 def open_python_sdk_docs():
@@ -191,9 +192,4 @@ def open_knowledge_base():
 
 
 def get_chromium_command(url):
-    sudo_user = getenv("SUDO_USER")
-    if sudo_user is not None:
-        command = "su {} -c \"chromium-browser --new-window --start-maximized {}\"".format(sudo_user, url)
-    else:
-        command = "chromium-browser --new-window --start-maximized {}".format(url)
-    return command
+    return f"su {get_user_using_display(':0')} -c \"chromium-browser --new-window --start-maximized {url}\""

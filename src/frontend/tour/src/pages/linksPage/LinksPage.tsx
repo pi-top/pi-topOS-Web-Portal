@@ -28,6 +28,7 @@ export default ({ goToNextPage }: Props) => {
   const getBrowserData = () => {
     setIsOnWebUi(window.navigator.userAgent === "pt-web-ui");
   }
+
   useEffect(() => {
     Promise.all([getSDKUrl(), getBrowserData()]);
   }, []);
