@@ -18,7 +18,7 @@ export default ({ goToNextPage }: Props) => {
   const furtherUrl = "https://further.pi-top.com";
   const kbUrl = "https://knowledgebase.pi-top.com";
   const [docsUrl, setDocsUrl] = useState("");
-  const [isOnWebUi, setIsOnWebUi] = useState(true);
+  const [isOnWebUi, setIsOnWebUi] = useState(false);
 
   const getSDKUrl = () => {
     getPythonSDKDocsUrl()
@@ -49,7 +49,7 @@ export default ({ goToNextPage }: Props) => {
       nextButton={{
         onClick: ()=>{closePtBrowser()},
         label: 'Exit',
-        hidden: !isOnWebUi
+        hidden: ! isOnWebUi
       }}
       className={styles.root}
     >
