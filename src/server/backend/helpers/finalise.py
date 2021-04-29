@@ -172,3 +172,28 @@ def onboarding_completed():
         return False
     except Exception:
         return True
+
+
+def open_further():
+    PTLogger.info("Function: open_further()")
+    try:
+        run_command("pt-further", timeout=5, log_errors=False)
+    except Exception:
+        pass
+
+
+def open_python_sdk_docs():
+    PTLogger.info("Function: open_python_sdk_docs()")
+    try:
+        run_command(f"chromium-browser --new-window {python_sdk_docs_url()}", timeout=5, log_errors=False)
+    except Exception:
+        pass
+
+
+def open_knowledge_base():
+    PTLogger.info("Function: open_knowledge_base()")
+    try:
+        kbUrl = "https://knowledgebase.pi-top.com"
+        run_command(f"chromium-browser --new-window {kbUrl}", timeout=5, log_errors=False)
+    except Exception:
+        pass

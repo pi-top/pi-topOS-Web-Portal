@@ -1,18 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import linkScreen from "../../assets/images/upgrade-page.png";
 import styles from "./LinksPage.module.css";
 import Layout from "../../components/layout/Layout";
 import Button from "../../components/atoms/button/Button";
+import closePtBrowser from "../../services/closePtBrowser";
+import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
+import openPythonSDKDocs from "../../services/openPythonSDKDocs";
+import openFurther from "../../services/openFurther";
+import openKnowledgeBase from "../../services/openPythonSDKDocs";
 
 export type Props = {
   goToNextPage: () => void;
 };
 
 export default ({ goToNextPage }: Props) => {
-const furtherUrl = "https://further.pi-top.com";
-const docsUrl = "https://docs.pi-top.com";
-const kbUrl = "https://knowledgebase.pi-top.com";
+  const furtherUrl = "https://further.pi-top.com";
+  const kbUrl = "https://knowledgebase.pi-top.com";
+  const [docsUrl, setDocsUrl] = useState("");
+  const [isOnWebUi, setIsOnWebUi] = useState(false);
+
+  const getSDKUrl = () => {
+    getPythonSDKDocsUrl()
+      .then((url) => setDocsUrl(url))
+  };
+
+  useEffect(() => {
+    Promise.all([getSDKUrl()]);
+  }, []);
 
   return (
     <Layout
@@ -27,18 +42,19 @@ const kbUrl = "https://knowledgebase.pi-top.com";
       }
       explanation=""
       nextButton={{
-        onClick: ()=>{ window.opener=null; window.close()},
-        label: 'Exit'
+        onClick: ()=>{closePtBrowser()},
+        label: 'Exit',
+        hidden: !isOnWebUi
       }}
       className={styles.root}
     >
-      <Button className={styles.linkButton} unstyled onClick={() => window.open(furtherUrl)}>
+      <Button className={styles.linkButton} unstyled onClick={() => isOnWebUi? openFurther() : window.open(furtherUrl)}>
         Go Further
       </Button>
-      <Button className={styles.linkButton} unstyled onClick={() => window.open(docsUrl)}>
+      <Button className={styles.linkButton} unstyled onClick={() => isOnWebUi? openPythonSDKDocs() : window.open(docsUrl)}>
         Checkout the Python SDK
       </Button>
-      <Button className={styles.linkButton} unstyled onClick={() => window.open(kbUrl)}>
+      <Button className={styles.linkButton} unstyled onClick={() => isOnWebUi? openKnowledgeBase() : window.open(kbUrl)}>
         Go to the Knowledge Base
       </Button>
     </Layout>

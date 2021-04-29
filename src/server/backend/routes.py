@@ -44,6 +44,9 @@ from .helpers.finalise import (
     enable_pt_sys_oled,
     mark_eula_agreed,
     onboarding_completed,
+    open_further,
+    open_knowledge_base,
+    open_python_sdk_docs,
     python_sdk_docs_url,
     reboot,
     restore_files,
@@ -436,4 +439,25 @@ def post_disable_tour():
 def post_close_pt_browser():
     PTLogger.debug("Route '/close-pt-browser'")
     close_pt_browser()
+    return "OK"
+
+
+@app.route('/open-further', methods=['POST'])
+def post_open_further():
+    PTLogger.debug("Route '/open-further'")
+    open_further()
+    return "OK"
+
+
+@app.route('/open-python-sdk-docs', methods=['POST'])
+def post_open_python_sdk_docs():
+    PTLogger.debug("Route '/open-python-sdk-docs'")
+    open_python_sdk_docs()
+    return "OK"
+
+
+@app.route('/open-knowledge-base', methods=['POST'])
+def post_open_knowledge_base():
+    PTLogger.debug("Route '/open-knowledge-base'")
+    open_knowledge_base()
     return "OK"
