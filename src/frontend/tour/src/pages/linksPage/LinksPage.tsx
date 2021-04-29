@@ -25,9 +25,13 @@ export default ({ goToNextPage }: Props) => {
       .then((url) => setDocsUrl(url))
   };
 
+  const getBrowserData = () => {
+    setIsOnWebUi(window.navigator.userAgent === "pt-web-ui");
+  }
   useEffect(() => {
-    Promise.all([getSDKUrl()]);
+    Promise.all([getSDKUrl(), getBrowserData()]);
   }, []);
+
 
   return (
     <Layout
