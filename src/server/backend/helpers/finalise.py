@@ -1,9 +1,10 @@
 from pitopcommon.logger import PTLogger
 from fileinput import input as finput
-from os import utime, remove
+from os import utime, remove, getenv
 from pathlib import Path
 
 from .command_runner import run_command
+from pitopcommon.command_runner import run_command_background
 from .paths import (
     use_test_path,
     etc_pi_top,
@@ -176,24 +177,23 @@ def onboarding_completed():
 
 def open_further():
     PTLogger.info("Function: open_further()")
-    try:
-        run_command("pt-further", timeout=5, log_errors=False)
-    except Exception:
-        pass
+    run_command_background("pt-further")
 
 
 def open_python_sdk_docs():
     PTLogger.info("Function: open_python_sdk_docs()")
-    try:
-        run_command(f"chromium-browser --new-window {python_sdk_docs_url()}", timeout=5, log_errors=False)
-    except Exception:
-        pass
+    run_command_background(get_chromium_command(python_sdk_docs_url()))
 
 
 def open_knowledge_base():
     PTLogger.info("Function: open_knowledge_base()")
-    try:
-        kbUrl = "https://knowledgebase.pi-top.com"
-        run_command(f"chromium-browser --new-window {kbUrl}", timeout=5, log_errors=False)
-    except Exception:
-        pass
+    run_command_background(get_chromium_command("https://knowledgebase.pi-top.com"))
+
+
+def get_chromium_command(url):
+    sudo_user = getenv("SUDO_USER")
+    if sudo_user is not None:
+        command = "su {} -c \"chromium-browser --new-window --start-maximized {}\"".format(sudo_user, url)
+    else:
+        command = "chromium-browser --new-window --start-maximized {}".format(url)
+    return command

@@ -8,7 +8,7 @@ import closePtBrowser from "../../services/closePtBrowser";
 import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 import openFurther from "../../services/openFurther";
-import openKnowledgeBase from "../../services/openPythonSDKDocs";
+import openKnowledgeBase from "../../services/openKnowledgeBase";
 
 export type Props = {
   goToNextPage: () => void;
@@ -18,7 +18,7 @@ export default ({ goToNextPage }: Props) => {
   const furtherUrl = "https://further.pi-top.com";
   const kbUrl = "https://knowledgebase.pi-top.com";
   const [docsUrl, setDocsUrl] = useState("");
-  const [isOnWebUi, setIsOnWebUi] = useState(false);
+  const [isOnWebUi, setIsOnWebUi] = useState(true);
 
   const getSDKUrl = () => {
     getPythonSDKDocsUrl()

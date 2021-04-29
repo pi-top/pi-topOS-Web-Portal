@@ -2,9 +2,9 @@
 
 import apiBaseUrl from "./apiBaseUrl";
 
-export default async function openFurther() {
+export default async function openPythonSDKDocs() {
   await axios.post(
-    `${apiBaseUrl}/open-further`,
+    `${apiBaseUrl}/open-python-sdk-docs`,
     {}
   );
 }
