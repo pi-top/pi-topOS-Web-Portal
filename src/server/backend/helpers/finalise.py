@@ -156,7 +156,7 @@ def close_pt_browser():
     pids = run_command("pgrep pt-web-ui", timeout=5, check=False).split()
     for pid in pids:
         try:
-            run_command(f"kill -9 {pids}", timeout=5)
+            run_command(f"kill -9 {pid}", timeout=5)
         except Exception as e:
             PTLogger.debug(f"Error killing PID {pid}: {e}")
 
