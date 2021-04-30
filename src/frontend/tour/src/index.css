@@ -1,0 +1,96 @@
+:root {
+  /* Colours */
+  --green: #00ad9f;
+  --green60: rgb(102,206,197);
+  --green20: rgb(204,239,236);
+  --green15: rgb(224,245,243);
+
+  --buttonBackground: #66cec5;
+  --buttonBorder: #66cec5;
+
+  --navy: rgb(12, 33, 46);
+  --navy10: rgba(12, 33, 46, 0.1);
+
+  --red: #f16f68;
+  --mediumRed: #f7a9a4;
+  --lightRed: #fce2e1;
+
+  --font: #505050;
+  --font80: #848484;
+
+  --navy: #002938;
+
+  /* Non-Palette Colours */
+  --greenHighlight: #71c0b4;
+  --lightGreen: #daebe7;
+  --blue: #42a3ce;
+  --lightBlue: rgba(66, 163, 206, 0.5);
+  --black: #0f212e;
+  --lightBlack: rgb(15, 33, 46, 0.7);
+  --orange: #ee723e;
+  --lightOrange: rgba(238, 114, 62, 0.5);
+  --pink: #df1995;
+  --lightPink: rgba(223, 25, 149, 0.4);
+  --mediumDarkGrey: #636363;
+  --darkGrey: #505050;
+  --noteGrey: #878787;
+  --iconGrey: #959595;
+  --mediumGrey: #c9c9c9;
+  --grey: #e3e3e3;
+  --mildGrey: #ececec;
+  --lightGrey: #f5f5f5;
+  --white: #fff;
+  --codeBackground: #282b35;
+
+  /* Sizing */
+  --rounded: 5px;
+
+  /* Fonts */
+  --fontFamily: 'FS Me', sans-serif;
+
+  /* React Toolbox */
+  --preferred-font: var(--fontFamily);
+  --input-text-bottom-border-color: var(--grey);
+  --input-text-input-element-color: var(--darkGrey);
+}
+
+.green {
+  color: var(--green);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'FS Me';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/FSMePro/FSMePro-Regular.otf') format('otf');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'FS Me';
+  font-weight: 400;
+  font-style: italic;
+  src: url('/FSMePro/FSMePro-Italic.otf') format('otf');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'FS Me';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/FSMePro/FSMePro-Bold.otf') format('otf');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'FS Me';
+  font-weight: 700;
+  font-style: italic;
+  src: url('/FSMePro/FSMePro-BoldItalic.otf') format('otf');
+}

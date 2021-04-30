@@ -1,0 +1,732 @@
+[
+  {
+    "localeCode": "aa_DJ",
+    "country": "Djibouti",
+    "nativeLanguageName": "Afaraf"
+  },
+  {
+    "localeCode": "af_ZA",
+    "country": "South Africa",
+    "nativeLanguageName": "Afrikaans"
+  },
+  {
+    "localeCode": "an_ES",
+    "country": "Spain",
+    "nativeLanguageName": "aragonés"
+  },
+  {
+    "localeCode": "ar_AE",
+    "country": "United Arab Emirates",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_BH",
+    "country": "Bahrain",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_DZ",
+    "country": "Algeria",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_EG",
+    "country": "Egypt",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_IQ",
+    "country": "Iraq",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_JO",
+    "country": "Jordan",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_KW",
+    "country": "Kuwait",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_LB",
+    "country": "Lebanon",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_LY",
+    "country": "Libya",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_MA",
+    "country": "Morocco",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_OM",
+    "country": "Oman",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_QA",
+    "country": "Qatar",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_SA",
+    "country": "Saudi Arabia",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_SD",
+    "country": "Sudan",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_SY",
+    "country": "Syrian Arab Republic",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_TN",
+    "country": "Tunisia",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "ar_YE",
+    "country": "Yemen",
+    "nativeLanguageName": "اللغة العربية"
+  },
+  {
+    "localeCode": "be_BY",
+    "country": "Belarus",
+    "nativeLanguageName": "беларуская мова"
+  },
+  {
+    "localeCode": "bg_BG",
+    "country": "Bulgaria",
+    "nativeLanguageName": "български език"
+  },
+  {
+    "localeCode": "br_FR",
+    "country": "France",
+    "nativeLanguageName": "brezhoneg"
+  },
+  {
+    "localeCode": "bs_BA",
+    "country": "Bosnia and Herzegovina",
+    "nativeLanguageName": "bosanski jezik"
+  },
+  {
+    "localeCode": "ca_AD",
+    "country": "Andorra",
+    "nativeLanguageName": "català"
+  },
+  {
+    "localeCode": "ca_ES",
+    "country": "Spain",
+    "nativeLanguageName": "català"
+  },
+  {
+    "localeCode": "ca_FR",
+    "country": "France",
+    "nativeLanguageName": "català"
+  },
+  {
+    "localeCode": "ca_IT",
+    "country": "Italy",
+    "nativeLanguageName": "català"
+  },
+  {
+    "localeCode": "cs_CZ",
+    "country": "Czechia",
+    "nativeLanguageName": "čeština"
+  },
+  {
+    "localeCode": "cy_GB",
+    "country": "United Kingdom of Great Britain and Northern Ireland",
+    "nativeLanguageName": "Cymraeg"
+  },
+  {
+    "localeCode": "da_DK",
+    "country": "Denmark",
+    "nativeLanguageName": "dansk"
+  },
+  {
+    "localeCode": "de_AT",
+    "country": "Austria",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "de_BE",
+    "country": "Belgium",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "de_CH",
+    "country": "Switzerland",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "de_DE",
+    "country": "Germany",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "de_IT",
+    "country": "Italy",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "de_LI",
+    "country": "Liechtenstein",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "de_LU",
+    "country": "Luxembourg",
+    "nativeLanguageName": "Deutsch"
+  },
+  {
+    "localeCode": "el_GR",
+    "country": "Greece",
+    "nativeLanguageName": "Ελληνικά"
+  },
+  {
+    "localeCode": "el_CY",
+    "country": "Cyprus",
+    "nativeLanguageName": "Ελληνικά"
+  },
+  {
+    "localeCode": "en_AU",
+    "country": "Australia",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_BW",
+    "country": "Botswana",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_CA",
+    "country": "Canada",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_DK",
+    "country": "Denmark",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_GB",
+    "country": "United Kingdom of Great Britain and Northern Ireland",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_HK",
+    "country": "Hong Kong",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_IE",
+    "country": "Ireland",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_NZ",
+    "country": "New Zealand",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_PH",
+    "country": "Philippines",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_SC",
+    "country": "Seychelles",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_SG",
+    "country": "Singapore",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_US",
+    "country": "United States of America",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_ZA",
+    "country": "South Africa",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "en_ZW",
+    "country": "Zimbabwe",
+    "nativeLanguageName": "English"
+  },
+  {
+    "localeCode": "es_AR",
+    "country": "Argentina",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_BO",
+    "country": "Bolivia, Plurinational State of",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_CL",
+    "country": "Chile",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_CO",
+    "country": "Colombia",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_CR",
+    "country": "Costa Rica",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_DO",
+    "country": "Dominican Republic",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_EC",
+    "country": "Ecuador",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_ES",
+    "country": "Spain",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_GT",
+    "country": "Guatemala",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_HN",
+    "country": "Honduras",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_MX",
+    "country": "Mexico",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_NI",
+    "country": "Nicaragua",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_PA",
+    "country": "Panama",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_PE",
+    "country": "Peru",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_PR",
+    "country": "Puerto Rico",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_PY",
+    "country": "Paraguay",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_SV",
+    "country": "El Salvador",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_US",
+    "country": "United States of America",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_UY",
+    "country": "Uruguay",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "es_VE",
+    "country": "Venezuela, Bolivarian Republic of",
+    "nativeLanguageName": "Español"
+  },
+  {
+    "localeCode": "et_EE",
+    "country": "Estonia",
+    "nativeLanguageName": "eesti"
+  },
+  {
+    "localeCode": "eu_ES",
+    "country": "Spain",
+    "nativeLanguageName": "euskara"
+  },
+  {
+    "localeCode": "eu_FR",
+    "country": "France",
+    "nativeLanguageName": "euskara"
+  },
+  {
+    "localeCode": "fi_FI",
+    "country": "Finland",
+    "nativeLanguageName": "suomi"
+  },
+  {
+    "localeCode": "fo_FO",
+    "country": "Faroe Islands",
+    "nativeLanguageName": "føroyskt"
+  },
+  {
+    "localeCode": "fr_BE",
+    "country": "Belgium",
+    "nativeLanguageName": "Français"
+  },
+  {
+    "localeCode": "fr_CA",
+    "country": "Canada",
+    "nativeLanguageName": "Français"
+  },
+  {
+    "localeCode": "fr_CH",
+    "country": "Switzerland",
+    "nativeLanguageName": "Français"
+  },
+  {
+    "localeCode": "fr_FR",
+    "country": "France",
+    "nativeLanguageName": "Français"
+  },
+  {
+    "localeCode": "fr_LU",
+    "country": "Luxembourg",
+    "nativeLanguageName": "Français"
+  },
+  {
+    "localeCode": "ga_IE",
+    "country": "Ireland",
+    "nativeLanguageName": "Gaeilge"
+  },
+  {
+    "localeCode": "gd_GB",
+    "country": "United Kingdom of Great Britain and Northern Ireland",
+    "nativeLanguageName": "Gàidhlig"
+  },
+  {
+    "localeCode": "gl_ES",
+    "country": "Spain",
+    "nativeLanguageName": "galego"
+  },
+  {
+    "localeCode": "gv_GB",
+    "country": "United Kingdom of Great Britain and Northern Ireland",
+    "nativeLanguageName": "Gaelg"
+  },
+  {
+    "localeCode": "he_IL",
+    "country": "Israel",
+    "nativeLanguageName": "עברית"
+  },
+  {
+    "localeCode": "hr_HR",
+    "country": "Croatia",
+    "nativeLanguageName": "hrvatski jezik"
+  },
+  {
+    "localeCode": "hu_HU",
+    "country": "Hungary",
+    "nativeLanguageName": "magyar"
+  },
+  {
+    "localeCode": "id_ID",
+    "country": "Indonesia",
+    "nativeLanguageName": "Bahasa Indonesia"
+  },
+  {
+    "localeCode": "is_IS",
+    "country": "Iceland",
+    "nativeLanguageName": "Íslenska"
+  },
+  {
+    "localeCode": "it_CH",
+    "country": "Switzerland",
+    "nativeLanguageName": "Italiano"
+  },
+  {
+    "localeCode": "it_IT",
+    "country": "Italy",
+    "nativeLanguageName": "Italiano"
+  },
+  {
+    "localeCode": "ja_JP",
+    "country": "Japan",
+    "nativeLanguageName": "日本語"
+  },
+  {
+    "localeCode": "ka_GE",
+    "country": "Georgia",
+    "nativeLanguageName": "ქართული"
+  },
+  {
+    "localeCode": "kk_KZ",
+    "country": "Kazakhstan",
+    "nativeLanguageName": "қазақ тілі"
+  },
+  {
+    "localeCode": "kl_GL",
+    "country": "Greenland",
+    "nativeLanguageName": "kalaallisut"
+  },
+  {
+    "localeCode": "ko_KR",
+    "country": "Korea, Republic of",
+    "nativeLanguageName": "한국어"
+  },
+  {
+    "localeCode": "ku_TR",
+    "country": "Turkey",
+    "nativeLanguageName": "Kurdî"
+  },
+  {
+    "localeCode": "kw_GB",
+    "country": "United Kingdom of Great Britain and Northern Ireland",
+    "nativeLanguageName": "Kernewek"
+  },
+  {
+    "localeCode": "lg_UG",
+    "country": "Uganda",
+    "nativeLanguageName": "Luganda"
+  },
+  {
+    "localeCode": "lt_LT",
+    "country": "Lithuania",
+    "nativeLanguageName": "lietuvių kalba"
+  },
+  {
+    "localeCode": "lv_LV",
+    "country": "Latvia",
+    "nativeLanguageName": "latviešu valoda"
+  },
+  {
+    "localeCode": "mg_MG",
+    "country": "Madagascar",
+    "nativeLanguageName": "fiteny malagasy"
+  },
+  {
+    "localeCode": "mi_NZ",
+    "country": "New Zealand",
+    "nativeLanguageName": "te reo Māori"
+  },
+  {
+    "localeCode": "mk_MK",
+    "country": "North Macedonia",
+    "nativeLanguageName": "македонски јазик"
+  },
+  {
+    "localeCode": "ms_MY",
+    "country": "Malaysia",
+    "nativeLanguageName": "Bahasa Malaysia"
+  },
+  {
+    "localeCode": "mt_MT",
+    "country": "Malta",
+    "nativeLanguageName": "Malti"
+  },
+  {
+    "localeCode": "nb_NO",
+    "country": "Norway",
+    "nativeLanguageName": "Norsk bokmål"
+  },
+  {
+    "localeCode": "nl_BE",
+    "country": "Belgium",
+    "nativeLanguageName": "Nederlands"
+  },
+  {
+    "localeCode": "nl_NL",
+    "country": "Netherlands",
+    "nativeLanguageName": "Nederlands"
+  },
+  {
+    "localeCode": "nn_NO",
+    "country": "Norway",
+    "nativeLanguageName": "Norsk nynorsk"
+  },
+  {
+    "localeCode": "oc_FR",
+    "country": "France",
+    "nativeLanguageName": "occitan"
+  },
+  {
+    "localeCode": "om_KE",
+    "country": "Kenya",
+    "nativeLanguageName": "Afaan Oromoo"
+  },
+  {
+    "localeCode": "pl_PL",
+    "country": "Poland",
+    "nativeLanguageName": "język polski"
+  },
+  {
+    "localeCode": "pt_BR",
+    "country": "Brazil",
+    "nativeLanguageName": "Português"
+  },
+  {
+    "localeCode": "pt_PT",
+    "country": "Portugal",
+    "nativeLanguageName": "Português"
+  },
+  {
+    "localeCode": "ro_RO",
+    "country": "Romania",
+    "nativeLanguageName": "Română"
+  },
+  {
+    "localeCode": "ru_RU",
+    "country": "Russian Federation",
+    "nativeLanguageName": "Русский"
+  },
+  {
+    "localeCode": "ru_UA",
+    "country": "Ukraine",
+    "nativeLanguageName": "Русский"
+  },
+  {
+    "localeCode": "sk_SK",
+    "country": "Slovakia",
+    "nativeLanguageName": "slovenčina"
+  },
+  {
+    "localeCode": "sl_SI",
+    "country": "Slovenia",
+    "nativeLanguageName": "slovenski jezik"
+  },
+  {
+    "localeCode": "so_DJ",
+    "country": "Djibouti",
+    "nativeLanguageName": "Soomaaliga"
+  },
+  {
+    "localeCode": "so_KE",
+    "country": "Kenya",
+    "nativeLanguageName": "Soomaaliga"
+  },
+  {
+    "localeCode": "so_SO",
+    "country": "Somalia",
+    "nativeLanguageName": "Soomaaliga"
+  },
+  {
+    "localeCode": "sq_AL",
+    "country": "Albania",
+    "nativeLanguageName": "Shqip"
+  },
+  {
+    "localeCode": "st_ZA",
+    "country": "South Africa",
+    "nativeLanguageName": "Sesotho"
+  },
+  {
+    "localeCode": "sv_FI",
+    "country": "Finland",
+    "nativeLanguageName": "svenska"
+  },
+  {
+    "localeCode": "sv_SE",
+    "country": "Sweden",
+    "nativeLanguageName": "svenska"
+  },
+  {
+    "localeCode": "tg_TJ",
+    "country": "Tajikistan",
+    "nativeLanguageName": "тоҷикӣ"
+  },
+  {
+    "localeCode": "th_TH",
+    "country": "Thailand",
+    "nativeLanguageName": "ไทย"
+  },
+  {
+    "localeCode": "tl_PH",
+    "country": "Philippines",
+    "nativeLanguageName": "Wikang Tagalog"
+  },
+  {
+    "localeCode": "tr_CY",
+    "country": "Cyprus",
+    "nativeLanguageName": "Türkçe"
+  },
+  {
+    "localeCode": "tr_TR",
+    "country": "Turkey",
+    "nativeLanguageName": "Türkçe"
+  },
+  {
+    "localeCode": "uk_UA",
+    "country": "Ukraine",
+    "nativeLanguageName": "Українська"
+  },
+  {
+    "localeCode": "uz_UZ",
+    "country": "Uzbekistan",
+    "nativeLanguageName": "Ўзбек"
+  },
+  {
+    "localeCode": "wa_BE",
+    "country": "Belgium",
+    "nativeLanguageName": "walon"
+  },
+  {
+    "localeCode": "xh_ZA",
+    "country": "South Africa",
+    "nativeLanguageName": "isiXhosa"
+  },
+  {
+    "localeCode": "yi_US",
+    "country": "United States of America",
+    "nativeLanguageName": "ייִדיש"
+  },
+  {
+    "localeCode": "zh_CN",
+    "country": "China",
+    "nativeLanguageName": "中文"
+  },
+  {
+    "localeCode": "zh_HK",
+    "country": "Hong Kong",
+    "nativeLanguageName": "中文"
+  },
+  {
+    "localeCode": "zh_SG",
+    "country": "Singapore",
+    "nativeLanguageName": "中文"
+  },
+  {
+    "localeCode": "zh_TW",
+    "country": "Taiwan, Province of China",
+    "nativeLanguageName": "中文"
+  },
+  {
+    "localeCode": "zu_ZA",
+    "country": "South Africa",
+    "nativeLanguageName": "isiZulu"
+  }
+]

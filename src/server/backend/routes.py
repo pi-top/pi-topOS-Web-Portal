@@ -32,20 +32,27 @@ from .helpers.keyboard import (
 from .helpers.registration import set_registration_email
 from .helpers.finalise import (
     available_space,
+    close_pt_browser,
     configure_tour,
-    update_mime_database,
     deprioritise_openbox_session,
-    stop_onboarding_autostart,
-    enable_os_updater_service,
+    disable_startup_noise,
+    disable_tour,
     enable_firmware_updater_service,
     enable_further_link_service,
-    disable_startup_noise,
-    mark_eula_agreed,
-    unhide_all_boot_messages,
-    reboot,
-    enable_pt_sys_oled,
     enable_mouse_cursor,
-    restore_files
+    enable_os_updater_service,
+    enable_pt_sys_oled,
+    mark_eula_agreed,
+    onboarding_completed,
+    open_further,
+    open_knowledge_base,
+    open_python_sdk_docs,
+    python_sdk_docs_url,
+    reboot,
+    restore_files,
+    stop_onboarding_autostart,
+    unhide_all_boot_messages,
+    update_mime_database,
 )
 from .helpers.wifi_manager import (
     get_ssids,
@@ -81,6 +88,8 @@ def abort_on_no_data(data):
 @app.route('/', methods=['GET'])
 def index():
     PTLogger.debug("Route '/'")
+    if onboarding_completed():
+        return send_from_directory(app.static_folder + "/tour", 'index.html')
     return send_from_directory(app.static_folder + "/onboarding", 'index.html')
 
 
@@ -88,6 +97,12 @@ def index():
 def onboarding_index():
     PTLogger.debug("Route '/onboarding'")
     return send_from_directory(app.static_folder + "/onboarding", 'index.html')
+
+
+@app.route('/tour', methods=['GET'])
+def tour_index():
+    PTLogger.debug("Route '/tour'")
+    return send_from_directory(app.static_folder + "/tour", 'index.html')
 
 
 @app.route('/FSMePro/<filename>', methods=['GET'])
@@ -405,3 +420,44 @@ def post_restore_files():
 def get_is_fs_expanded():
     PTLogger.debug("Route '/is-fs-expanded'")
     return jdumps({'expanded': is_file_system_expanded()})
+
+
+@app.route('/python-sdk-docs-url', methods=['GET'])
+def get_python_sdk_docs_url():
+    PTLogger.debug("Route '/python-sdk-docs-url")
+    return jdumps({'url': python_sdk_docs_url()})
+
+
+@app.route('/disable-tour', methods=['POST'])
+def post_disable_tour():
+    PTLogger.debug("Route '/disable-tour'")
+    disable_tour()
+    return "OK"
+
+
+@app.route('/close-pt-browser', methods=['POST'])
+def post_close_pt_browser():
+    PTLogger.debug("Route '/close-pt-browser'")
+    close_pt_browser()
+    return "OK"
+
+
+@app.route('/open-further', methods=['POST'])
+def post_open_further():
+    PTLogger.debug("Route '/open-further'")
+    open_further()
+    return "OK"
+
+
+@app.route('/open-python-sdk-docs', methods=['POST'])
+def post_open_python_sdk_docs():
+    PTLogger.debug("Route '/open-python-sdk-docs'")
+    open_python_sdk_docs()
+    return "OK"
+
+
+@app.route('/open-knowledge-base', methods=['POST'])
+def post_open_knowledge_base():
+    PTLogger.debug("Route '/open-knowledge-base'")
+    open_knowledge_base()
+    return "OK"

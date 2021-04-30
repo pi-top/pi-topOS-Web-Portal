@@ -1,0 +1,30 @@
+.select {
+  composes: text from '../../../globalStyles/Typography.module.css';
+  width: 100%;
+  font-family: var(--fontFamily);
+}
+
+.select :global(.ReactSelect__control) {
+  border-color: var(--mediumGrey);
+  box-shadow: none;
+}
+
+.select :global(.ReactSelect__control):hover {
+  border-color: var(--green);
+}
+
+.select :global(.ReactSelect__menu-list) {
+  max-height: 25vh;
+}
+
+.select :global(.ReactSelect__single-value) {
+  color: var(--font);
+}
+
+.select :global(.ReactSelect__option--is-focused) {
+  background: var(--green15);
+}
+
+.select :global(.ReactSelect__option--is-selected) {
+  background: var(--green);
+}
