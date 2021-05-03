@@ -4,6 +4,7 @@ import UpgradePage from "./UpgradePage";
 
 import useSocket from "../../hooks/useSocket";
 import getAvailableSpace from "../../services/getAvailableSpace";
+import wsBaseUrl from "../../services/wsBaseUrl";
 
 export enum OSUpdaterMessageType {
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
@@ -51,7 +52,7 @@ export type Props = {
 };
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
-  const socket = useSocket("ws://127.0.0.1:80/os-upgrade");
+  const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);

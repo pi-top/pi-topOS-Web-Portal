@@ -15,6 +15,8 @@ import querySpinner from "../../../../test/helpers/querySpinner";
 import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
+import wsBaseUrl from "../../../services/wsBaseUrl";
+
 jest.mock("../../../services/getAvailableSpace");
 
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
@@ -29,7 +31,7 @@ const createServer = () => {
   if (server) {
     server.close();
   }
-  return new Server("ws://127.0.0.1:80/os-upgrade");
+  return new Server(`${wsBaseUrl}/os-upgrade`);
 };
 
 describe("UpgradePageContainer", () => {

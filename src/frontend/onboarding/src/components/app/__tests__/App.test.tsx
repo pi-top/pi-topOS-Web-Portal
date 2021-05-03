@@ -42,6 +42,8 @@ import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
 import connectToNetwork from "../../../services/connectToNetwork";
 import expandFileSystem from "../../../services/expandFileSystem";
 
+import wsBaseUrl from "../../../services/wsBaseUrl";
+
 jest.mock("../../../services/getNetworks");
 jest.mock("../../../services/isConnectedToNetwork");
 jest.mock("../../../services/connectToNetwork");
@@ -205,7 +207,7 @@ describe("App", () => {
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
     connectToNetworkMock.mockResolvedValue("OK");
 
-    server = new Server("ws://127.0.0.1:80/os-upgrade");
+    server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
       socket.on("message", (data) => {
         if (data === "prepare") {
