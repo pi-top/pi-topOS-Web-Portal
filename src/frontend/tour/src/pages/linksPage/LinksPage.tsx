@@ -9,6 +9,8 @@ import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
+import stopTourAutostart from "../../services/stopTourAutostart";
+
 
 export type Props = {
   goToNextPage: () => void;
@@ -47,7 +49,10 @@ export default ({ goToNextPage }: Props) => {
       }
       explanation=""
       nextButton={{
-        onClick: ()=>{closePtBrowser()},
+        onClick: () => {
+          stopTourAutostart()
+            .then(() => closePtBrowser())
+          },
         label: 'Exit',
         hidden: ! isOnWebUi
       }}

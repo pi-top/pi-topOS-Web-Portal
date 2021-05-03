@@ -63,10 +63,7 @@ def deprioritise_openbox_session() -> None:
 
 def stop_onboarding_autostart() -> None:
     PTLogger.info("Function: stop_onboarding_autostart()")
-    run_command("systemctl disable pt-os-setup",
-                timeout=30, lower_priority=True)
-    run_command("systemctl mask pt-os-setup",
-                timeout=30, lower_priority=True)
+    remove("/etc/xdg/autostart/pt-os-setup.desktop")
 
 
 def enable_os_updater_service():
@@ -170,10 +167,9 @@ def python_sdk_docs_url():
 def onboarding_completed():
     PTLogger.info("Function: onboarding_completed()")
     try:
-        run_command("systemctl is-enabled -q pt-os-setup", timeout=5, log_errors=False)
-        return False
+        return not Path("/etc/xdg/autostart/pt-os-setup.desktop").exists()
     except Exception:
-        return True
+        return False
 
 
 def open_further():
