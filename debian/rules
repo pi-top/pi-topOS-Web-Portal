@@ -10,10 +10,17 @@ override_dh_auto_build:
 		mkdir -p ../../server/backend/pages && \
 		mv build ../../server/backend/pages/onboarding
 
+	cd src/frontend/tour && \
+		npm install && \
+		node_modules/react-scripts/bin/react-scripts.js build && \
+		mkdir -p ../../server/backend/pages && \
+		mv build ../../server/backend/pages/tour
+
 	dh_auto_build
 
 override_dh_clean:
 	rm -rf src/server/onboarding/build
+	rm -rf src/server/tour/build
 	dh_clean
 
 override_dh_installsystemd:

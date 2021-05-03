@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ErrorPage renders correctly 1`] = `
+<div>
+  <div
+    class="root"
+  >
+    <div
+      class="banner"
+    >
+      <div
+        class="root bannerImage"
+      >
+        <img
+          alt="power-switch-help"
+          class="image"
+          draggable="false"
+          src="error-screen.png"
+          style="max-height: 100%; max-width: 100%;"
+        />
+      </div>
+      <h1
+        class="prompt"
+      >
+        I've had some 
+        <span
+          class="green"
+        >
+          trouble setting up
+        </span>
+      </h1>
+    </div>
+    <div
+      class="content"
+    >
+      <span
+        class="explanation"
+      >
+        Please restart me by using the switch shown and contact
+         
+        <span
+          class="green"
+        >
+          support@pi-top.com
+        </span>
+      </span>
+      <span
+        class="explanation"
+      >
+        If you are using a 
+        <span
+          class="green"
+        >
+          pi-top[3]
+        </span>
+         please press the power button on the keyboard
+      </span>
+    </div>
+  </div>
+</div>
+`;

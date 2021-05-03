@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<CheckBox /> display inline when matching inline 1`] = `
+<div>
+  <div
+    class="inline"
+  >
+    <input
+      checked=""
+      class="checkbox"
+      id="checkbox-undefined"
+      type="checkbox"
+    />
+    <label
+      class="label inline isSelected"
+      for="checkbox-undefined"
+    >
+      <span
+        class="input"
+        style="background-image: url(radio.svg);"
+      >
+        <span
+          class="checked"
+        />
+      </span>
+      <span
+        class="labelText"
+      >
+        Label
+        <span
+          class="errorMsg"
+        />
+      </span>
+    </label>
+  </div>
+</div>
+`;
+
+exports[`<CheckBox /> show label text in left side when matching textLeft 1`] = `
+<div>
+  <div
+    class=""
+  >
+    <input
+      checked=""
+      class="checkbox"
+      id="checkbox-undefined"
+      type="checkbox"
+    />
+    <label
+      class="label isSelected"
+      for="checkbox-undefined"
+    >
+      <span
+        class="labelText"
+      >
+        Label
+        <span
+          class="errorMsg"
+        />
+      </span>
+      <span
+        class="input"
+        style="background-image: url(radio.svg);"
+      >
+        <span
+          class="checked"
+        />
+      </span>
+    </label>
+  </div>
+</div>
+`;
