@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SplashPage renders correct image 1`] = `
+exports[`TourSplashPage renders correct image 1`] = `
 <img
-  alt="intro-screen"
+  alt="tour-intro-screen"
   class="image"
   draggable="false"
-  src="intro-screen.png"
+  src="summary-screen.png"
   style="max-height: 100%; max-width: 100%;"
 />
 `;
 
-exports[`SplashPage renders prompt correctly 1`] = `
+exports[`TourSplashPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  Are you ready to be a 
+  All done, now let's start 
   <span
     class="green"
   >
-    maker
+    making
   </span>
-  ?
+  !
 </h1>
 `;

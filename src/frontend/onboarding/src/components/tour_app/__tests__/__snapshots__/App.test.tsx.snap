@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App renders build information correctly when loaded 1`] = `
+exports[`TourApp renders build information correctly when loaded 1`] = `
 <div
   class="root"
   data-testid="build-info"

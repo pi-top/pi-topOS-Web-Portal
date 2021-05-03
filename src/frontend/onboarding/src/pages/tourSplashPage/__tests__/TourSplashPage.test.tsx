@@ -8,9 +8,9 @@ import {
   GetByText,
 } from "@testing-library/react";
 
-import SplashPage, { Props } from "../SplashPage";
+import TourSplashPage, { Props } from "../TourSplashPage";
 
-describe("SplashPage", () => {
+describe("TourSplashPage", () => {
   let defaultProps: Props;
   let languagePage: HTMLElement;
   let getByAltText: BoundFunction<GetByBoundAttribute>;
@@ -26,11 +26,11 @@ describe("SplashPage", () => {
       getByAltText,
       queryByText,
       getByText,
-    } = render(<SplashPage {...defaultProps} />));
+    } = render(<TourSplashPage {...defaultProps} />));
   });
 
   it("renders correct image", () => {
-    expect(getByAltText("intro-screen")).toMatchSnapshot();
+    expect(getByAltText("tour-intro-screen")).toMatchSnapshot();
   });
 
   it("renders prompt correctly", () => {
@@ -39,11 +39,11 @@ describe("SplashPage", () => {
   });
 
   it("renders Yes button", () => {
-    expect(queryByText("Yes")).toBeInTheDocument();
+    expect(queryByText("Let's Go")).toBeInTheDocument();
   });
 
   it("calls goToNextPage on yes button click", () => {
-    fireEvent.click(getByText("Yes"));
+    fireEvent.click(getByText("Let's Go"));
 
     expect(defaultProps.goToNextPage).toHaveBeenCalled();
   });

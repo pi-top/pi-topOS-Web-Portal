@@ -13,7 +13,7 @@ export default ({ goToNextPage }: Props) => {
     <Layout
       banner={{
         src: summaryScreen,
-        alt: "intro-screen"
+        alt: "tour-intro-screen"
       }}
       prompt={
         <>
