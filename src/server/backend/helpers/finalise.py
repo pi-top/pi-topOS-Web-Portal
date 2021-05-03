@@ -167,10 +167,9 @@ def python_sdk_docs_url():
 def onboarding_completed():
     PTLogger.info("Function: onboarding_completed()")
     try:
-        run_command("systemctl is-enabled -q pt-os-setup", timeout=5, log_errors=False)
-        return False
+        return not Path("/etc/xdg/autostart/pt-os-setup.desktop").exists()
     except Exception:
-        return True
+        return False
 
 
 def open_further():
