@@ -17,6 +17,7 @@ export type Props = {
 };
 
 export default ({ goToNextPage }: Props) => {
+  console.log(goToNextPage);
   const furtherUrl = "https://further.pi-top.com";
   const kbUrl = "https://knowledgebase.pi-top.com";
   const [docsUrl, setDocsUrl] = useState("");

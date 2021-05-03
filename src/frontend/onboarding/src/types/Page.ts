@@ -8,18 +8,22 @@ export enum Page {
   Registration = "REGISTRATION",
   Restart = "RESTART",
   Terms = "TERMS",
-  Wait = "WAIT"
+  Wait = "WAIT",
+  TourSplash = "TOURSPLASH",
+  Links = "LINKS",
 }
 
 export enum PageRoute {
-  Wait = "/",
-  Wifi = "/wifi",
-  Upgrade = "/upgrade",
-  Country = "/country",
-  Keyboard = "/keyboard",
-  Language = "/language",
-  Registration = "/registration",
-  Restart = "/reboot",
-  Terms = "/terms",
-  Splash = "/start"
+  Wait = "/onboarding",
+  Wifi = "/onboarding/wifi",
+  Upgrade = "/onboarding/upgrade",
+  Country = "/onboarding/country",
+  Keyboard = "/onboarding/keyboard",
+  Language = "/onboarding/language",
+  Registration = "/onboarding/registration",
+  Restart = "/onboarding/reboot",
+  Terms = "/onboarding/terms",
+  Splash = "/onboarding/start",
+  Links = "/tour/links",
+  TourSplash = "/tour"
 }

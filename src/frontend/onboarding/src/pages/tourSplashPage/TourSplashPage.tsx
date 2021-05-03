@@ -1,7 +1,7 @@
 import React from "react";
 
 import summaryScreen from "../../assets/images/summary-screen.png";
-import styles from "./SplashPage.module.css";
+import styles from "./TourSplashPage.module.css";
 import Layout from "../../components/layout/Layout";
 
 export type Props = {

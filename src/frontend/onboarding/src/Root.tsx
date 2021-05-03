@@ -1,8 +1,9 @@
 import React from "react";
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 
 import ErrorBoundary from "./components/errorBoundary/ErrorBoundary";
-import App from "./components/app/App";
+import OnboardingApp from "./components/onboarding_app/App";
+import TourApp from "./components/tour_app/App";
 import RestartPageContainer from "./pages/restartPage/RestartPageContainer";
 import ErrorPage from "./pages/errorPage/ErrorPage";
 
@@ -15,7 +16,9 @@ export default () => (
     }
   >
     <BrowserRouter>
-      <App />
+      <Route path="/tour" component={TourApp} />
+      <Route path="/onboarding" component={OnboardingApp} />
     </BrowserRouter>
+
   </ErrorBoundary>
 );
