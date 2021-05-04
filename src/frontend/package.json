@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "rm -rf ../../server/backend/pages/onboarding || true && react-scripts build && mkdir -p ../../server/backend/pages/onboarding &&  mv build/* ../../server/backend/pages/onboarding/",
+    "build": "rm -rf ../server/backend/build || true && react-scripts build && mkdir -p ../server/backend/build &&  mv build/* ../server/backend/build/",
     "test": "react-scripts test",
     "test:coverage": "yarn test --watchAll=false --coverage",
     "eject": "react-scripts eject"
