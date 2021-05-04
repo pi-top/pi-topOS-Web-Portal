@@ -19,7 +19,7 @@ def build_data() -> dict:
         try:
             title, value = line.strip().split(": ")
             if title in headers:
-                data[title] = value
+                data[title.replace(" ", "_").lower()] = value
         except Exception:
             continue
     return data
@@ -55,11 +55,11 @@ def device_serial_number():
         return ""
 
 
-def get_about_data():
+def device_data():
     data = build_data()
     data.update({
-        "Device": device_type(),
-        "Serial Number": device_serial_number(),
-        "Update Source": device_update_channel(),
+        "device": device_type(),
+        "serial_number": device_serial_number(),
+        "update_source": device_update_channel(),
     })
     return data

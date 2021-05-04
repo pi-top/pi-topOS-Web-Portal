@@ -1,6 +1,11 @@
 .root {
-  --promptFontSize: 50px;
+  --bannerHeight: 250px;
 }
+
+.root img {
+  width: 200px;
+}
+
 
 .error {
   composes: fontError from '../../globalStyles/Typography.module.css';
@@ -15,6 +20,29 @@
   padding: 10px;
 }
 
-.root img {
-  display: none;
+.divTable {
+	display: table;
+	width: 100%;
+}
+.divTableRow {
+	display: table-row;
+}
+
+.divTableCell {
+	display: table-cell;
+	padding: 3px 10px;
+}
+
+.divTableBody {
+	display: table-row-group;
+}
+
+.dataTitle {
+  font-weight: bold;
+  composes: text from '../../globalStyles/Typography.module.css';
+}
+
+.dataContent {
+  font-weight: lighter;
+  composes: text from '../../globalStyles/Typography.module.css';
 }
