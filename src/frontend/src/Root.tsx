@@ -6,6 +6,7 @@ import OnboardingApp from "./components/onboarding_app/App";
 import TourApp from "./components/tour_app/App";
 import RestartPageContainer from "./pages/restartPage/RestartPageContainer";
 import ErrorPage from "./pages/errorPage/ErrorPage";
+import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 
 export default () => (
   <ErrorBoundary
@@ -18,6 +19,7 @@ export default () => (
     <BrowserRouter>
       <Route path="/tour" component={TourApp} />
       <Route path="/onboarding" component={OnboardingApp} />
+      <Route path="/about" component={AboutPageContainer} />
     </BrowserRouter>
 
   </ErrorBoundary>
