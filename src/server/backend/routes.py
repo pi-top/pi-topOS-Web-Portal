@@ -7,6 +7,7 @@ from pitopcommon.logger import PTLogger
 from flask import (
     abort,
     current_app as app,
+    redirect,
     request,
     send_from_directory,
 )
@@ -89,20 +90,13 @@ def abort_on_no_data(data):
 def index():
     PTLogger.debug("Route '/'")
     if onboarding_completed():
-        return send_from_directory(app.static_folder + "/tour", 'index.html')
-    return send_from_directory(app.static_folder + "/onboarding", 'index.html')
+        return redirect("/tour")
+    return redirect("/onboarding")
 
 
-@app.route('/onboarding', methods=['GET'])
-def onboarding_index():
-    PTLogger.debug("Route '/onboarding'")
-    return send_from_directory(app.static_folder + "/onboarding", 'index.html')
-
-
-@app.route('/tour', methods=['GET'])
-def tour_index():
-    PTLogger.debug("Route '/tour'")
-    return send_from_directory(app.static_folder + "/tour", 'index.html')
+@app.errorhandler(404)
+def not_found(e):
+    return app.send_static_file('index.html')
 
 
 @app.route('/FSMePro/<filename>', methods=['GET'])

@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TourSplashPage renders correct image 1`] = `
+<img
+  alt="tour-intro-screen"
+  class="image"
+  draggable="false"
+  src="summary-screen.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`TourSplashPage renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  All done, now let's start 
+  <span
+    class="green"
+  >
+    making
+  </span>
+  !
+</h1>
+`;

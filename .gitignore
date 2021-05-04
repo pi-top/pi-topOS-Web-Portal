@@ -1,7 +1,8 @@
 *.DS_Store*
 # Explicitly defined for pre-commit to ignore it
-src/frontend/onboarding/build
-src/server/onboarding/build
+src/frontend/build
+src/frontend/node_modules
+src/server/backend/build
 .idea
 *__pycache__
 *.pytest_cache*

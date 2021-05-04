@@ -9,8 +9,8 @@ sockets = None
 def create_app(test=False):
     app = Flask(__name__,
                 static_url_path='',
-                static_folder='./pages/',
-                template_folder='./pages/')
+                static_folder='./build',
+                template_folder='./build')
     global sockets
     sockets = Sockets(app)
 
