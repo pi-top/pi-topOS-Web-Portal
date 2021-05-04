@@ -5,5 +5,5 @@ SRC_DIR="${DIR}/src"
 
 echo "Building static files for onboarding web server"
 cd "${SRC_DIR}/frontend"
-yarnpkg install
-yarnpkg build
+yarn install
+yarn build
