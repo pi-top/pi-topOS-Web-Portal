@@ -4,11 +4,10 @@
 	dh $@
 
 override_dh_auto_build:
-	cd src/frontend/onboarding && \
+	cd src/frontend/ && \
 		npm install && \
 		node_modules/react-scripts/bin/react-scripts.js build && \
-		mkdir -p ../../server/backend/pages && \
-		mv build ../../server/backend/pages/onboarding
+		mv build ../server/backend/
 
 	dh_auto_build
 
