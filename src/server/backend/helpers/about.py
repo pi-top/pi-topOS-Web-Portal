@@ -1,5 +1,4 @@
 from json import load as jload
-from pitop.system.device import device_type
 
 
 def _get_file_lines(filename) -> list:
@@ -56,6 +55,7 @@ def device_serial_number():
 
 
 def device_data():
+    from pitop.system.device import device_type
     data = build_data()
     data.update({
         "device": device_type(),
