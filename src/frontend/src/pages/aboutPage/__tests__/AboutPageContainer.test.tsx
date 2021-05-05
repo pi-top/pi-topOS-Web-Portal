@@ -11,36 +11,24 @@ import {
 
 import AboutPageContainer, { Props } from "../AboutPageContainer";
 import querySpinner from "../../../../test/helpers/querySpinner";
-import { ExplanationMessage, ErrorMessage } from "../AboutPage";
+import { ErrorMessage } from "../AboutPage";
 
-import isFileSystemExpanded from "../../../services/isFileSystemExpanded";
-import reboot from "../../../services/reboot";
-import expandFileSystem from "../../../services/expandFileSystem";
-import enableMouseCursor from "../../../services/enableMouseCursor";
-import enablePtSysOled from "../../../services/enablePtSysOled";
+import getAboutDevice from "../../../services/getAboutDevice";
 
-jest.mock("../../../services/isFileSystemExpanded");
-jest.mock("../../../services/reboot");
-jest.mock("../../../services/expandFileSystem");
-jest.mock("../../../services/enableMouseCursor");
-jest.mock("../../../services/enablePtSysOled");
+jest.mock("../../../services/getAboutDevice");
+const getAboutDeviceMock = getAboutDevice as jest.Mock;
 
-const isFileSystemExpandedMock = isFileSystemExpanded as jest.Mock;
-const rebootMock = reboot as jest.Mock;
-const expandFileSystemMock = expandFileSystem as jest.Mock;
-const enableMouseCursorMock = enableMouseCursor as jest.Mock;
-const enablePtSysOledMock = enableMouseCursor as jest.Mock;
+const sleep = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 describe("AboutPageContainer", () => {
   let defaultProps: Props;
   let mount: (props?: Props) => RenderResult;
 
   beforeEach(async () => {
-    isFileSystemExpandedMock.mockResolvedValue({ expanded: false });
-    rebootMock.mockResolvedValue("OK");
-    expandFileSystemMock.mockResolvedValue("OK");
-    enableMouseCursorMock.mockResolvedValue("OK");
-    enablePtSysOledMock.mockResolvedValue("OK");
+    getAboutDeviceMock.mockResolvedValue("OK");
 
     defaultProps = {
       goToNextPage: jest.fn()
@@ -52,26 +40,23 @@ describe("AboutPageContainer", () => {
   });
 
   afterEach(() => {
-    isFileSystemExpandedMock.mockRestore();
-    rebootMock.mockRestore();
-    expandFileSystemMock.mockRestore();
-    enableMouseCursorMock.mockRestore();
+    getAboutDeviceMock.mockRestore();
   });
 
   it("renders the correct banner image", async () => {
     const { queryByAltText } = mount();
     await wait();
 
-    expect(queryByAltText("wait-screen")).toMatchSnapshot();
+    expect(queryByAltText("about-screen")).toMatchSnapshot();
 
     await wait();
   });
 
-  it("renders prompt correctly", async () => {
-    const { container: upgradePage } = mount();
+  it("renders device information correctly", async () => {
+    const { container: aboutPage } = mount();
     await wait();
 
-    const prompt = upgradePage.querySelector(".prompt");
+    const prompt = aboutPage.querySelector(".prompt");
     expect(prompt).toMatchSnapshot();
 
     await wait();
@@ -93,96 +78,36 @@ describe("AboutPageContainer", () => {
     await wait();
   });
 
-  it("doesn't render spinner when checking if file system was expanded", async () => {
-    const { container: waitPage } = mount();
-
-    expect(querySpinner(waitPage)).not.toBeInTheDocument();
-
-    await wait();
-  });
-
-  it("checks if the file system was expanded", async () => {
+  it("requests device information", async () => {
     const { } = mount();
     await wait();
 
-    expect(isFileSystemExpandedMock).toHaveBeenCalled();
+    expect(getAboutDeviceMock).toHaveBeenCalled();
 
     await wait();
   });
 
-  it("attempts to expand file system if it's not already expanded", async () => {
-    const { } = mount();
-    await wait();
+  it("renders the spinner when waiting device information", async () => {
+    getAboutDeviceMock.mockImplementationOnce(async () => await sleep(500))
+    const { container: aboutPage, getByText } = mount();
 
-    expect(expandFileSystemMock).toHaveBeenCalled();
-
-    await wait();
-  });
-
-  it("renders the spinner when expanding the file system", async () => {
-    const { container: waitPage, getByText } = mount();
-
-    await waitForElement(() => querySpinner(waitPage));
-    expect(querySpinner(waitPage)).toBeInTheDocument();
+    await waitForElement(() => querySpinner(aboutPage));
+    expect(querySpinner(aboutPage)).toBeInTheDocument();
 
     await wait();
   });
 
-  it("attempts to reboot after expanding file system", async () => {
-    const { } = mount();
+  it("doesn't render spinner when device information is received", async () => {
+    const { container: aboutPage } = mount();
     await wait();
 
-    expect(rebootMock).toHaveBeenCalled();
-
-    await wait();
-  });
-
-
-  it("attempts to reboot", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({ expanded: false });
-
-    const { } = mount();
-    await wait();
-
-    expect(rebootMock).toHaveBeenCalled();
+    expect(querySpinner(aboutPage)).not.toBeInTheDocument();
 
     await wait();
   });
 
-  it("when the fs was already expanded, goes automatically to the Splash page", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({expanded: true});
-    const { } = mount();
-    await wait();
-
-    expect(defaultProps.goToNextPage).toHaveBeenCalled();
-    expect(rebootMock).not.toHaveBeenCalled();
-    expect(expandFileSystemMock).not.toHaveBeenCalled();
-
-    await wait();
-  });
-
-  it("when the fs was already expanded, doesn't expand fs again", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({expanded: true});
-    const { } = mount();
-    await wait();
-
-    expect(expandFileSystemMock).not.toHaveBeenCalled();
-
-    await wait();
-  });
-
-  it("when the fs was already expanded, doesn't reboot", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({expanded: true});
-    const { } = mount();
-    await wait();
-
-    expect(rebootMock).not.toHaveBeenCalled();
-
-    await wait();
-  });
-
-  it("when there's an error while checking if fs was expanded, renders the error message", async () => {
-    isFileSystemExpandedMock.mockRejectedValue(
+  it("when there's an error getting device information, renders the error message", async () => {
+    getAboutDeviceMock.mockRejectedValue(
       new Error("oh oh, something happened")
     );
 
@@ -190,43 +115,5 @@ describe("AboutPageContainer", () => {
     await wait();
 
     await waitForElement(() => getByText(ErrorMessage.GenericError));
-  });
-
-  it("when there's an error while trying to reboot, renders the error message", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({expanded: false});
-    rebootMock.mockRejectedValue(
-      new Error("oh oh, something happened")
-    );
-    const { getByText } = mount();
-    await wait();
-
-    await waitForElement(() => getByText(ErrorMessage.GenericError));
-  });
-
-  it("when there's an error while expanding filesystem, doesn't call enableMouseCursor nor reboot", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({expanded: false});
-    expandFileSystemMock.mockRejectedValue(
-      new Error("oh oh, something happened")
-    );
-
-    const { getByText } = mount();
-    await wait();
-
-    expect(enableMouseCursorMock).not.toHaveBeenCalled();
-    expect(rebootMock).not.toHaveBeenCalled();
-
-  });
-
-  it("when there's an error while enabling mouse cursor, doesn't call reboot", async () => {
-    isFileSystemExpandedMock.mockResolvedValue({expanded: false});
-    enableMouseCursorMock.mockRejectedValue(
-      new Error("oh oh, something happened")
-    );
-
-    const { getByText } = mount();
-    await wait();
-
-    expect(rebootMock).not.toHaveBeenCalled();
-
   });
 });
