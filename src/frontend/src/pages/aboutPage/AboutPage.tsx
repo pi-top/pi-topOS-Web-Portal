@@ -46,9 +46,8 @@ export default ({ deviceData, isFetchingData, hasError }: Props) => {
         <div className={styles.divTable}>
           <div className={styles.divTableBody}>
             {
-              Object.keys(deviceData).map(key => (
-                <>
-                <div className={styles.divTableRow}>
+              Object.keys(deviceData).map(key => {
+                return <div key={key} className={styles.divTableRow}>
                   <div className={styles.divTableCell}>
                     <span className={styles.dataTitle}>{toTitleCase(key.replace("_", " "))}</span>
                   </div>
@@ -56,8 +55,7 @@ export default ({ deviceData, isFetchingData, hasError }: Props) => {
                     <span className={styles.dataContent}>{deviceData[key]}</span>
                   </div>
                 </div>
-                </>
-              ))
+              })
             }
           </div>
         </div>
