@@ -1,0 +1,6 @@
+pt-web-portal-desktop: desktop-command-not-in-package usr/share/applications/pt-about.desktop pt-web-ui
+# 'Help' is not considered a valid category but it works
+pt-web-portal-desktop: desktop-entry-invalid-category Help usr/share/applications/pt-about.desktop
+# 'Help' is not considered a valid category but it works
+pt-web-portal-desktop: desktop-entry-lacks-main-category usr/share/applications/pt-about.desktop
+pt-web-portal-desktop: maintainer-script-calls-systemctl preinst:16

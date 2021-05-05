@@ -1,0 +1,49 @@
+#!/bin/bash -e
+
+previous_version_requires_patch() {
+	local version_to_check_against="${1}"
+	# Is new install or version is earlier than upgrade check
+	[[ -z "${previous_version}" ]] && return 0
+	dpkg --compare-versions "${previous_version}" lt "${version_to_check_against}" && return 0
+	return 1
+}
+
+create_device_is_registered_breadcrumb() {
+	touch "/etc/pi-top/.deviceRegistered"
+}
+
+unmask_pt_device_registration_service() {
+	systemctl unmask pt-device-registration
+}
+
+case "$1" in
+upgrade)
+	shift
+	previous_version="${1:-}"
+
+	if previous_version_requires_patch "3.3.3"; then
+		# Handle new way of registering device
+		service_state=$(systemctl is-enabled pt-device-registration 2>/dev/null || true)
+		if [[ "${service_state}" == "masked" ]]; then
+			echo "Device registration already completed, migrating to new schema"
+			create_device_is_registered_breadcrumb
+			# Service needs to be unmasked for it to be completely removed from the system
+			unmask_pt_device_registration_service
+		fi
+	fi
+
+	;;
+
+install | abort-upgrade) ;;
+
+\
+	\
+	*)
+	echo "preinst called with unknown argument \`$1'" >&2
+	exit 1
+	;;
+esac
+
+#DEBHELPER#
+
+exit 0

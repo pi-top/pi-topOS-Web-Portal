@@ -47,7 +47,7 @@ def test_configure_tour_success(app, mocker):
 
     run_mock.assert_called_once_with(
         ['nice', '-n', '10', 'ln', '-s',
-            '/usr/lib/pt-tour/pt-tour.desktop', '/etc/xdg/autostart'],
+            '/usr/lib/pt-web-portal/pt-tour.desktop', '/etc/xdg/autostart'],
         capture_output=True, check=True, env={'DISPLAY': ':0'}, timeout=60)
     assert response.status_code == 200
     assert response.data == b'OK'

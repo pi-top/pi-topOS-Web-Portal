@@ -44,7 +44,7 @@ def expand_file_system() -> None:
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
-        "ln -s /usr/lib/pt-tour/pt-tour.desktop /etc/xdg/autostart", timeout=60, lower_priority=True)
+        "ln -s /usr/lib/pt-web-portal/pt-tour.desktop /etc/xdg/autostart", timeout=60, lower_priority=True)
 
 
 def update_mime_database() -> None:
@@ -135,9 +135,9 @@ def enable_mouse_cursor():
 def restore_files():
     PTLogger.info("Function: restore_files()")
 
-    run_command("rsync -av /usr/lib/pt-os-setup/bak/ /",
+    run_command("rsync -av /usr/lib/pt-web-portal/bak/ /",
                 timeout=30, lower_priority=True)
-    run_command("rm -r /usr/lib/pt-os-setup/",
+    run_command("rm -r /usr/lib/pt-web-portal/",
                 timeout=30, lower_priority=True)
 
 
