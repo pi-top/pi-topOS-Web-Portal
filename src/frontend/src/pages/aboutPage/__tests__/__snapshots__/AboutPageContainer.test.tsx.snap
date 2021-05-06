@@ -3,7 +3,9 @@
 exports[`AboutPageContainer renders device information correctly 1`] = `
 <h1
   class="prompt"
-/>
+>
+  pi-topOS Sirius
+</h1>
 `;
 
 exports[`AboutPageContainer renders the correct banner image 1`] = `
