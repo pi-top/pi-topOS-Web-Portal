@@ -27,11 +27,7 @@ export default ({ deviceData, isFetchingData, hasError }: Props) => {
         src: piTopLogo,
         alt: "about-screen"
       }}
-      prompt={
-        isFetchingData && <>
-          <Spinner size={50} />
-        </>
-      }
+      prompt={"pi-topOS Sirius"}
       explanation=""
       nextButton={{
         onClick: () => {},
@@ -41,7 +37,10 @@ export default ({ deviceData, isFetchingData, hasError }: Props) => {
       className={styles.root}
     >
       {isFetchingData ?
-        (<span className={styles.dataContent}>Retrieving device information...</span>)
+        (<>
+          <Spinner size={50} />
+        </>
+        )
       : (
         <div className={styles.divTable}>
           <div className={styles.divTableBody}>
