@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Exec=web-renderer --title="About pi-topOS" --url="http://localhost/about" --windowed --width 0.28 --height 0.36 --show-window-frame --icon /usr/share/icons/hicolor/scalable/apps/pt-about.svg
+Exec=web-renderer --window-title "About pi-topOS" --url "http://localhost/about" --windowed --width 0.28 --height 0.36 --show-window-frame --icon /usr/share/icons/hicolor/scalable/apps/pt-about.svg
 Icon=pt-about
 Terminal=false
 Name=About pi-topOS
