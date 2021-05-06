@@ -30,8 +30,6 @@ Depends:
  raspi-config,
  rsync,
  web-renderer,
-Recommends:
- pt-tour,
 Replaces:
  piwiz,
 Breaks:
@@ -48,12 +46,14 @@ Depends:
  ${misc:Depends},
  pt-web-portal,
  web-renderer,
-Replaces:
- piwiz,
 Breaks:
- piwiz,
-Conflicts:
- piwiz,
+ pt-tour,
+ pt-os-setup,
+ pt-about,
+Replaces:
+ pt-tour,
+ pt-os-setup,
+ pt-about,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing
  useful pages of the web portal from the Linux desktop.
