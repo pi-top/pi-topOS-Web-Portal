@@ -17,7 +17,6 @@ Depends:
  ${shlibs:Depends},
 # Needed for 'nice' command
  coreutils (>= 8.0),
- pt-web-ui (>> 1.0),
  python3-flask,
  python3-flask-cors,
  python3-flask-sockets,
@@ -30,6 +29,7 @@ Depends:
  python3-websockets,
  raspi-config,
  rsync,
+ web-renderer,
 Recommends:
  pt-tour,
 Replaces:
@@ -47,7 +47,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  pt-web-portal,
- pt-web-ui,
+ web-renderer,
 Replaces:
  piwiz,
 Breaks:
