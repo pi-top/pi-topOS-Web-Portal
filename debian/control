@@ -29,7 +29,6 @@ Depends:
  python3-websockets,
  raspi-config,
  rsync,
- web-renderer,
 Replaces:
  piwiz,
 Breaks:
