@@ -12,6 +12,7 @@ from flask import (
     send_from_directory,
 )
 
+from .helpers.about import device_data
 from .helpers.build import os_build_info
 from .helpers.language import (
     list_locales_supported,
@@ -455,3 +456,9 @@ def post_open_knowledge_base():
     PTLogger.debug("Route '/open-knowledge-base'")
     open_knowledge_base()
     return "OK"
+
+
+@app.route('/about-device', methods=['GET'])
+def get_about_device():
+    PTLogger.debug("Route '/about-device'")
+    return jdumps(device_data())

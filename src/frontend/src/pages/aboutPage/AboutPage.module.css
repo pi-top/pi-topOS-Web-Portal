@@ -1,0 +1,48 @@
+.root {
+  --bannerHeight: 250px;
+}
+
+.root img {
+  width: 200px;
+}
+
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+}
+
+.message {
+  position: absolute;
+  right: 100%;
+  composes: text from '../../globalStyles/Typography.module.css';
+  color: var(--green);
+  font-size: 16px;
+  padding: 10px;
+}
+
+.divTable {
+	display: table;
+	width: 90%;
+}
+.divTableRow {
+	display: table-row;
+}
+
+.divTableCell {
+	display: table-cell;
+	padding: 3px 10px;
+}
+
+.divTableBody {
+	display: table-row-group;
+}
+
+.dataTitle {
+  font-weight: bold;
+  composes: text from '../../globalStyles/Typography.module.css';
+}
+
+.dataContent {
+  font-weight: lighter;
+  composes: text from '../../globalStyles/Typography.module.css';
+}

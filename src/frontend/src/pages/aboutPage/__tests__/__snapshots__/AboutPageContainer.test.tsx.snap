@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AboutPageContainer renders device information correctly 1`] = `
+<h1
+  class="prompt"
+>
+  pi-topOS Sirius
+</h1>
+`;
+
+exports[`AboutPageContainer renders the correct banner image 1`] = `
+<img
+  alt="about-screen"
+  class="image"
+  draggable="false"
+  src="pi-top-logo.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
