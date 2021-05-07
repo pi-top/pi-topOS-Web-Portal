@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Exec=web-renderer --title "About pi-topOS" --width 0.4 --height 0.4 http://localhost/about
+Exec=web-renderer --window-title "About pi-topOS" --size 0.4x0.4 http://localhost/about
 Icon=pt-about
 Terminal=false
 Name=About pi-topOS
