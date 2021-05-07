@@ -4,4 +4,4 @@ A Python server that hosts a web application to interact directly with a Linux m
 
 Check out the docs folder for more information!
 
-Desktop management of `pt-web-portal` app pages via `pt-web-ui` is done via `pt-web-portal-desktop`.
+In addition to the core web server, desktop management of `pt-web-portal`'s app pages via [`web-renderer`](https://github.com/pi-top/web-renderer) is handled via a separate binary Debian package: `pt-web-portal-desktop`.

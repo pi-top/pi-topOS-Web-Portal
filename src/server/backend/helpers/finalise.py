@@ -151,7 +151,7 @@ def disable_tour():
 
 def close_pt_browser():
     PTLogger.info("Function: close_pt_browser()")
-    pids = run_command("pgrep pt-web-ui", timeout=5, check=False).split()
+    pids = run_command("pgrep web-renderer", timeout=5, check=False).split()
     for pid in pids:
         try:
             run_command(f"kill -9 {pid}", timeout=5)

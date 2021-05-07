@@ -29,7 +29,7 @@ export default ({ goToNextPage }: Props) => {
   };
 
   const getBrowserData = () => {
-    setIsOnWebUi(window.navigator.userAgent === "pt-web-ui");
+    setIsOnWebUi(window.navigator.userAgent === "web-renderer");
   }
 
   useEffect(() => {
