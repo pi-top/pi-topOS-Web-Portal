@@ -1,3 +1,13 @@
+pt-web-portal (0.1.7) buster; urgency=medium
+
+  * Add "about" page to be displayed by pt-about
+  * Add "tour" app to be displayed by pt-tour
+  * Get websocket URI based on window.location.host
+  * Build pt-web-portal-desktop binary package
+  * Use 'web-renderer' instead of 'pt-web-ui'
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 07 May 2021 16:06:10 +0000
+
 pt-web-portal (0.1.6) buster; urgency=medium
 
   * Create OSUpdater object only when required
