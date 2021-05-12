@@ -1,19 +1,10 @@
 pt-web-portal (0.1.7) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Skip device registration if onboarding isn't completed
-  * Cleanup pt-os-setup folder after files are restored
-  * Add new tour (#18)
-  * Update to use pt-os-setup autostart script (#19)
-  * Get websocket URI based on window.location.host (#17)
-  * Merge tour into onboarding app (#20)
-
-  [ Mike Roberts ]
+  * Add "about" page to be displayed by pt-about
+  * Add "tour" app to be displayed by pt-tour
+  * Get websocket URI based on window.location.host
   * Build pt-web-portal-desktop binary package
-
-  [ Jorge Capona ]
-  * Use web-renderer instead of pt-web-ui (#23)
-  * Add "about" page (#21)
+  * Use 'web-renderer' instead of 'pt-web-ui'
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 07 May 2021 16:06:10 +0000
 
