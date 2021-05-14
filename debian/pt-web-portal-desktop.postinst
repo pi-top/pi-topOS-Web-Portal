@@ -1,14 +1,5 @@
 #!/bin/bash -e
 
-is_package_installed() {
-	package_name=$1
-	status="$(dpkg-query -W --showformat='${db:Status-Status}' "${package_name}" 2>&1)"
-	if [ "${status}" == "installed" ]; then
-		return 0
-	fi
-	return 1
-}
-
 prepare_for_onboarding() {
 	echo "Preparing system to run onboarding"
 
@@ -31,7 +22,7 @@ is_first_install() {
 }
 
 if is_first_install "$@"; then
-	if ! is_package_installed "pt-os-setup"; then
+	if [[ ! -f "/tmp/pi-top/pt-web-portal.onboardingCompleted" ]]; then
 		prepare_for_onboarding
 	fi
 fi
