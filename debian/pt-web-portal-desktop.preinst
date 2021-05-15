@@ -25,6 +25,25 @@ is_package_installed() {
 	return 1
 }
 
+prepare_for_onboarding() {
+	echo "Disabling notifications until onboarding is completed"
+	DBUS_NOTIFICATION_SERVICE_FILE="/usr/share/dbus-1/services/org.xfce.xfce4-notifyd.Notifications.service"
+	if [[ -f "${DBUS_NOTIFICATION_SERVICE_FILE}" ]]; then
+		DESTINATION_PATH="/usr/lib/pt-web-portal/bak/usr/share/dbus-1/services/"
+		mkdir -p "${DESTINATION_PATH}"
+		mv "${DBUS_NOTIFICATION_SERVICE_FILE}" "${DESTINATION_PATH}"
+	fi
+	echo "Setting up system to boot in openbox-session"
+	update-alternatives --install /usr/bin/x-session-manager x-session-manager /usr/bin/openbox-session 99
+}
+
+is_pi_top_os() {
+	if [[ -f "/etc/pt-issue" ]]; then
+		return 0
+	fi
+	return 1
+}
+
 case "$1" in
 upgrade)
 	shift
@@ -44,9 +63,8 @@ upgrade)
 	;;
 
 install)
-	if is_package_installed "pt-os-setup"; then
-		mkdir -p "/tmp/pi-top/"
-		touch "/tmp/pi-top/pt-web-portal.onboardingCompleted"
+	if is_pi_top_os && ! is_package_installed "pt-os-setup"; then
+		prepare_for_onboarding
 	fi
 
 	;;
