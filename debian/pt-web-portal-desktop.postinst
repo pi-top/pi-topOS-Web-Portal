@@ -1,14 +1,35 @@
 #!/bin/bash -e
 
-if [ -z "${2}" ]; then
-	ln -sf /usr/lib/pt-web-portal/pt-os-setup.desktop /etc/xdg/autostart/pt-os-setup.desktop
-	update-alternatives --install /usr/bin/x-session-manager x-session-manager /usr/bin/openbox-session 99
-
-	DBUS_NOTIFICATION_SERVICE_FILE="/usr/share/dbus-1/services/org.xfce.xfce4-notifyd.Notifications.service"
+onboarding_should_run() {
+	DBUS_NOTIFICATION_SERVICE_FILE="/usr/lib/pt-web-portal/bak/usr/share/dbus-1/services/org.xfce.xfce4-notifyd.Notifications.service"
 	if [[ -f "${DBUS_NOTIFICATION_SERVICE_FILE}" ]]; then
-		DESTINATION_PATH="/usr/lib/pt-web-portal/bak/usr/share/dbus-1/services/"
-		mkdir -p "${DESTINATION_PATH}"
-		mv "${DBUS_NOTIFICATION_SERVICE_FILE}" "${DESTINATION_PATH}"
+		return 0
+	fi
+	return 1
+}
+
+prepare_for_onboarding() {
+	echo "Setting up system to run onboarding on boot"
+	ln -sf /usr/lib/pt-web-portal/pt-os-setup.desktop /etc/xdg/autostart/pt-os-setup.desktop
+}
+
+is_first_install() {
+	if [ -z "${2}" ]; then
+		return 0
+	fi
+	return 1
+}
+
+is_pi_top_os() {
+	if [[ -f "/etc/pt-issue" ]]; then
+		return 0
+	fi
+	return 1
+}
+
+if is_first_install "$@"; then
+	if is_pi_top_os && onboarding_should_run; then
+		prepare_for_onboarding
 	fi
 fi
 

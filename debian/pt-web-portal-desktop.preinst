@@ -16,6 +16,33 @@ unmask_pt_device_registration_service() {
 	systemctl unmask pt-device-registration
 }
 
+is_fs_expanded() {
+	FS_EXPANDED_BREADCRUMB="/etc/pi-top/.expandedFs"
+	if [[ -f "${FS_EXPANDED_BREADCRUMB}" ]]; then
+		return 0
+	fi
+	return 1
+}
+
+prepare_for_onboarding() {
+	echo "Disabling notifications until onboarding is completed"
+	DBUS_NOTIFICATION_SERVICE_FILE="/usr/share/dbus-1/services/org.xfce.xfce4-notifyd.Notifications.service"
+	if [[ -f "${DBUS_NOTIFICATION_SERVICE_FILE}" ]]; then
+		DESTINATION_PATH="/usr/lib/pt-web-portal/bak/usr/share/dbus-1/services/"
+		mkdir -p "${DESTINATION_PATH}"
+		mv "${DBUS_NOTIFICATION_SERVICE_FILE}" "${DESTINATION_PATH}"
+	fi
+	echo "Setting up system to boot in openbox-session"
+	update-alternatives --install /usr/bin/x-session-manager x-session-manager /usr/bin/openbox-session 99
+}
+
+is_pi_top_os() {
+	if [[ -f "/etc/pt-issue" ]]; then
+		return 0
+	fi
+	return 1
+}
+
 case "$1" in
 upgrade)
 	shift
@@ -34,7 +61,14 @@ upgrade)
 
 	;;
 
-install | abort-upgrade) ;;
+install)
+	if is_pi_top_os && ! is_fs_expanded; then
+		prepare_for_onboarding
+	fi
+
+	;;
+
+abort-upgrade) ;;
 
 \
 	\
