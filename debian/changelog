@@ -1,3 +1,9 @@
+pt-web-portal (0.1.8) buster; urgency=medium
+
+  * Fix conditions to determine when onboarding should run on install/upgrade
+
+ -- pi-top <deb-maintainers@pi-top.com>  Sat, 15 May 2021 17:45:03 +0000
+
 pt-web-portal (0.1.7) buster; urgency=medium
 
   * Add "about" page to be displayed by pt-about
