@@ -16,10 +16,9 @@ unmask_pt_device_registration_service() {
 	systemctl unmask pt-device-registration
 }
 
-is_package_installed() {
-	package_name=$1
-	status="$(dpkg-query -W --showformat='${db:Status-Status}' "${package_name}" 2>&1)"
-	if [ "${status}" == "installed" ]; then
+is_fs_expanded() {
+	FS_EXPANDED_BREADCRUMB="/etc/pi-top/.expandedFs"
+	if [[ -f "${FS_EXPANDED_BREADCRUMB}" ]]; then
 		return 0
 	fi
 	return 1
@@ -63,7 +62,7 @@ upgrade)
 	;;
 
 install)
-	if is_pi_top_os && ! is_package_installed "pt-os-setup"; then
+	if is_pi_top_os && ! is_fs_expanded; then
 		prepare_for_onboarding
 	fi
 

@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 onboarding_should_run() {
-	notifications_file="/usr/lib/pt-web-portal/bak/usr/share/dbus-1/services/org.xfce.xfce4-notifyd.Notifications.service"
-	if [[ -f "${notifications_file}" ]]; then
+	DBUS_NOTIFICATION_SERVICE_FILE="/usr/lib/pt-web-portal/bak/usr/share/dbus-1/services/org.xfce.xfce4-notifyd.Notifications.service"
+	if [[ -f "${DBUS_NOTIFICATION_SERVICE_FILE}" ]]; then
 		return 0
 	fi
 	return 1
