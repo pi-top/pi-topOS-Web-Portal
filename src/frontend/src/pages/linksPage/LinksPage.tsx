@@ -24,9 +24,9 @@ export default ({ goToNextPage }: Props) => {
   const [isOnWebUi, setIsOnWebUi] = useState(false);
 
   const getSDKUrl = () => {
+    setDocsUrl("https://docs.pi-top.com")
     getPythonSDKDocsUrl()
       .then((url_data) => {
-        console.log(url_data);
         setDocsUrl(url_data.url);
       })
   };
