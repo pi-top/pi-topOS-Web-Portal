@@ -1,3 +1,10 @@
+pt-web-portal (0.1.9) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Fix "open SDK docs" in tour (#34)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 17 May 2021 19:24:32 +0000
+
 pt-web-portal (0.1.8) buster; urgency=medium
 
   * Fix conditions to determine when onboarding should run on install/upgrade
