@@ -137,7 +137,7 @@ def restore_files():
 
     run_command("rsync -av /usr/lib/pt-web-portal/bak/ /",
                 timeout=30, lower_priority=True)
-    run_command("rm -r /usr/lib/pt-web-portal/",
+    run_command("rm -r /usr/lib/pt-web-portal/bak",
                 timeout=30, lower_priority=True)
 
 
@@ -161,7 +161,7 @@ def close_pt_browser():
 
 def python_sdk_docs_url():
     PTLogger.info("Function: python_sdk_docs_url()")
-    return run_command("pi-top support links docs -p", timeout=5, check=False).strip()
+    return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
 
 
 def onboarding_completed():
