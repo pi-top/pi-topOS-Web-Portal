@@ -161,7 +161,7 @@ def close_pt_browser():
 
 def python_sdk_docs_url():
     PTLogger.info("Function: python_sdk_docs_url()")
-    return run_command("pi-top support links docs -p", timeout=5, check=False).strip()
+    return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
 
 
 def onboarding_completed():
