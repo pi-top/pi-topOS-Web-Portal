@@ -1,3 +1,9 @@
+pt-web-portal (0.1.9) buster; urgency=medium
+
+  * Fix opening SDK docs in tour app
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 17 May 2021 19:24:32 +0000
+
 pt-web-portal (0.1.8) buster; urgency=medium
 
   * Fix conditions to determine when onboarding should run on install/upgrade
