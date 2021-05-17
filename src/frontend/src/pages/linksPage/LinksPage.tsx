@@ -25,7 +25,7 @@ export default ({ goToNextPage }: Props) => {
 
   const getSDKUrl = () => {
     getPythonSDKDocsUrl()
-      .then((url) => setDocsUrl(url))
+      .then((url_data) => setDocsUrl(url_data.url))
   };
 
   const getBrowserData = () => {
