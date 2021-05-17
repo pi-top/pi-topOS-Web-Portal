@@ -137,7 +137,7 @@ def restore_files():
 
     run_command("rsync -av /usr/lib/pt-web-portal/bak/ /",
                 timeout=30, lower_priority=True)
-    run_command("rm -r /usr/lib/pt-web-portal/",
+    run_command("rm -r /usr/lib/pt-web-portal/bak",
                 timeout=30, lower_priority=True)
 
 
