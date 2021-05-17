@@ -1,7 +1,6 @@
 pt-web-portal (0.1.9) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Fix "open SDK docs" in tour (#34)
+  * Fix opening SDK docs in tour app
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 17 May 2021 19:24:32 +0000
 
