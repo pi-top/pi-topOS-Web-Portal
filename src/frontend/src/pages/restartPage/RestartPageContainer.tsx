@@ -69,12 +69,10 @@ export default ({
   function waitUntilServerIsOnline() {
       getBuildInfo()
         .then(() => {
-          console.log("online!");
           setProgressMessage("The device is back online :)");
           window.location.href = "/";
         })
         .catch(() => {
-          console.log("offline!");
           window.setTimeout(waitUntilServerIsOnline, 1500);
         })
   }
