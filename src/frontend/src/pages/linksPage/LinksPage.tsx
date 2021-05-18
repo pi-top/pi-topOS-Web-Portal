@@ -20,14 +20,15 @@ export default ({ goToNextPage }: Props) => {
   console.log(goToNextPage);
   const furtherUrl = "https://further.pi-top.com";
   const kbUrl = "https://knowledgebase.pi-top.com";
-  const [docsUrl, setDocsUrl] = useState("");
+  const [docsUrl, setDocsUrl] = useState("https://docs.pi-top.com");
   const [isOnWebUi, setIsOnWebUi] = useState(false);
 
   const getSDKUrl = () => {
-    setDocsUrl("https://docs.pi-top.com")
     getPythonSDKDocsUrl()
       .then((url_data) => {
-        setDocsUrl(url_data.url);
+        if (isOnWebUi || url_data.url.startsWith("http")) {
+            setDocsUrl(url_data.url);
+        }
       })
   };
 
