@@ -83,7 +83,7 @@ from .events import (
 
 def abort_on_no_data(data):
     if data is None:
-        abort(404)
+        abort(400)
     return jdumps(data)
 
 
