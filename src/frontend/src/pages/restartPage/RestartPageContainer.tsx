@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import RestartPage from "./RestartPage";
 
@@ -14,6 +14,7 @@ import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
+import getBuildInfo from "../../services/getBuildInfo"
 
 const maxProgress = 9; // this is the number of services for setting up
 
@@ -40,6 +41,15 @@ export default ({
     "Alright let's get started!"
   );
   const [progress, setProgress] = useState(0);
+  const [isOnWebUi, setIsOnWebUi] = useState(false);
+
+  const getBrowserData = () => {
+    setIsOnWebUi(window.navigator.userAgent === "web-renderer");
+  }
+
+  useEffect(() => {
+    Promise.all([getBrowserData()]);
+  }, []);
 
   function safelyRunService(service: () => Promise<void>, message: string) {
     return service()
@@ -55,6 +65,20 @@ export default ({
         );
       });
   }
+
+  function waitUntilServerIsOnline() {
+      getBuildInfo()
+        .then(() => {
+          console.log("online!");
+          setProgressMessage("The device is back online :)");
+          window.location.href = "/";
+        })
+        .catch(() => {
+          console.log("offline!");
+          window.setTimeout(waitUntilServerIsOnline, 1500);
+        })
+  }
+
 
   return (
     <RestartPage
@@ -133,10 +157,19 @@ export default ({
           )
           .catch(console.error)
           .finally(() =>
-            reboot().catch(() => {
-              setRebootError(true);
-              setIsSettingUpDevice(false);
-            })
+            reboot()
+              .catch(() => {
+                if (isOnWebUi) {
+                  setRebootError(true);
+                  setIsSettingUpDevice(false);
+                }
+              })
+              .then(() => {
+                setProgressMessage(
+                  "Rebooting device, please wait until the unit is back online..."
+                )
+                window.setTimeout(waitUntilServerIsOnline, 3000);
+              })
           );
       }}
     />
