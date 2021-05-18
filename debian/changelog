@@ -1,3 +1,10 @@
+pt-web-portal (0.1.11) buster; urgency=medium
+
+  * API responds with HTTP code 400 on no data
+  * Add title & icon to tour desktop file
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 18 May 2021 17:25:48 +0000
+
 pt-web-portal (0.1.10) buster; urgency=medium
 
   * Update favicon & logos
