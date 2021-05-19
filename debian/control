@@ -16,7 +16,7 @@ Depends:
  ${python3:Depends},
  ${shlibs:Depends},
 # "Roboto" font used in web app
- fonts-roboto-unhinted
+ fonts-roboto-unhinted,
 # Needed for 'nice' command
  coreutils (>= 8.0),
  python3-flask,
