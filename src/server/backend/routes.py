@@ -100,10 +100,10 @@ def not_found(e):
     return app.send_static_file('index.html')
 
 
-@app.route('/FSMePro/<filename>', methods=['GET'])
-def FSMePro(filename):
-    PTLogger.debug("Route '/FSMePro/%s'" % filename)
-    return send_from_directory('/usr/share/fonts/opentype/FSMePro', filename)
+@app.route('/roboto/<filename>', methods=['GET'])
+def roboto(filename):
+    PTLogger.debug(f"Route '/roboto/{filename}")
+    return send_from_directory('/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/', filename)
 
 
 # Startup
