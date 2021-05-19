@@ -14,10 +14,4 @@ describe("TermsAndConditions", () => {
       queryByText("pi-topOS End User Licence Agreement (EULA)")
     ).toBeInTheDocument();
   });
-
-  it("renders fontsmith EULA", () => {
-    expect(
-      queryByText("Fontsmith Ltd FS ME v6.0 End User Licence Agreement (EULA)")
-    ).toBeInTheDocument();
-  });
 });
