@@ -6,6 +6,7 @@ import Layout from "../../components/layout/Layout";
 import Button from "../../components/atoms/button/Button";
 import closePtBrowser from "../../services/closePtBrowser";
 import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
+import getFurtherUrl from "../../services/getFurtherUrl";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
@@ -18,12 +19,12 @@ export type Props = {
 
 export default ({ goToNextPage }: Props) => {
   console.log(goToNextPage);
-  const furtherUrl = "https://further.pi-top.com";
   const kbUrl = "https://knowledgebase.pi-top.com";
   const [docsUrl, setDocsUrl] = useState("https://docs.pi-top.com");
+  const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
   const [isOnWebUi, setIsOnWebUi] = useState(false);
 
-  const getSDKUrl = () => {
+  const updateSDKUrl = () => {
     getPythonSDKDocsUrl()
       .then((url_data) => {
         if (isOnWebUi || url_data.url.startsWith("http")) {
@@ -32,12 +33,16 @@ export default ({ goToNextPage }: Props) => {
       })
   };
 
-  const getBrowserData = () => {
+  const updateFurtherUrl = () => {
+    getFurtherUrl().then((url_data) => setFurtherUrl(url_data.url))
+  };
+
+  const readUserAgent = () => {
     setIsOnWebUi(window.navigator.userAgent === "web-renderer");
   }
 
   useEffect(() => {
-    Promise.all([getSDKUrl(), getBrowserData()]);
+    Promise.all([updateSDKUrl(), updateFurtherUrl(), readUserAgent()]);
   }, []);
 
 
