@@ -357,7 +357,7 @@ describe("RestartPageContainer", () => {
         expect(getBuildInfoMock).toHaveBeenCalled();
       });
 
-      describe('after reboot, when the device is back online', () => {
+      describe('when the device is back online', () => {
         beforeEach(async () => {
           jest.useFakeTimers();
           mockUserAgent = "web-renderer";
