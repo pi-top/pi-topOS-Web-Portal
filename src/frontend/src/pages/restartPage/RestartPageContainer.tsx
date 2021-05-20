@@ -157,16 +157,16 @@ export default ({
           .finally(() =>
             reboot()
               .catch(() => {
-                if (isOnWebUi) {
-                  setRebootError(true);
-                  setIsSettingUpDevice(false);
-                }
+                setRebootError(true);
+                setIsSettingUpDevice(false);
               })
               .then(() => {
-                setProgressMessage(
-                  "Rebooting device, please wait until the unit is back online..."
-                )
-                window.setTimeout(waitUntilServerIsOnline, 3000);
+                if (isOnWebUi) {
+                  setProgressMessage(
+                    "Rebooting device, please wait until the unit is back online..."
+                  )
+                  window.setTimeout(waitUntilServerIsOnline, 3000);
+                }
               })
           );
       }}
