@@ -69,14 +69,13 @@ export default ({
   function waitUntilServerIsOnline() {
       getBuildInfo()
         .then(() => {
-          setProgressMessage("The device is back online :)");
+          setProgressMessage("The device is back online!");
           window.location.href = "/";
         })
         .catch(() => {
           window.setTimeout(waitUntilServerIsOnline, 1500);
         })
   }
-
 
   return (
     <RestartPage
@@ -154,21 +153,19 @@ export default ({
             )
           )
           .catch(console.error)
-          .finally(() =>
+          .finally(() => {
             reboot()
+              .then(() => {
+                if (!isOnWebUi) {
+                  setProgressMessage("Rebooting device, please wait until the unit is back online...")
+                  window.setTimeout(waitUntilServerIsOnline, 3000);
+                }
+              })
               .catch(() => {
                 setRebootError(true);
                 setIsSettingUpDevice(false);
               })
-              .then(() => {
-                if (isOnWebUi) {
-                  setProgressMessage(
-                    "Rebooting device, please wait until the unit is back online..."
-                  )
-                  window.setTimeout(waitUntilServerIsOnline, 3000);
-                }
-              })
-          );
+            });
       }}
     />
   );
