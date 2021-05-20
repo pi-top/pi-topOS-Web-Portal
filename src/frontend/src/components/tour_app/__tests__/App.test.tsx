@@ -107,7 +107,5 @@ describe("TourApp", () => {
       fireEvent.click(getByText("Let's Go"));
       await waitForLinksPage();
     });
-
-
   });
 });
