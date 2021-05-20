@@ -349,11 +349,17 @@ describe("RestartPageContainer", () => {
 
       it('displays a wait message', async () => {
         expect(getByText("Rebooting device, please wait until the unit is back online...")).toBeInTheDocument();
+        await act(async () => {
+          jest.runAllTimers();
+          await Promise.resolve();
+        });
       });
 
       it('starts querying device to learn if its back online', async () => {
-        jest.runAllTimers();
-        await Promise.resolve();
+        await act(async () => {
+          jest.runAllTimers();
+          await Promise.resolve();
+        });
         expect(getBuildInfoMock).toHaveBeenCalled();
       });
 
@@ -367,8 +373,10 @@ describe("RestartPageContainer", () => {
         });
 
         it('updates the displayed message', async () => {
-          jest.runAllTimers();
-          await Promise.resolve();
+          await act(async () => {
+            jest.runAllTimers();
+            await Promise.resolve();
+          });
           expect(getByText("The device is back online!")).toBeInTheDocument()
         });
       });
