@@ -6,9 +6,9 @@ import TourSplashPage from "../../pages/tourSplashPage/TourSplashPage";
 import LinksPage from "../../pages/linksPage/LinksPage";
 import ErrorPage from "../../pages/errorPage/ErrorPage";
 import BuildInformation from "../buildInformation/BuildInformation";
+
 import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import getFurtherUrl from "../../services/getFurtherUrl";
-
 import getBuildInfo from "../../services/getBuildInfo";
 
 import { BuildInfo } from "../../types/Build";
@@ -27,10 +27,13 @@ export default () => {
             setDocsUrl(url_data.url);
         }
       })
+      .catch(() => null) // will use default url
   };
 
   const updateFurtherUrl = () => {
-    getFurtherUrl().then((url_data) => setFurtherUrl(url_data.url))
+    getFurtherUrl()
+      .then((url_data) => setFurtherUrl(url_data.url))
+      .catch(() => null) // will use default url
   };
 
   const readUserAgent = () => {
