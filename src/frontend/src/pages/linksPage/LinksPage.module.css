@@ -6,8 +6,22 @@
   composes: fontError from '../../globalStyles/Typography.module.css';
 }
 
+.buttonContainer {
+  position: relative;
+}
+
 .linkButton {
   color: var(--green);
-  margin:auto;
+  margin: auto;
   height: 50px;
+  position: relative;
+}
+
+.spinnerSpan {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  left: calc(100% + 20px);
+  top: 0;
 }
