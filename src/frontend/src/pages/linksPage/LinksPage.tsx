@@ -13,12 +13,7 @@ import openKnowledgeBase from "../../services/openKnowledgeBase";
 import stopTourAutostart from "../../services/stopTourAutostart";
 
 
-export type Props = {
-  goToNextPage: () => void;
-};
-
-export default ({ goToNextPage }: Props) => {
-  console.log(goToNextPage);
+export default () => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const [docsUrl, setDocsUrl] = useState("https://docs.pi-top.com");
   const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
