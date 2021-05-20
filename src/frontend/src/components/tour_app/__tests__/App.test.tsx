@@ -16,8 +16,16 @@ import { PageRoute } from "../../../types/Page";
 import queryReactSelect from "../../../../test/helpers/queryReactSelect";
 
 import getBuildInfo from "../../../services/getBuildInfo";
+import getPythonSDKDocsUrl from "../../../services/getPythonSDKDocsUrl";
+import getFurtherUrl from "../../../services/getFurtherUrl";
+
 jest.mock("../../../services/getBuildInfo");
+jest.mock("../../../services/getPythonSDKDocsUrl");
+jest.mock("../../../services/getFurtherUrl");
+
 const getBuildInfoMock = getBuildInfo as jest.Mock;
+const getPythonSDKDocsUrlMock = getPythonSDKDocsUrl as jest.Mock;
+const getFurtherUrlMock = getFurtherUrl as jest.Mock;
 
 const buildInfo: BuildInfo = {
   buildName: "test-build",
@@ -52,6 +60,8 @@ const mount = (pageRoute: PageRoute = PageRoute.TourSplash) => {
 describe("TourApp", () => {
   beforeAll(() => {
     getBuildInfoMock.mockResolvedValue(buildInfo);
+    getPythonSDKDocsUrlMock.mockResolvedValue({url: "http://docs.pi-top.com"});
+    getFurtherUrlMock.mockResolvedValue({url: "http://further.pi-top.com"});
   });
   afterEach(() => cleanup());
 
@@ -59,7 +69,6 @@ describe("TourApp", () => {
     const { queryByTestId } = mount();
 
     expect(queryByTestId("build-info")).not.toBeInTheDocument();
-
     await wait();
   });
 
@@ -77,13 +86,24 @@ describe("TourApp", () => {
     expect(queryByAltText("tour-intro-screen")).toBeInTheDocument();
   });
 
+  it("requests python sdk docs url on mount", async () => {
+    const { queryByAltText, waitForSplashPage } = mount();
+    await waitForSplashPage();
+    expect(getPythonSDKDocsUrl).toHaveBeenCalled()
+  });
+
+  it("requests further url on mount", async () => {
+    const { queryByAltText, waitForSplashPage } = mount();
+    await waitForSplashPage();
+    expect(getFurtherUrlMock).toHaveBeenCalled()
+  });
+
   describe("TourSplashPage", () => {
     it("navigates to LinksPage on next button click", async () => {
       const { getByText, waitForSplashPage, waitForLinksPage } = mount(
         PageRoute.TourSplash
       );
       await waitForSplashPage();
-
       fireEvent.click(getByText("Let's Go"));
       await waitForLinksPage();
     });

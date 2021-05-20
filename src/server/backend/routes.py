@@ -34,27 +34,30 @@ from .helpers.keyboard import (
 from .helpers.registration import set_registration_email
 from .helpers.finalise import (
     available_space,
-    close_pt_browser,
     configure_tour,
     deprioritise_openbox_session,
     disable_startup_noise,
-    disable_tour,
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_mouse_cursor,
     enable_os_updater_service,
     enable_pt_sys_oled,
     mark_eula_agreed,
-    onboarding_completed,
-    open_further,
-    open_knowledge_base,
-    open_python_sdk_docs,
-    python_sdk_docs_url,
     reboot,
     restore_files,
     stop_onboarding_autostart,
     unhide_all_boot_messages,
     update_mime_database,
+)
+from .helpers.tour import (
+    open_further,
+    onboarding_completed,
+    close_pt_browser,
+    open_knowledge_base,
+    open_python_sdk_docs,
+    python_sdk_docs_url,
+    disable_tour,
+    further_url
 )
 from .helpers.wifi_manager import (
     get_ssids,
@@ -442,6 +445,12 @@ def post_open_further():
     PTLogger.debug("Route '/open-further'")
     open_further()
     return "OK"
+
+
+@app.route('/further-url', methods=['GET'])
+def get_further_url():
+    PTLogger.debug("Route '/further-url'")
+    return jdumps({'url': further_url()})
 
 
 @app.route('/open-python-sdk-docs', methods=['POST'])
