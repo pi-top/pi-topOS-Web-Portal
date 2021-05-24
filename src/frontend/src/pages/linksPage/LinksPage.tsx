@@ -12,41 +12,42 @@ import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import stopTourAutostart from "../../services/stopTourAutostart";
 
+import { runningOnWebRenderer } from "../../helpers/utils";
+
 export type Props = {
   furtherUrl: string
-  isOnWebUi: boolean;
   pythonDocsUrl: string;
 };
 
-export default ({ furtherUrl, isOnWebUi, pythonDocsUrl  }: Props) => {
+export default ({ furtherUrl, pythonDocsUrl  }: Props) => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const [isOpeningPythonDocs, setIsOpeningPythonDocs] = useState(false);
   const [isOpeningFurther, setIsOpeningFurther] = useState(false);
   const [isOpeningKnowledgeBase, setIsOpeningKnowledgeBase] = useState(false);
 
   const goToFurther = () => {
-    if (isOnWebUi) {
+    if (runningOnWebRenderer()) {
       openFurther();
       setIsOpeningFurther(true);
-      window.setTimeout(() => setIsOpeningFurther(false), 8000);
+      window.setTimeout(() => setIsOpeningFurther(false), 10000);
     } else {
       window.open(furtherUrl);
     }
   }
   const goToPythonSDKDocs = () => {
-    if (isOnWebUi) {
+    if (runningOnWebRenderer()) {
       openPythonSDKDocs();
       setIsOpeningPythonDocs(true);
-      window.setTimeout(() => setIsOpeningPythonDocs(false), 8000);
+      window.setTimeout(() => setIsOpeningPythonDocs(false), 10000);
     } else {
       window.open(pythonDocsUrl);
     }
   }
   const goToKB = () => {
-    if (isOnWebUi) {
+    if (runningOnWebRenderer()) {
       openKnowledgeBase();
       setIsOpeningKnowledgeBase(true);
-      window.setTimeout(() => setIsOpeningKnowledgeBase(false), 8000);
+      window.setTimeout(() => setIsOpeningKnowledgeBase(false), 10000);
     } else {
       window.open(kbUrl);
     }
@@ -70,7 +71,7 @@ export default ({ furtherUrl, isOnWebUi, pythonDocsUrl  }: Props) => {
             .then(() => closePtBrowser())
           },
         label: 'Exit',
-        hidden: ! isOnWebUi
+        hidden: ! runningOnWebRenderer()
       }}
       className={styles.root}
     >

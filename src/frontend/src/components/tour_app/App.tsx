@@ -11,6 +11,9 @@ import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import getFurtherUrl from "../../services/getFurtherUrl";
 import getBuildInfo from "../../services/getBuildInfo";
 
+import { runningOnWebRenderer } from "../../helpers/utils";
+
+
 import { BuildInfo } from "../../types/Build";
 import { PageRoute } from "../../types/Page";
 
@@ -18,12 +21,11 @@ export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
   const [docsUrl, setDocsUrl] = useState("https://docs.pi-top.com");
   const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
-  const [isOnWebUi, setIsOnWebUi] = useState(false);
 
   const updateSDKUrl = () => {
     getPythonSDKDocsUrl()
       .then((url_data) => {
-        if (isOnWebUi || url_data.url.startsWith("http")) {
+        if (runningOnWebRenderer() || url_data.url.startsWith("http")) {
             setDocsUrl(url_data.url);
         }
       })
@@ -36,12 +38,8 @@ export default () => {
       .catch(() => null) // will use default url
   };
 
-  const readUserAgent = () => {
-    setIsOnWebUi(window.navigator.userAgent === "web-renderer");
-  }
-
   useEffect(() => {
-    Promise.all([updateSDKUrl(), updateFurtherUrl(), readUserAgent()]);
+    Promise.all([updateSDKUrl(), updateFurtherUrl()]);
   }, []);
 
   useEffect(() => {
@@ -65,7 +63,6 @@ export default () => {
           exact
           path={PageRoute.Links}
           render={() => (<LinksPage
-                            isOnWebUi={isOnWebUi}
                             pythonDocsUrl={docsUrl}
                             furtherUrl={furtherUrl}
                         />)}
