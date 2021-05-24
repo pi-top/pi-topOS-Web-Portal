@@ -7,6 +7,8 @@ import {
   RenderResult,
   wait,
   fireEvent,
+  getByLabelText,
+  waitForElement,
 } from "@testing-library/react";
 
 import RestartPageContainer, { Props } from "../RestartPageContainer";
@@ -24,6 +26,8 @@ import markEulaAgreed from "../../../services/markEulaAgreed";
 import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
+import serverStatus from "../../../services/serverStatus";
+
 import { act } from "react-dom/test-utils";
 
 jest.mock("../../../services/configureTour");
@@ -38,6 +42,8 @@ jest.mock("../../../services/markEulaAgreed");
 jest.mock("../../../services/stopOnboardingAutostart");
 jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
+jest.mock("../../../services/serverStatus");
+
 
 const configureTourMock = configureTour as jest.Mock;
 const deprioritiseOpenboxSessionMock = deprioritiseOpenboxSession as jest.Mock;
@@ -51,6 +57,8 @@ const markEulaAgreedMock = markEulaAgreed as jest.Mock;
 const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
+const serverStatusMock = serverStatus as jest.Mock;
+
 
 const mockServices = [
   configureTourMock,
@@ -67,6 +75,7 @@ const mockServices = [
   rebootMock,
 ];
 
+
 const resolveMocks = (mocks: jest.Mock[] = mockServices) => {
   mocks.forEach((mock) => {
     mock.mockResolvedValue("OK");
@@ -79,6 +88,21 @@ const rejectMocks = (mocks: jest.Mock[] = mockServices) => {
   });
 };
 
+let mockUserAgent = "web-renderer";
+Object.defineProperty(global.navigator, "userAgent", {
+  get() {
+    return mockUserAgent;
+  },
+});
+
+
+jest.mock('react-router-dom', () => ({
+  useHistory: () => ({
+    push: jest.fn(),
+  }),
+}));
+
+
 describe("RestartPageContainer", () => {
   let defaultProps: Props;
   let restartPageContainer: HTMLElement;
@@ -87,7 +111,8 @@ describe("RestartPageContainer", () => {
   let rerender: RenderResult["rerender"];
   beforeEach(async () => {
     resolveMocks();
-
+    serverStatusMock.mockResolvedValue("OK");
+    mockUserAgent = "web-renderer";
     defaultProps = {};
 
     ({
@@ -318,6 +343,43 @@ describe("RestartPageContainer", () => {
       it('stops rendering progress', () => {
         expect(restartPageContainer.querySelector('.progress')).not.toBeInTheDocument();
       })
+    });
+
+    describe('after reboot call when running through an external browser', () => {
+      beforeEach(async () => {
+        jest.useFakeTimers();
+        mockUserAgent = "not-web-renderer";
+        serverStatusMock.mockResolvedValue("OK");
+        fireEvent.click(getByText("Restart"));
+        await wait();
+      });
+
+      it('displays a wait message', async () => {
+        expect(getByText("Rebooting device, please wait until the unit is back online...")).toBeInTheDocument();
+        await act(async () => {
+          jest.runOnlyPendingTimers();
+          await Promise.resolve();
+        });
+      });
+
+      it('starts querying device to learn if its back online', async () => {
+        await act(async () => {
+          jest.runOnlyPendingTimers();
+          await Promise.resolve();
+        });
+        expect(serverStatusMock).toHaveBeenCalled();
+      });
+
+      describe('when the device is back online', () => {
+        it('updates the displayed message', async () => {
+          await act(async () => {
+            jest.runOnlyPendingTimers();
+            jest.runOnlyPendingTimers();
+            await Promise.resolve();
+          });
+          expect(getByText("The device is back online!")).toBeInTheDocument()
+        });
+      });
     });
   });
 });

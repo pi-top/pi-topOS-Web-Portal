@@ -471,3 +471,9 @@ def post_open_knowledge_base():
 def get_about_device():
     PTLogger.debug("Route '/about-device'")
     return jdumps(device_data())
+
+
+@app.route('/status', methods=['GET'])
+def get_status():
+    PTLogger.debug("Route '/status'")
+    return "OK"
