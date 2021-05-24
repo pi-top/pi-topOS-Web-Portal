@@ -66,7 +66,8 @@ export default ({
         await serverStatus({ timeout: 1250 });
         setProgressMessage("The device is back online!");
         clearInterval(interval);
-        history.push('/');
+        history.push("/");
+        window.location.reload()
       } catch (_) {}
     }, 1500);
   }
