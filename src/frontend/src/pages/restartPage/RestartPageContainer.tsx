@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useHistory } from 'react-router-dom';
 
 import RestartPage from "./RestartPage";
 
@@ -14,7 +15,7 @@ import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
-import getBuildInfo from "../../services/getBuildInfo"
+import serverStatus from "../../services/serverStatus"
 
 const maxProgress = 9; // this is the number of services for setting up
 
@@ -35,6 +36,7 @@ export default ({
   globalError = false,
   goToPreviousPage,
 }: Props) => {
+  const history = useHistory()
   const [isSettingUpDevice, setIsSettingUpDevice] = useState(false);
   const [rebootError, setRebootError] = useState(false);
   const [progressMessage, setProgressMessage] = useState(
@@ -59,14 +61,14 @@ export default ({
   }
 
   function waitUntilServerIsOnline() {
-      getBuildInfo()
-        .then(() => {
-          setProgressMessage("The device is back online!");
-          window.location.href = "/";
-        })
-        .catch(() => {
-          window.setTimeout(waitUntilServerIsOnline, 1500);
-        })
+    const interval = setInterval(async () => {
+      try {
+        await serverStatus({ timeout: 1250 });
+        setProgressMessage("The device is back online!");
+        clearInterval(interval);
+        history.push('/');
+      } catch (_) {}
+    }, 1500);
   }
 
   return (
