@@ -17,6 +17,8 @@ import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 
+import { runningOnWebRenderer } from "../../helpers/utils";
+
 const maxProgress = 9; // this is the number of services for setting up
 
 const calculatePercentageProgress = (progress: number, maxProgress: number) => {
@@ -151,7 +153,7 @@ export default ({
           .finally(() => {
             reboot()
               .then(() => {
-                if (window.navigator.userAgent !== "web-renderer") {
+                if (!runningOnWebRenderer()) {
                   setProgressMessage("Rebooting device, please wait until the unit is back online...")
                   window.setTimeout(waitUntilServerIsOnline, 3000);
                 }
