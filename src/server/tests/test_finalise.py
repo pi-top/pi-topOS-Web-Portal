@@ -149,14 +149,10 @@ def test_mark_eula_agreed_success(app):
 
 
 def test_reboot_success(app, mocker):
-    environ_mock = mocker.patch('backend.helpers.command_runner.environ')
-    environ_mock.copy = dict
-    run_mock = mocker.patch('backend.helpers.command_runner.run',
-                            return_value=dotdict({'stdout': b'', 'stderr': b'', 'returncode': 0}))
+    run_mock = mocker.patch('backend.helpers.finalise.run_command_background', return_value=0)
 
     response = app.post('/reboot')
-    run_mock.assert_called_once_with(['nice', '-n', '10', 'reboot'], capture_output=True, check=True,
-                                     env={'DISPLAY': ':0'}, timeout=30)
+    run_mock.assert_called_once_with('reboot')
     assert response.status_code == 200
     assert response.data == b'OK'
 

@@ -115,7 +115,7 @@ def unhide_all_boot_messages() -> None:
 
 def reboot() -> None:
     PTLogger.info("Function: reboot()")
-    run_command("reboot", timeout=30, lower_priority=True)
+    run_command_background("reboot")
 
 
 def enable_pt_sys_oled():

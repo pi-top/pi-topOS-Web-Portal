@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from 'react-router-dom';
 
 import RestartPage from "./RestartPage";
 
@@ -14,6 +15,7 @@ import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
+import serverStatus from "../../services/serverStatus"
 
 const maxProgress = 9; // this is the number of services for setting up
 
@@ -34,12 +36,14 @@ export default ({
   globalError = false,
   goToPreviousPage,
 }: Props) => {
+  const history = useHistory()
   const [isSettingUpDevice, setIsSettingUpDevice] = useState(false);
   const [rebootError, setRebootError] = useState(false);
   const [progressMessage, setProgressMessage] = useState(
     "Alright let's get started!"
   );
   const [progress, setProgress] = useState(0);
+
 
   function safelyRunService(service: () => Promise<void>, message: string) {
     return service()
@@ -54,6 +58,18 @@ export default ({
           Math.min(currentProgess + 1, maxProgress)
         );
       });
+  }
+
+  function waitUntilServerIsOnline() {
+    const interval = setInterval(async () => {
+      try {
+        await serverStatus({ timeout: 1250 });
+        setProgressMessage("The device is back online!");
+        clearInterval(interval);
+        history.push("/");
+        window.location.reload()
+      } catch (_) {}
+    }, 1500);
   }
 
   return (
@@ -132,12 +148,19 @@ export default ({
             )
           )
           .catch(console.error)
-          .finally(() =>
-            reboot().catch(() => {
-              setRebootError(true);
-              setIsSettingUpDevice(false);
-            })
-          );
+          .finally(() => {
+            reboot()
+              .then(() => {
+                if (window.navigator.userAgent !== "web-renderer") {
+                  setProgressMessage("Rebooting device, please wait until the unit is back online...")
+                  window.setTimeout(waitUntilServerIsOnline, 3000);
+                }
+              })
+              .catch(() => {
+                setRebootError(true);
+                setIsSettingUpDevice(false);
+              })
+            });
       }}
     />
   );
