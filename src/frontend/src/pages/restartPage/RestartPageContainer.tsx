@@ -41,15 +41,7 @@ export default ({
     "Alright let's get started!"
   );
   const [progress, setProgress] = useState(0);
-  const [isOnWebUi, setIsOnWebUi] = useState(false);
 
-  const getBrowserData = () => {
-    setIsOnWebUi(window.navigator.userAgent === "web-renderer");
-  }
-
-  useEffect(() => {
-    Promise.all([getBrowserData()]);
-  }, []);
 
   function safelyRunService(service: () => Promise<void>, message: string) {
     return service()
@@ -156,7 +148,7 @@ export default ({
           .finally(() => {
             reboot()
               .then(() => {
-                if (!isOnWebUi) {
+                if (window.navigator.userAgent !== "web-renderer") {
                   setProgressMessage("Rebooting device, please wait until the unit is back online...")
                   window.setTimeout(waitUntilServerIsOnline, 3000);
                 }

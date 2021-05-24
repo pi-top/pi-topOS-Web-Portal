@@ -88,7 +88,7 @@ const rejectMocks = (mocks: jest.Mock[] = mockServices) => {
   });
 };
 
-let mockUserAgent = "not-web-renderer";
+let mockUserAgent = "web-renderer";
 Object.defineProperty(global.navigator, "userAgent", {
   get() {
     return mockUserAgent;
@@ -105,7 +105,7 @@ describe("RestartPageContainer", () => {
   beforeEach(async () => {
     resolveMocks();
     getBuildInfoMock.mockResolvedValue("OK");
-    mockUserAgent = "not-web-renderer";
+    mockUserAgent = "web-renderer";
     defaultProps = {};
 
     ({
@@ -338,10 +338,10 @@ describe("RestartPageContainer", () => {
       })
     });
 
-    describe('after reboot call when using web-renderer', () => {
+    describe('after reboot call when running through an external browser', () => {
       beforeEach(async () => {
         jest.useFakeTimers();
-        mockUserAgent = "web-renderer";
+        mockUserAgent = "not-web-renderer";
         getBuildInfoMock.mockResolvedValue("OK");
         fireEvent.click(getByText("Restart"));
         await wait();
@@ -366,7 +366,6 @@ describe("RestartPageContainer", () => {
       describe('when the device is back online', () => {
         beforeEach(async () => {
           jest.useFakeTimers();
-          mockUserAgent = "web-renderer";
           getBuildInfoMock.mockResolvedValue("OK");
           fireEvent.click(getByText("Restart"));
           await wait();
