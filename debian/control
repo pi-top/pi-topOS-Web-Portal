@@ -19,6 +19,8 @@ Depends:
  fonts-roboto-unhinted,
 # Needed for 'nice' command
  coreutils (>= 8.0),
+# Required for 'pt-notify-send', handled by common lib
+ pt-notifications,
  python3-flask,
  python3-flask-cors,
  python3-flask-sockets,
