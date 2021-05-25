@@ -49,16 +49,19 @@ def get_pid_using_port(port_number: int) -> list:
 
 
 def display_unavailable_port_notification() -> None:
-    pids_using_port = get_pid_using_port(80)
+    pids_using_port = " ".join(get_pid_using_port(80))
     open_kb_command = "'chromium-browser --new-window --start-maximized https://knowledgebase.pi-top.com'"
+    kill_cmd = f"env SUDO_ASKPASS=/usr/lib/pt-web-portal/pwdptwp.sh sudo -A kill -9 {pids_using_port}"
 
     action_manager = NotificationActionManager()
+    action_manager.add_action(call_to_action_text=f"Kill PID {pids_using_port} & Restart", command_str=kill_cmd)
+    action_manager.add_action(call_to_action_text="Retry", command_str="true")
     action_manager.add_action(call_to_action_text="Find out more", command_str=open_kb_command)
     action_manager.set_close_action(command_str=open_kb_command)
 
     send_notification(
         title="Error - pi-top web portal",
-        text=f"Server cannot be started, port 80 is already in use by another process (PID {' '.join(pids_using_port)}).\n"
+        text=f"Server cannot be started, port 80 is already in use by another process (PID {pids_using_port}).\n"
              "Make sure no other server software is configured to use this port and try again.",
         icon_name="messagebox_critical",
         timeout=0,
