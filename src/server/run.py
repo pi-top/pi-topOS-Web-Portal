@@ -49,18 +49,16 @@ def display_unavailable_port_notification() -> None:
         return
 
     open_kb_command = "chromium-browser --new-window --start-maximized https://knowledgebase.pi-top.com"
-    action_str = f"touch {USER_ACKNOWLEDGED_NOTIFICATION_BREADCRUMB} && {open_kb_command}"
+    action_str = f"touch {USER_ACKNOWLEDGED_NOTIFICATION_BREADCRUMB} && '{open_kb_command}'"
 
     action_manager = NotificationActionManager()
-    action_manager.add_action(
-        call_to_action_text="Open",
-        command_str=action_str)
+    action_manager.add_action(call_to_action_text="Find out more", command_str=action_str)
+    action_manager.set_close_action(command_str=action_str)
 
     send_notification(
-        title="Error starting pt-web-portal",
-        text="Port 80 is in use by another application but it's required to start pt-web-portal,\n"
-        "please go to our Knowledge Base article to learn about why it's necessary and\n"
-        "read about possible solutions to this issue.",
+        title="Error - pi-top web portal",
+        text="pi-top web portal server cannot be started. Port 80 is already in use.\n"
+             "Make sure no other server software is configured to use this port and try again.",
         icon_name="messagebox_critical",
         timeout=0,
         actions_manager=action_manager,
