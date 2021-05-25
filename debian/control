@@ -15,10 +15,12 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
  ${shlibs:Depends},
-# "Roboto" font used in web app
- fonts-roboto-unhinted,
 # Needed for 'nice' command
  coreutils (>= 8.0),
+# "Roboto" font used in web app
+ fonts-roboto-unhinted,
+# To determine process using port 80
+ lsof,
 # Required for 'pt-notify-send', handled by common lib
  pt-notifications,
  python3-flask,

@@ -9,6 +9,7 @@ from geventwebsocket.handler import WebSocketHandler
 
 from pitopcommon.logger import PTLogger
 from pitopcommon.notifications import send_notification, NotificationActionManager
+from pitopcommon.command_runner import run_command
 
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
@@ -41,6 +42,13 @@ def is_root() -> bool:
     return geteuid() == 0
 
 
+def get_pid_using_port(port_number: int) -> list:
+    try:
+        return run_command(f"lsof -ti :{port_number}", timeout=10, log_errors=False).split()
+    except Exception:
+        return list()
+
+
 def display_unavailable_port_notification() -> None:
     USER_ACKNOWLEDGED_NOTIFICATION_BREADCRUMB = "/tmp/pt-web-portal.port-in-use.breadcrumb"
 
@@ -48,8 +56,9 @@ def display_unavailable_port_notification() -> None:
         PTLogger.debug("User already acknowledged the notification this session, skipping.")
         return
 
+    pids_using_port = get_pid_using_port(80)
     open_kb_command = "chromium-browser --new-window --start-maximized https://knowledgebase.pi-top.com"
-    action_str = f"touch {USER_ACKNOWLEDGED_NOTIFICATION_BREADCRUMB} && '{open_kb_command}'"
+    action_str = f"'touch {USER_ACKNOWLEDGED_NOTIFICATION_BREADCRUMB} && {open_kb_command}'"
 
     action_manager = NotificationActionManager()
     action_manager.add_action(call_to_action_text="Find out more", command_str=action_str)
@@ -57,7 +66,7 @@ def display_unavailable_port_notification() -> None:
 
     send_notification(
         title="Error - pi-top web portal",
-        text="pi-top web portal server cannot be started. Port 80 is already in use.\n"
+        text=f"pi-top web portal server cannot be started. Port 80 is already in use by PID {' '.join(pids_using_port)}. "
              "Make sure no other server software is configured to use this port and try again.",
         icon_name="messagebox_critical",
         timeout=0,
