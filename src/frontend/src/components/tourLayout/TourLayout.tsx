@@ -26,7 +26,7 @@ export type Props = {
   explanation?: ReactNode;
   children?: ReactNode;
   className?: string;
-  isLoadingBanner: boolean;
+  isLoadingBanner?: boolean;
 };
 
 export default ({

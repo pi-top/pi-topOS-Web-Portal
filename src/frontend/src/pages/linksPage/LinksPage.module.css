@@ -21,7 +21,7 @@
 }
 
 .linkButton:disabled {
-  color: var(--green40);
+  color: #636363;
 }
 
 .message {
@@ -42,4 +42,9 @@
 .furtherButton:hover:enabled {
   color: var(--white);
   background-color: var(--green);
+}
+
+.furtherButton:disabled {
+  color: #ccefec;
+  background-color: var(--white);
 }
