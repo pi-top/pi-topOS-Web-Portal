@@ -38,3 +38,8 @@
   color: var(--green);
   background-color: var(--white);
 }
+
+.furtherButton:hover:enabled {
+  color: var(--white);
+  background-color: var(--green);
+}
