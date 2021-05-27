@@ -53,6 +53,7 @@ from .helpers.tour import (
     open_further,
     onboarding_completed,
     close_pt_browser,
+    open_forum,
     open_knowledge_base,
     open_python_sdk_docs,
     python_sdk_docs_url,
@@ -464,6 +465,13 @@ def post_open_python_sdk_docs():
 def post_open_knowledge_base():
     PTLogger.debug("Route '/open-knowledge-base'")
     open_knowledge_base()
+    return "OK"
+
+
+@app.route('/open-forum', methods=['POST'])
+def post_open_forum():
+    PTLogger.debug("Route '/open-forum'")
+    open_forum()
     return "OK"
 
 

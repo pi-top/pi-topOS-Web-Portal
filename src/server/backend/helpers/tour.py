@@ -87,5 +87,10 @@ def open_knowledge_base():
     run_command_background(get_chromium_command("https://knowledgebase.pi-top.com"))
 
 
+def open_forum():
+    PTLogger.info("Function: open_forum()")
+    run_command_background(get_chromium_command("https://forum.pi-top.com"))
+
+
 def get_chromium_command(url):
     return f"su {get_user_using_display(':0')} -c \"chromium-browser --new-window --start-maximized {url}\""

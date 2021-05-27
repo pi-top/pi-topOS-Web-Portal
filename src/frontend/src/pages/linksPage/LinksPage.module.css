@@ -10,23 +10,31 @@
   position: relative;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .linkButton {
-  color: var(--green);
-  margin: auto;
-  height: 50px;
-  position: relative;
+  color: var(--black);
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .linkButton:disabled {
   color: var(--green40);
 }
 
+.message {
+  font-size: 12px;
+  composes: text from '../../globalStyles/Typography.module.css';
+  margin: 40px 0 10px 0;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  text-align: center
+}
 
-.spinnerSpan {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  height: 50px;
-  left: calc(100% + 20px);
-  top: 0;
+.furtherButton {
+  color: var(--green);
+  background-color: var(--white);
 }
