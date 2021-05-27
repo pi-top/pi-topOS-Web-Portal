@@ -89,8 +89,7 @@ export default ({ furtherUrl, pythonDocsUrl  }: Props) => {
       nextButton={{
         onClick: () => {
           goToFurther();
-          runningOnWebRenderer() && stopTourAutostart()
-            .then(() => closePtBrowser())
+          runningOnWebRenderer() && stopTourAutostart().then(() => window.setTimeout(closePtBrowser, 8000))
           },
         label: 'Go to Further',
         disabled: isOpeningFurther,
