@@ -18,6 +18,10 @@
   color: var(--black);
   font-weight: bold;
   font-size: 12px;
+  background: transparent url('../../assets/images/link-button-background.svg') 0% 0% no-repeat padding-box;
+  background-position: bottom;
+  background-repeat: repeat-x;
+  border-bottom: 2px solid #00AD9F;
 }
 
 .linkButton:disabled {
