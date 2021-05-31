@@ -2,6 +2,7 @@ import React from "react";
 import { Line as ProgressBar } from "rc-progress";
 
 import Layout from "../../components/layout/Layout";
+import Spinner from "../../components/atoms/spinner/Spinner";
 
 import rebootScreen from "../../assets/images/reboot-screen.png";
 import styles from "./RestartPage.module.css";
@@ -11,7 +12,14 @@ export enum ErrorMessage {
   RebootError = "I can't get to sleep! Please hold my power button down - that always makes me sleepy"
 }
 
+export enum ServerStatusMessages {
+  Waiting = "Rebooting device, please wait until the unit is back online...",
+  Online = "The device is back online!"
+}
+
 export type Props = {
+  isWaitingForServer: boolean
+  serverRebooted: boolean
   globalError: boolean;
   isSettingUpDevice: boolean;
   rebootError: boolean;
@@ -22,6 +30,8 @@ export type Props = {
 };
 
 export default ({
+  isWaitingForServer,
+  serverRebooted,
   globalError,
   isSettingUpDevice,
   rebootError,
@@ -54,14 +64,16 @@ export default ({
       nextButton={{
         onClick: setupDevice,
         label: "Restart",
-        disabled: isSettingUpDevice || rebootError,
+        disabled: isSettingUpDevice || rebootError || isWaitingForServer,
+        hidden: isWaitingForServer || serverRebooted
       }}
       backButton={
         (globalError || !onBackClick)
           ? undefined
           : {
               onClick: onBackClick,
-              disabled: isSettingUpDevice,
+              disabled: isSettingUpDevice || isWaitingForServer,
+              hidden: isWaitingForServer || serverRebooted
             }
       }
       className={styles.root}
@@ -75,6 +87,14 @@ export default ({
           />
           <span className={styles.message}>{progressMessage}</span>
         </div>
+      )}
+      {isWaitingForServer ? (
+        <>
+          <span className={styles.message}>{ServerStatusMessages.Waiting}</span>
+          <Spinner size={40} />{" "}
+        </>
+      ):(
+        serverRebooted && <span className={styles.message}>{ServerStatusMessages.Online}</span>
       )}
 
       {errorMessage && <span className={styles.error}>{errorMessage}</span>}
