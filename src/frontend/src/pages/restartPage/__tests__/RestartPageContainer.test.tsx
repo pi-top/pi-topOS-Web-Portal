@@ -13,6 +13,7 @@ import {
 
 import RestartPageContainer, { Props } from "../RestartPageContainer";
 import { ErrorMessage } from "../RestartPage";
+import querySpinner from "../../../../test/helpers/querySpinner";
 
 import configureTour from "../../../services/configureTour";
 import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSession";
@@ -370,6 +371,14 @@ describe("RestartPageContainer", () => {
         expect(serverStatusMock).toHaveBeenCalled();
       });
 
+      it('renders a spinner', async () => {
+        await act(async () => {
+          jest.runOnlyPendingTimers();
+          await Promise.resolve();
+        });
+        expect(querySpinner(restartPageContainer)).toBeInTheDocument();
+      });
+
       describe('when the device is back online', () => {
         it('updates the displayed message', async () => {
           await act(async () => {
@@ -378,6 +387,15 @@ describe("RestartPageContainer", () => {
             await Promise.resolve();
           });
           expect(getByText("The device is back online!")).toBeInTheDocument()
+        });
+
+        it('doesn\'t render a spinner', async () => {
+          await act(async () => {
+            jest.runOnlyPendingTimers();
+            jest.runOnlyPendingTimers();
+            await Promise.resolve();
+          });
+          expect(querySpinner(restartPageContainer)).not.toBeInTheDocument();
         });
       });
     });
