@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import linkScreenCenter from "../../assets/images/tour-links-screen.svg";
 import linkScreenSquare from "../../assets/images/tour-links-square.svg";
@@ -13,17 +13,18 @@ import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openForum from "../../services/openForum";
 import stopTourAutostart from "../../services/stopTourAutostart";
+import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
+import getFurtherUrl from "../../services/getFurtherUrl";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
-export type Props = {
-  furtherUrl: string
-  pythonDocsUrl: string;
-};
+export type Props = { };
 
-export default ({ furtherUrl, pythonDocsUrl  }: Props) => {
+export default ({ }: Props) => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const forumUrl = "https://forum.pi-top.com";
+  const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com");
+  const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
   const [isOpeningLink, setIsOpeningLink] = useState(false);
 
   const serviceMap = new Map<string, any>();
@@ -46,6 +47,26 @@ export default ({ furtherUrl, pythonDocsUrl  }: Props) => {
   const openLink = (link: string) => {
     runningOnWebRenderer() ? openLinkInDevice(link) : window.open(link);
   }
+
+  const updateSDKUrl = () => {
+    getPythonSDKDocsUrl()
+      .then((url_data) => {
+        if (runningOnWebRenderer() || url_data.url.startsWith("http")) {
+            setPythonDocsUrl(url_data.url);
+        }
+      })
+      .catch(() => null) // will use default url
+  };
+
+  const updateFurtherUrl = () => {
+    getFurtherUrl()
+      .then((url_data) => setFurtherUrl(url_data.url))
+      .catch(() => null) // will use default url
+  };
+
+  useEffect(() => {
+    Promise.all([updateSDKUrl(), updateFurtherUrl()]);
+  }, []);
 
   return (
     <TourLayout
