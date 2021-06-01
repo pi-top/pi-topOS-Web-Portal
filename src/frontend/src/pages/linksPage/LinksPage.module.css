@@ -31,11 +31,10 @@
 .message {
   font-size: 12px;
   composes: text from '../../globalStyles/Typography.module.css';
-  margin: 40px 0 10px 0;
   overflow: hidden;
   display: block;
   width: 100%;
-  text-align: center
+  text-align: center;
 }
 
 .furtherButton {

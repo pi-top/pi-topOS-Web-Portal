@@ -78,12 +78,10 @@ export default ({ furtherUrl, pythonDocsUrl  }: Props) => {
       }}
       className={styles.root}
     >
-      <span className={styles.message}>
-        If you know what you want to make, checkout our <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(pythonDocsUrl)}> Python SDK</Button>.
-      </span>
-      <span className={styles.message}>
-        Have some questions? Go to <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(kbUrl)}> Knowledge Base </Button> or connect with our community on our   <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(forumUrl)}> Forum </Button>
-      </span>
+      <div className={styles.message}>
+        <p>If you know what you want to make, checkout our <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(pythonDocsUrl)}> Python SDK</Button>.</p>
+        <p>Have some questions? Go to <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(kbUrl)}> Knowledge Base </Button> or connect with our community on our   <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(forumUrl)}> Forum </Button></p>
+      </div>
 
     </TourLayout>
   );
