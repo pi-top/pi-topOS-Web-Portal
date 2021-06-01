@@ -10,23 +10,44 @@
   position: relative;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .linkButton {
-  color: var(--green);
-  margin: auto;
-  height: 50px;
-  position: relative;
+  color: var(--black);
+  font-weight: bold;
+  font-size: 12px;
+  background: transparent url('../../assets/images/link-button-background.svg') 0% 0% no-repeat padding-box;
+  background-position: bottom;
+  background-repeat: repeat-x;
+  border-bottom: 2px solid #00AD9F;
 }
 
 .linkButton:disabled {
-  color: var(--green40);
+  color: #636363;
 }
 
+.message {
+  font-size: 12px;
+  composes: text from '../../globalStyles/Typography.module.css';
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
 
-.spinnerSpan {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  height: 50px;
-  left: calc(100% + 20px);
-  top: 0;
+.furtherButton {
+  color: var(--green);
+  background-color: var(--white);
+}
+
+.furtherButton:hover:enabled {
+  color: var(--white);
+  background-color: var(--green);
+}
+
+.furtherButton:disabled {
+  color: #ccefec;
+  background-color: var(--white);
 }
