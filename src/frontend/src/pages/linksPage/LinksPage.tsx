@@ -18,9 +18,8 @@ import getFurtherUrl from "../../services/getFurtherUrl";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
-export type Props = { };
 
-export default ({ }: Props) => {
+export default () => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const forumUrl = "https://forum.pi-top.com";
   const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com");
