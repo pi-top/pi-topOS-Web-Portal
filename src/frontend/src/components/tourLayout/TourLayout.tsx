@@ -21,7 +21,6 @@ export type Props = {
   };
   prompt: ReactNode;
   nextButton: LayoutButtonProps;
-  isLoading?: boolean;
   title?: ReactNode;
   explanation?: ReactNode;
   children?: ReactNode;
@@ -38,7 +37,6 @@ export default ({
   explanation,
   children,
   className,
-  isLoading,
   isLoadingBanner,
 }: Props) => (
   <div className={cx(styles.layout, className)}>
@@ -72,28 +70,22 @@ export default ({
       ) : (
         <>
         <h2 className={styles.bannerTitle}>{title}</h2>
-        <div className={styles.explanationDiv}><span className={styles.explanation}>{explanation}</span></div>
+        <div className={styles.explanationDiv}>
+          <span className={styles.explanation}>{explanation}</span>
+        </div>
         </>
       )}
     </div>
 
-
-
     <div className={styles.content}>
-      <div className={styles.children}>
-        {children}
-      </div>
+      <div className={styles.children}>{children}</div>
 
       <div className={styles.spacer} />
 
       <div className={styles.buttons}>
-        {isLoading ? (
-          <Spinner size={60} />
-        ) : (
-          <Button {...nextButton}>
-            {nextButton.label ? nextButton.label : "Next"}
-          </Button>
-        )}
+        <Button {...nextButton}>
+          {nextButton.label ? nextButton.label : "Next"}
+        </Button>
       </div>
 
     </div>

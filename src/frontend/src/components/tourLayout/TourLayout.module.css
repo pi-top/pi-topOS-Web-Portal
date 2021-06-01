@@ -36,6 +36,7 @@
   flex: 1 1;
 
   max-width: 389px;
+  width: 100%;
 
   align-items: center;
   margin: 0 auto;
@@ -101,7 +102,6 @@
   width: 100%;
   overflow: hidden;
 }
-
 
 .content {
   flex: 1;
