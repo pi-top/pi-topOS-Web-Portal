@@ -70,6 +70,7 @@ export default ({ }: Props) => {
 
   return (
     <TourLayout
+      onCloseButton={() => stopTourAutostart().then(() => closePtBrowser())}
       isLoadingBanner={isOpeningLink}
       banner={{
         src_banner: linkScreenCenter,

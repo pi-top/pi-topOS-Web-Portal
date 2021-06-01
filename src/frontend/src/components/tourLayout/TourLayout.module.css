@@ -131,3 +131,22 @@
   display: flex;
   justify-content: center;
 }
+
+.closeButton {
+  position: fixed;
+  top: 0;
+  right: 0;
+  composes: text from '../../globalStyles/Typography.module.css';
+  font-size: 20px;
+  text-align: end;
+  background-color: white;
+  color: #505050;
+  min-width: auto;
+  border: 0px;
+  font-weight: normal;
+}
+
+.closeButton:hover:enabled {
+  background-color: white;
+  color: #00AD9F;
+}

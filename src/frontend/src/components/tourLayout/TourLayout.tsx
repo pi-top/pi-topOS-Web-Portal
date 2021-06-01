@@ -6,6 +6,8 @@ import Spinner from "../atoms/spinner/Spinner";
 import styles from "./TourLayout.module.css";
 import Image from "../atoms/image/Image";
 
+import { runningOnWebRenderer } from "../../helpers/utils";
+
 type LayoutButtonProps = Omit<ButtonProps, "children"> & {
   label?: string;
 };
@@ -26,6 +28,7 @@ export type Props = {
   children?: ReactNode;
   className?: string;
   isLoadingBanner?: boolean;
+  onCloseButton: () => void;
 };
 
 export default ({
@@ -38,8 +41,12 @@ export default ({
   children,
   className,
   isLoadingBanner,
+  onCloseButton,
 }: Props) => (
   <div className={cx(styles.layout, className)}>
+
+    {runningOnWebRenderer() && <Button className={styles.closeButton} onClick={onCloseButton}>X</Button>}
+
     <div className={styles.header}>
       <h1 className={styles.prompt}>{prompt}</h1>
     </div>
