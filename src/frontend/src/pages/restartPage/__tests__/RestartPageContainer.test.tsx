@@ -28,6 +28,7 @@ import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
 import serverStatus from "../../../services/serverStatus";
+import updateEeprom from "../../../services/updateEeprom";
 
 import { act } from "react-dom/test-utils";
 
@@ -44,6 +45,7 @@ jest.mock("../../../services/stopOnboardingAutostart");
 jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/serverStatus");
+jest.mock("../../../services/updateEeprom");
 
 
 const configureTourMock = configureTour as jest.Mock;
@@ -59,6 +61,7 @@ const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
+const updateEepromMock = updateEeprom as jest.Mock;
 
 
 const mockServices = [
@@ -73,6 +76,7 @@ const mockServices = [
   markEulaAgreedMock,
   stopOnboardingAutostartMock,
   updateMimeDatabaseMock,
+  updateEepromMock,
   rebootMock,
 ];
 
@@ -311,6 +315,22 @@ describe("RestartPageContainer", () => {
     describe('when update mime database fails', () => {
       beforeEach(() => {
         updateMimeDatabaseMock.mockRejectedValue(new Error());
+      });
+
+      it('calls remaining services', async () => {
+        fireEvent.click(getByText("Restart"));
+
+        await wait();
+
+        mockServices.forEach((mock) => {
+          expect(mock).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('when update EEPROM fails', () => {
+      beforeEach(() => {
+        updateEepromMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {
