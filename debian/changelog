@@ -1,3 +1,11 @@
+pt-web-portal (0.1.13) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Remove tour splash page (#50)
+  * Increase tour font size (#51)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 02 Jun 2021 17:11:28 +0000
+
 pt-web-portal (0.1.12) buster; urgency=medium
 
   * Use online SDK docs URL when accessing tour from browser
