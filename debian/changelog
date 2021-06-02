@@ -1,13 +1,10 @@
 pt-web-portal (0.1.12) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Use online SDK docs when accessing tour from browser
-  * Replace FSMe font with Roboto (#42)
-  * Pass device name and serial on further url (#43)
-  * Redirect to tour after device reboots (#41)
-  * Display spinner while opening links in tour (#44)
-  * Display spinner when device reboots in onboarding (#47)
-  * Update tour page design (#46)
+  * Use online SDK docs URL when accessing tour from browser
+  * Replace FSMe font with Roboto
+  * Provide device information en further URL query string
+  * Redirect to tour after device reboots
+  * Update tour design
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 01 Jun 2021 23:19:12 +0000
 
