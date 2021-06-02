@@ -15,7 +15,7 @@
 .prompt {
   composes: text from '../../globalStyles/Typography.module.css';
   line-height: 1;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
   text-overflow: ellipsis;
@@ -42,7 +42,7 @@
   margin: 0 auto;
 }
 
-@media screen and (max-width:320px) {
+@media screen and (max-width:370px) {
   .bannerCoverImage {
     display: none;
   }
@@ -90,13 +90,13 @@
 }
 
 .explanationDiv {
-  width: 80%;
+  width: 90%;
 }
 
 .explanation {
   composes: text from '../../globalStyles/Typography.module.css';
   color: #636363;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
   display: block;
   width: 100%;
