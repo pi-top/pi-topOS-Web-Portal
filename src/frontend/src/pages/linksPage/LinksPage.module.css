@@ -17,7 +17,7 @@
 .linkButton {
   color: var(--black);
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
   background: transparent url('../../assets/images/link-button-background.svg') 0% 0% no-repeat padding-box;
   background-position: bottom;
   background-repeat: repeat-x;
@@ -29,7 +29,7 @@
 }
 
 .message {
-  font-size: 12px;
+  font-size: 14px;
   composes: text from '../../globalStyles/Typography.module.css';
   overflow: hidden;
   display: block;
