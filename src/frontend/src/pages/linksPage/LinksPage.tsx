@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import linkScreenCenter from "../../assets/images/tour-links-screen.svg";
-import linkScreenSquare from "../../assets/images/tour-links-square.svg";
 
 import styles from "./LinksPage.module.css";
 import TourLayout  from "../../components/tourLayout/TourLayout";
@@ -72,12 +71,8 @@ export default () => {
       onCloseButton={() => !isOpeningLink && stopTourAutostart().then(() => closePtBrowser())}
       isLoadingBanner={isOpeningLink}
       banner={{
-        src_banner: linkScreenCenter,
-        alt_banner: "links-screen-banner"
-      }}
-      bannerCover={{
-        src_cover: linkScreenSquare,
-        alt_cover: "links-screen-square"
+        src: linkScreenCenter,
+        alt: "links-screen-banner"
       }}
       prompt={
         <>What do you want to <span className="green">do next</span>?</>

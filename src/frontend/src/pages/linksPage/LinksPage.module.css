@@ -17,7 +17,7 @@
 .linkButton {
   color: var(--black);
   font-weight: bold;
-  font-size: 14px;
+  font-size: 14pt;
   background: url('../../assets/images/link-button-underline.svg'), url('../../assets/images/link-button-background.svg');
   background-size: auto, auto;
   background-position: bottom, bottom;
@@ -30,7 +30,7 @@
 }
 
 .message {
-  font-size: 14px;
+  font-size: 14pt;
   composes: text from '../../globalStyles/Typography.module.css';
   overflow: hidden;
   display: block;
