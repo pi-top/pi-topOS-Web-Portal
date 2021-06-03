@@ -50,7 +50,7 @@ def get_pid_using_port(port_number: int) -> list:
 
 def display_unavailable_port_notification() -> None:
     pids_using_port = " ".join(get_pid_using_port(80))
-    open_kb_command = "'chromium-browser --new-window --start-maximized https://knowledgebase.pi-top.com'"
+    open_kb_command = "'chromium-browser --new-window --start-maximized https://knowledgebase.pi-top.com/knowledge/pi-topos-port-80'"
     kill_cmd = f"env SUDO_ASKPASS=/usr/lib/pt-web-portal/pwdptwp.sh sudo -A kill -9 {pids_using_port}"
 
     action_manager = NotificationActionManager()
