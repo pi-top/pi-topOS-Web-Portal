@@ -133,17 +133,21 @@
 }
 
 .closeButton {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
-  composes: text from '../../globalStyles/Typography.module.css';
-  font-size: 20px;
-  text-align: end;
   background-color: white;
   color: #505050;
   min-width: auto;
   border: 0px;
-  font-weight: normal;
+  width: 43px;
+}
+
+.closeButtonImg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
 }
 
 .closeButton:hover:enabled {

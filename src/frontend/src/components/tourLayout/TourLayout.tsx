@@ -6,6 +6,8 @@ import Spinner from "../atoms/spinner/Spinner";
 import styles from "./TourLayout.module.css";
 import Image from "../atoms/image/Image";
 
+import closeButton from "../../assets/images/tour-close-button.svg";
+
 import { runningOnWebRenderer } from "../../helpers/utils";
 
 type LayoutButtonProps = Omit<ButtonProps, "children"> & {
@@ -45,7 +47,16 @@ export default ({
 }: Props) => (
   <div className={cx(styles.layout, className)}>
 
-    {runningOnWebRenderer() && <Button className={styles.closeButton} onClick={onCloseButton}>X</Button>}
+    {!runningOnWebRenderer() &&
+      <Button className={styles.closeButton} onClick={onCloseButton}>
+        <Image
+          src={closeButton}
+          alt=""
+          imageScale={1}
+          className={styles.closeButtonImg}
+        />
+      </Button>
+    }
 
     <div className={styles.header}>
       <h1 className={styles.prompt}>{prompt}</h1>
