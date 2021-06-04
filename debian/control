@@ -19,7 +19,7 @@ Depends:
  coreutils (>= 8.0),
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
-# To determine process using port 80
+# Determine process ID using required port
  lsof,
 # Needed to update the EEPROM
  pt-system-tools,
