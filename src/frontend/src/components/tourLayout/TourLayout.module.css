@@ -6,72 +6,53 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items:center;
+}
+
+.layoutBrowser {
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .header {
-  max-height: 25vh;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 10px;
 }
 
 .prompt {
   composes: text from '../../globalStyles/Typography.module.css';
   line-height: 1;
-  font-size: 20px;
+  font-size: 24pt;
   font-weight: bold;
   text-align: center;
   text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: auto;
   width: 100%;
-  padding-top: 15vh;
-  padding-bottom: 20px;
-  margin: 0;
 }
 
 .bannerStack {
-  max-height: var(--bannerHeight, 50vh);
-  position: relative;
+  max-height: 45vh;
+  max-width: 580px;
 
   display: flex;
   flex-direction: column;
   flex: 1 1;
+  justify-content: center;
 
-  max-width: 389px;
-  width: 100%;
-
-  align-items: center;
-  margin: 0 auto;
+  background-image: url("../../assets/images/tour-links-square.svg");
+  background-size:contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow:visible;
 }
 
-@media screen and (max-width:370px) {
-  .bannerCoverImage {
-    display: none;
+@media screen and (max-height:700px), screen and (max-width:700px) {
+  .bannerStack {
+    background-image: none;
   }
-}
-
-.banner {
-  position: relative;
-  display: block;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin-top: 20px;
-}
-
-
-.bannerImage {
-
-}
-
-.bannerCover {
-  position: absolute;
-  display: block;
-  right: 0;
-  left: 0;
-  top: 0;
-}
-
-.bannerCoverImage {
-
 }
 
 .bannerTitle {
@@ -79,74 +60,58 @@
   color: #636363;
   line-height: 1;
   font-weight: normal;
-  font-size: 16px;
+  font-size: 21pt;
   text-align: center;
-
   text-overflow: ellipsis;
-  overflow: hidden;
   white-space: nowrap;
   width: 100%;
-  margin: 30px 0 20px 0;
+  line-break: 21pt;
 }
 
 .explanationDiv {
-  width: 90%;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .explanation {
   composes: text from '../../globalStyles/Typography.module.css';
   color: #636363;
-  font-size: 14px;
+  font-size: 14pt;
   text-align: center;
   display: block;
-  width: 100%;
-  overflow: hidden;
+  line-height: 24pt;
+  white-space: auto;
 }
 
 .content {
-  flex: 1;
-  min-height: 20vh;
-  width: var(--contentWidth, 80vw);
+  max-width: 80vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  margin: 0 auto;
-  display:block;
+  margin-bottom: auto;
+  overflow:visible;
 }
 
 .children {
-  min-height: 50%;
   text-overflow: ellipsis;
-  overflow: hidden;
   display:flex;
   align-items: center;
-
+  white-space: auto;
+  margin: 60px 0;
 }
 
 .buttons {
   width: 100%;
   position: relative;
-  bottom: -10%;
+  bottom: 0;
   display: flex;
   justify-content: center;
+  margin: auto auto;
 }
 
 .closeButton {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
-  composes: text from '../../globalStyles/Typography.module.css';
-  font-size: 20px;
-  text-align: end;
-  background-color: white;
-  color: #505050;
-  min-width: auto;
-  border: 0px;
-  font-weight: normal;
-}
-
-.closeButton:hover:enabled {
-  background-color: white;
-  color: #00AD9F;
+  width: 43px;
 }

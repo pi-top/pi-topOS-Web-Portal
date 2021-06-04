@@ -6,6 +6,8 @@ import Spinner from "../atoms/spinner/Spinner";
 import styles from "./TourLayout.module.css";
 import Image from "../atoms/image/Image";
 
+import closeButton from "../../assets/images/tour-close-button.svg";
+
 import { runningOnWebRenderer } from "../../helpers/utils";
 
 type LayoutButtonProps = Omit<ButtonProps, "children"> & {
@@ -14,12 +16,8 @@ type LayoutButtonProps = Omit<ButtonProps, "children"> & {
 
 export type Props = {
   banner: {
-    src_banner: string;
-    alt_banner: string;
-  };
-  bannerCover: {
-    src_cover: string;
-    alt_cover: string;
+    src: string;
+    alt: string;
   };
   prompt: ReactNode;
   nextButton: LayoutButtonProps;
@@ -32,8 +30,7 @@ export type Props = {
 };
 
 export default ({
-  banner: { src_banner, alt_banner },
-  bannerCover: { src_cover, alt_cover },
+  banner: { src, alt },
   prompt,
   nextButton,
   title,
@@ -43,32 +40,29 @@ export default ({
   isLoadingBanner,
   onCloseButton,
 }: Props) => (
-  <div className={cx(styles.layout, className)}>
+  <div className={cx(!runningOnWebRenderer() && styles.layoutBrowser, styles.layout , className)}>
 
-    {runningOnWebRenderer() && <Button className={styles.closeButton} onClick={onCloseButton}>X</Button>}
+    {runningOnWebRenderer() &&
+      <Button className={styles.closeButton} unstyled onClick={onCloseButton}>
+        <Image
+          src={closeButton}
+          alt=""
+          imageScale={1}
+          className={styles.closeButtonImg}
+        />
+      </Button>
+    }
 
     <div className={styles.header}>
       <h1 className={styles.prompt}>{prompt}</h1>
     </div>
 
     <div className={styles.bannerStack}>
-      <div className={styles.banner}>
-        <Image
-          src={src_banner}
-          alt={alt_banner}
-          imageScale={1}
-          className={styles.bannerImage}
-        />
-      </div>
-
-      {src_cover && <div className={styles.bannerCover}>
-        <Image
-          src={src_cover}
-          alt={alt_cover}
-          imageScale={1}
-          className={styles.bannerCoverImage}
-        />
-      </div>}
+      <Image
+        src={src}
+        alt={alt}
+        imageScale={1}
+      />
 
       {isLoadingBanner ? (
         <div className={styles.bannerTitle}>

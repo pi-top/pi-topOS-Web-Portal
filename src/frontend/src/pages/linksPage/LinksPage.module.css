@@ -17,11 +17,12 @@
 .linkButton {
   color: var(--black);
   font-weight: bold;
-  font-size: 14px;
-  background: transparent url('../../assets/images/link-button-background.svg') 0% 0% no-repeat padding-box;
-  background-position: bottom;
-  background-repeat: repeat-x;
-  border-bottom: 2px solid #00AD9F;
+  font-size: 14pt;
+  background: url('../../assets/images/link-button-underline.svg'), url('../../assets/images/link-button-background.svg');
+  background-size: auto, auto;
+  background-position: bottom, bottom;
+  background-repeat: no-repeat, repeat-x;
+  padding: 0 4px 0 4px;
 }
 
 .linkButton:disabled {
@@ -29,7 +30,7 @@
 }
 
 .message {
-  font-size: 14px;
+  font-size: 14pt;
   composes: text from '../../globalStyles/Typography.module.css';
   overflow: hidden;
   display: block;
