@@ -56,4 +56,5 @@ except OSError as e:
     PTLogger.error(f"{e}")
     if str(e.errno) == "98":
         display_unavailable_port_notification()
+        exit(0)
     exit(1)

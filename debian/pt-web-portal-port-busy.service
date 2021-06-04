@@ -4,11 +4,10 @@ Documentation=https://knowledgebase.pi-top.com/knowledge
 
 [Service]
 Type=simple
-Restart=on-failure
 RestartSec=0
-Environment="PYTHONUNBUFFERED=1"
-Environment="PYTHONDONTWRITEBYTECODE=1"
-ExecStart=/usr/lib/pt-web-portal/run.py
+Environment="DISPLAY=:0.0"
+ExecStart=/usr/lib/pt-web-portal/notify-on-port-busy.sh
+KillMode=process
 
 [Install]
 WantedBy=multi-user.target
