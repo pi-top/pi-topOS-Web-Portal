@@ -16,6 +16,7 @@ import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
+import updateEeprom from "../../services/updateEeprom"
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -150,6 +151,12 @@ export default ({
             safelyRunService(
               stopOnboardingAutostart,
               "Made sure not to make you go through this again..."
+            )
+          )
+          .finally(() =>
+            safelyRunService(
+              updateEeprom,
+              "Made things easier for me to go to sleep when you ask..."
             )
           )
           .catch(console.error)

@@ -19,6 +19,8 @@ Depends:
  fonts-roboto-unhinted,
 # Needed for 'nice' command
  coreutils (>= 8.0),
+# Needed to update the EEPROM
+ pt-system-tools,
  python3-flask,
  python3-flask-cors,
  python3-flask-sockets,

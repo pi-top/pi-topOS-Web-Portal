@@ -47,6 +47,7 @@ from .helpers.finalise import (
     restore_files,
     stop_onboarding_autostart,
     unhide_all_boot_messages,
+    update_eeprom,
     update_mime_database,
 )
 from .helpers.tour import (
@@ -484,4 +485,11 @@ def get_about_device():
 @app.route('/status', methods=['GET'])
 def get_status():
     PTLogger.debug("Route '/status'")
+    return "OK"
+
+
+@app.route('/update-eeprom', methods=['POST'])
+def post_update_eeprom():
+    PTLogger.debug("Route '/update-eeprom'")
+    update_eeprom()
     return "OK"

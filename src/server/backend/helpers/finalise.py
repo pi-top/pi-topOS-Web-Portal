@@ -189,3 +189,8 @@ def open_knowledge_base():
 
 def get_chromium_command(url):
     return f"su {get_user_using_display(':0')} -c \"chromium-browser --new-window --start-maximized {url}\""
+
+
+def update_eeprom():
+    PTLogger.info("Function: update_eeprom()")
+    run_command("/usr/lib/pt-system-tools/pt-eeprom -f", timeout=10, check=False)
