@@ -66,11 +66,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+  min-height: 10%;
   line-break: 21pt;
 }
 
 .explanationDiv {
   width: 80%;
+  min-height: 20%;
   margin: 0 auto;
 }
 
