@@ -17,3 +17,4 @@ override_dh_clean:
 
 override_dh_installsystemd:
 	dh_installsystemd --restart-after-upgrade --name=pt-web-portal
+	dh_installsystemd --no-enable --name=pt-web-portal-port-busy

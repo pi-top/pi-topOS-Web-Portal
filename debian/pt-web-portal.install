@@ -1,3 +1,4 @@
+pkg/notify-on-port-busy.sh                  /usr/lib/pt-web-portal
 pkg/pwdptwp.sh                              /usr/lib/pt-web-portal
 pkg/expand-fs.sh                            /usr/lib/pt-web-portal
 src/server/Pipfile*                         /usr/lib/pt-web-portal
