@@ -1,9 +1,8 @@
 pt-web-portal (0.1.14) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Update EEPROM on restart page (#53)
-  * Review tour page design (#54)
-  * Display notification if port 80 is already in use (#45)
+  * Update EEPROM on restart page
+  * Review tour page design
+  * Display notification if port 80 is already in use
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 16:35:22 +0000
 
