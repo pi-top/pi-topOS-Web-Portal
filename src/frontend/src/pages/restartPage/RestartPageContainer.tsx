@@ -156,7 +156,7 @@ export default ({
           .finally(() =>
             safelyRunService(
               updateEeprom,
-              "Made sure not to make you go through this again..."
+              "Made things easier for me to go to sleep when you ask..."
             )
           )
           .catch(console.error)
