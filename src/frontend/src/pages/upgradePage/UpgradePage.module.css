@@ -23,6 +23,8 @@
   padding: 20px;
   font-size: 16px;
   color: var(--green);
+  overflow: hidden;
+  max-height: 10vh;
 }
 
 .error {
