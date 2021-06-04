@@ -1,3 +1,20 @@
+pt-web-portal (0.1.13) buster; urgency=medium
+
+  * Remove tour splash page
+  * Increase tour font size
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 02 Jun 2021 17:11:28 +0000
+
+pt-web-portal (0.1.12) buster; urgency=medium
+
+  * Use online SDK docs URL when accessing tour from browser
+  * Replace FSMe font with Roboto
+  * Provide device information en further URL query string
+  * Redirect to tour after device reboots
+  * Update tour design
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 01 Jun 2021 23:19:12 +0000
+
 pt-web-portal (0.1.11) buster; urgency=medium
 
   * API responds with HTTP code 400 on no data

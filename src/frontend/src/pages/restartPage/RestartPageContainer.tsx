@@ -16,6 +16,7 @@ import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
+import updateEeprom from "../../services/updateEeprom"
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -41,10 +42,10 @@ export default ({
   const history = useHistory()
   const [isSettingUpDevice, setIsSettingUpDevice] = useState(false);
   const [rebootError, setRebootError] = useState(false);
-  const [progressMessage, setProgressMessage] = useState(
-    "Alright let's get started!"
-  );
+  const [progressMessage, setProgressMessage] = useState("Alright let's get started!");
   const [progress, setProgress] = useState(0);
+  const [isWaitingForServer, setIsWaitingForServer] = useState(false);
+  const [serverRebooted, setServerRebooted] = useState(false);
 
 
   function safelyRunService(service: () => Promise<void>, message: string) {
@@ -66,7 +67,8 @@ export default ({
     const interval = setInterval(async () => {
       try {
         await serverStatus({ timeout: 1250 });
-        setProgressMessage("The device is back online!");
+        setServerRebooted(true);
+        setIsWaitingForServer(false);
         clearInterval(interval);
         history.push("/");
         window.location.reload()
@@ -76,6 +78,8 @@ export default ({
 
   return (
     <RestartPage
+      isWaitingForServer={isWaitingForServer}
+      serverRebooted={serverRebooted}
       globalError={globalError}
       isSettingUpDevice={isSettingUpDevice}
       rebootError={rebootError}
@@ -149,12 +153,20 @@ export default ({
               "Made sure not to make you go through this again..."
             )
           )
+          .finally(() =>
+            safelyRunService(
+              updateEeprom,
+              "Made things easier for me to go to sleep when you ask..."
+            )
+          )
           .catch(console.error)
           .finally(() => {
             reboot()
               .then(() => {
                 if (!runningOnWebRenderer()) {
-                  setProgressMessage("Rebooting device, please wait until the unit is back online...")
+                  setIsSettingUpDevice(false);
+                  setIsWaitingForServer(true);
+                  setServerRebooted(false);
                   window.setTimeout(waitUntilServerIsOnline, 3000);
                 }
               })

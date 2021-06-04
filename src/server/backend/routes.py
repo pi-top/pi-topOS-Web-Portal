@@ -47,12 +47,14 @@ from .helpers.finalise import (
     restore_files,
     stop_onboarding_autostart,
     unhide_all_boot_messages,
+    update_eeprom,
     update_mime_database,
 )
 from .helpers.tour import (
     open_further,
     onboarding_completed,
     close_pt_browser,
+    open_forum,
     open_knowledge_base,
     open_python_sdk_docs,
     python_sdk_docs_url,
@@ -467,6 +469,13 @@ def post_open_knowledge_base():
     return "OK"
 
 
+@app.route('/open-forum', methods=['POST'])
+def post_open_forum():
+    PTLogger.debug("Route '/open-forum'")
+    open_forum()
+    return "OK"
+
+
 @app.route('/about-device', methods=['GET'])
 def get_about_device():
     PTLogger.debug("Route '/about-device'")
@@ -476,4 +485,11 @@ def get_about_device():
 @app.route('/status', methods=['GET'])
 def get_status():
     PTLogger.debug("Route '/status'")
+    return "OK"
+
+
+@app.route('/update-eeprom', methods=['POST'])
+def post_update_eeprom():
+    PTLogger.debug("Route '/update-eeprom'")
+    update_eeprom()
     return "OK"

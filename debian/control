@@ -23,6 +23,8 @@ Depends:
  lsof,
 # Required for 'pt-notify-send', handled by common lib
  pt-notifications,
+# Needed to update the EEPROM
+ pt-system-tools,
  python3-flask,
  python3-flask-cors,
  python3-flask-sockets,

@@ -13,6 +13,7 @@ import {
 
 import RestartPageContainer, { Props } from "../RestartPageContainer";
 import { ErrorMessage } from "../RestartPage";
+import querySpinner from "../../../../test/helpers/querySpinner";
 
 import configureTour from "../../../services/configureTour";
 import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSession";
@@ -27,6 +28,7 @@ import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
 import serverStatus from "../../../services/serverStatus";
+import updateEeprom from "../../../services/updateEeprom";
 
 import { act } from "react-dom/test-utils";
 
@@ -43,6 +45,7 @@ jest.mock("../../../services/stopOnboardingAutostart");
 jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/serverStatus");
+jest.mock("../../../services/updateEeprom");
 
 
 const configureTourMock = configureTour as jest.Mock;
@@ -58,6 +61,7 @@ const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
+const updateEepromMock = updateEeprom as jest.Mock;
 
 
 const mockServices = [
@@ -72,6 +76,7 @@ const mockServices = [
   markEulaAgreedMock,
   stopOnboardingAutostartMock,
   updateMimeDatabaseMock,
+  updateEepromMock,
   rebootMock,
 ];
 
@@ -323,6 +328,22 @@ describe("RestartPageContainer", () => {
       });
     });
 
+    describe('when update EEPROM fails', () => {
+      beforeEach(() => {
+        updateEepromMock.mockRejectedValue(new Error());
+      });
+
+      it('calls remaining services', async () => {
+        fireEvent.click(getByText("Restart"));
+
+        await wait();
+
+        mockServices.forEach((mock) => {
+          expect(mock).toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('when reboot fails', () => {
       beforeEach(async () => {
         rebootMock.mockRejectedValue(new Error());
@@ -370,6 +391,14 @@ describe("RestartPageContainer", () => {
         expect(serverStatusMock).toHaveBeenCalled();
       });
 
+      it('renders a spinner', async () => {
+        await act(async () => {
+          jest.runOnlyPendingTimers();
+          await Promise.resolve();
+        });
+        expect(querySpinner(restartPageContainer)).toBeInTheDocument();
+      });
+
       describe('when the device is back online', () => {
         it('updates the displayed message', async () => {
           await act(async () => {
@@ -378,6 +407,15 @@ describe("RestartPageContainer", () => {
             await Promise.resolve();
           });
           expect(getByText("The device is back online!")).toBeInTheDocument()
+        });
+
+        it('doesn\'t render a spinner', async () => {
+          await act(async () => {
+            jest.runOnlyPendingTimers();
+            jest.runOnlyPendingTimers();
+            await Promise.resolve();
+          });
+          expect(querySpinner(restartPageContainer)).not.toBeInTheDocument();
         });
       });
     });
