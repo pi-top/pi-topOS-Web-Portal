@@ -7,6 +7,9 @@
   display: flex;
   flex-direction: column;
   align-items:center;
+}
+
+.layoutBrowser {
   overflow-y: scroll;
   overflow-x: hidden;
 }

@@ -40,7 +40,7 @@ export default ({
   isLoadingBanner,
   onCloseButton,
 }: Props) => (
-  <div className={cx(styles.layout, className)}>
+  <div className={cx(!runningOnWebRenderer() && styles.layoutBrowser, styles.layout , className)}>
 
     {runningOnWebRenderer() &&
       <Button className={styles.closeButton} unstyled onClick={onCloseButton}>
