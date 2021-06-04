@@ -110,9 +110,17 @@
   margin: auto auto;
 }
 
-.closeButton {
+.closeButtonDiv {
   position: absolute;
   top: 0;
   right: 0;
   width: 43px;
+  height: 43px;
+}
+.closeButton {
+  background-color: #505050;
+}
+
+.closeButton:hover:enabled {
+  background-color: #00AD9F;
 }
