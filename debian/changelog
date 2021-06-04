@@ -1,7 +1,6 @@
 pt-web-portal (0.1.15) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Review tour page design (#56)
+  * Review tour page design
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 20:49:40 +0000
 
