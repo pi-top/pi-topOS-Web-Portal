@@ -3,10 +3,12 @@ import cx from "classnames";
 
 import Button, { Props as ButtonProps } from "../atoms/button/Button";
 import Spinner from "../atoms/spinner/Spinner";
+import MaskedDiv from "../atoms/masked/MaskedDiv";
+
 import styles from "./TourLayout.module.css";
 import Image from "../atoms/image/Image";
 
-import closeButton from "../../assets/images/tour-close-button.svg";
+import closeButtonImage from "../../assets/images/tour-close-button.svg";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -43,14 +45,12 @@ export default ({
   <div className={cx(!runningOnWebRenderer() && styles.layoutBrowser, styles.layout , className)}>
 
     {runningOnWebRenderer() &&
-      <Button className={styles.closeButton} unstyled onClick={onCloseButton}>
-        <Image
-          src={closeButton}
-          alt=""
-          imageScale={1}
-          className={styles.closeButtonImg}
-        />
-      </Button>
+      <MaskedDiv
+        className={cx(styles.closeButtonDiv)}
+        mask={`url(${closeButtonImage})`}
+      >
+        <Button className={styles.closeButton} onClick={onCloseButton}> </Button>
+      </MaskedDiv>
     }
 
     <div className={styles.header}>
@@ -63,19 +63,10 @@ export default ({
         alt={alt}
         imageScale={1}
       />
-
-      {isLoadingBanner ? (
-        <div className={styles.bannerTitle}>
-          <Spinner size={60} />
-        </div>
-      ) : (
-        <>
-        <h2 className={styles.bannerTitle}>{title}</h2>
-        <div className={styles.explanationDiv}>
-          <span className={styles.explanation}>{explanation}</span>
-        </div>
-        </>
-      )}
+      <h2 className={styles.bannerTitle}>{!isLoadingBanner && title}</h2>
+      <div className={styles.explanationDiv}>
+        <span className={styles.explanation}>{isLoadingBanner? <Spinner size={55} /> : explanation}</span>
+      </div>
     </div>
 
     <div className={styles.content}>

@@ -36,6 +36,7 @@
 .bannerStack {
   max-height: 45vh;
   max-width: 580px;
+  width: 50%;
 
   display: flex;
   flex-direction: column;
@@ -49,7 +50,7 @@
   overflow:visible;
 }
 
-@media screen and (max-height:700px), screen and (max-width:700px) {
+@media screen and (max-height:700px), screen and (max-width:900px) {
   .bannerStack {
     background-image: none;
   }
@@ -65,11 +66,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+  min-height: 10%;
   line-break: 21pt;
 }
 
 .explanationDiv {
   width: 80%;
+  min-height: 20%;
   margin: 0 auto;
 }
 
@@ -109,9 +112,17 @@
   margin: auto auto;
 }
 
-.closeButton {
+.closeButtonDiv {
   position: absolute;
   top: 0;
   right: 0;
   width: 43px;
+  height: 43px;
+}
+.closeButton {
+  background-color: #505050;
+}
+
+.closeButton:hover:enabled {
+  background-color: #00AD9F;
 }
