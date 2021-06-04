@@ -21,8 +21,6 @@ Depends:
  fonts-roboto-unhinted,
 # To determine process using port 80
  lsof,
-# Required for 'pt-notify-send', handled by common lib
- pt-notifications,
 # Needed to update the EEPROM
  pt-system-tools,
  python3-flask,
