@@ -7,6 +7,8 @@ from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
 from pitopcommon.logger import PTLogger
+from pitopcommon.command_runner import run_command
+
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
 
@@ -38,10 +40,21 @@ def is_root() -> bool:
     return geteuid() == 0
 
 
+def display_unavailable_port_notification() -> None:
+    return run_command("systemctl start pt-web-portal-port-busy", timeout=10, log_errors=False)
+
+
 register_device_in_background()
 
-server = pywsgi.WSGIServer(
-    ("", 80),
-    create_app(test=args.test_mode),
-    handler_class=WebSocketHandler)
-server.serve_forever()
+try:
+    server = pywsgi.WSGIServer(
+        ("", 80),
+        create_app(test=args.test_mode),
+        handler_class=WebSocketHandler)
+    server.serve_forever()
+except OSError as e:
+    PTLogger.error(f"{e}")
+    if str(e.errno) == "98":
+        display_unavailable_port_notification()
+        exit(0)
+    exit(1)
