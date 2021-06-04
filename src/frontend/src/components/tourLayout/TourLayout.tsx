@@ -63,19 +63,10 @@ export default ({
         alt={alt}
         imageScale={1}
       />
-
-      {isLoadingBanner ? (
-        <div className={styles.bannerTitle}>
-          <Spinner size={60} />
-        </div>
-      ) : (
-        <>
-        <h2 className={styles.bannerTitle}>{title}</h2>
-        <div className={styles.explanationDiv}>
-          <span className={styles.explanation}>{explanation}</span>
-        </div>
-        </>
-      )}
+      <h2 className={styles.bannerTitle}>{!isLoadingBanner && title}</h2>
+      <div className={styles.explanationDiv}>
+        <span className={styles.explanation}>{isLoadingBanner? <Spinner size={55} /> : explanation}</span>
+      </div>
     </div>
 
     <div className={styles.content}>
