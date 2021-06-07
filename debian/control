@@ -47,7 +47,6 @@ Depends:
  web-renderer,
 Breaks:
  piwiz,
- pt-about,
 Replaces:
  piwiz,
 # Need to overwrite pt-tour.desktop for older systems running pt-os-setup
