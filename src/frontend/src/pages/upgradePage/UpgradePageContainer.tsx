@@ -62,10 +62,12 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
+  const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [availableSpace, setAvailableSpace] = useState(0);
+  const [waitingForServer, setWaitingForServer] = useState(false);
 
   useEffect(() => {
     getAvailableSpace()
@@ -91,10 +93,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       } catch (_) {}
     };
     socket.onclose = () => {
-      setError(true);
+      !upgradeFinished && setError(true);
       setIsOpen(false);
     };
-  }, [socket]);
+  }, [socket, upgradeFinished]);
 
   useEffect(() => {
     if (!message) {
@@ -131,6 +133,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     ) {
       setUpgradeIsRunning(false);
       setUpgradeIsRequired(false);
+      setUpgradeFinished(true);
     }
 
     if (
@@ -149,6 +152,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         if (!message.payload.size.downloadSize) {
           setUpgradeIsRunning(false);
           setUpgradeIsRequired(false);
+          setUpgradeFinished(true);
         }
       } catch (_) {
         setError(true);
@@ -163,19 +167,21 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   function waitUntilServerIsOnline() {
     const interval = setInterval(async () => {
       try {
-        await serverStatus({ timeout: 500 });
+        await serverStatus({ timeout: 300 });
         clearInterval(interval);
         history.push("/onboarding/registration");
         window.location.reload()
       } catch (_) {}
-    }, 1500);
+    }, 700);
   }
 
   return (
     <UpgradePage
       onNextClick={() => {
+        setWaitingForServer(true);
         restartWebPortalService()
-          .then(() => window.setTimeout(waitUntilServerIsOnline, 3000))
+          .then(() => window.setTimeout(waitUntilServerIsOnline, 300))
+          .catch();
       }}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
@@ -191,6 +197,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       upgradeIsPrepared={upgradeIsPrepared}
       upgradeIsRequired={upgradeIsRequired}
       upgradeIsRunning={upgradeIsRunning}
+      waitingForServer={waitingForServer}
       downloadSize={updateSize.downloadSize}
       error={error}
     />
