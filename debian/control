@@ -48,17 +48,13 @@ Depends:
 Breaks:
  piwiz,
  pt-about,
- pt-os-setup,
- pt-tour,
 Replaces:
  piwiz,
- pt-about,
- pt-os-setup,
+# Need to overwrite pt-tour.desktop for older systems running pt-os-setup
  pt-tour,
 Conflicts:
  piwiz,
  pt-about,
- pt-os-setup,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing
  useful pages of the web portal from the Linux desktop.
