@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from 'react-router-dom';
 
 import UpgradePage from "./UpgradePage";
 
@@ -56,7 +55,6 @@ export type Props = {
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
-  const history = useHistory()
 
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
@@ -169,8 +167,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       try {
         await serverStatus({ timeout: 300 });
         clearInterval(interval);
-        history.push("/onboarding/registration");
-        window.location.reload()
+        goToNextPage();
       } catch (_) {}
     }, 700);
   }
