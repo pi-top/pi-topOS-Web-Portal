@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom';
 
 import UpgradePage from "./UpgradePage";
 
 import useSocket from "../../hooks/useSocket";
 import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
+import restartWebPortalService from "../../services/restartWebPortalService";
+import serverStatus from "../../services/serverStatus"
 
 export enum OSUpdaterMessageType {
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
@@ -53,6 +56,8 @@ export type Props = {
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
+  const history = useHistory()
+
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
@@ -155,9 +160,23 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
   }, [message, socket]);
 
+  function waitUntilServerIsOnline() {
+    const interval = setInterval(async () => {
+      try {
+        await serverStatus({ timeout: 500 });
+        clearInterval(interval);
+        history.push("/onboarding/registration");
+        window.location.reload()
+      } catch (_) {}
+    }, 1500);
+  }
+
   return (
     <UpgradePage
-      onNextClick={goToNextPage}
+      onNextClick={() => {
+        restartWebPortalService()
+          .then(() => window.setTimeout(waitUntilServerIsOnline, 3000))
+      }}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
       onStartUpgradeClick={() => {
