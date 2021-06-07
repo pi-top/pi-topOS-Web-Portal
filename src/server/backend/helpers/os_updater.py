@@ -82,10 +82,6 @@ class OSUpdater:
             self.cache.upgrade()
             self.cache.upgrade(True)
 
-            # omit onboarding from upgrading to avoid issues with the running process
-            if 'pt-web-portal' in self.cache.keys():
-                self.cache['pt-web-portal'].mark_keep()
-
             PTLogger.info(
                 f"Will upgrade/install {self.cache.install_count} packages")
             PTLogger.info(
