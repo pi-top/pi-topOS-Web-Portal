@@ -59,7 +59,6 @@ Conflicts:
  piwiz,
  pt-about,
  pt-os-setup,
- pt-tour,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing
  useful pages of the web portal from the Linux desktop.
