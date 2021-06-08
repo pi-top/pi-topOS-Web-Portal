@@ -32,6 +32,7 @@ export type Props = {
   upgradeIsPrepared: boolean,
   upgradeIsRequired: boolean,
   upgradeIsRunning: boolean,
+  upgradeFinished: boolean,
   waitingForServer: boolean,
   downloadSize: number,
   error: boolean
@@ -47,6 +48,7 @@ export default ({
   upgradeIsPrepared,
   upgradeIsRequired,
   upgradeIsRunning,
+  upgradeFinished,
   downloadSize,
   waitingForServer,
   error,
@@ -60,7 +62,7 @@ export default ({
     if (waitingForServer) {
       return UpgradePageExplanation.WaitingForServer;
     }
-    if (!upgradeIsRequired && waitingForServer) {
+    if (upgradeFinished) {
       return UpgradePageExplanation.Finish;
     }
     if (!upgradeIsRequired) {

@@ -177,8 +177,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       onNextClick={() => {
         setWaitingForServer(true);
         restartWebPortalService()
-          .then(() => window.setTimeout(waitUntilServerIsOnline, 300))
-          .catch();
+          .then(() => setTimeout(waitUntilServerIsOnline, 300))
+          .catch(() => setError(true))
       }}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
@@ -194,6 +194,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       upgradeIsPrepared={upgradeIsPrepared}
       upgradeIsRequired={upgradeIsRequired}
       upgradeIsRunning={upgradeIsRunning}
+      upgradeFinished={upgradeFinished}
       waitingForServer={waitingForServer}
       downloadSize={updateSize.downloadSize}
       error={error}
