@@ -5,6 +5,8 @@ import UpgradePage from "./UpgradePage";
 import useSocket from "../../hooks/useSocket";
 import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
+import restartWebPortalService from "../../services/restartWebPortalService";
+import serverStatus from "../../services/serverStatus"
 
 export enum OSUpdaterMessageType {
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
@@ -53,14 +55,17 @@ export type Props = {
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
+
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
+  const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [availableSpace, setAvailableSpace] = useState(0);
+  const [waitingForServer, setWaitingForServer] = useState(false);
 
   useEffect(() => {
     getAvailableSpace()
@@ -86,10 +91,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       } catch (_) {}
     };
     socket.onclose = () => {
-      setError(true);
+      !upgradeFinished && setError(true);
       setIsOpen(false);
     };
-  }, [socket]);
+  }, [socket, upgradeFinished]);
 
   useEffect(() => {
     if (!message) {
@@ -126,6 +131,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     ) {
       setUpgradeIsRunning(false);
       setUpgradeIsRequired(false);
+      setUpgradeFinished(true);
     }
 
     if (
@@ -144,6 +150,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         if (!message.payload.size.downloadSize) {
           setUpgradeIsRunning(false);
           setUpgradeIsRequired(false);
+          setUpgradeFinished(true);
         }
       } catch (_) {
         setError(true);
@@ -155,9 +162,24 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
   }, [message, socket]);
 
+  function waitUntilServerIsOnline() {
+    const interval = setInterval(async () => {
+      try {
+        await serverStatus({ timeout: 300 });
+        clearInterval(interval);
+        goToNextPage();
+      } catch (_) {}
+    }, 700);
+  }
+
   return (
     <UpgradePage
-      onNextClick={goToNextPage}
+      onNextClick={() => {
+        setWaitingForServer(true);
+        restartWebPortalService()
+          .then(() => setTimeout(waitUntilServerIsOnline, 300))
+          .catch(() => setError(true))
+      }}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
       onStartUpgradeClick={() => {
@@ -172,6 +194,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       upgradeIsPrepared={upgradeIsPrepared}
       upgradeIsRequired={upgradeIsRequired}
       upgradeIsRunning={upgradeIsRunning}
+      upgradeFinished={upgradeFinished}
+      waitingForServer={waitingForServer}
       downloadSize={updateSize.downloadSize}
       error={error}
     />

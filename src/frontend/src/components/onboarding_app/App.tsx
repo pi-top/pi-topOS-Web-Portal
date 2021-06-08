@@ -151,8 +151,8 @@ export default () => {
               goToPreviousPage={() => history.push(PageRoute.Wifi)}
               goToNextPage={() => {
                 addCompleted(Page.Upgrade);
-
                 history.push(PageRoute.Registration);
+                window.location.reload();
               }}
             />
           )}

@@ -24,7 +24,11 @@ from .helpers.wifi_country import (
     current_wifi_country,
     set_wifi_country
 )
-from .helpers.timezone import get_all_timezones, set_timezone, get_current_timezone
+from .helpers.timezone import (
+    get_all_timezones,
+    set_timezone,
+    get_current_timezone,
+)
 from .helpers.keyboard import (
     list_keyboard_layout_codes,
     list_keyboard_layout_variants,
@@ -72,12 +76,12 @@ from .helpers.os_updater import (
     start_os_upgrade,
     prepare_os_upgrade
 )
-
 from .helpers.expand_fs import (
     is_file_system_expanded,
     expand_file_system,
     create_expand_fs_breadcrumb
 )
+from .helpers.system import restart_web_portal_service
 
 from .events import (
     create_emit_os_upgrade_message,
@@ -492,4 +496,11 @@ def get_status():
 def post_update_eeprom():
     PTLogger.debug("Route '/update-eeprom'")
     update_eeprom()
+    return "OK"
+
+
+@app.route('/restart-web-portal-service', methods=['POST'])
+def post_restart_web_portal_service():
+    PTLogger.debug("Route '/restart-web-portal-service'")
+    restart_web_portal_service()
     return "OK"

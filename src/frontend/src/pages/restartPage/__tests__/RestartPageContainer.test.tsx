@@ -374,6 +374,7 @@ describe("RestartPageContainer", () => {
         fireEvent.click(getByText("Restart"));
         await wait();
       });
+      afterEach(() => jest.useRealTimers());
 
       it('displays a wait message', async () => {
         expect(getByText("Rebooting device, please wait until the unit is back online...")).toBeInTheDocument();

@@ -42,6 +42,10 @@ import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
 import connectToNetwork from "../../../services/connectToNetwork";
 import expandFileSystem from "../../../services/expandFileSystem";
 
+import serverStatus from "../../../services/serverStatus";
+import restartWebPortalService from "../../../services/restartWebPortalService";
+
+
 import wsBaseUrl from "../../../services/wsBaseUrl";
 
 jest.mock("../../../services/getNetworks");
@@ -64,6 +68,9 @@ jest.mock("../../../services/setKeyboard");
 jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/expandFileSystem");
+jest.mock("../../../services/serverStatus");
+jest.mock("../../../services/restartWebPortalService");
+
 
 const expandFileSystemMock = expandFileSystem as jest.Mock;
 const getBuildInfoMock = getBuildInfo as jest.Mock;
@@ -85,6 +92,10 @@ const getNetworksMock = getNetworks as jest.Mock;
 const isConnectedToNetworkMock = isConnectedToNetwork as jest.Mock;
 const connectToNetworkMock = connectToNetwork as jest.Mock;
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
+const serverStatusMock = serverStatus as jest.Mock;
+const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
+
+import { UpgradePageExplanation } from "../../../pages/upgradePage/UpgradePage";
 
 const keyboardVariants = {
   us: {
@@ -147,8 +158,9 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForRestartPage: () => waitForAltText("reboot-screen"),
     // Actions
     upgrade: async () => {
+
       fireEvent.click(result.getByText("Update"));
-      await waitForText("Next");
+      await waitForText(UpgradePageExplanation.Finish);
     },
     registerEmail: (email: string) => {
       const emailInput = result.getByPlaceholderText(
@@ -206,6 +218,10 @@ describe("App", () => {
     ]);
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
     connectToNetworkMock.mockResolvedValue("OK");
+
+    // upgrade page mocks
+    serverStatusMock.mockResolvedValue("OK");
+    restartWebPortalServiceMock.mockResolvedValue("OK");
 
     server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
@@ -529,7 +545,12 @@ describe("App", () => {
 
       await upgrade();
 
+      jest.useFakeTimers();
       fireEvent.click(getByText("Next"));
+      await wait();
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
       await waitForRegistrationPage();
     });
 
@@ -556,7 +577,21 @@ describe("App", () => {
 
       await upgrade();
 
+      // go to RegistrationPage
+      jest.useFakeTimers();
       fireEvent.click(getByText("Next"));
+      await wait();
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+      await waitForRegistrationPage();
+
+      // go back to UpgradePage
+      fireEvent.click(getByText("Back"));
+      await waitForUpgradePage();
+
+      // Skip to RegistrationPage
+      fireEvent.click(getByText("Skip"));
       await waitForRegistrationPage();
     });
   });

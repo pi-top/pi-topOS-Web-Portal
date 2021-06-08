@@ -18,7 +18,8 @@ export enum UpgradePageExplanation {
   Preparing = "Checking the size of update...",
   UpgradePrepared = "{size} of new packages need to be installed. This might take {time} minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
-  Finish = "Great, system update has been successfully installed!",
+  Finish = "Great, system update has been successfully installed! Please click the Next button to restart the application and continue.",
+  WaitingForServer = "Please wait...",
 }
 
 export type Props = {
@@ -31,6 +32,8 @@ export type Props = {
   upgradeIsPrepared: boolean,
   upgradeIsRequired: boolean,
   upgradeIsRunning: boolean,
+  upgradeFinished: boolean,
+  waitingForServer: boolean,
   downloadSize: number,
   error: boolean
 };
@@ -45,7 +48,9 @@ export default ({
   upgradeIsPrepared,
   upgradeIsRequired,
   upgradeIsRunning,
+  upgradeFinished,
   downloadSize,
+  waitingForServer,
   error,
 }: Props) => {
   const errorMessage = error && ErrorMessage.GenericError;
@@ -53,6 +58,12 @@ export default ({
   const getExplanation = () => {
     if (error) {
       return ""
+    }
+    if (waitingForServer) {
+      return UpgradePageExplanation.WaitingForServer;
+    }
+    if (upgradeFinished) {
+      return UpgradePageExplanation.Finish;
     }
     if (!upgradeIsRequired) {
       return UpgradePageExplanation.Finish;
@@ -85,7 +96,7 @@ export default ({
         nextButton={{
           onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
           label: !upgradeIsRequired ? "Next" : "Update",
-          disabled: !upgradeIsPrepared || upgradeIsRunning || error
+          disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || error
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={isCompleted || error}
@@ -94,7 +105,7 @@ export default ({
           disabled: upgradeIsRunning
         }}
       >
-        {!(upgradeIsPrepared || error) && (
+        { (waitingForServer || !(upgradeIsPrepared || error)) && (
           <>
             <Spinner size={40} />{" "}
           </>

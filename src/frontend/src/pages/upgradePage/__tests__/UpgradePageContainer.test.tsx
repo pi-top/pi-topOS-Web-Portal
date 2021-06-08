@@ -16,10 +16,17 @@ import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
 import wsBaseUrl from "../../../services/wsBaseUrl";
+import serverStatus from "../../../services/serverStatus";
+import restartWebPortalService from "../../../services/restartWebPortalService";
+import { createModuleBlock } from "typescript";
 
 jest.mock("../../../services/getAvailableSpace");
+jest.mock("../../../services/serverStatus");
+jest.mock("../../../services/restartWebPortalService");
 
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
+const serverStatusMock = serverStatus as jest.Mock;
+const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
 
 type ExtendedRenderResult = RenderResult & {
   waitForPreparation: () => Promise<HTMLElement>;
@@ -45,6 +52,8 @@ describe("UpgradePageContainer", () => {
         Messages.Size.payload.size.downloadSize +
         1000
     );
+    serverStatusMock.mockResolvedValue("OK");
+    restartWebPortalServiceMock.mockResolvedValue("OK");
 
     server = createServer();
     server.on("connection", (socket) => {
@@ -384,6 +393,11 @@ describe("UpgradePageContainer", () => {
         });
       });
     });
+    afterEach(() => {
+      jest.useRealTimers();
+      restartWebPortalServiceMock.mockRestore();
+      serverStatusMock.mockRestore();
+    })
 
     it("renders the upgrade finished message", async () => {
       const { getByText, waitForPreparation } = mount();
@@ -432,13 +446,45 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
-    it("calls onNextClick when next button clicked", async () => {
+    it("requests to restart the pt-web-portal systemd service", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
+      await wait();
+      jest.runOnlyPendingTimers();
+      expect(restartWebPortalServiceMock).toHaveBeenCalled();
+    });
+
+    it("displays an error message when restartWebPortalService fails", async () => {
+      restartWebPortalServiceMock.mockRejectedValue(new Error("couldn't restart"));
+      const { getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      jest.useFakeTimers();
+
+      fireEvent.click(getByText("Next"));
+      await wait();
+      jest.runOnlyPendingTimers();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+    });
+
+    it("calls goToNextPage when next button clicked", async () => {
+      const { getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      jest.useFakeTimers();
+
+      fireEvent.click(getByText("Next"));
+      await wait();
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
+      await wait();
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
@@ -450,6 +496,78 @@ describe("UpgradePageContainer", () => {
 
       fireEvent.click(getByText("Back"));
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
+    });
+
+    describe("when pt-web-portal server is restarting", () => {
+      afterEach(() => {
+        jest.useRealTimers();
+        restartWebPortalServiceMock.mockRestore();
+        serverStatusMock.mockRestore();
+      })
+
+      it("renders a spinner", async () => {
+        const { container: upgradePage, getByText, waitForPreparation } = mount();
+        await waitForPreparation();
+        fireEvent.click(getByText("Update"));
+        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        jest.useFakeTimers();
+
+        fireEvent.click(getByText("Next"));
+        await wait();
+        jest.runOnlyPendingTimers();
+        expect(querySpinner(upgradePage)).toBeInTheDocument();
+      });
+
+      it("renders a 'please wait' message", async () => {
+        const { getByText, waitForPreparation } = mount();
+        await waitForPreparation();
+        fireEvent.click(getByText("Update"));
+        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        jest.useFakeTimers();
+
+        fireEvent.click(getByText("Next"));
+        await wait();
+        jest.runOnlyPendingTimers();
+        await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer));
+      });
+
+      it("probes backend server to determine if its online", async () => {
+        const { getByText, waitForPreparation } = mount();
+        await waitForPreparation();
+        fireEvent.click(getByText("Update"));
+        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        jest.useFakeTimers();
+
+        fireEvent.click(getByText("Next"));
+        await wait();
+        jest.runOnlyPendingTimers();
+        expect(serverStatusMock).toHaveBeenCalledTimes(1);
+      });
+
+      it("probes backend server until its online", async () => {
+        const { getByText, waitForPreparation } = mount();
+        await waitForPreparation();
+        fireEvent.click(getByText("Update"));
+        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        jest.useFakeTimers();
+
+        serverStatusMock.mockRejectedValue(new Error("I'm offline"));
+        fireEvent.click(getByText("Next"));
+
+        // checks twice
+        jest.runOnlyPendingTimers();
+        expect(serverStatusMock).toBeCalledTimes(1);
+        jest.runOnlyPendingTimers();
+        expect(serverStatusMock).toHaveBeenCalledTimes(2);
+        // server is back online
+        serverStatusMock.mockResolvedValue("OK");
+        jest.runOnlyPendingTimers();
+        expect(serverStatusMock).toHaveBeenCalledTimes(3);
+        await wait();
+        jest.runOnlyPendingTimers();
+        // we don't check again
+        expect(serverStatusMock).toHaveBeenCalledTimes(3);
+      });
     });
   });
 
