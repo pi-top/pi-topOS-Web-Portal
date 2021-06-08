@@ -1,3 +1,11 @@
+pt-web-portal (0.1.16) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Support installation on older systems running pt-os-setup  (#58)
+  * Restart pt-web-portal.service after upgrade page (#59)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 08 Jun 2021 22:03:37 +0000
+
 pt-web-portal (0.1.15) buster; urgency=medium
 
   * Review tour page design
