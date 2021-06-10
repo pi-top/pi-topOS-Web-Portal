@@ -10,7 +10,7 @@ import {
   QueryByBoundAttribute,
 } from "@testing-library/react";
 
-import RestartPage, { Props, ErrorMessage } from "../RestartPage";
+import RestartPage, { Props, ErrorMessage, ExplanationMessages } from "../RestartPage";
 
 describe("RestartPage", () => {
   let defaultProps: Props;
@@ -51,9 +51,9 @@ describe("RestartPage", () => {
   });
 
   it("renders explanation", () => {
-    expect(
-      queryByText("Press restart and I'll set some stuff up before rebooting")
-    ).toBeInTheDocument();
+    ExplanationMessages.OnBrowser.split('\n').map(function(item, _) {
+      item && expect(getByText(item)).toBeInTheDocument();
+    });
   });
 
   it("does not render error message", () => {

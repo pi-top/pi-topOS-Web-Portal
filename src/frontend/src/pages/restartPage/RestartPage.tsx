@@ -54,11 +54,7 @@ export default ({
   }
 
   if (rebootError) {
-    errorMessage = ErrorMessage.RebootError;
-  }
-
-  if (rebootError && isWaitingForServer) {
-    errorMessage = ErrorMessage.TimeoutError;
+    errorMessage = isWaitingForServer ? ErrorMessage.TimeoutError : ErrorMessage.RebootError;
   }
 
   let explanationMessage = runningOnWebRenderer() ? ExplanationMessages.OnWebRenderer : ExplanationMessages.OnBrowser;
