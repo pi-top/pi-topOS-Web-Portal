@@ -1,3 +1,10 @@
+pt-web-portal (0.1.19) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Fix pt-web-portal service restart on UpgradePage
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 10 Jun 2021 22:38:08 +0000
+
 pt-web-portal (0.1.18) buster; urgency=medium
 
   * Don't sleep before restarting systemd service
