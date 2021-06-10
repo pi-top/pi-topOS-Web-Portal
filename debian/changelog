@@ -1,3 +1,9 @@
+pt-web-portal (0.1.17) buster; urgency=medium
+
+  * Display warning on timeouts when restarting service & rebooting device
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 10 Jun 2021 21:35:55 +0000
+
 pt-web-portal (0.1.16) buster; urgency=medium
 
   * Support installation on older systems running pt-os-setup
