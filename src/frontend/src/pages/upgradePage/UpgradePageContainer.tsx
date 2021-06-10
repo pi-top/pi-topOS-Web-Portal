@@ -162,7 +162,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
   }, [message, socket]);
 
-  const serviceRestartTimoutMs = 120000;
+  const serviceRestartTimoutMs = 30000;
   const timeoutServerStatusRequestMs = 300;
   const serverStatusRequestIntervalMs = 700;
   let elapsedWaitingTimeMs = 0;
