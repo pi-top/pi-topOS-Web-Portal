@@ -63,17 +63,24 @@ export default ({
       });
   }
 
+  const rebootTimeoutMs = 120000;
+  const timeoutServerStatusRequestMs = 500;
+  const serverStatusRequestIntervalMs = 1500;
+  let elapsedWaitingTimeMs = 0;
+
   function waitUntilServerIsOnline() {
     const interval = setInterval(async () => {
       try {
-        await serverStatus({ timeout: 1250 });
+        elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
+        elapsedWaitingTimeMs >= rebootTimeoutMs && setRebootError(true);
+        await serverStatus({ timeout: timeoutServerStatusRequestMs });
         setServerRebooted(true);
         setIsWaitingForServer(false);
         clearInterval(interval);
         history.push("/");
         window.location.reload()
       } catch (_) {}
-    }, 1500);
+    }, serverStatusRequestIntervalMs);
   }
 
   return (

@@ -12,7 +12,7 @@ import {
 } from "@testing-library/react";
 
 import RestartPageContainer, { Props } from "../RestartPageContainer";
-import { ErrorMessage } from "../RestartPage";
+import { ErrorMessage, ExplanationMessages } from "../RestartPage";
 import querySpinner from "../../../../test/helpers/querySpinner";
 
 import configureTour from "../../../services/configureTour";
@@ -377,7 +377,10 @@ describe("RestartPageContainer", () => {
       afterEach(() => jest.useRealTimers());
 
       it('displays a wait message', async () => {
-        expect(getByText("Rebooting device, please wait until the unit is back online...")).toBeInTheDocument();
+        ExplanationMessages.OnBrowser.split('\n').map(function(item, _) {
+          item && expect(getByText(item)).toBeInTheDocument();
+        });
+
         await act(async () => {
           jest.runOnlyPendingTimers();
           await Promise.resolve();

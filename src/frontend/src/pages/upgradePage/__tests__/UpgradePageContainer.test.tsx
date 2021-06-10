@@ -87,17 +87,19 @@ describe("UpgradePageContainer", () => {
         waitForPreparation: () =>
           waitForElement(() =>
             result.getByText(
-              UpgradePageExplanation.UpgradePrepared.replace(
-                "{size}",
-                "100 kB"
-              ).replace("{time}", "a few")
+              UpgradePageExplanation.UpgradePrepared
+                .replace("{size}", "100 kB")
+                .replace("{time}", "a few")
             )
           ),
       };
     };
   });
+
   afterEach(() => {
-    act(() => server.close());
+    getAvailableSpaceMock.mockRestore();
+    serverStatusMock.mockRestore();
+    restartWebPortalServiceMock.mockRestore();
   });
 
   it("renders the correct banner image", async () => {
@@ -194,9 +196,7 @@ describe("UpgradePageContainer", () => {
     await waitForPreparation();
     fireEvent.click(getByText("Update"));
 
-    await waitForElement(() =>
-      getByText("Please sit back and relax - this may take some time...")
-    );
+    await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
   });
 
   describe("when preparation fails", () => {
@@ -207,9 +207,6 @@ describe("UpgradePageContainer", () => {
           socket.send(JSON.stringify(Messages.PrepareError));
         });
       });
-    });
-    afterEach(() => {
-      act(() => server.close());
     });
 
     it("renders the error message", async () => {
@@ -257,9 +254,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() =>
-        getByText("Please sit back and relax - this may take some time...")
-      );
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       await waitForElement(() =>
         queryByText(UpgradePageExplanation.InProgress)
@@ -270,9 +265,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() =>
-        getByText("Please sit back and relax - this may take some time...")
-      );
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       await waitForElement(() => upgradePage.querySelector(".progress"));
       const progressBar = upgradePage.querySelector(".progress");
@@ -283,9 +276,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() =>
-        getByText("Please sit back and relax - this may take some time...")
-      );
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       expect(
         queryByText(Messages.UpgradeStatus.payload.message)
@@ -296,9 +287,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() =>
-        getByText("Please sit back and relax - this may take some time...")
-      );
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       await waitForElement(() => getByText("Update"));
       expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -308,9 +297,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() =>
-        getByText("Please sit back and relax - this may take some time...")
-      );
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       await waitForElement(() => getByText("Back"));
       expect(getByText("Back")).toHaveProperty("disabled", true);
@@ -338,9 +325,6 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
-    });
-    afterEach(() => {
-      act(() => server.close());
     });
 
     it("renders the error message", async () => {
@@ -401,18 +385,20 @@ describe("UpgradePageContainer", () => {
 
     it("renders the upgrade finished message", async () => {
       const { getByText, waitForPreparation } = mount();
-
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
     });
 
     it("renders progress bar correctly", async () => {
       const { getByText, waitForPreparation, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
 
       expect(upgradePage.querySelector(".progress")).toMatchSnapshot();
     });
@@ -421,7 +407,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
 
       expect(
         getByText(Messages.UpgradeFinish.payload.message)
@@ -432,7 +420,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
 
       expect(queryByText("Update")).not.toBeInTheDocument();
     });
@@ -441,7 +431,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
 
       expect(queryByText("Next")).toBeInTheDocument();
     });
@@ -450,7 +442,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -464,7 +458,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -477,7 +473,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -492,7 +490,9 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => getByText(text))
+      }))
 
       fireEvent.click(getByText("Back"));
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
@@ -509,7 +509,9 @@ describe("UpgradePageContainer", () => {
         const { container: upgradePage, getByText, waitForPreparation } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+          text && await waitForElement(() => getByText(text))
+        }))
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -522,7 +524,9 @@ describe("UpgradePageContainer", () => {
         const { getByText, waitForPreparation } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+          text && await waitForElement(() => getByText(text))
+        }))
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -535,7 +539,9 @@ describe("UpgradePageContainer", () => {
         const { getByText, waitForPreparation } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+          text && await waitForElement(() => getByText(text))
+        }))
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -548,7 +554,9 @@ describe("UpgradePageContainer", () => {
         const { getByText, waitForPreparation } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await waitForElement(() => getByText(UpgradePageExplanation.Finish));
+        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
+          text && await waitForElement(() => getByText(text))
+        }))
         jest.useFakeTimers();
 
         serverStatusMock.mockRejectedValue(new Error("I'm offline"));

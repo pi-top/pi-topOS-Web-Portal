@@ -162,14 +162,21 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
   }, [message, socket]);
 
+  const serviceRestartTimoutMs = 30000;
+  const timeoutServerStatusRequestMs = 300;
+  const serverStatusRequestIntervalMs = 700;
+  let elapsedWaitingTimeMs = 0;
+
   function waitUntilServerIsOnline() {
     const interval = setInterval(async () => {
       try {
-        await serverStatus({ timeout: 300 });
+        elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
+        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
+        await serverStatus({ timeout: timeoutServerStatusRequestMs });
         clearInterval(interval);
         goToNextPage();
       } catch (_) {}
-    }, 700);
+    }, serverStatusRequestIntervalMs);
   }
 
   return (

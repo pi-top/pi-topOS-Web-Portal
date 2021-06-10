@@ -7,14 +7,22 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import rebootScreen from "../../assets/images/reboot-screen.png";
 import styles from "./RestartPage.module.css";
 
+import { runningOnWebRenderer } from "../../helpers/utils";
+
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
-  RebootError = "I can't get to sleep! Please hold my power button down - that always makes me sleepy"
+  RebootError = "I can't get to sleep! Please hold my power button down - that always makes me sleepy",
+  TimeoutError = "It seems as though this is taking longer than expected. Try refreshing this webpage in your browser. Otherwise, try checking your connection and restarting your pi-top device."
 }
 
 export enum ServerStatusMessages {
-  Waiting = "Rebooting device, please wait until the unit is back online...",
+  Waiting = "Rebooting. Please wait until this pi-top device is back online",
   Online = "The device is back online!"
+}
+
+export enum ExplanationMessages {
+  OnWebRenderer = "Press 'restart' and I'll set some stuff up before rebooting. This might take up to a couple of minutes.",
+  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere"
 }
 
 export type Props = {
@@ -46,8 +54,10 @@ export default ({
   }
 
   if (rebootError) {
-    errorMessage = ErrorMessage.RebootError;
+    errorMessage = isWaitingForServer ? ErrorMessage.TimeoutError : ErrorMessage.RebootError;
   }
+
+  let explanationMessage = runningOnWebRenderer() ? ExplanationMessages.OnWebRenderer : ExplanationMessages.OnBrowser;
 
   return (
     <Layout
@@ -60,7 +70,7 @@ export default ({
           Right, I need a quick <span className="green">nap</span>
         </>
       }
-      explanation="Press restart and I'll set some stuff up before rebooting"
+      explanation={explanationMessage}
       nextButton={{
         onClick: setupDevice,
         label: "Restart",

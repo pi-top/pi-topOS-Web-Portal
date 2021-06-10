@@ -160,7 +160,9 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     upgrade: async () => {
 
       fireEvent.click(result.getByText("Update"));
-      await waitForText(UpgradePageExplanation.Finish);
+      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _) => {
+        text && await waitForText(text);
+      }))
     },
     registerEmail: (email: string) => {
       const emailInput = result.getByPlaceholderText(
