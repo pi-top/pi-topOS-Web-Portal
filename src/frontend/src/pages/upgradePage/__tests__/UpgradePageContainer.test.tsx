@@ -5,6 +5,7 @@ import {
   RenderResult,
   waitForElement,
   wait,
+  queryByText,
 } from "@testing-library/react";
 
 import { act } from "react-dom/test-utils";
@@ -453,9 +454,9 @@ describe("UpgradePageContainer", () => {
       expect(restartWebPortalServiceMock).toHaveBeenCalled();
     });
 
-    it("displays an error message when restartWebPortalService fails", async () => {
+    it("doesn't display an error message when restartWebPortalService fails", async () => {
       restartWebPortalServiceMock.mockRejectedValue(new Error("couldn't restart"));
-      const { getByText, waitForPreparation } = mount();
+      const { queryByText, getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
@@ -466,7 +467,7 @@ describe("UpgradePageContainer", () => {
       fireEvent.click(getByText("Next"));
       await wait();
       jest.runOnlyPendingTimers();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
     });
 
     it("calls goToNextPage when next button clicked", async () => {

@@ -184,8 +184,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       onNextClick={() => {
         setWaitingForServer(true);
         restartWebPortalService()
-          .then(() => setTimeout(waitUntilServerIsOnline, 300))
-          .catch(() => setError(true))
+          .catch(() => null) // ignored, request will fail since backend server is restarted
+          .finally(() => setTimeout(waitUntilServerIsOnline, 300))
       }}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
