@@ -21,7 +21,7 @@ export enum ServerStatusMessages {
 
 export enum ExplanationMessages {
   OnWebRenderer = "Press 'restart' and I'll set some stuff up before rebooting. This might take up to a couple of minutes.",
-  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it. This page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere"
+  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere"
 }
 
 export type Props = {

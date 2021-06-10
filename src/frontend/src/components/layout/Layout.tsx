@@ -53,7 +53,10 @@ export default ({
     </div>
 
     <div className={styles.content}>
-      {explanation && <span className={styles.explanation}>{explanation}</span>}
+      {explanation && <span className={styles.explanation}>{explanation.split('\n').map(function(item, key) {
+          return (<span key={key}>{item}<br/></span>)
+        })
+      }</span>}
 
       {children}
 
