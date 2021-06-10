@@ -11,7 +11,8 @@ import { runningOnWebRenderer } from "../../helpers/utils";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
-  RebootError = "I can't get to sleep! Please hold my power button down - that always makes me sleepy"
+  RebootError = "I can't get to sleep! Please hold my power button down - that always makes me sleepy",
+  TimeoutError = "Try refreshing this webpage in your browser. Otherwise, try checking your connection and restarting your pi-top device."
 }
 
 export enum ServerStatusMessages {
@@ -54,6 +55,10 @@ export default ({
 
   if (rebootError) {
     errorMessage = ErrorMessage.RebootError;
+  }
+
+  if (rebootError && isWaitingForServer) {
+    errorMessage = ErrorMessage.TimeoutError;
   }
 
   let explanationMessage = runningOnWebRenderer() ? ExplanationMessages.OnWebRenderer : ExplanationMessages.OnBrowser;
