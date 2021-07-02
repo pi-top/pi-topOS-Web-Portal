@@ -50,7 +50,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@types/classnames": "^2.3.1",
     "@types/country-list": "^2.1.0",
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^26.0.23",
     "@types/react-loader-spinner": "^4.0.0",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-select": "^3.0.10",
