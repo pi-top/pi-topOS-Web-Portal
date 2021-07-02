@@ -15,7 +15,7 @@ THIRD_LINE_Y = 41
 
 def get_image_file_path(relative_file_name):
     return path.abspath(
-        path.join("/usr", "lib", "pt-web-portal",  "miniscreen", "images", relative_file_name)
+        path.join("/usr", "lib", "pt-web-portal",  "miniscreen", "onboarding", "images", relative_file_name)
     )
 
 
