@@ -4,3 +4,7 @@ updates:
     directory: "/src/server"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/src/frontend"
+    schedule:
+      interval: "daily"
