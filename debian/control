@@ -34,8 +34,6 @@ Depends:
  python3-waitress,
  python3-websockets,
  raspi-config,
-# Modifying AP mode
- rpi-wifi-ap,
  rsync,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
