@@ -6545,6 +6545,25 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
+iso-3166-1-alpha-2@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/iso-3166-1-alpha-2/-/iso-3166-1-alpha-2-1.0.0.tgz#bc9e0bb94e584df5468a932997a28552e26f97ac"
+  integrity sha1-vJ4LuU5YTfVGipMpl6KFUuJvl6w=
+  dependencies:
+    mout "^0.11.0"
+
+iso-639-1-zh@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/iso-639-1-zh/-/iso-639-1-zh-2.0.4.tgz#61b577d14ee8b0c2c8e73697a3c894fe02dbd541"
+  integrity sha1-YbV30U7osMLI5zaXo8iU/gLb1UE=
+  dependencies:
+    iso-639-1 "^2.0.0"
+
+iso-639-1@^2.0.0:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/iso-639-1/-/iso-639-1-2.1.9.tgz#e41b11d4f1808e5316d0252c3fa16eeb9b37bb58"
+  integrity sha512-owRu9up+Cpx/hwSzm83j6G8PtC7U99UCtPVItsafefNfEgMl+pi8KBwhXwJkJfp6IouyYWFxj8n24SvCWpKZEQ==
+
 isobject@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-2.1.0.tgz#f065561096a3f1da2ef46272f815c840d87e0c89"
@@ -7306,6 +7325,14 @@ loader-utils@^1.1.0, loader-utils@^1.2.3, loader-utils@^1.4.0:
     emojis-list "^3.0.0"
     json5 "^1.0.1"
 
+locale-code@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/locale-code/-/locale-code-2.0.2.tgz#660d80c5825d8fe9f3ba4a72de5716833ec7d0ed"
+  integrity sha512-wNcUMwk6Nlc10pnZZXWtKArAOZHhH8p2vohPEIENg7ImwMrib/CwKSvyV4g9Wm7KjylyHzXnEMz4i/W3w57wlw==
+  dependencies:
+    iso-3166-1-alpha-2 "~1.0.0"
+    iso-639-1-zh "^2.0.4"
+
 locate-path@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"
@@ -7738,6 +7765,11 @@ moo@^0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/moo/-/moo-0.5.1.tgz#7aae7f384b9b09f620b6abf6f74ebbcd1b65dbc4"
   integrity sha512-I1mnb5xn4fO80BH9BLcF0yLypy2UKl+Cb01Fu0hJRkJjlCRtxZMWkTdAtDd5ZqCOxtCkhmRwyI57vWT+1iZ67w==
+
+mout@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/mout/-/mout-0.11.1.tgz#ba3611df5f0e5b1ffbfd01166b8f02d1f5fa2b99"
+  integrity sha1-ujYR318OWx/7/QEWa48C0fX6K5k=
 
 move-concurrently@^1.0.1:
   version "1.0.1"
