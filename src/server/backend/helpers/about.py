@@ -35,7 +35,7 @@ def device_update_channel() -> str:
     }
 
     def get_source_from_line(line):
-        if match("^deb (http[s]?://(www.)?)?apt.pi-top.com/pi-top-os/ sirius", line):
+        if match("^deb (http[s]?://(www\.)?)?apt\.pi-top\.com/pi-top-os/ sirius", line):
             # Expecting similar to
             # `deb http://apt.pi-top.com/pi-top-os/ sirius main contrib non-free`
             for channel_text, channel_data in channels.items():
