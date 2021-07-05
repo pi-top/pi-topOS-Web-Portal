@@ -53,3 +53,5 @@ target_wrapper.*
 CMakeLists.txt.user*
 
 .vscode
+
+src/server/*.xml
