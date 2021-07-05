@@ -9,10 +9,10 @@ from pitopcommon.sys_info import (
 )
 from pitopcommon.pt_os import is_pi_using_default_password
 
-from connection_state import ConnectionState
+from .state import ConnectionState
 
 
-class Device:
+class ConnectionMonitor:
     def __init__(self):
         self.username = "pi" if getuser() == "root" else getuser()
         self.password = "pi-top" if is_pi_using_default_password() is True else "********"
@@ -20,8 +20,6 @@ class Device:
         self.stop_thread = False
         self.__update_state_thread = Thread(target=self.__update_state, args=())
         self.__update_state_thread.start()
-        while self.state == ConnectionState():
-            sleep(0.1)
 
     def __update_state(self):
         while self.stop_thread is False:

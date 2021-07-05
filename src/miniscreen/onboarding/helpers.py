@@ -1,4 +1,3 @@
-from os import path
 from PIL import (
     Image,
     ImageFont,
@@ -11,12 +10,6 @@ MARGIN_X = 29
 FIRST_LINE_Y = 9
 SECOND_LINE_Y = 25
 THIRD_LINE_Y = 41
-
-
-def get_image_file_path(relative_file_name):
-    return path.abspath(
-        path.join("/usr", "lib", "pt-web-portal",  "miniscreen", "onboarding", "images", relative_file_name)
-    )
 
 
 def draw_text(canvas, text, xy, font_size=12):
