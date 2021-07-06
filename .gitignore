@@ -37,7 +37,7 @@ ui_*.h
 *.qmlc
 *.jsc
 Makefile*
-*build-*
+*build-*/
 
 # Qt unit tests
 target_wrapper.*
@@ -53,3 +53,5 @@ target_wrapper.*
 CMakeLists.txt.user*
 
 .vscode
+
+src/server/*.xml
