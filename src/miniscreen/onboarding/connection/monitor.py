@@ -1,47 +1,39 @@
-from getpass import getuser
-from ipaddress import ip_address
-from threading import Thread
 from time import sleep
+from threading import Thread
 
-from pitopcommon.sys_info import (
-    get_internal_ip,
-    get_address_for_ptusb_connected_device
+from .methods import (
+    ConnectionMethod,
+    NoConnection,
+    ApConnection,
+    UsbConnection,
+    EthernetConnection,
 )
-from pitopcommon.pt_os import is_pi_using_default_password
-
-from .state import ConnectionState
 
 
 class ConnectionMonitor:
     def __init__(self):
-        self.username = "pi" if getuser() == "root" else getuser()
-        self.password = "pi-top" if is_pi_using_default_password() is True else "********"
-        self.state = ConnectionState()
+        self.connections = {
+            ConnectionMethod.AP: ApConnection(),
+            ConnectionMethod.USB: UsbConnection(),
+            ConnectionMethod.ETHERNET: EthernetConnection(),
+            ConnectionMethod.NONE: NoConnection(),
+        }
+
+        # initial state
+        self.state = self.connections.get(ConnectionMethod.NONE)
+
         self.stop_thread = False
         self.__update_state_thread = Thread(target=self.__update_state, args=())
         self.__update_state_thread.start()
 
     def __update_state(self):
         while self.stop_thread is False:
-            ptusb0_ip = ""
-            eth0_ip = ""
-            connected_device_ip = ""
-            if not self.state.ethernet_is_connected():
-                try:
-                    ptusb0_ip = ip_address(get_internal_ip(iface="ptusb0"))
-                except ValueError:
-                    pass
-                connected_device_ip = get_address_for_ptusb_connected_device()
+            for connection_name, connection_data in self.connections.items():
+                if connection_data.is_connected():
+                    self.state = connection_data
+                    break
 
-            if not self.state.usb_is_connected():
-                try:
-                    eth0_ip = ip_address(get_internal_ip(iface="eth0"))
-                except ValueError:
-                    pass
-
-            self.state = ConnectionState(
-                eth0_ip=eth0_ip,
-                ptusb0_ip=ptusb0_ip,
-                connected_device_ip=connected_device_ip)
+            if not self.state.is_connected():
+                self.state = self.connections.get(ConnectionMethod.NONE)
 
             sleep(0.5)

@@ -11,6 +11,8 @@ from pitopcommon.command_runner import run_command
 
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
+from backend.helpers.finalise import onboarding_completed
+from miniscreen.onboarding.app import OnboardingApp
 
 
 parser = ArgumentParser(description="pi-top backend server")
@@ -43,6 +45,11 @@ def is_root() -> bool:
 def display_unavailable_port_notification() -> None:
     return run_command("systemctl start pt-web-portal-port-busy", timeout=10, log_errors=False)
 
+
+if onboarding_completed() is False:
+    PTLogger.info("Onboarding not completed, starting miniscreen app")
+    onboarding_app = OnboardingApp()
+    onboarding_app.start()
 
 register_device_in_background()
 
