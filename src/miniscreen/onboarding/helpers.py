@@ -13,7 +13,7 @@ THIRD_LINE_Y = 41
 
 
 def draw_text(canvas, text, xy, font_size=12):
-    font = ImageFont.truetype("/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf", size=font_size)
+    font = ImageFont.truetype("/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Regular.ttf", size=font_size)
     canvas.text(
         text=text,
         xy=xy,
