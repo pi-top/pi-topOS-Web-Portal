@@ -1,3 +1,7 @@
+from abc import (
+    ABC,
+    abstractmethod,
+)
 from enum import Enum, auto
 from getpass import getuser
 from ipaddress import ip_address
@@ -18,7 +22,7 @@ class ConnectionMethod(Enum):
     NONE = auto()
 
 
-class ConnectionMethodBase:
+class ConnectionMethodBase(ABC):
     def __init__(self, connection_method):
         self.connection_method = connection_method
         self.ip = ""
@@ -26,11 +30,13 @@ class ConnectionMethodBase:
         self.interface_name = ""
         self.metadata = dict()
 
+    @abstractmethod
     def update(self):
-        pass
+        raise NotImplementedError
 
+    @abstractmethod
     def is_connected(self):
-        return False
+        raise NotImplementedError
 
     def get_image_file_path(self, relative_file_name):
         return path.abspath(
@@ -49,6 +55,9 @@ class NoConnection(ConnectionMethodBase):
     def __init__(self):
         super(NoConnection, self).__init__(ConnectionMethod.NONE)
         self.path_to_image = self.get_image_file_path("first_time_connect.gif")
+
+    def update(self):
+        pass
 
     def is_connected(self):
         return False
