@@ -24,6 +24,10 @@ class ConnectionMethodBase:
         self.ip = ""
         self.path_to_image = ""
         self.interface_name = ""
+        self.metadata = dict()
+
+    def update(self):
+        pass
 
     def is_connected(self):
         return False
@@ -35,6 +39,7 @@ class ConnectionMethodBase:
 
     def __eq__(self, other):
         return isinstance(other, ConnectionMethodBase) \
+            and self.metadata == other.metadata \
             and self.connection_method == other.connection_method \
             and self.ip == other.ip \
             and self.is_connected() == other.is_connected()
@@ -42,10 +47,8 @@ class ConnectionMethodBase:
 
 class NoConnection(ConnectionMethodBase):
     def __init__(self):
-        self.connection_method = ConnectionMethod.NONE
-        self.ip = ""
+        super(NoConnection, self).__init__(ConnectionMethod.NONE)
         self.path_to_image = self.get_image_file_path("first_time_connect.gif")
-        self.interface_name = ""
 
     def is_connected(self):
         return False
@@ -53,12 +56,15 @@ class NoConnection(ConnectionMethodBase):
 
 class UsbConnection(ConnectionMethodBase):
     def __init__(self):
-        self.connection_method = ConnectionMethod.USB
-        self.username = "pi" if getuser() == "root" else getuser()
-        self.password = "pi-top" if is_pi_using_default_password() is True else "********"
+        super(UsbConnection, self).__init__(ConnectionMethod.USB)
+        self.metadata = {
+            "username": "pi" if getuser() == "root" else getuser(),
+            "password": "pi-top" if is_pi_using_default_password() is True else "********",
+        }
         self.path_to_image = self.get_image_file_path("usb.gif")
         self.interface_name = "ptusb0"
 
+    def update(self):
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
         except Exception:
@@ -70,13 +76,13 @@ class UsbConnection(ConnectionMethodBase):
 
 class ApConnection(ConnectionMethodBase):
     def __init__(self):
-        self.connection_method = ConnectionMethod.AP
-        connection_status = get_ap_mode_status()
-        self.ssid = connection_status.get("ssid")
-        self.passphrase = connection_status.get("passphrase")
+        super(ApConnection, self).__init__(ConnectionMethod.AP)
+        self.metadata = get_ap_mode_status()
         self.path_to_image = self.get_image_file_path("ap.gif")
         self.interface_name = "wlan_ap0"
 
+    def update(self):
+        self.metadata = get_ap_mode_status()
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
         except Exception:
@@ -91,10 +97,15 @@ class ApConnection(ConnectionMethodBase):
 
 class EthernetConnection(ConnectionMethodBase):
     def __init__(self):
-        self.connection_method = ConnectionMethod.ETHERNET
+        super(EthernetConnection, self).__init__(ConnectionMethod.ETHERNET)
+        self.metadata = {
+            "username": "pi" if getuser() == "root" else getuser(),
+            "password": "pi-top" if is_pi_using_default_password() is True else "********",
+        }
         self.path_to_image = self.get_image_file_path("lan.gif")
         self.interface_name = "eth0"
 
+    def update(self):
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
         except Exception:
