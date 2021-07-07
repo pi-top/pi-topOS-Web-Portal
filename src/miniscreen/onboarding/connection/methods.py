@@ -23,12 +23,12 @@ class ConnectionMethod(Enum):
 
 
 class ConnectionMethodBase(ABC):
-    def __init__(self, connection_method):
+    def __init__(self, connection_method, ip="", path_to_image="", interface_name="", metadata=dict()):
         self.connection_method = connection_method
-        self.ip = ""
-        self.path_to_image = ""
-        self.interface_name = ""
-        self.metadata = dict()
+        self.ip = ip
+        self.path_to_image = path_to_image
+        self.interface_name = interface_name
+        self.metadata = metadata
 
     @abstractmethod
     def update(self):
@@ -53,8 +53,9 @@ class ConnectionMethodBase(ABC):
 
 class NoConnection(ConnectionMethodBase):
     def __init__(self):
-        super(NoConnection, self).__init__(ConnectionMethod.NONE)
-        self.path_to_image = self.get_image_file_path("first_time_connect.gif")
+        super(NoConnection, self).__init__(
+            connection_method=ConnectionMethod.NONE,
+            path_to_image=self.get_image_file_path("first_time_connect.gif"))
 
     def update(self):
         pass
@@ -65,13 +66,15 @@ class NoConnection(ConnectionMethodBase):
 
 class UsbConnection(ConnectionMethodBase):
     def __init__(self):
-        super(UsbConnection, self).__init__(ConnectionMethod.USB)
-        self.metadata = {
-            "username": "pi" if getuser() == "root" else getuser(),
-            "password": "pi-top" if is_pi_using_default_password() is True else "********",
-        }
-        self.path_to_image = self.get_image_file_path("usb.gif")
-        self.interface_name = "ptusb0"
+        super(UsbConnection, self).__init__(
+            connection_method=ConnectionMethod.USB,
+            ip="",
+            path_to_image=self.get_image_file_path("usb.gif"),
+            interface_name="ptusb0",
+            metadata={
+                "username": "pi" if getuser() == "root" else getuser(),
+                "password": "pi-top" if is_pi_using_default_password() is True else "********",
+            })
 
     def update(self):
         try:
@@ -85,10 +88,12 @@ class UsbConnection(ConnectionMethodBase):
 
 class ApConnection(ConnectionMethodBase):
     def __init__(self):
-        super(ApConnection, self).__init__(ConnectionMethod.AP)
-        self.metadata = get_ap_mode_status()
-        self.path_to_image = self.get_image_file_path("ap.gif")
-        self.interface_name = "wlan_ap0"
+        super(ApConnection, self).__init__(
+            connection_method=ConnectionMethod.AP,
+            ip="",
+            path_to_image=self.get_image_file_path("ap.gif"),
+            interface_name="wlan_ap0",
+            metadata=get_ap_mode_status())
 
     def update(self):
         self.metadata = get_ap_mode_status()
@@ -106,13 +111,15 @@ class ApConnection(ConnectionMethodBase):
 
 class EthernetConnection(ConnectionMethodBase):
     def __init__(self):
-        super(EthernetConnection, self).__init__(ConnectionMethod.ETHERNET)
-        self.metadata = {
-            "username": "pi" if getuser() == "root" else getuser(),
-            "password": "pi-top" if is_pi_using_default_password() is True else "********",
-        }
-        self.path_to_image = self.get_image_file_path("lan.gif")
-        self.interface_name = "eth0"
+        super(EthernetConnection, self).__init__(
+            connection_method=ConnectionMethod.ETHERNET,
+            ip="",
+            path_to_image=self.get_image_file_path("lan.gif"),
+            interface_name="eth0",
+            metadata={
+                "username": "pi" if getuser() == "root" else getuser(),
+                "password": "pi-top" if is_pi_using_default_password() is True else "********",
+            })
 
     def update(self):
         try:
