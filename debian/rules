@@ -9,7 +9,7 @@ override_dh_auto_build:
 			npm install -g yarn && yarn install && \
 \  # 			yarn build
 			node_modules/react-scripts/bin/react-scripts.js build && \
-      mv build ../server/backend/
+			mv build ../server/backend/
 	)
 	dh_auto_build
 
