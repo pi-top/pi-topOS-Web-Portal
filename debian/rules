@@ -4,13 +4,10 @@
 	dh $@
 
 override_dh_auto_build:
-	(
-		cd src/frontend/ && \
-			npm install -g yarn && yarn install && \
-\  # 			yarn build
-			node_modules/react-scripts/bin/react-scripts.js build && \
-			mv build ../server/backend/
-	)
+	cd src/frontend/ && \
+		npm install -g yarn && yarn install && \
+		node_modules/react-scripts/bin/react-scripts.js build && \
+		mv build ../server/backend/
 	dh_auto_build
 
 override_dh_clean:
