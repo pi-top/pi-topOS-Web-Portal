@@ -1,13 +1,20 @@
 #!/usr/bin/python3
 
-from os import geteuid
+from os import (
+    environ,
+    geteuid,
+)
 from argparse import ArgumentParser
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
-from pitopcommon.logger import PTLogger
 from pitopcommon.command_runner import run_command
+from pitopcommon.logger import PTLogger
+from pitopcommon.sys_info import (
+    get_systemd_active_state,
+    stop_systemd_service,
+)
 
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
@@ -48,6 +55,13 @@ def display_unavailable_port_notification() -> None:
 
 if onboarding_completed() is False:
     PTLogger.info("Onboarding not completed, starting miniscreen app")
+
+    if get_systemd_active_state("pt-sys-oled").lower() == "active":
+        PTLogger.info("Stopping pt-sys-oled.service")
+        stop_systemd_service("pt-sys-oled")
+
+    # use miniscreen in non-locking mode
+    environ["PT_MINISCREEN_SYSTEM"] = "1"
     onboarding_app = OnboardingApp()
     onboarding_app.start()
 
