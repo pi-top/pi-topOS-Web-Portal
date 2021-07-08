@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies with pipenv
         run: |
-          pip install pipenv pytest
+          pip install pipenv
           cd src/server
           pipenv install --deploy --dev --verbose
 
