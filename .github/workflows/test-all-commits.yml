@@ -17,18 +17,36 @@ jobs:
       - name: Install pipenv
         uses: dschep/install-pipenv-action@v1
 
-      - name: Run tests and generate coverage report
+      - name: Run Python tests and generate coverage report
         run: |
           cd src/server
           pipenv install --dev
           PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend
           pipenv run coverage xml
 
-      - name: Upload test coverage report to Codecov
+      - name: Upload Python test coverage reports to Codecov
         uses: codecov/codecov-action@v1
         with:
           files: ./src/server/coverage.xml
           flags: unittests
-          env_vars: OS,PYTHON,JAVASCRIPT
+          env_vars: OS,PYTHON
           fail_ci_if_error: true
           verbose: true
+
+  test-js-no-coverage-report:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Run Node tests
+        run: |
+          cd src/frontend
+          yarn install
+          yarn test
