@@ -29,7 +29,6 @@ class ConnectionMethodBase(ABC):
         self.path_to_image = path_to_image
         self.interface_name = interface_name
         self.metadata = metadata
-        self.update()
 
     @abstractmethod
     def update(self):
@@ -63,15 +62,18 @@ class UsbConnection(ConnectionMethodBase):
                 "username": "pi" if getuser() == "root" else getuser(),
                 "password": "pi-top" if is_pi_using_default_password() is True else "********",
             })
+        self.update()
 
     def update(self):
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
+            self.connected_device_ip = get_address_for_ptusb_connected_device()
         except Exception:
             self.ip = ""
+            self.connected_device_ip = ""
 
     def is_connected(self):
-        return get_address_for_ptusb_connected_device() != ""
+        return self.connected_device_ip != ""
 
 
 class ApConnection(ConnectionMethodBase):
@@ -82,6 +84,7 @@ class ApConnection(ConnectionMethodBase):
             path_to_image=self.get_image_file_path("ap.gif"),
             interface_name="wlan_ap0",
             metadata=get_ap_mode_status())
+        self.update()
 
     def update(self):
         self.metadata = get_ap_mode_status()
@@ -108,6 +111,7 @@ class EthernetConnection(ConnectionMethodBase):
                 "username": "pi" if getuser() == "root" else getuser(),
                 "password": "pi-top" if is_pi_using_default_password() is True else "********",
             })
+        self.update()
 
     def update(self):
         try:

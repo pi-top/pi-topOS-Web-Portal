@@ -3,6 +3,7 @@ from threading import Thread
 from time import sleep
 
 from pitop import Pitop
+from pitopcommon.logger import PTLogger
 
 from .menus import (
     ApMenuPage,
@@ -27,7 +28,8 @@ class OnboardingApp:
         }
 
         self.current_page = self.pages.get(Menus.AP)
-        self.needs_redraw = False
+        self.next_page = None
+        self.force_redraw = False
 
         self.__auto_play_thread = None
         self.__stop_thread = False
@@ -43,25 +45,29 @@ class OnboardingApp:
         if self.__auto_play_thread and self.__auto_play_thread.is_alive():
             self.__auto_play_thread.join()
 
-    def update_display(self):
-        self.current_page.render(self.miniscreen)
-
-    def should_redraw(self):
-        result = self.needs_redraw or self.current_page.should_redraw()
-        self.needs_redraw = False
-        return result
+    def should_redraw(self, page):
+        return self.force_redraw or page.should_redraw()
 
     def go_to(self, page):
-        self.needs_redraw = True
-        self.current_page = self.pages.get(page)
+        self.next_page = self.pages.get(page)
+        PTLogger.info(f"Moving to {self.next_page.type.name} page")
 
     def __run_in_background(self):
         try:
-            self.update_display()
+            self.current_page.render(self.miniscreen)
             while self.__stop_thread is False:
-                if self.should_redraw():
+                current_page = self.current_page
+                if self.should_redraw(current_page):
+                    PTLogger.info(f"Redrawing {current_page.type.name}")
                     self.miniscreen.reset()
-                    self.update_display()
+                    current_page.render(self.miniscreen)
+                    self.force_redraw = False
+
+                if self.next_page:
+                    self.current_page = self.next_page
+                    self.next_page = None
+                    self.force_redraw = True
+
                 sleep(0.5)
         except KeyboardInterrupt:
             pass

@@ -1,3 +1,4 @@
+from copy import copy
 from enum import IntEnum
 from PIL import ImageDraw, Image
 
@@ -31,7 +32,7 @@ class Menus(IntEnum):
         return Menus(previous)
 
 
-class MenuPage:
+class MenuPageBase:
     def __init__(self, type, connection_state=None):
         self.type = type
         self.connection_state = connection_state
@@ -45,11 +46,12 @@ class MenuPage:
             play_animated_image_file(miniscreen, self.connection_state.path_to_image)
         else:
             image = Image.open(self.connection_state.path_to_image)
+            image = image.convert("1")
             canvas = ImageDraw.Draw(image)
-            canvas.ellipse((70, 23) + (84, 37), fill=0, outline=1)
-            canvas.ellipse((71, 24) + (83, 36), fill=0, outline=1)
-            canvas.line((74, 27) + (79, 32), fill=1, width=2)
-            canvas.line((75, 32) + (80, 27), fill=1, width=2)
+            canvas.ellipse((70, 23) + (84, 37), fill=0, outline=0)
+            canvas.ellipse((71, 24) + (83, 36), fill=1, outline=0)
+            canvas.line((74, 27) + (79, 32), fill=0, width=2)
+            canvas.line((75, 32) + (80, 27), fill=0, width=2)
             miniscreen.display_image(image)
 
     def render(self, miniscreen):
@@ -60,13 +62,12 @@ class MenuPage:
 
     def should_redraw(self):
         state = self.connection_state
-        previous_state = state
-        if hasattr(state, "update"):
-            state.update()
+        previous_state = copy(self.connection_state)
+        state.update()
         return state != previous_state
 
 
-class ApMenuPage(MenuPage):
+class ApMenuPage(MenuPageBase):
     def __init__(self):
         super(ApMenuPage, self).__init__(Menus.AP, ApConnection())
 
@@ -79,7 +80,7 @@ class ApMenuPage(MenuPage):
         miniscreen.display_image(image)
 
 
-class UsbMenuPage(MenuPage):
+class UsbMenuPage(MenuPageBase):
     def __init__(self):
         super(UsbMenuPage, self).__init__(Menus.USB, UsbConnection())
 
@@ -92,7 +93,7 @@ class UsbMenuPage(MenuPage):
         miniscreen.display_image(image)
 
 
-class EthernetMenuPage(MenuPage):
+class EthernetMenuPage(MenuPageBase):
     def __init__(self):
         super(EthernetMenuPage, self).__init__(Menus.ETHERNET, EthernetConnection())
 
@@ -105,7 +106,7 @@ class EthernetMenuPage(MenuPage):
         miniscreen.display_image(image)
 
 
-class InfoMenuPage(MenuPage):
+class InfoMenuPage(MenuPageBase):
     def __init__(self):
         super(InfoMenuPage, self).__init__(Menus.INFO)
 
@@ -114,7 +115,7 @@ class InfoMenuPage(MenuPage):
         image = Image.new(miniscreen.mode, miniscreen.size)
         canvas = ImageDraw.Draw(image)
         draw_text(canvas, text="pi-topOS", xy=(MARGIN_X/2, FIRST_LINE_Y))
-        draw_text(canvas, text=f"Build #: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
+        draw_text(canvas, text=f"Build: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
         draw_text(canvas, text=f"Date: {build_data.get('build_date')}", xy=(MARGIN_X/2, THIRD_LINE_Y))
         miniscreen.display_image(image)
 
