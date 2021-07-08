@@ -3,7 +3,7 @@ name: Build
 on: push
 
 jobs:
-  build-latest-debian-package:
+  build-debian-package:
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
