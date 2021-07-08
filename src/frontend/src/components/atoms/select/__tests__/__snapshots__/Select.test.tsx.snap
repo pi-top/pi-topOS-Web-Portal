@@ -5,11 +5,17 @@ exports[`Select renders correctly 1`] = `
   <div
     class="select css-2b097c-container"
   >
+    <span
+      aria-atomic="false"
+      aria-live="polite"
+      aria-relevant="additions text"
+      class="css-1f43avz-a11yText-A11yText"
+    />
     <div
       class="ReactSelect__control css-yk16xz-control"
     >
       <div
-        class="ReactSelect__value-container css-1hwfws3"
+        class="ReactSelect__value-container css-g1d714-ValueContainer"
       >
         <div
           class="ReactSelect__placeholder css-1wa3eu0-placeholder"
@@ -53,7 +59,7 @@ exports[`Select renders correctly 1`] = `
         >
           <svg
             aria-hidden="true"
-            class="css-6q0nyr-Svg"
+            class="css-tj5bde-Svg"
             focusable="false"
             height="20"
             viewBox="0 0 20 20"
