@@ -52,19 +52,6 @@ class ConnectionMethodBase(ABC):
             and self.is_connected() == other.is_connected()
 
 
-class NoConnection(ConnectionMethodBase):
-    def __init__(self):
-        super(NoConnection, self).__init__(
-            connection_method=ConnectionMethod.NONE,
-            path_to_image=self.get_image_file_path("first_time_connect.gif"))
-
-    def update(self):
-        pass
-
-    def is_connected(self):
-        return False
-
-
 class UsbConnection(ConnectionMethodBase):
     def __init__(self):
         super(UsbConnection, self).__init__(
