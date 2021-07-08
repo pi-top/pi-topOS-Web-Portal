@@ -1,3 +1,4 @@
+from re import match
 from json import load as jload
 from pitopcommon.common_names import DeviceName
 
@@ -34,16 +35,21 @@ def device_update_channel() -> str:
     }
 
     def get_source_from_line(line):
-        if line.startswith("deb") and "apt.pi-top.com" in line:
+        if match("^deb (http[s]?://(www\.)?)?apt\.pi-top\.com/pi-top-os/ sirius", line):
+            # Expecting similar to
+            # `deb http://apt.pi-top.com/pi-top-os/ sirius main contrib non-free`
             for channel_text, channel_data in channels.items():
                 if channel_text in line:
                     return channel_data
+
         return {}
+
     most_unstable_source = {}
     for line in _get_file_lines("/etc/apt/sources.list.d/pi-top.list"):
         source_data = get_source_from_line(line)
         if source_data and source_data.get("priority") >= most_unstable_source.get("priority", 0):
             most_unstable_source = source_data
+
     return most_unstable_source.get("name")
 
 
