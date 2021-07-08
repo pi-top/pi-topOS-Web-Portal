@@ -16,8 +16,8 @@ from .menus import (
 class OnboardingApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
-        self.miniscreen.up_button.when_pressed = lambda: self.go_to(self.current_page.type.next())
-        self.miniscreen.down_button.when_pressed = lambda: self.go_to(self.current_page.type.previous())
+        self.miniscreen.up_button.when_pressed = lambda: self.go_to(self.current_page.type.previous())
+        self.miniscreen.down_button.when_pressed = lambda: self.go_to(self.current_page.type.next())
 
         self.pages = {
             Menus.AP: ApMenuPage(),
@@ -54,7 +54,6 @@ class OnboardingApp:
     def go_to(self, page):
         self.needs_redraw = True
         self.current_page = self.pages.get(page)
-        print(f"going to {self.current_page.type.name}")
 
     def __run_in_background(self):
         try:

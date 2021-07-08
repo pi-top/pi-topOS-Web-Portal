@@ -44,7 +44,6 @@ class MenuPage:
             # final image shouldn't be cleared after animation finishes
             play_animated_image_file(miniscreen, self.connection_state.path_to_image)
         else:
-            # draw on top of existing
             image = Image.open(self.connection_state.path_to_image)
             canvas = ImageDraw.Draw(image)
             canvas.ellipse((70, 23) + (84, 37), fill=0, outline=1)

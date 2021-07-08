@@ -29,6 +29,7 @@ class ConnectionMethodBase(ABC):
         self.path_to_image = path_to_image
         self.interface_name = interface_name
         self.metadata = metadata
+        self.update()
 
     @abstractmethod
     def update(self):
