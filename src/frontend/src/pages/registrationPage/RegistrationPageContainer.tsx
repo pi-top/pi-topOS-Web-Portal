@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import RegistrationPage from "./RegistrationPage";
 import setRegistration from "../../services/setRegistration";

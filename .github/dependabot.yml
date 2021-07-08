@@ -9,6 +9,7 @@ updates:
     directory: "/src/frontend"
     schedule:
       interval: "daily"
+    versioning-strategy: "increase"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the

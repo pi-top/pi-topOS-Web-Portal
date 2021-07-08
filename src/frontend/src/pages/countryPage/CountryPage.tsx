@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getName } from "country-list";
 
 import Layout from "../../components/layout/Layout";

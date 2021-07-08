@@ -9,7 +9,6 @@ from flask import (
     current_app as app,
     redirect,
     request,
-    send_from_directory,
 )
 
 from .helpers.about import device_data
@@ -107,12 +106,6 @@ def index():
 @app.errorhandler(404)
 def not_found(e):
     return app.send_static_file('index.html')
-
-
-@app.route('/roboto/<filename>', methods=['GET'])
-def roboto(filename):
-    PTLogger.debug(f"Route '/roboto/{filename}")
-    return send_from_directory('/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/', filename)
 
 
 # Startup

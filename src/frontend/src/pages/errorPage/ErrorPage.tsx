@@ -1,5 +1,3 @@
-import React from "react";
-
 import Image from "../../components/atoms/image/Image";
 
 import styles from "./ErrorPage.module.css";

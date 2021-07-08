@@ -1,4 +1,3 @@
-import React from "react";
 import { Line as ProgressBar } from "rc-progress";
 import prettyBytes from "pretty-bytes";
 
