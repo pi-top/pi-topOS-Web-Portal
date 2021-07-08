@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import ErrorBoundary from "./components/errorBoundary/ErrorBoundary";
