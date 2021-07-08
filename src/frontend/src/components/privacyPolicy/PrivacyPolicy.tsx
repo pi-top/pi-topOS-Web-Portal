@@ -1,3 +1,4 @@
+import React from "react";
 import cx from 'classnames';
 
 import styles from "./PrivacyPolicy.module.css";

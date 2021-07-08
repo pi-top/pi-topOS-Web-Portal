@@ -1,3 +1,5 @@
+import React from "react";
+
 import PrivacyPolicyDialog from "./PrivacyPolicyDialog";
 
 export type Props = {

@@ -1,3 +1,4 @@
+import React from "react";
 import { Line as ProgressBar } from "rc-progress";
 
 import Layout from "../../components/layout/Layout";

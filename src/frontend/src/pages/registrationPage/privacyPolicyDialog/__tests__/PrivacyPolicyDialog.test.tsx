@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import ReactDom from "react-dom";
 import {
   render,

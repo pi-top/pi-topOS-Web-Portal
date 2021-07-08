@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { render } from '@testing-library/react';
 
 import Image, { Props } from "../Image";

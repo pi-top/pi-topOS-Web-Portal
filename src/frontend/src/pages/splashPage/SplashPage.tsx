@@ -1,3 +1,5 @@
+import React from "react";
+
 import introScreen from "../../assets/images/intro-screen.png";
 import styles from "./SplashPage.module.css";
 import Layout from "../../components/layout/Layout";

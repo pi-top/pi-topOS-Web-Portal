@@ -1,3 +1,5 @@
+import React from "react";
+
 import styles from "./AboutPage.module.css";
 import Layout from "../../components/layout/Layout";
 import Spinner from "../../components/atoms/spinner/Spinner";

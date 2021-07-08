@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { render, RenderResult } from "@testing-library/react";
 
 import BuildInformation, { Props } from "../BuildInformation";

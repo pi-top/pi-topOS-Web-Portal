@@ -1,3 +1,4 @@
+import React from "react";
 import { render, QueryByText, BoundFunction } from "@testing-library/react";
 
 import TermsAndConditions from "../TermsAndConditions";
