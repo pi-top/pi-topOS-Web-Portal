@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import linkScreenCenter from "../../assets/images/tour-links-screen.svg";
 

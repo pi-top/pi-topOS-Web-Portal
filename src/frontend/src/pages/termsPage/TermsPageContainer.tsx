@@ -1,5 +1,3 @@
-import React from "react";
-
 import TermsPage from "./TermsPage";
 
 export type Props = {

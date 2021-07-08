@@ -1,4 +1,3 @@
-import React from "react";
 import { render, GetByText, BoundFunction } from "@testing-library/react";
 
 import PrivacyPolicy from "../PrivacyPolicy";

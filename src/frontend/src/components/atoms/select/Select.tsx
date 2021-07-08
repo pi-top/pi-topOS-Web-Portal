@@ -1,4 +1,3 @@
-import React from "react";
 import Select, { Props as SelectProps } from "react-select";
 import cx from "classnames";
 

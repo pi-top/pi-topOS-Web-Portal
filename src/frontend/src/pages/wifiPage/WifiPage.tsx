@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import Layout from "../../components/layout/Layout";
 import Select from "../../components/atoms/select/Select";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { Timezone } from "../../types/Timezone";
 import CountryPage from "./CountryPage";

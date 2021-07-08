@@ -1,5 +1,3 @@
-import React from "react";
-
 import Dialog from "../../../components/atoms/dialog/Dialog";
 import Button from "../../../components/atoms/button/Button";
 import PrivacyPolicy from "../../../components/privacyPolicy/PrivacyPolicy";

@@ -1,5 +1,3 @@
-import React from "react";
-
 import styles from "./BuildInformation.module.css";
 import { BuildInfo } from "../../types/Build";
 
