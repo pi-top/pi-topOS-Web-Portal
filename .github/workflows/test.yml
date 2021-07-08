@@ -20,13 +20,13 @@ jobs:
         run: |
           cd src/server
           pipenv install --dev
-          PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend --junitxml=tests.xml
+          PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend
           pipenv run coverage xml
 
       - name: Upload test coverage report to Codecov
         uses: codecov/codecov-action@v1
         with:
-          files: ./coverage.xml
+          files: ./src/server/coverage.xml
           flags: unittests
           env_vars: OS,PYTHON,JAVASCRIPT
           fail_ci_if_error: true
