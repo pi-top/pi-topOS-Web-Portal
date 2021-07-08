@@ -17,7 +17,7 @@ jobs:
         run: |
           pip install pipenv pytest
           cd src/server
-          pipenv install --deploy --dev
+          pipenv install --deploy --dev --verbose
 
       - name: Run tests and generate coverage report
         run: |
