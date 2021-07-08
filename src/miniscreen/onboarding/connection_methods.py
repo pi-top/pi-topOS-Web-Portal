@@ -40,7 +40,7 @@ class ConnectionMethodBase(ABC):
 
     def get_image_file_path(self, relative_file_name):
         return path.abspath(
-            path.join(path.dirname(path.abspath(__file__)) + "/../images", relative_file_name)
+            path.join(path.dirname(path.abspath(__file__)) + "/images", relative_file_name)
         )
 
     def __eq__(self, other):
