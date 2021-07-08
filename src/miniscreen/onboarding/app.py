@@ -68,7 +68,7 @@ class OnboardingApp:
                     self.next_page = None
                     self.force_redraw = True
 
-                sleep(0.5)
+                sleep(0.2)
         except KeyboardInterrupt:
             pass
         finally:
