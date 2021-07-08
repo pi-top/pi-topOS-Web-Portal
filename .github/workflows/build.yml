@@ -1,9 +1,6 @@
-name: Latest Build
+name: Build
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   build-latest-debian-package:
