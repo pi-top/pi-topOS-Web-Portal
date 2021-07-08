@@ -6,8 +6,12 @@ from time import sleep
 
 from pitop import Pitop
 
-from .connection.methods import ConnectionMethod
-from .connection.monitor import ConnectionMonitor
+from .connection.methods import (
+    ConnectionMethod,
+    ApConnection,
+    UsbConnection,
+    EthernetConnection,
+)
 from .helpers import (
     FIRST_LINE_Y,
     MARGIN_X,
@@ -18,9 +22,48 @@ from .helpers import (
 )
 
 
+from enum import IntEnum
+
+
+class Menus(IntEnum):
+    AP = 0
+    USB = 1
+    ETHERNET = 2
+    INFO = 3
+
+    def next(self):
+        next_mode = self.value + 1 if self.value + 1 < len(Menus) else 0
+        return Menus(next_mode)
+
+    def previous(self):
+        previous = self.value - 1 if self.value - 1 >= 0 else len(Menus) - 1
+        return Menus(previous)
+
+
+class MenuPage:
+    def __init__(self, type, connection_state):
+        self.type = type
+        self.connection_state = connection_state
+
+    def render(self):
+        previous_state = self.connection_state
+        self.connection_state.update()
+        if self.connection_state != previous_state:
+            self.play_state_animation(self.connection_state)
+            if self.connection_state.is_connected():
+                self.display_connection_data(self.connection_state)
+
+
 class OnboardingApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
+        self.pages = {
+            Menus.AP: MenuPage(Menus.AP, ApConnection()),
+            Menus.USB: MenuPage(Menus.USB, UsbConnection()),
+            Menus.ETHERNET: MenuPage(Menus.ETHERNET, EthernetConnection()),
+            Menus.INFO: MenuPage(Menus.INFO, None),
+        }
+        self.current_page = self.pages.get(Menus.AP)
         self.__auto_play_thread = None
         self.__stop_thread = Value(c_bool, False)
         atexit.register(self.stop)
@@ -61,23 +104,21 @@ class OnboardingApp:
             draw_text(canvas, text=str(connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y),)
         self.miniscreen.display_image(image)
 
+    def __go_to(self, page):
+        self.current_page = self.pages.get(page)
+
     def __run_in_background(self):
+        self.miniscreen.up_button.when_pressed = lambda: self.__go_to(self.current_page.type.next())
+        self.miniscreen.down_button.when_pressed = lambda: self.__go_to(self.current_page.type.previous())
+
         try:
-            connection_monitor = ConnectionMonitor()
-            previous_state = None
             while self.__stop_thread.value is False:
-                current_state = connection_monitor.state
-                if current_state != previous_state:
-                    previous_state = current_state
-                    self.play_state_animation(current_state)
-                    if current_state.is_connected():
-                        self.display_connection_data(current_state)
+                self.current_page.render()
                 sleep(0.5)
         except KeyboardInterrupt:
             pass
         finally:
             self.miniscreen.stop_animated_image()
-            connection_monitor.stop()
 
 
 if __name__ == '__main__':
