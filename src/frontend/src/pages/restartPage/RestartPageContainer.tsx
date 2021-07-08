@@ -17,6 +17,7 @@ import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
+import enablePtSysOled from "../../services/enablePtSysOled";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -164,6 +165,12 @@ export default ({
             safelyRunService(
               updateEeprom,
               "Made things easier for me to go to sleep when you ask..."
+            )
+          )
+          .finally(() =>
+            safelyRunService(
+              enablePtSysOled,
+              "Reminded myself to ..."
             )
           )
           .catch(console.error)
