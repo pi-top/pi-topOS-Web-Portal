@@ -16,13 +16,10 @@ jobs:
       - name: Install pipenv
         uses: dschep/install-pipenv-action@v1
 
-      - name: Install dependencies with pipenv
+      - name: Run tests and generate coverage report
         run: |
           cd src/server
           pipenv install --dev
-
-      - name: Run tests and generate coverage report
-        run: |
           PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend --junitxml=tests.xml
           pipenv run coverage xml
 
