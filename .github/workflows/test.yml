@@ -1,0 +1,34 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install dependencies with pipenv
+        run: |
+          pip install pipenv
+          cd src/server
+          pipenv install --deploy --dev
+
+      - name: Run tests and generate coverage report
+      - run: |
+          PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend --junitxml=tests.xml
+          pipenv run coverage xml
+
+      - name: Upload test coverage report to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON,JAVASCRIPT
+          fail_ci_if_error: true
+          verbose: true
