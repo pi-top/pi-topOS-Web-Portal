@@ -20,7 +20,7 @@ jobs:
           pipenv install --deploy --dev
 
       - name: Run tests and generate coverage report
-      - run: |
+        run: |
           PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend --junitxml=tests.xml
           pipenv run coverage xml
 
