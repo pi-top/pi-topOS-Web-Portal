@@ -41,12 +41,6 @@ class Menus(IntEnum):
         return Menus(previous)
 
 
-class RenderState(Enum):
-    STATIONARY = 0
-    ANIMATING = 1
-    DISPLAYING_INFO = 2
-
-
 class MenuPageBase:
     def __init__(self, type, size=(0, 0), mode=0):
         self.type = type
@@ -54,8 +48,46 @@ class MenuPageBase:
         self.mode = mode
         self.interval = DEFAULT_INTERVAL
 
-    def render(self, draw):
+    def render(self, draw, redraw=False):
         raise NotImplementedError
+
+
+class InfoMenuPage(MenuPageBase):
+    def __init__(self, size, mode):
+        super(InfoMenuPage, self).__init__(type=Menus.INFO, size=size, mode=mode)
+
+    def render(self, draw, redraw=False):
+        build_data = self.build_data()
+        draw_text(draw, text="pi-topOS", xy=(MARGIN_X/2, FIRST_LINE_Y))
+        draw_text(draw, text=f"Build: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
+        draw_text(draw, text=f"Date: {build_data.get('build_date')}", xy=(MARGIN_X/2, THIRD_LINE_Y))
+
+    def __get_file_lines(self, filename):
+        lines = list()
+        try:
+            with open(filename) as fp:
+                lines = fp.readlines()
+        except Exception:
+            pass
+        return lines
+
+    def build_data(self):
+        headers = ("Build Number", "Build Date")
+        data = {}
+        for line in self.__get_file_lines("/etc/pt-issue"):
+            try:
+                title, value = line.strip().split(": ")
+                if title in headers:
+                    data[title.replace(" ", "_").lower()] = value
+            except Exception:
+                continue
+        return data
+
+
+class RenderState(Enum):
+    STATIONARY = 0
+    ANIMATING = 1
+    DISPLAYING_INFO = 2
 
 
 class ConnectionMenuPage(MenuPageBase):
@@ -113,18 +145,15 @@ class ConnectionMenuPage(MenuPageBase):
         else:
             self.interval = DEFAULT_INTERVAL
 
-    def render(self, draw):
-        if self.render_state != RenderState.ANIMATING:
-            self.is_connected = self.connection_state.is_connected()
-            if not self.is_connected:
-                self.reset_animation()
-
-        if self.render_state == RenderState.DISPLAYING_INFO:
+    def render(self, draw, redraw=False):
+        if redraw or self.render_state != RenderState.ANIMATING:
             self.connection_state.update()
+            self.is_connected = self.connection_state.is_connected()
+            if redraw or not self.is_connected:
+                self.reset_animation()
 
         if not self.first_draw:
             if self.is_connected:
-
                 if self.title_image_pos[0] <= -self.size[0]:
                     self.render_state = RenderState.DISPLAYING_INFO
                 elif self.render_state != RenderState.DISPLAYING_INFO:
@@ -202,35 +231,3 @@ class EthernetMenuPage(ConnectionMenuPage):
         draw_text(draw, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
         draw_text(draw, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
         draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
-
-
-class InfoMenuPage(MenuPageBase):
-    def __init__(self, size, mode):
-        super(InfoMenuPage, self).__init__(type=Menus.INFO, size=size, mode=mode)
-
-    def render(self, draw):
-        build_data = self.build_data()
-        draw_text(draw, text="pi-topOS", xy=(MARGIN_X/2, FIRST_LINE_Y))
-        draw_text(draw, text=f"Build: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
-        draw_text(draw, text=f"Date: {build_data.get('build_date')}", xy=(MARGIN_X/2, THIRD_LINE_Y))
-
-    def __get_file_lines(self, filename):
-        lines = list()
-        try:
-            with open(filename) as fp:
-                lines = fp.readlines()
-        except Exception:
-            pass
-        return lines
-
-    def build_data(self):
-        headers = ("Build Number", "Build Date")
-        data = {}
-        for line in self.__get_file_lines("/etc/pt-issue"):
-            try:
-                title, value = line.strip().split(": ")
-                if title in headers:
-                    data[title.replace(" ", "_").lower()] = value
-            except Exception:
-                continue
-        return data

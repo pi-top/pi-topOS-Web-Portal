@@ -32,7 +32,6 @@ class OnboardingApp:
 
         self.current_page = self.pages.get(Menus.AP)
         self.next_page = None
-        self.force_redraw = False
 
         self.__auto_play_thread = None
         self.__stop_thread = False
@@ -55,17 +54,18 @@ class OnboardingApp:
     def __run_in_background(self):
         try:
             empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
+            force_redraw = False
             while self.__stop_thread is False:
                 image = empty_image.copy()
                 draw = ImageDraw.Draw(image)
 
-                self.current_page.render(draw)
-                self.force_redraw = False
+                self.current_page.render(draw, redraw=force_redraw)
+                force_redraw = False
 
                 if self.next_page:
                     self.current_page = self.next_page
                     self.next_page = None
-                    self.force_redraw = True
+                    force_redraw = True
                     self.current_page.first_draw = True
 
                 self.miniscreen.device.display(image)
