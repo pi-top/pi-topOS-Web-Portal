@@ -23,7 +23,14 @@ class ConnectionMethod(Enum):
 
 
 class ConnectionMethodBase(ABC):
-    def __init__(self, connection_method, ip="", path_to_image="", interface_name="", metadata=dict()):
+    def __init__(
+        self,
+        connection_method,
+        ip="",
+        path_to_image="",
+        interface_name="",
+        metadata=dict()
+    ):
         self.connection_method = connection_method
         self.ip = ip
         self.path_to_image = path_to_image
@@ -40,7 +47,13 @@ class ConnectionMethodBase(ABC):
 
     def get_image_file_path(self, relative_file_name):
         return path.abspath(
-            path.join(path.dirname(path.abspath(__file__)) + "/images", relative_file_name)
+            path.join(
+                path.dirname(
+                    path.abspath(__file__)
+                ),
+                "images",
+                relative_file_name
+            )
         )
 
     def __eq__(self, other):
@@ -62,6 +75,7 @@ class UsbConnection(ConnectionMethodBase):
                 "username": "pi" if getuser() == "root" else getuser(),
                 "password": "pi-top" if is_pi_using_default_password() is True else "********",
             })
+        self.connected_device_ip = ""
         self.update()
 
     def update(self):
@@ -74,6 +88,14 @@ class UsbConnection(ConnectionMethodBase):
 
     def is_connected(self):
         return self.connected_device_ip != ""
+
+    def __eq__(self, other):
+        return isinstance(other, UsbConnection) \
+            and self.metadata == other.metadata \
+            and self.connection_method == other.connection_method \
+            and self.ip == other.ip \
+            and self.is_connected() == other.is_connected() \
+            and self.connected_device_ip() == other.connected_device_ip()
 
 
 class ApConnection(ConnectionMethodBase):
