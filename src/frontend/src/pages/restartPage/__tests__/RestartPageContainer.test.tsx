@@ -29,6 +29,7 @@ import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
 import serverStatus from "../../../services/serverStatus";
 import updateEeprom from "../../../services/updateEeprom";
+import enablePtSysOled from "../../../services/enablePtSysOled";
 
 import { act } from "react-dom/test-utils";
 
@@ -46,6 +47,7 @@ jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/updateEeprom");
+jest.mock("../../../services/enablePtSysOled");
 
 
 const configureTourMock = configureTour as jest.Mock;
@@ -62,6 +64,7 @@ const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const updateEepromMock = updateEeprom as jest.Mock;
+const enablePtSysOledMock = enablePtSysOled as jest.Mock;
 
 
 const mockServices = [
@@ -78,6 +81,7 @@ const mockServices = [
   updateMimeDatabaseMock,
   updateEepromMock,
   rebootMock,
+  enablePtSysOledMock,
 ];
 
 
