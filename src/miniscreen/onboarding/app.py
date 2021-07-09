@@ -1,4 +1,8 @@
 import atexit
+from PIL import (
+    Image,
+    ImageDraw,
+)
 from threading import Thread
 from time import sleep
 
@@ -50,8 +54,12 @@ class OnboardingApp:
 
     def __run_in_background(self):
         try:
+            empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
             while self.__stop_thread is False:
-                self.current_page.render(self.miniscreen, force=self.force_redraw)
+                image = empty_image.copy()
+                draw = ImageDraw.Draw(image)
+
+                self.current_page.render(draw)
                 self.force_redraw = False
 
                 if self.next_page:
@@ -60,6 +68,7 @@ class OnboardingApp:
                     self.force_redraw = True
                     self.current_page.first_draw = True
 
+                self.miniscreen.device.display(image)
                 sleep(self.current_page.interval)
         except KeyboardInterrupt:
             pass

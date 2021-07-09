@@ -1,4 +1,3 @@
-from copy import copy
 from enum import IntEnum, Enum
 from os import path
 from PIL import ImageDraw, Image
@@ -9,19 +8,22 @@ from .connection_methods import (
     EthernetConnection,
 )
 from .helpers import (
-    FIRST_LINE_Y,
-    MARGIN_X,
-    SECOND_LINE_Y,
-    THIRD_LINE_Y,
     draw_text,
-    play_animated_image_file,
+    process_image,
 )
+
 # Tunings to approximately match other sys info pages using GIFs
 ANIMATION_SPEED = 1
 ANIMATION_SLEEP_INTERVAL = 0.005
 STATIONARY_SLEEP_INTERVAL = 0.5
 FIRST_DRAW_SLEEP_INTERVAL = 1
 DEFAULT_INTERVAL = 0.2
+
+# Formatting text in miniscreen
+MARGIN_X = 29
+FIRST_LINE_Y = 9
+SECOND_LINE_Y = 25
+THIRD_LINE_Y = 41
 
 
 class Menus(IntEnum):
@@ -46,43 +48,44 @@ class RenderState(Enum):
 
 
 class MenuPageBase:
-    def __init__(self, type, connection_state=None, path_to_image="", size=(0, 0), mode=0):
+    def __init__(self, type, size=(0, 0), mode=0):
         self.type = type
-        self.connection_state = connection_state
-        self.path_to_image = path_to_image
         self.size = size
         self.mode = mode
+        self.interval = DEFAULT_INTERVAL
+
+    def render(self, draw):
+        raise NotImplementedError
+
+
+class ConnectionMenuPage(MenuPageBase):
+    def __init__(self, type, connection_state=None, title_image_filename="", info_image_filename="", size=(0, 0), mode=0):
+        super(ConnectionMenuPage, self).__init__(type, size, mode)
+
+        self.connection_state = connection_state
         self.interval = STATIONARY_SLEEP_INTERVAL
         self.render_state = RenderState.STATIONARY
 
-    def display_connection_data(self, miniscreen):
-        pass
+        self.title_connected_image = process_image(
+            Image.open(self.get_image_file_path(title_image_filename)),
+            size,
+            mode
+        )
+        self.title_disconnected_image = self.title_connected_image.copy()
+        self.add_disconnected_icon(self.title_disconnected_image)
 
-    def play_state_animation(self, miniscreen):
-        if self.connection_state.is_connected():
-            # final image shouldn't be cleared after animation finishes
-            play_animated_image_file(miniscreen, self.path_to_image)
-        else:
-            image = Image.open(self.path_to_image)
-            image = image.convert("1")
-            canvas = ImageDraw.Draw(image)
-            canvas.ellipse((70, 23) + (84, 37), fill=0, outline=0)
-            canvas.ellipse((71, 24) + (83, 36), fill=1, outline=0)
-            canvas.line((74, 27) + (79, 32), fill=0, width=2)
-            canvas.line((75, 32) + (80, 27), fill=0, width=2)
-            miniscreen.display_image(image)
+        self.info_image = process_image(
+            Image.open(self.get_image_file_path(info_image_filename)),
+            size,
+            mode
+        )
 
-    def render(self, miniscreen, force=False):
-        state = self.connection_state
-        self.play_state_animation(miniscreen)
-        if state.is_connected():
-            self.display_connection_data(miniscreen)
+        self.title_image_pos = (0, 0)
+        self.first_draw = True
+        self.is_connected = False
 
-    def should_redraw(self):
-        state = self.connection_state
-        previous_state = copy(self.connection_state)
-        state.update()
-        return state != previous_state
+    def draw_connection_data(self, draw):
+        raise NotImplementedError
 
     def get_image_file_path(self, relative_file_name):
         return path.abspath(
@@ -94,54 +97,6 @@ class MenuPageBase:
                 relative_file_name
             )
         )
-
-    def process_image(self, image_to_process):
-        if image_to_process.size == self.size:
-            image = image_to_process
-            if image.mode != self.mode:
-                image = image.convert(self.mode)
-        else:
-            image = Image.new(
-                self.mode,
-                self.size,
-                "black"
-            )
-            image.paste(
-                image_to_process.resize(
-                    self.size,
-                    resample=Image.NEAREST
-                )
-            )
-
-        return image
-
-    def add_disconnected_icon(self, pil_image):
-        canvas = ImageDraw.Draw(pil_image)
-        canvas.ellipse((70, 23) + (84, 37), fill=0, outline=0)
-        canvas.ellipse((71, 24) + (83, 36), fill=1, outline=0)
-        canvas.line((74, 27) + (79, 32), fill=0, width=2)
-        canvas.line((75, 32) + (80, 27), fill=0, width=2)
-
-
-class ApMenuPage(MenuPageBase):
-    def __init__(self, size, mode):
-        super(ApMenuPage, self).__init__(Menus.AP, ApConnection(), "", size, mode)
-        title_image_path = self.get_image_file_path("ap_title.png")
-        info_image_path = self.get_image_file_path("ap_info.png")
-
-        self.title_connected_image = self.process_image(
-            Image.open(title_image_path)
-        )
-        self.title_disconnected_image = self.title_connected_image.copy()
-        self.add_disconnected_icon(self.title_disconnected_image)
-
-        self.info_image = self.process_image(
-            Image.open(info_image_path)
-        )
-
-        self.title_image_pos = (0, 0)
-        self.first_draw = True
-        self.is_connected = False
 
     def reset_animation(self):
         self.title_image_pos = (0, 0)
@@ -158,10 +113,7 @@ class ApMenuPage(MenuPageBase):
         else:
             self.interval = DEFAULT_INTERVAL
 
-    def render(self, miniscreen, force=False):
-        image = Image.new(miniscreen.mode, miniscreen.size)
-        draw = ImageDraw.Draw(image)
-
+    def render(self, draw):
         if self.render_state != RenderState.ANIMATING:
             self.is_connected = self.connection_state.is_connected()
             if not self.is_connected:
@@ -187,9 +139,7 @@ class ApMenuPage(MenuPageBase):
                 bitmap=self.info_image,
                 fill="white",
             )
-            draw_text(draw, text=self.connection_state.metadata.get("ssid", ""), xy=(MARGIN_X, FIRST_LINE_Y))
-            draw_text(draw, text=self.connection_state.metadata.get("passphrase", ""), xy=(MARGIN_X, SECOND_LINE_Y))
-            draw_text(draw, text=self.connection_state.ip, xy=(MARGIN_X, THIRD_LINE_Y))
+            self.draw_connection_data(draw)
         else:
             title_image = self.title_connected_image if self.is_connected else self.title_disconnected_image
             draw.bitmap(
@@ -201,50 +151,68 @@ class ApMenuPage(MenuPageBase):
         self.set_interval()
         self.first_draw = False
 
-        miniscreen.device.display(image)
+    def add_disconnected_icon(self, pil_image):
+        canvas = ImageDraw.Draw(pil_image)
+        canvas.ellipse((70, 23) + (84, 37), fill=0, outline=0)
+        canvas.ellipse((71, 24) + (83, 36), fill=1, outline=0)
+        canvas.line((74, 27) + (79, 32), fill=0, width=2)
+        canvas.line((75, 32) + (80, 27), fill=0, width=2)
 
 
-class UsbMenuPage(MenuPageBase):
+class ApMenuPage(ConnectionMenuPage):
     def __init__(self, size, mode):
-        super(UsbMenuPage, self).__init__(Menus.USB, UsbConnection(), self.get_image_file_path("usb.gif"), size, mode)
+        super(ApMenuPage, self).__init__(type=Menus.AP,
+                                         connection_state=ApConnection(),
+                                         title_image_filename="ap_title.png",
+                                         info_image_filename="ap_info.png",
+                                         size=size,
+                                         mode=mode)
 
-    def display_connection_data(self, miniscreen):
-        image = miniscreen.image.copy()
-        canvas = ImageDraw.Draw(image)
-        draw_text(canvas, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
-        draw_text(canvas, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
-        draw_text(canvas, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
-        miniscreen.display_image(image)
+    def draw_connection_data(self, draw):
+        draw_text(draw, text=self.connection_state.metadata.get("ssid", ""), xy=(MARGIN_X, FIRST_LINE_Y))
+        draw_text(draw, text=self.connection_state.metadata.get("passphrase", ""), xy=(MARGIN_X, SECOND_LINE_Y))
+        draw_text(draw, text=self.connection_state.ip, xy=(MARGIN_X, THIRD_LINE_Y))
 
 
-class EthernetMenuPage(MenuPageBase):
+class UsbMenuPage(ConnectionMenuPage):
     def __init__(self, size, mode):
-        super(EthernetMenuPage, self).__init__(Menus.ETHERNET, EthernetConnection(), self.get_image_file_path("lan.gif"), size, mode)
+        super(UsbMenuPage, self).__init__(type=Menus.USB,
+                                          connection_state=UsbConnection(),
+                                          title_image_filename="usb_title.png",
+                                          info_image_filename="usb_info.png",
+                                          size=size,
+                                          mode=mode)
 
-    def display_connection_data(self, miniscreen):
-        image = miniscreen.image.copy()
-        canvas = ImageDraw.Draw(image)
-        draw_text(canvas, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
-        draw_text(canvas, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
-        draw_text(canvas, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
-        miniscreen.display_image(image)
+    def draw_connection_data(self, draw):
+        draw_text(draw, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
+        draw_text(draw, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
+        draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
+
+
+class EthernetMenuPage(ConnectionMenuPage):
+    def __init__(self, size, mode):
+        super(EthernetMenuPage, self).__init__(type=Menus.ETHERNET,
+                                               connection_state=EthernetConnection(),
+                                               title_image_filename="lan_title.png",
+                                               info_image_filename="lan_info.png",
+                                               size=size,
+                                               mode=mode)
+
+    def draw_connection_data(self, draw):
+        draw_text(draw, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
+        draw_text(draw, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
+        draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
 
 
 class InfoMenuPage(MenuPageBase):
     def __init__(self, size, mode):
-        super(InfoMenuPage, self).__init__(Menus.INFO, size, mode)
+        super(InfoMenuPage, self).__init__(type=Menus.INFO, size=size, mode=mode)
 
-    def render(self, miniscreen, force=False):
+    def render(self, draw):
         build_data = self.build_data()
-        image = Image.new(miniscreen.mode, miniscreen.size)
-        canvas = ImageDraw.Draw(image)
-        draw_text(canvas, text="pi-topOS", xy=(MARGIN_X/2, FIRST_LINE_Y))
-        draw_text(canvas, text=f"Build: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
-        draw_text(canvas, text=f"Date: {build_data.get('build_date')}", xy=(MARGIN_X/2, THIRD_LINE_Y))
-        miniscreen.display_image(image)
-
-    def should_redraw(self):
-        return False
+        draw_text(draw, text="pi-topOS", xy=(MARGIN_X/2, FIRST_LINE_Y))
+        draw_text(draw, text=f"Build: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
+        draw_text(draw, text=f"Date: {build_data.get('build_date')}", xy=(MARGIN_X/2, THIRD_LINE_Y))
 
     def __get_file_lines(self, filename):
         lines = list()
