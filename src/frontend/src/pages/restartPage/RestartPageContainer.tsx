@@ -170,7 +170,7 @@ export default ({
           .finally(() =>
             safelyRunService(
               enablePtSysOled,
-              "Reminded myself to ..."
+              "Reminded myself to tell the miniscreen to do its thing in the morning..."
             )
           )
           .catch(console.error)
