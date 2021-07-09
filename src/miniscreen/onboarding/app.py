@@ -19,12 +19,11 @@ class OnboardingApp:
         self.miniscreen = Pitop().miniscreen
         self.miniscreen.up_button.when_pressed = lambda: self.go_to(self.current_page.type.previous())
         self.miniscreen.down_button.when_pressed = lambda: self.go_to(self.current_page.type.next())
-
         self.pages = {
-            Menus.AP: ApMenuPage(),
-            Menus.USB: UsbMenuPage(),
-            Menus.ETHERNET: EthernetMenuPage(),
-            Menus.INFO: InfoMenuPage(),
+            Menus.AP: ApMenuPage(self.miniscreen.size, self.miniscreen.mode),
+            Menus.USB: UsbMenuPage(self.miniscreen.size, self.miniscreen.mode),
+            Menus.ETHERNET: EthernetMenuPage(self.miniscreen.size, self.miniscreen.mode),
+            Menus.INFO: InfoMenuPage(self.miniscreen.size, self.miniscreen.mode),
         }
 
         self.current_page = self.pages.get(Menus.AP)
@@ -45,30 +44,23 @@ class OnboardingApp:
         if self.__auto_play_thread and self.__auto_play_thread.is_alive():
             self.__auto_play_thread.join()
 
-    def should_redraw(self, page):
-        return self.force_redraw or page.should_redraw()
-
     def go_to(self, page):
         self.next_page = self.pages.get(page)
         PTLogger.info(f"Moving to {self.next_page.type.name} page")
 
     def __run_in_background(self):
         try:
-            self.current_page.render(self.miniscreen)
             while self.__stop_thread is False:
-                current_page = self.current_page
-                if self.should_redraw(current_page):
-                    PTLogger.info(f"Redrawing {current_page.type.name}")
-                    self.miniscreen.reset()
-                    current_page.render(self.miniscreen)
-                    self.force_redraw = False
+                self.current_page.render(self.miniscreen, force=self.force_redraw)
+                self.force_redraw = False
 
                 if self.next_page:
                     self.current_page = self.next_page
                     self.next_page = None
                     self.force_redraw = True
+                    self.current_page.first_draw = True
 
-                sleep(0.2)
+                sleep(self.current_page.interval)
         except KeyboardInterrupt:
             pass
         finally:

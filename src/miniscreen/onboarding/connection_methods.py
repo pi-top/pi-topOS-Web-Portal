@@ -5,7 +5,6 @@ from abc import (
 from enum import Enum, auto
 from getpass import getuser
 from ipaddress import ip_address
-from os import path
 
 from pitopcommon.sys_info import (
     get_address_for_ptusb_connected_device,
@@ -27,13 +26,11 @@ class ConnectionMethodBase(ABC):
         self,
         connection_method,
         ip="",
-        path_to_image="",
         interface_name="",
         metadata=dict()
     ):
         self.connection_method = connection_method
         self.ip = ip
-        self.path_to_image = path_to_image
         self.interface_name = interface_name
         self.metadata = metadata
 
@@ -44,17 +41,6 @@ class ConnectionMethodBase(ABC):
     @abstractmethod
     def is_connected(self):
         raise NotImplementedError
-
-    def get_image_file_path(self, relative_file_name):
-        return path.abspath(
-            path.join(
-                path.dirname(
-                    path.abspath(__file__)
-                ),
-                "images",
-                relative_file_name
-            )
-        )
 
     def __eq__(self, other):
         return isinstance(other, ConnectionMethodBase) \
@@ -69,7 +55,6 @@ class UsbConnection(ConnectionMethodBase):
         super(UsbConnection, self).__init__(
             connection_method=ConnectionMethod.USB,
             ip="",
-            path_to_image=self.get_image_file_path("usb.gif"),
             interface_name="ptusb0",
             metadata={
                 "username": "pi" if getuser() == "root" else getuser(),
@@ -95,7 +80,7 @@ class UsbConnection(ConnectionMethodBase):
             and self.connection_method == other.connection_method \
             and self.ip == other.ip \
             and self.is_connected() == other.is_connected() \
-            and self.connected_device_ip() == other.connected_device_ip()
+            and self.connected_device_ip == other.connected_device_ip
 
 
 class ApConnection(ConnectionMethodBase):
@@ -103,7 +88,6 @@ class ApConnection(ConnectionMethodBase):
         super(ApConnection, self).__init__(
             connection_method=ConnectionMethod.AP,
             ip="",
-            path_to_image=self.get_image_file_path("ap.gif"),
             interface_name="wlan_ap0",
             metadata=get_ap_mode_status())
         self.update()
@@ -127,7 +111,6 @@ class EthernetConnection(ConnectionMethodBase):
         super(EthernetConnection, self).__init__(
             connection_method=ConnectionMethod.ETHERNET,
             ip="",
-            path_to_image=self.get_image_file_path("lan.gif"),
             interface_name="eth0",
             metadata={
                 "username": "pi" if getuser() == "root" else getuser(),
