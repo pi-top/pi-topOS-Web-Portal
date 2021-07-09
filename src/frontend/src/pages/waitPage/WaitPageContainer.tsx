@@ -6,7 +6,6 @@ import isFileSystemExpanded from "../../services/isFileSystemExpanded";
 import reboot from "../../services/reboot";
 import expandFileSystem from "../../services/expandFileSystem";
 import enableMouseCursor from "../../services/enableMouseCursor";
-import enablePtSysOled from "../../services/enablePtSysOled";
 
 export type Props = {
   goToNextPage: () => void;
@@ -44,9 +43,6 @@ export default ({
     expandFileSystem()
         .then(() => {
             return enableMouseCursor()
-        })
-        .then(() => {
-            return enablePtSysOled()
         })
         .then(() => {
             setIsRebooting(true);
