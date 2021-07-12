@@ -1,4 +1,5 @@
 import atexit
+from os import path
 from PIL import (
     Image,
     ImageDraw,
@@ -9,6 +10,7 @@ from time import sleep
 from pitop import Pitop
 from pitopcommon.logger import PTLogger
 
+from .helpers import get_image_file_path
 from .menus import (
     ApMenuPage,
     EthernetMenuPage,
@@ -53,6 +55,15 @@ class OnboardingApp:
 
     def __run_in_background(self):
         try:
+            fs_expanded_breadcrumb = "/etc/pi-top/.expandedFs"
+            one_loop_only = path.exists(fs_expanded_breadcrumb)
+            startup_animation_path = get_image_file_path("pi-top_startup.gif")
+            self.miniscreen.play_animated_image_file(
+                startup_animation_path,
+                background=False,
+                loop=not one_loop_only
+            )
+
             empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
             force_redraw = False
             while self.__stop_thread is False:
