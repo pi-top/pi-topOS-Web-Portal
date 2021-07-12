@@ -4,3 +4,4 @@ src/notify-on-port-busy.sh                  /usr/lib/pt-web-portal
 src/server/Pipfile*                         /usr/lib/pt-web-portal
 src/server/run.py                           /usr/lib/pt-web-portal
 src/server/backend                          /usr/lib/pt-web-portal
+src/miniscreen                              /usr/lib/pt-web-portal
