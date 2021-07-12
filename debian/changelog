@@ -1,29 +1,8 @@
 pt-web-portal (0.1.20) buster; urgency=medium
 
-  [ Mike Roberts ]
-  * Re-apply changes over v0.1.19 without touching dependencies
-  * Just use build.yml
-  * build-debian-package
-  * react-jsx --> react
-  * Generate new yarn.lock (#130)
-
-  [ Jorge Capona ]
-  * Fix ts issue in isSingleOption component
-  * Revert "Fix ts issue in isSingleOption component"
-  * Enable pt-sys-oled on Restart Page (#134)
-
-  [ dependabot[bot] ]
-  * Bump react from 16.13.0 to 16.14.0 in /src/frontend (#138)
-
-  [ dependabot[bot] ]
-  * Bump pitopcommon from 0.8.5 to 0.8.7 in /src/server (#142)
-
-  [ dependabot[bot] ]
-  * Bump actions/setup-python from 1 to 2.2.2 (#136)
-
-  [ dependabot[bot] ]
-  * Bump @testing-library/jest-dom from 4.2.4 to 5.14.1 in /src/frontend (#137)
-  * Add miniscreen app for onboarding (#102)
+  * Add miniscreen app for onboarding
+  * Enable pt-sys-oled service on Restart Page
+  * Bump webapp dependencies
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 12 Jul 2021 19:50:15 +0000
 
