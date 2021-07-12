@@ -1,3 +1,10 @@
+pt-web-portal (0.1.21) buster; urgency=medium
+
+  * Add first boot animation
+  * Bump webapp dependencies
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 12 Jul 2021 22:27:19 +0000
+
 pt-web-portal (0.1.20) buster; urgency=medium
 
   * Add miniscreen app for onboarding
