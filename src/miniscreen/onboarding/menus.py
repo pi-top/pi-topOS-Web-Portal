@@ -1,5 +1,4 @@
 from enum import IntEnum, Enum
-from os import path
 from PIL import ImageDraw, Image
 
 from .connection_methods import (
@@ -9,6 +8,7 @@ from .connection_methods import (
 )
 from .helpers import (
     draw_text,
+    get_image_file_path,
     process_image,
 )
 
@@ -99,7 +99,7 @@ class ConnectionMenuPage(MenuPageBase):
         self.render_state = RenderState.STATIONARY
 
         self.title_connected_image = process_image(
-            Image.open(self.get_image_file_path(title_image_filename)),
+            Image.open(get_image_file_path(title_image_filename)),
             size,
             mode
         )
@@ -115,7 +115,7 @@ class ConnectionMenuPage(MenuPageBase):
         add_disconnected_icon(self.title_disconnected_image)
 
         self.info_image = process_image(
-            Image.open(self.get_image_file_path(info_image_filename)),
+            Image.open(get_image_file_path(info_image_filename)),
             size,
             mode
         )
@@ -126,17 +126,6 @@ class ConnectionMenuPage(MenuPageBase):
 
     def draw_connection_data(self, draw):
         raise NotImplementedError
-
-    def get_image_file_path(self, relative_file_name):
-        return path.abspath(
-            path.join(
-                path.dirname(
-                    path.abspath(__file__)
-                ),
-                "images",
-                relative_file_name
-            )
-        )
 
     def reset_animation(self):
         self.title_image_pos = (0, 0)

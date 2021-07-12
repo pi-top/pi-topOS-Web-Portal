@@ -1,3 +1,4 @@
+from os import path
 from PIL import (
     Image,
     ImageFont,
@@ -38,3 +39,15 @@ def process_image(image_to_process, size, mode):
         )
 
     return image
+
+
+def get_image_file_path(relative_file_name):
+    return path.abspath(
+        path.join(
+            path.dirname(
+                path.abspath(__file__)
+            ),
+            "images",
+            relative_file_name
+        )
+    )
