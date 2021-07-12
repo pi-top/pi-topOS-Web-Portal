@@ -104,7 +104,15 @@ class ConnectionMenuPage(MenuPageBase):
             mode
         )
         self.title_disconnected_image = self.title_connected_image.copy()
-        self.add_disconnected_icon(self.title_disconnected_image)
+
+        def add_disconnected_icon(pil_image):
+            canvas = ImageDraw.Draw(pil_image)
+            canvas.ellipse((70, 23) + (84, 37), fill=0, outline=0)
+            canvas.ellipse((71, 24) + (83, 36), fill=1, outline=0)
+            canvas.line((74, 27) + (79, 32), fill=0, width=2)
+            canvas.line((75, 32) + (80, 27), fill=0, width=2)
+
+        add_disconnected_icon(self.title_disconnected_image)
 
         self.info_image = process_image(
             Image.open(self.get_image_file_path(info_image_filename)),
@@ -179,13 +187,6 @@ class ConnectionMenuPage(MenuPageBase):
 
         self.set_interval()
         self.first_draw = False
-
-    def add_disconnected_icon(self, pil_image):
-        canvas = ImageDraw.Draw(pil_image)
-        canvas.ellipse((70, 23) + (84, 37), fill=0, outline=0)
-        canvas.ellipse((71, 24) + (83, 36), fill=1, outline=0)
-        canvas.line((74, 27) + (79, 32), fill=0, width=2)
-        canvas.line((75, 32) + (80, 27), fill=0, width=2)
 
 
 class ApMenuPage(ConnectionMenuPage):
