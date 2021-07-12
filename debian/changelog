@@ -1,3 +1,11 @@
+pt-web-portal (0.1.20) buster; urgency=medium
+
+  * Add miniscreen app for onboarding
+  * Enable pt-sys-oled service on Restart Page
+  * Bump webapp dependencies
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 12 Jul 2021 19:50:15 +0000
+
 pt-web-portal (0.1.19) buster; urgency=medium
 
   * Fix pt-web-portal service restart on UpgradePage
