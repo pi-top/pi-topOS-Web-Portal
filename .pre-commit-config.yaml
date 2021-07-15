@@ -3,7 +3,7 @@
 exclude: '^.*\.snap$'
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
     - id: trailing-whitespace
     - id: end-of-file-fixer
@@ -18,15 +18,10 @@ repos:
       args: ["-x", "--exclude=SC1091,SC2039,SC2155"]
     - id: shfmt
 
--   repo: https://github.com/asottile/seed-isort-config
-    rev: v1.9.3
-    hooks:
-    - id: seed-isort-config
-
--   repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.21
-    hooks:
-    - id: isort
+# -   repo: https://github.com/pre-commit/mirrors-isort
+#     rev: v5.9.2
+#     hooks:
+#     - id: isort
 
 # -   repo: https://github.com/ambv/black
 #     rev: 21.6b0
@@ -34,14 +29,14 @@ repos:
 #     - id: black
 
 -   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.5.6
+    rev: v1.5.7
     hooks:
     - id: autopep8
       name: autopep8 - all checks, no tests
       args: ["-i", "--max-line-length=150", "--exclude", "src/server/tests/*"]
 
 -   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.5.6
+    rev: v1.5.7
     hooks:
     - id: autopep8
       # Default: E226,E24,W50,W690
@@ -49,7 +44,7 @@ repos:
       args: ["-i", "--max-line-length=150", "--ignore", "E226,E24,W50,W690,E402"]
 
 -   repo: https://gitlab.com/PyCQA/flake8
-    rev: 3.9.1
+    rev: 3.9.2
     hooks:
     - id: flake8
       name: flake8
