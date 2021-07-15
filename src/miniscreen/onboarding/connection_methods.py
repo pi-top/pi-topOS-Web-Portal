@@ -1,17 +1,14 @@
-from abc import (
-    ABC,
-    abstractmethod,
-)
+from abc import ABC, abstractmethod
 from enum import Enum, auto
 from getpass import getuser
 from ipaddress import ip_address
 
+from pitopcommon.pt_os import is_pi_using_default_password
 from pitopcommon.sys_info import (
     get_address_for_ptusb_connected_device,
     get_ap_mode_status,
     get_internal_ip,
 )
-from pitopcommon.pt_os import is_pi_using_default_password
 
 
 class ConnectionMethod(Enum):
@@ -22,13 +19,7 @@ class ConnectionMethod(Enum):
 
 
 class ConnectionMethodBase(ABC):
-    def __init__(
-        self,
-        connection_method,
-        ip="",
-        interface_name="",
-        metadata=dict()
-    ):
+    def __init__(self, connection_method, ip="", interface_name="", metadata=dict()):
         self.connection_method = connection_method
         self.ip = ip
         self.interface_name = interface_name
@@ -43,11 +34,13 @@ class ConnectionMethodBase(ABC):
         raise NotImplementedError
 
     def __eq__(self, other):
-        return isinstance(other, ConnectionMethodBase) \
-            and self.metadata == other.metadata \
-            and self.connection_method == other.connection_method \
-            and self.ip == other.ip \
+        return (
+            isinstance(other, ConnectionMethodBase)
+            and self.metadata == other.metadata
+            and self.connection_method == other.connection_method
+            and self.ip == other.ip
             and self.is_connected() == other.is_connected()
+        )
 
 
 class UsbConnection(ConnectionMethodBase):
@@ -58,8 +51,11 @@ class UsbConnection(ConnectionMethodBase):
             interface_name="ptusb0",
             metadata={
                 "username": "pi" if getuser() == "root" else getuser(),
-                "password": "pi-top" if is_pi_using_default_password() is True else "********",
-            })
+                "password": "pi-top"
+                if is_pi_using_default_password() is True
+                else "********",
+            },
+        )
         self.connected_device_ip = ""
         self.update()
 
@@ -75,12 +71,14 @@ class UsbConnection(ConnectionMethodBase):
         return self.connected_device_ip != ""
 
     def __eq__(self, other):
-        return isinstance(other, UsbConnection) \
-            and self.metadata == other.metadata \
-            and self.connection_method == other.connection_method \
-            and self.ip == other.ip \
-            and self.is_connected() == other.is_connected() \
+        return (
+            isinstance(other, UsbConnection)
+            and self.metadata == other.metadata
+            and self.connection_method == other.connection_method
+            and self.ip == other.ip
+            and self.is_connected() == other.is_connected()
             and self.connected_device_ip == other.connected_device_ip
+        )
 
 
 class ApConnection(ConnectionMethodBase):
@@ -89,7 +87,8 @@ class ApConnection(ConnectionMethodBase):
             connection_method=ConnectionMethod.AP,
             ip="",
             interface_name="wlan_ap0",
-            metadata=get_ap_mode_status())
+            metadata=get_ap_mode_status(),
+        )
         self.update()
 
     def update(self):
@@ -114,8 +113,11 @@ class EthernetConnection(ConnectionMethodBase):
             interface_name="eth0",
             metadata={
                 "username": "pi" if getuser() == "root" else getuser(),
-                "password": "pi-top" if is_pi_using_default_password() is True else "********",
-            })
+                "password": "pi-top"
+                if is_pi_using_default_password() is True
+                else "********",
+            },
+        )
         self.update()
 
     def update(self):

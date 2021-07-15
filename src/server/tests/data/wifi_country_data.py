@@ -1,4 +1,4 @@
-country_code_sample = b'en_US'
+country_code_sample = b"en_US"
 
 wifi_country_list = {
     "AD": "Andorra",
@@ -249,5 +249,5 @@ wifi_country_list = {
     "YT": "Mayotte",
     "ZA": "South Africa",
     "ZM": "Zambia",
-    "ZW": "Zimbabwe"
+    "ZW": "Zimbabwe",
 }

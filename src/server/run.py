@@ -1,32 +1,23 @@
 #!/usr/bin/python3
 
-from os import (
-    environ,
-    geteuid,
-)
 from argparse import ArgumentParser
-
-from gevent import pywsgi
-from geventwebsocket.handler import WebSocketHandler
-
-from pitopcommon.command_runner import run_command
-from pitopcommon.logger import PTLogger
-from pitopcommon.sys_info import (
-    get_systemd_active_state,
-    stop_systemd_service,
-)
+from os import environ, geteuid
 
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
 from backend.helpers.finalise import onboarding_completed
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 from miniscreen.onboarding.app import OnboardingApp
-
+from pitopcommon.command_runner import run_command
+from pitopcommon.logger import PTLogger
+from pitopcommon.sys_info import get_systemd_active_state, stop_systemd_service
 
 parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
     "--no-journal",
     help="Prints output to stdout instead of journal.",
-    action="store_true"
+    action="store_true",
 )
 parser.add_argument(
     "--log-level",
@@ -37,12 +28,15 @@ parser.add_argument(
 parser.add_argument(
     "--test-mode",
     help="Runs in test mode, mocking versions of system libraries.",
-    action="store_true"
+    action="store_true",
 )
 
 args = parser.parse_args()
-PTLogger.setup_logging(logger_name="pt-web-portal",
-                       logging_level=args.log_level, log_to_journal=args.no_journal is False)
+PTLogger.setup_logging(
+    logger_name="pt-web-portal",
+    logging_level=args.log_level,
+    log_to_journal=args.no_journal is False,
+)
 
 
 def is_root() -> bool:
@@ -50,7 +44,9 @@ def is_root() -> bool:
 
 
 def display_unavailable_port_notification() -> None:
-    return run_command("systemctl start pt-web-portal-port-busy", timeout=10, log_errors=False)
+    return run_command(
+        "systemctl start pt-web-portal-port-busy", timeout=10, log_errors=False
+    )
 
 
 if onboarding_completed() is False:
@@ -69,9 +65,8 @@ register_device_in_background()
 
 try:
     server = pywsgi.WSGIServer(
-        ("", 80),
-        create_app(test=args.test_mode),
-        handler_class=WebSocketHandler)
+        ("", 80), create_app(test=args.test_mode), handler_class=WebSocketHandler
+    )
     server.serve_forever()
 except OSError as e:
     PTLogger.error(f"{e}")

@@ -52,7 +52,9 @@ def further_url():
 
     def get_device_id_string():
         try:
-            device_str = str(run_command("cat /etc/pi-top/pt-device-manager/device_version", 1000)).strip()
+            device_str = str(
+                run_command("cat /etc/pi-top/pt-device-manager/device_version", 1000)
+            ).strip()
             return f"device={device_str}" if device_str != "" else ""
         except Exception:
             return ""

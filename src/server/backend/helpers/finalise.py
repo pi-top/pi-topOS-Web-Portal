@@ -1,24 +1,24 @@
-from pitopcommon.logger import PTLogger
 from fileinput import input as finput
-from os import utime, remove
+from os import remove, utime
 from pathlib import Path
 
-from .command_runner import run_command
 from pitopcommon.command_runner import run_command_background
 from pitopcommon.current_session_info import get_user_using_display
+from pitopcommon.logger import PTLogger
+
+from .command_runner import run_command
 from .paths import (
-    use_test_path,
-    etc_pi_top,
     boot_cmdline_txt,
+    etc_pi_top,
+    eula_agreed_breadcrumb,
     startup_noise_breadcrumb,
-    eula_agreed_breadcrumb
+    use_test_path,
 )
 
 
 def available_space() -> int:
     PTLogger.info("Function: available_space()")
-    out = run_command("df --block-size=1 --output=avail '/'",
-                      timeout=2).splitlines()
+    out = run_command("df --block-size=1 --output=avail '/'", timeout=2).splitlines()
 
     if use_test_path():
         return "1000000000000"
@@ -37,28 +37,31 @@ def available_space() -> int:
 
 def expand_file_system() -> None:
     PTLogger.info("Function: expand_file_system()")
-    run_command("/usr/lib/pt-web-portal/expand-fs.sh",
-                timeout=60, lower_priority=True)
+    run_command("/usr/lib/pt-web-portal/expand-fs.sh", timeout=60, lower_priority=True)
 
 
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
-        "ln -s /usr/lib/pt-web-portal/pt-tour.desktop /etc/xdg/autostart", timeout=60, lower_priority=True)
+        "ln -s /usr/lib/pt-web-portal/pt-tour.desktop /etc/xdg/autostart",
+        timeout=60,
+        lower_priority=True,
+    )
 
 
 def update_mime_database() -> None:
     PTLogger.info("Function: update_mime_database()")
-    run_command("update-mime-database /usr/share/mime",
-                timeout=90, lower_priority=True)
+    run_command("update-mime-database /usr/share/mime", timeout=90, lower_priority=True)
 
 
 def deprioritise_openbox_session() -> None:
     PTLogger.info("Function: deprioritise_openbox_session()")
     run_command(
-        "update-alternatives --install /usr/bin/x-session-manager " +
-        "x-session-manager /usr/bin/openbox-session 40",
-        timeout=30, lower_priority=True)
+        "update-alternatives --install /usr/bin/x-session-manager "
+        + "x-session-manager /usr/bin/openbox-session 40",
+        timeout=30,
+        lower_priority=True,
+    )
 
 
 def stop_onboarding_autostart() -> None:
@@ -69,22 +72,25 @@ def stop_onboarding_autostart() -> None:
 def enable_os_updater_service():
     PTLogger.info("Function: enable_os_updater()")
 
-    return run_command("systemctl enable pt-os-updater",
-                       timeout=30, lower_priority=True)
+    return run_command(
+        "systemctl enable pt-os-updater", timeout=30, lower_priority=True
+    )
 
 
 def enable_firmware_updater_service():
     PTLogger.info("Function: enable_firmware_updater()")
 
-    return run_command("systemctl enable pt-firmware-updater",
-                       timeout=30, lower_priority=True)
+    return run_command(
+        "systemctl enable pt-firmware-updater", timeout=30, lower_priority=True
+    )
 
 
 def enable_further_link_service():
     PTLogger.info("Function: enable_further_link()")
 
-    return run_command("systemctl enable pt-further-link",
-                       timeout=30, lower_priority=True)
+    return run_command(
+        "systemctl enable pt-further-link", timeout=30, lower_priority=True
+    )
 
 
 def _touch_etc_pi_top_file(file_path) -> None:
@@ -94,7 +100,7 @@ def _touch_etc_pi_top_file(file_path) -> None:
     try:
         utime(file_path, None)
     except OSError:
-        open(file_path, 'a').close()
+        open(file_path, "a").close()
 
 
 def disable_startup_noise() -> None:
@@ -121,24 +127,26 @@ def reboot() -> None:
 def enable_pt_sys_oled():
     PTLogger.info("Function: enable_pt_sys_oled()")
 
-    return run_command("systemctl enable pt-sys-oled",
-                       timeout=30, lower_priority=True)
+    return run_command("systemctl enable pt-sys-oled", timeout=30, lower_priority=True)
 
 
 def enable_mouse_cursor():
     PTLogger.info("Function: enable_mouse_cursor()")
 
-    return run_command('sed -i "s/xserver-command=X -nocursor/#xserver-command=X/1" /etc/lightdm/lightdm.conf',
-                       timeout=30, lower_priority=True)
+    return run_command(
+        'sed -i "s/xserver-command=X -nocursor/#xserver-command=X/1" /etc/lightdm/lightdm.conf',
+        timeout=30,
+        lower_priority=True,
+    )
 
 
 def restore_files():
     PTLogger.info("Function: restore_files()")
 
-    run_command("rsync -av /usr/lib/pt-web-portal/bak/ /",
-                timeout=30, lower_priority=True)
-    run_command("rm -r /usr/lib/pt-web-portal/bak",
-                timeout=30, lower_priority=True)
+    run_command(
+        "rsync -av /usr/lib/pt-web-portal/bak/ /", timeout=30, lower_priority=True
+    )
+    run_command("rm -r /usr/lib/pt-web-portal/bak", timeout=30, lower_priority=True)
 
 
 def disable_tour():

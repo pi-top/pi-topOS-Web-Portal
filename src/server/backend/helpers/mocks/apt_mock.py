@@ -8,19 +8,28 @@ class CacheMock:
     sleep_time = 0
     _dummy_messages = [
         ["dpkg-exec", 0.0, "Running dpkg"],
-        ["gnome-control-center-data", 25.0,
-            "Preparing gnome-control-center-data (armhf)"],
-        ["gnome-control-center-data", 50.6923,
-            "Unpacking gnome-control-center-data (armhf)"],
-        ["gnome-control-center-data", 95.3333,
-            "Installing gnome-control-center-data (armhf)"],
+        [
+            "gnome-control-center-data",
+            25.0,
+            "Preparing gnome-control-center-data (armhf)",
+        ],
+        [
+            "gnome-control-center-data",
+            50.6923,
+            "Unpacking gnome-control-center-data (armhf)",
+        ],
+        [
+            "gnome-control-center-data",
+            95.3333,
+            "Installing gnome-control-center-data (armhf)",
+        ],
     ]
 
     def update(self, progress=None):
         if self.sleep_time:
             print(f"CacheMock.update: Sleeping for {self.sleep_time}s")
             sleep(self.sleep_time)
-        if hasattr(progress, 'pulse'):
+        if hasattr(progress, "pulse"):
             progress.pulse(None)
         # sleep(2)
 
@@ -38,15 +47,14 @@ class CacheMock:
             print(f"CacheMock.commit: Sleeping for {self.sleep_time}s")
             sleep(self.sleep_time)
 
-        if hasattr(fetch_progress, 'pulse'):
+        if hasattr(fetch_progress, "pulse"):
             fetch_progress.pulse(None)
 
-        if hasattr(install_progress, 'status_change'):
+        if hasattr(install_progress, "status_change"):
             for pkg_name, percent, status in self._dummy_messages:
                 install_progress.status_change(
-                    pkg=pkg_name,
-                    percent=percent,
-                    status=status)
+                    pkg=pkg_name, percent=percent, status=status
+                )
                 # sleep(0.5)
 
     def keys(self):

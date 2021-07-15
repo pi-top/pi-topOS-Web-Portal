@@ -1,6 +1,7 @@
+from json import dumps
+
 from pitopcommon.logger import PTLogger
 
-from json import dumps
 from .paths import pt_issue
 
 
@@ -30,12 +31,12 @@ def os_build_info():
                 build_hash = line.split(":")[1].strip()
 
     resp = {
-        'buildName': build_name,
-        'buildNumber': build_number,
-        'buildDate': build_date,
-        'buildRepo': build_repo,
-        'finalRepo': final_repo,
-        'buildHash': build_hash,
+        "buildName": build_name,
+        "buildNumber": build_number,
+        "buildDate": build_date,
+        "buildRepo": build_repo,
+        "finalRepo": final_repo,
+        "buildHash": build_hash,
     }
 
     PTLogger.info("OS build information: " + dumps(resp))
