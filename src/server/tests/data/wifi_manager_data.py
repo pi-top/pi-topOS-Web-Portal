@@ -34,4 +34,4 @@ network_profiles = [
      'bssid': '18:35:d1:20:98:5f', 'key': None, 'freq': 5200, 'signal': -92}
 ]
 
-wpa_cli_status = "bssid=e0:cc:7a:fd:84:50\nfreq=5220\nssid=Depto 606-5G\nid=0\nmode=station\nwifi_generation=5\npairwise_cipher=CCMP\ngroup_cipher=TKIP\nkey_mgmt=WPA2-PSK\nwpa_state=COMPLETED\nip_address=192.168.100.50\naddress=c4:e9:84:96:0d:76\nuuid=b4984c92-ade4-59c9-b66c-53619fe60d8d"
+wpa_cli_status = "bssid=e0:cc:7a:fd:84:50\nfreq=5220\nssid=Depto 606-5G\nid=0\nmode=station\nwifi_generation=5\npairwise_cipher=CCMP\ngroup_cipher=TKIP\nkey_mgmt=WPA2-PSK\nwpa_state=COMPLETED\nip_address=192.168.100.50\naddress=c4:e9:84:96:0d:76\nuuid=b4984c92-ade4-59c9-b66c-53619fe60d8d"  # noqa: E501
