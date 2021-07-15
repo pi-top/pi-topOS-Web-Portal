@@ -11,13 +11,6 @@ repos:
     - id: check-added-large-files
     - id: check-symlinks
 
--   repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 2.1.5
-    hooks:
-    - id: shellcheck
-      args: ["-x", "--exclude=SC1091,SC2039,SC2155"]
-    - id: shfmt
-
 -   repo: https://github.com/pycqa/isort
     rev: 5.9.2
     hooks:
