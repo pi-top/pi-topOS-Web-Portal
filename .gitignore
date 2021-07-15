@@ -1,5 +1,3 @@
-.isort.cfg
-
 *.DS_Store*
 # Explicitly defined for pre-commit to ignore it
 src/frontend/build
