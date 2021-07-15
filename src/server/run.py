@@ -8,10 +8,11 @@ from backend.helpers.device_registration import register_device_in_background
 from backend.helpers.finalise import onboarding_completed
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
-from miniscreen.onboarding.app import OnboardingApp
 from pitopcommon.command_runner import run_command
 from pitopcommon.logger import PTLogger
 from pitopcommon.sys_info import get_systemd_active_state, stop_systemd_service
+
+from miniscreen.onboarding.app import OnboardingApp
 
 parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
