@@ -18,15 +18,15 @@ repos:
       args: ["-x", "--exclude=SC1091,SC2039,SC2155"]
     - id: shfmt
 
-# -   repo: https://github.com/pre-commit/mirrors-isort
-#     rev: v5.9.2
-#     hooks:
-#     - id: isort
+-   repo: https://github.com/pycqa/isort
+    rev: 5.9.2
+    hooks:
+    - id: isort
 
-# -   repo: https://github.com/ambv/black
-#     rev: 21.6b0
-#     hooks:
-#     - id: black
+-   repo: https://github.com/ambv/black
+    rev: 21.6b0
+    hooks:
+    - id: black
 
 -   repo: https://github.com/pre-commit/mirrors-autopep8
     rev: v1.5.7
