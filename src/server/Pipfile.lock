@@ -262,11 +262,11 @@
         },
         "pitopcommon": {
             "hashes": [
-                "sha256:4285680ecbbb645c32b3cb98c4d4e1f58a2790188610303a34fa0edd654dc802",
-                "sha256:987e29ace9b95e4091ef550b262f0b33a083c58d003fc27aa4683214b623cc3d"
+                "sha256:5b0ae8a51a3993a062ae055482ae9bddfbf1c01779b55d9165e64b617d85f882",
+                "sha256:e514d11cd514c99b1ab2a6f142201bbed843289e9f7504f815515f1caae5f2ef"
             ],
             "index": "pypi",
-            "version": "==0.8.8"
+            "version": "==0.8.9"
         },
         "python-systemd": {
             "hashes": [
