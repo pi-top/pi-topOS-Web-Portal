@@ -57,6 +57,7 @@ export type Props = {
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Props) => {
   const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
+  console.warn(`${wsBaseUrl}/os-upgrade`);
 
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
