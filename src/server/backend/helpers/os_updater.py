@@ -1,7 +1,3 @@
-from .system_clock import (
-    synchronize_system_clock,
-    is_system_clock_synchronized
-)
 import os
 from datetime import date
 
@@ -9,6 +5,8 @@ from pitopcommon.logger import PTLogger
 
 from ..events import MessageType
 from .modules import get_apt
+from .system_clock import is_system_clock_synchronized, synchronize_system_clock
+
 (apt, apt.progress, apt_pkg) = get_apt()
 
 
@@ -26,8 +24,10 @@ class FetchProgress(apt.progress.base.AcquireProgress):
         if self.current_cps > 0:
             text = text + f" at {apt_pkg.size_to_str(self.current_cps)}/s"
 
-        progress = ((self.current_bytes + self.current_items) /
-                    float(self.total_bytes + self.total_items))*100.0
+        progress = (
+            (self.current_bytes + self.current_items)
+            / float(self.total_bytes + self.total_items)
+        ) * 100.0
         self.callback(MessageType.STATUS, text, round(progress, 1))
         return apt.progress.base.AcquireProgress.pulse(self, owner)
 
@@ -82,12 +82,13 @@ class OSUpdater:
             self.cache.upgrade()
             self.cache.upgrade(True)
 
+            PTLogger.info(f"Will upgrade/install {self.cache.install_count} packages")
             PTLogger.info(
-                f"Will upgrade/install {self.cache.install_count} packages")
+                f"Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
+            )
             PTLogger.info(
-                f"Need to download {apt_pkg.size_to_str(self.cache.required_download)}")
-            PTLogger.info(
-                f"After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used.")
+                f"After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
+            )
         except Exception as e:
             PTLogger.error(f"OSUpdater Error: {e}")
             raise
@@ -97,13 +98,15 @@ class OSUpdater:
     def download_size(self):
         size = self.cache.required_download if self.cache else 0
         PTLogger.info(
-            f"download_size: Need to download {apt_pkg.size_to_str(size)} - ({size} B)")
+            f"download_size: Need to download {apt_pkg.size_to_str(size)} - ({size} B)"
+        )
         return size
 
     def required_space(self):
         size = self.cache.required_space if self.cache else 0
         PTLogger.info(
-            f"required_space: {apt_pkg.size_to_str(size)} - ({size} B) needed for upgrade")
+            f"required_space: {apt_pkg.size_to_str(size)} - ({size} B) needed for upgrade"
+        )
         return size
 
     def upgrade(self, callback):
@@ -116,14 +119,9 @@ class OSUpdater:
         fetch_packages_progress = FetchProgress(callback)
         install_progress = InstallProgress(callback)
         try:
-            callback(
-                MessageType.START, "Starting install & upgrade process", 0.0)
-            self.cache.commit(
-                fetch_packages_progress,
-                install_progress
-            )
-            callback(
-                MessageType.FINISH, "Finished upgrade", 100.0)
+            callback(MessageType.START, "Starting install & upgrade process", 0.0)
+            self.cache.commit(fetch_packages_progress, install_progress)
+            callback(MessageType.FINISH, "Finished upgrade", 100.0)
         except Exception as e:
             PTLogger.error(f"OSUpdater Error: {e}")
             raise
@@ -142,13 +140,13 @@ class OSUpdater:
                 os.makedirs(self.CONFIG_DIRECTORY)
 
             if os.path.isfile(self.LAST_CHECKED_CONFIG_FILE):
-                PTLogger.info(
-                    f"File {self.LAST_CHECKED_CONFIG_FILE} exists, removing")
+                PTLogger.info(f"File {self.LAST_CHECKED_CONFIG_FILE} exists, removing")
                 os.remove(self.LAST_CHECKED_CONFIG_FILE)
 
             with open(self.LAST_CHECKED_CONFIG_FILE, "a") as file:
                 PTLogger.info(
-                    f"Writing {self.LAST_CHECKED_CONFIG_FILE} to skip pt-os-updater on reboot")
+                    f"Writing {self.LAST_CHECKED_CONFIG_FILE} to skip pt-os-updater on reboot"
+                )
                 file.write(date.today().strftime("%Y-%m-%d") + "\n")
         except Exception as e:
             PTLogger.warning(f"OSUpdater: {e}")
@@ -183,16 +181,16 @@ def prepare_os_upgrade(callback):
 def os_upgrade_size(callback):
     updater = get_os_updater_instance()
     try:
-        callback(MessageType.STATUS, {
-            'downloadSize': updater.download_size(),
-            'requiredSpace': updater.required_space(),
-        })
+        callback(
+            MessageType.STATUS,
+            {
+                "downloadSize": updater.download_size(),
+                "requiredSpace": updater.required_space(),
+            },
+        )
     except Exception as e:
         PTLogger.info(f"os_upgrade_size: {e}")
-        callback(MessageType.ERROR, {
-            'downloadSize': 0,
-            'requiredSpace': 0
-        })
+        callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
 
 
 def start_os_upgrade(callback):

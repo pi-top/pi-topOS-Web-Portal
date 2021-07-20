@@ -2,13 +2,14 @@
 
 import json
 import os
-import requests
 from pathlib import Path
-from time import sleep
 from threading import Thread
+from time import sleep
+
+import requests
+from pitopcommon.logger import PTLogger
 
 from .finalise import onboarding_completed
-from pitopcommon.logger import PTLogger
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
 REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
@@ -120,8 +121,7 @@ def get_registration_data():
 
 
 def send_data_and_get_resp(data):
-    headers = {"Content-Type": "application/json",
-               "Accept": "application/json"}
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
     try:
         PTLogger.debug("POSTing data...")
         r = requests.post(API_ENDPOINT, headers=headers, json=data)
@@ -157,7 +157,9 @@ def send_register_device_request():
             successfully_send_data = True
             PTLogger.info("Successfully registered device")
         else:
-            PTLogger.warning(f"Sending registration data failed with status code {statusCode}")
+            PTLogger.warning(
+                f"Sending registration data failed with status code {statusCode}"
+            )
             PTLogger.warning(f"Server response: {response}")
             PTLogger.warning("Retrying in 30s...")
             sleep(30)

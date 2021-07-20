@@ -1,4 +1,3 @@
-
 from os import path
 from sys import platform
 
@@ -23,7 +22,7 @@ def supported_locales():
 
 def zone_tab():
     if use_test_path():
-        return get_test_file_path('zone.tab')
+        return get_test_file_path("zone.tab")
 
     return "/usr/share/zoneinfo/zone.tab"
 
@@ -65,7 +64,7 @@ def boot_cmdline_txt():
 
 def etc_pi_top():
     if use_test_path():
-        return get_test_file_path('')
+        return get_test_file_path("")
     return "/etc/pi-top"
 
 

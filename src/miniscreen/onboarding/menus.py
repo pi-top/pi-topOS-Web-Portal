@@ -1,16 +1,9 @@
-from enum import IntEnum, Enum
-from PIL import ImageDraw, Image
+from enum import Enum, IntEnum
 
-from .connection_methods import (
-    ApConnection,
-    UsbConnection,
-    EthernetConnection,
-)
-from .helpers import (
-    draw_text,
-    get_image_file_path,
-    process_image,
-)
+from PIL import Image, ImageDraw
+
+from .connection_methods import ApConnection, EthernetConnection, UsbConnection
+from .helpers import draw_text, get_image_file_path, process_image
 
 # Tunings to approximately match other sys info pages using GIFs
 ANIMATION_SPEED = 1
@@ -58,9 +51,17 @@ class InfoMenuPage(MenuPageBase):
 
     def render(self, draw, redraw=False):
         build_data = self.build_data()
-        draw_text(draw, text="pi-topOS", xy=(MARGIN_X/2, FIRST_LINE_Y))
-        draw_text(draw, text=f"Build: {build_data.get('build_number')}", xy=(MARGIN_X/2, SECOND_LINE_Y))
-        draw_text(draw, text=f"Date: {build_data.get('build_date')}", xy=(MARGIN_X/2, THIRD_LINE_Y))
+        draw_text(draw, text="pi-topOS", xy=(MARGIN_X / 2, FIRST_LINE_Y))
+        draw_text(
+            draw,
+            text=f"Build: {build_data.get('build_number')}",
+            xy=(MARGIN_X / 2, SECOND_LINE_Y),
+        )
+        draw_text(
+            draw,
+            text=f"Date: {build_data.get('build_date')}",
+            xy=(MARGIN_X / 2, THIRD_LINE_Y),
+        )
 
     def __get_file_lines(self, filename):
         lines = list()
@@ -91,7 +92,15 @@ class RenderState(Enum):
 
 
 class ConnectionMenuPage(MenuPageBase):
-    def __init__(self, type, connection_state=None, title_image_filename="", info_image_filename="", size=(0, 0), mode=0):
+    def __init__(
+        self,
+        type,
+        connection_state=None,
+        title_image_filename="",
+        info_image_filename="",
+        size=(0, 0),
+        mode=0,
+    ):
         super(ConnectionMenuPage, self).__init__(type, size, mode)
 
         self.connection_state = connection_state
@@ -99,9 +108,7 @@ class ConnectionMenuPage(MenuPageBase):
         self.render_state = RenderState.STATIONARY
 
         self.title_connected_image = process_image(
-            Image.open(get_image_file_path(title_image_filename)),
-            size,
-            mode
+            Image.open(get_image_file_path(title_image_filename)), size, mode
         )
         self.title_disconnected_image = self.title_connected_image.copy()
 
@@ -115,9 +122,7 @@ class ConnectionMenuPage(MenuPageBase):
         add_disconnected_icon(self.title_disconnected_image)
 
         self.info_image = process_image(
-            Image.open(get_image_file_path(info_image_filename)),
-            size,
-            mode
+            Image.open(get_image_file_path(info_image_filename)), size, mode
         )
 
         self.title_image_pos = (0, 0)
@@ -155,7 +160,10 @@ class ConnectionMenuPage(MenuPageBase):
                     self.render_state = RenderState.DISPLAYING_INFO
                 elif self.render_state != RenderState.DISPLAYING_INFO:
                     self.render_state = RenderState.ANIMATING
-                    self.title_image_pos = (self.title_image_pos[0] - ANIMATION_SPEED, 0)
+                    self.title_image_pos = (
+                        self.title_image_pos[0] - ANIMATION_SPEED,
+                        0,
+                    )
             elif self.render_state != RenderState.STATIONARY:
                 self.reset_animation()
 
@@ -167,7 +175,11 @@ class ConnectionMenuPage(MenuPageBase):
             )
             self.draw_connection_data(draw)
         else:
-            title_image = self.title_connected_image if self.is_connected else self.title_disconnected_image
+            title_image = (
+                self.title_connected_image
+                if self.is_connected
+                else self.title_disconnected_image
+            )
             draw.bitmap(
                 xy=self.title_image_pos,
                 bitmap=title_image,
@@ -180,44 +192,74 @@ class ConnectionMenuPage(MenuPageBase):
 
 class ApMenuPage(ConnectionMenuPage):
     def __init__(self, size, mode):
-        super(ApMenuPage, self).__init__(type=Menus.AP,
-                                         connection_state=ApConnection(),
-                                         title_image_filename="ap_title.png",
-                                         info_image_filename="ap_info.png",
-                                         size=size,
-                                         mode=mode)
+        super(ApMenuPage, self).__init__(
+            type=Menus.AP,
+            connection_state=ApConnection(),
+            title_image_filename="ap_title.png",
+            info_image_filename="ap_info.png",
+            size=size,
+            mode=mode,
+        )
 
     def draw_connection_data(self, draw):
-        draw_text(draw, text=self.connection_state.metadata.get("ssid", ""), xy=(MARGIN_X, FIRST_LINE_Y))
-        draw_text(draw, text=self.connection_state.metadata.get("passphrase", ""), xy=(MARGIN_X, SECOND_LINE_Y))
+        draw_text(
+            draw,
+            text=self.connection_state.metadata.get("ssid", ""),
+            xy=(MARGIN_X, FIRST_LINE_Y),
+        )
+        draw_text(
+            draw,
+            text=self.connection_state.metadata.get("passphrase", ""),
+            xy=(MARGIN_X, SECOND_LINE_Y),
+        )
         draw_text(draw, text=self.connection_state.ip, xy=(MARGIN_X, THIRD_LINE_Y))
 
 
 class UsbMenuPage(ConnectionMenuPage):
     def __init__(self, size, mode):
-        super(UsbMenuPage, self).__init__(type=Menus.USB,
-                                          connection_state=UsbConnection(),
-                                          title_image_filename="usb_title.png",
-                                          info_image_filename="usb_info.png",
-                                          size=size,
-                                          mode=mode)
+        super(UsbMenuPage, self).__init__(
+            type=Menus.USB,
+            connection_state=UsbConnection(),
+            title_image_filename="usb_title.png",
+            info_image_filename="usb_info.png",
+            size=size,
+            mode=mode,
+        )
 
     def draw_connection_data(self, draw):
-        draw_text(draw, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
-        draw_text(draw, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
+        draw_text(
+            draw,
+            text=str(self.connection_state.metadata.get("username", "")),
+            xy=(MARGIN_X, FIRST_LINE_Y),
+        )
+        draw_text(
+            draw,
+            text=str(self.connection_state.metadata.get("password", "")),
+            xy=(MARGIN_X, SECOND_LINE_Y),
+        )
         draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
 
 
 class EthernetMenuPage(ConnectionMenuPage):
     def __init__(self, size, mode):
-        super(EthernetMenuPage, self).__init__(type=Menus.ETHERNET,
-                                               connection_state=EthernetConnection(),
-                                               title_image_filename="lan_title.png",
-                                               info_image_filename="lan_info.png",
-                                               size=size,
-                                               mode=mode)
+        super(EthernetMenuPage, self).__init__(
+            type=Menus.ETHERNET,
+            connection_state=EthernetConnection(),
+            title_image_filename="lan_title.png",
+            info_image_filename="lan_info.png",
+            size=size,
+            mode=mode,
+        )
 
     def draw_connection_data(self, draw):
-        draw_text(draw, text=str(self.connection_state.metadata.get("username", "")), xy=(MARGIN_X, FIRST_LINE_Y))
-        draw_text(draw, text=str(self.connection_state.metadata.get("password", "")), xy=(MARGIN_X, SECOND_LINE_Y))
+        draw_text(
+            draw,
+            text=str(self.connection_state.metadata.get("username", "")),
+            xy=(MARGIN_X, FIRST_LINE_Y),
+        )
+        draw_text(
+            draw,
+            text=str(self.connection_state.metadata.get("password", "")),
+            xy=(MARGIN_X, SECOND_LINE_Y),
+        )
         draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))

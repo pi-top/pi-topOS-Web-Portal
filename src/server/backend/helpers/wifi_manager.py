@@ -1,11 +1,12 @@
-from time import sleep
 from enum import Enum
+from time import sleep
 from typing import Dict, List
 
 from pitopcommon.logger import PTLogger
 
 from .command_runner import run_command
 from .modules import get_pywifi
+
 pywifi = get_pywifi()
 
 
@@ -18,7 +19,7 @@ class IfaceStatus(Enum):
 
 
 class WifiManager:
-    RPI_WLAN_INTERFACE = 'wlan0'
+    RPI_WLAN_INTERFACE = "wlan0"
 
     def __init__(self):
         self.wifi_interface = self.get_interface(self.RPI_WLAN_INTERFACE)
@@ -63,7 +64,13 @@ class WifiManager:
         return self.get_status() == IfaceStatus.SCANNING
 
     @staticmethod
-    def wait_for(condition_func, description=None, condition_true: bool = True, timeout: int = 30, silent: bool = False) -> None:
+    def wait_for(
+        condition_func,
+        description=None,
+        condition_true: bool = True,
+        timeout: int = 30,
+        silent: bool = False,
+    ) -> None:
         sleep_time = 0.1
         time_waited = 0
 
@@ -72,7 +79,10 @@ class WifiManager:
             if description is not None:
                 text += " for %s" % description
             text += " - sleeping for %.1f. Total: %.1f / %is" % (
-                sleep_time, time_waited, timeout)
+                sleep_time,
+                time_waited,
+                timeout,
+            )
             if not silent:
                 PTLogger.info(text)
             sleep(sleep_time)
@@ -93,7 +103,8 @@ class WifiManager:
             self.wifi_interface.scan()
 
             WifiManager.wait_for(
-                self.is_scanning, "scan completion", condition_true=False, silent=True)
+                self.is_scanning, "scan completion", condition_true=False, silent=True
+            )
 
         PTLogger.info("Scan completed")
         results = self.wifi_interface.scan_results()
@@ -124,16 +135,19 @@ class WifiManager:
 
         PTLogger.info("Connecting to newly created profile")
         self.wifi_interface.connect(
-            self.wifi_interface.add_network_profile(network_profile))
+            self.wifi_interface.add_network_profile(network_profile)
+        )
 
         WifiManager.wait_for(self.is_connected, "connection", silent=True)
 
         if self.is_connected():
             PTLogger.info("Updating wpa_supplicant.conf with network data")
             self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                self.RPI_WLAN_INTERFACE, 'SAVE_CONFIG', False)
+                self.RPI_WLAN_INTERFACE, "SAVE_CONFIG", False
+            )
             self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                self.RPI_WLAN_INTERFACE, 'RECONFIGURE', False)
+                self.RPI_WLAN_INTERFACE, "RECONFIGURE", False
+            )
             PTLogger.info("Waiting for interface to become connected again")
             WifiManager.wait_for(self.is_connected, "connection", silent=True)
 
@@ -141,13 +155,14 @@ class WifiManager:
         try:
             if self.get_status() == IfaceStatus.CONNECTED:
                 response = self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                    self.RPI_WLAN_INTERFACE, 'STATUS', True)
-                for line in response.split('\n'):
-                    if line.startswith('ssid='):
-                        return line.replace('ssid=', '')
+                    self.RPI_WLAN_INTERFACE, "STATUS", True
+                )
+                for line in response.split("\n"):
+                    if line.startswith("ssid="):
+                        return line.replace("ssid=", "")
         except Exception:
             pass
-        return ''
+        return ""
 
 
 # Global instance
@@ -164,8 +179,14 @@ def get_wifi_manager_instance():
 def get_ssids() -> List[Dict]:
     wm = get_wifi_manager_instance()
     PTLogger.info("GETTING LIST OF SSIDS")
-    return [{'ssid': r.ssid, 'passwordRequired': len(r.akm) != 0 and pywifi.const.AKM_TYPE_NONE not in r.akm}
-            for r in wm.scan_and_get_results()]
+    return [
+        {
+            "ssid": r.ssid,
+            "passwordRequired": len(r.akm) != 0
+            and pywifi.const.AKM_TYPE_NONE not in r.akm,
+        }
+        for r in wm.scan_and_get_results()
+    ]
 
 
 def attempt_connection(ssid, password, on_connection=None) -> None:
