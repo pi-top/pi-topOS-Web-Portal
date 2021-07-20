@@ -52,9 +52,10 @@ export type Props = {
   goToNextPage: () => void;
   goToPreviousPage: () => void;
   isCompleted: boolean;
+  standalone: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Props) => {
   const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
 
   const [message, setMessage] = useState<OSUpdaterMessage>();
@@ -222,6 +223,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       requiredBurn={requiredBurn}
       shouldBurn={shouldBurn}
       error={error}
+      standalone={standalone}
     />
   );
 };

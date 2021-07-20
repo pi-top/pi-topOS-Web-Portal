@@ -45,6 +45,7 @@ export type Props = {
   error: boolean,
   requiredBurn: boolean,
   shouldBurn: boolean,
+  standalone: boolean
 };
 
 export default ({
@@ -63,6 +64,7 @@ export default ({
   requiredBurn,
   shouldBurn,
   error,
+  standalone,
 }: Props) => {
   const errorMessage = error && ErrorMessage.GenericError;
 
@@ -111,7 +113,8 @@ export default ({
           disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || error
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={isCompleted || error}
+        showSkip={!standalone || isCompleted || error}
+        showBack={!standalone}
         backButton={{
           onClick: onBackClick,
           disabled: upgradeIsRunning

@@ -154,6 +154,7 @@ export default () => {
                 history.push(PageRoute.Registration);
                 window.location.reload();
               }}
+              standalone={false}
             />
           )}
         />
