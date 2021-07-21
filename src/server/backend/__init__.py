@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_sockets import Sockets
 
-sockets = None
+sockets: Sockets
 
 
 def create_app(test=False):

@@ -26,9 +26,6 @@ def current_wifi_country() -> str:
     ).strip()
     PTLogger.info("Current Wi-Fi country: '%s'" % wifi_country)
 
-    if wifi_country == "":
-        wifi_country = None
-
     return wifi_country
 
 

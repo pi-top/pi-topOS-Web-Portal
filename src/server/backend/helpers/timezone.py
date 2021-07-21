@@ -27,7 +27,7 @@ def get_all_timezones() -> list:
 
 def get_current_timezone() -> str:
     PTLogger.info("Function: get_current_timezone()")
-    tz_string = None
+    tz_string = ""
 
     if use_test_path():
         return "Europe/London"

@@ -51,7 +51,7 @@ class PyWiFiProfile:
 
 class PyWiFiInterfaceMock:
     state = PyWiFiConstant.IFACE_INACTIVE
-    results = []
+    results: list[PyWiFiProfile] = []
 
     def __init__(self):
         self._wifi_ctrl = PyWiFiUtil()

@@ -50,6 +50,7 @@ class WifiManager:
             return IfaceStatus.CONNECTING
         elif status_int == 4:
             return IfaceStatus.CONNECTED
+        return IfaceStatus.DISCONNECTED
 
     def is_inactive(self) -> bool:
         return self.get_status() in (IfaceStatus.DISCONNECTED, IfaceStatus.INACTIVE)
@@ -72,7 +73,7 @@ class WifiManager:
         silent: bool = False,
     ) -> None:
         sleep_time = 0.1
-        time_waited = 0
+        time_waited = 0.0
 
         while not condition_func() if condition_true else condition_func():
             text = "Waiting"

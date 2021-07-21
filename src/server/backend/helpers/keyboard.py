@@ -1,5 +1,5 @@
 from fileinput import input as finput
-from typing import Tuple
+from typing import Optional, Tuple
 
 from pitopcommon.logger import PTLogger
 
@@ -7,9 +7,9 @@ from .command_runner import run_command
 from .paths import default_keyboard_conf
 
 
-def current_keyboard_layout() -> Tuple[str, str]:
+def current_keyboard_layout() -> Tuple[str, Optional[str]]:
     PTLogger.info("Function: current_keyboard_layout()")
-    layout_code = None
+    layout_code = ""
     variant = None
 
     command = "setxkbmap -query"

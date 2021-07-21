@@ -10,7 +10,7 @@ from .system_clock import is_system_clock_synchronized, synchronize_system_clock
 (apt, apt.progress, apt_pkg) = get_apt()
 
 
-class FetchProgress(apt.progress.base.AcquireProgress):
+class FetchProgress(apt.progress.base.AcquireProgress):  # type: ignore
     def __init__(self, callback):
         apt.progress.base.AcquireProgress.__init__(self)
         self.callback = callback
@@ -32,7 +32,7 @@ class FetchProgress(apt.progress.base.AcquireProgress):
         return apt.progress.base.AcquireProgress.pulse(self, owner)
 
 
-class InstallProgress(apt.progress.base.InstallProgress):
+class InstallProgress(apt.progress.base.InstallProgress):  # type: ignore
     def __init__(self, callback):
         apt.progress.base.InstallProgress.__init__(self)
         self.callback = callback
@@ -49,7 +49,7 @@ class OSUpdater:
     lock = False
 
     def __init__(self) -> None:
-        self.cache = None
+        self.cache: apt.Cache  # type: ignore
         self.CONFIG_DIRECTORY = "/etc/pi-top/pt-os-updater/"
         self.LAST_CHECKED_CONFIG_FILE = self.CONFIG_DIRECTORY + "last_checked_date"
 
