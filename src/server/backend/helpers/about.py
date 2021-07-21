@@ -1,5 +1,6 @@
 from json import load as jload
 from re import match
+from typing import Dict
 
 from pitopcommon.common_names import DeviceName
 
@@ -47,7 +48,7 @@ def device_update_channel() -> str:
 
         return {}
 
-    most_unstable_source: dict[str, str] = {}
+    most_unstable_source: Dict[str, str] = {}
     for line in _get_file_lines("/etc/apt/sources.list.d/pi-top.list"):
         source_data = get_source_from_line(line)
         if source_data and source_data.get("priority") >= most_unstable_source.get(

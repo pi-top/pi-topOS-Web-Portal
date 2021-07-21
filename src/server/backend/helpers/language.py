@@ -1,4 +1,5 @@
 from re import search
+from typing import List
 
 from pitopcommon.logger import PTLogger
 
@@ -11,7 +12,7 @@ def list_locales_supported() -> list:
 
     with open(supported_locales()) as file:
         lines = [line.rstrip() for line in file]
-        utf8_locales: list[str] = list()
+        utf8_locales: List[str] = list()
 
         for line in lines:
             # keep lines NOT starting with @ and containing .UTF-8
@@ -44,7 +45,7 @@ def list_locales_available() -> list:
 
     with open(locales_gen()) as file:
         lines = [line.rstrip() for line in file]
-        utf8_locales: list[str] = list()
+        utf8_locales: List[str] = list()
 
         for line in lines:
             # get just locale code from lines matching utf-8 locale regex
