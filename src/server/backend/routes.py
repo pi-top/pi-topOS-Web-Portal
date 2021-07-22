@@ -73,7 +73,7 @@ from .helpers.wifi_manager import (
 
 
 def abort_on_no_data(data):
-    if data is None:
+    if data is None or (isinstance(data, str) and len(data) == 0):
         abort(400)
     return jdumps(data)
 

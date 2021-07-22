@@ -25,7 +25,7 @@ def run_command(
         % (command_str, timeout, check, capture_output, lower_priority)
     )
 
-    resp_stdout = None
+    resp_stdout = ""
 
     env_plus_display = environ.copy()
     env_plus_display["DISPLAY"] = ":0"

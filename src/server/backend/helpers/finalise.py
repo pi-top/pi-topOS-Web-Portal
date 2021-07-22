@@ -16,7 +16,7 @@ from .paths import (
 )
 
 
-def available_space() -> int:
+def available_space() -> str:
     PTLogger.info("Function: available_space()")
     out = run_command("df --block-size=1 --output=avail '/'", timeout=2).splitlines()
 
@@ -26,12 +26,9 @@ def available_space() -> int:
     if len(out) == 2:
         space = out[1].strip()
     else:
-        space = None
+        space = ""
 
-    if space == "":
-        space = None
-
-    PTLogger.info("Available Space: '%s'" % space)
+    PTLogger.info(f"Available Space: '{space}'")
     return space
 
 

@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 
 class PyWiFiConstant(Enum):
@@ -51,7 +52,7 @@ class PyWiFiProfile:
 
 class PyWiFiInterfaceMock:
     state = PyWiFiConstant.IFACE_INACTIVE
-    results = []
+    results: List[PyWiFiProfile] = []
 
     def __init__(self):
         self._wifi_ctrl = PyWiFiUtil()
