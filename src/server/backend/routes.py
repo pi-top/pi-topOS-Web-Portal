@@ -89,9 +89,13 @@ def index():
 @app.errorhandler(404)
 def not_found(e):
     valid_frontend_routes = ["/tour", "/onboarding"]
-    if request.path in valid_frontend_routes:
+    if request.path not in valid_frontend_routes:
+        return redirect("/")
+
+    if onboarding_completed():
         return app.send_static_file("index.html")
-    return redirect("/")
+
+    return redirect("/onboarding")
 
 
 # Startup
