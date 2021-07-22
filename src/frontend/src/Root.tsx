@@ -8,6 +8,7 @@ import RestartPageContainer from "./pages/restartPage/RestartPageContainer";
 import ErrorPage from "./pages/errorPage/ErrorPage";
 import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 import UpgradePageContainer from "./pages/upgradePage/UpgradePageContainer";
+import closePtBrowser from "./services/closePtBrowser";
 
 export default () => (
   <ErrorBoundary
@@ -21,7 +22,13 @@ export default () => (
       <Route path="/tour" component={LinksPage} />
       <Route path="/onboarding" component={OnboardingApp} />
       <Route path="/about" component={AboutPageContainer} />
-      <Route path="/updater" component={UpgradePageContainer} />
+      <Route path="/updater"
+        render={()=>{return(
+          <UpgradePageContainer
+            goToNextPage={() => {closePtBrowser()}}
+          />
+        )}}
+      />
     </BrowserRouter>
 
   </ErrorBoundary>

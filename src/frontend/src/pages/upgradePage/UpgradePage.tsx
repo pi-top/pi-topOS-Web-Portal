@@ -18,7 +18,7 @@ export enum UpgradePageExplanation {
   Preparing = "Checking the size of update...",
   UpgradePrepared = "{size} of new packages need to be installed. This might take {time} minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
-  Finish = "Great, system update has been successfully installed!\n\nPlease click the Next button to restart the application and continue.",
+  Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
   WaitingForServer = "Please wait...",
 }
 
@@ -75,10 +75,16 @@ export default ({
       return UpgradePageExplanation.WaitingForServer;
     }
     if (upgradeFinished) {
-      return UpgradePageExplanation.Finish;
+      return UpgradePageExplanation.Finish.replace(
+        "{continueButtonLabel}",
+        continueButtonLabel
+      ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
     }
     if (!upgradeIsRequired) {
-      return UpgradePageExplanation.Finish;
+      return UpgradePageExplanation.Finish.replace(
+        "{continueButtonLabel}",
+        continueButtonLabel
+      ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
     }
     if (upgradeIsRunning) {
       return UpgradePageExplanation.InProgress;
@@ -91,6 +97,8 @@ export default ({
     }
     return UpgradePageExplanation.Preparing;
   };
+
+  const continueButtonLabel = upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
 
   return (
     <>
@@ -107,12 +115,12 @@ export default ({
         explanation={getExplanation()}
         nextButton={{
           onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
-          label: upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit",
+          label: continueButtonLabel,
           disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || error
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={(onSkipClick !== undefined) && (isCompleted || error)}
-        showBack={(onBackClick !== undefined)}
+        showSkip={onSkipClick !== undefined && (isCompleted || error)}
+        showBack={onBackClick !== undefined}
         backButton={{
           onClick: onBackClick,
           disabled: upgradeIsRunning
