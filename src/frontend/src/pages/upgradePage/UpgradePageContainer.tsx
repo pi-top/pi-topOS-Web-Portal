@@ -56,17 +56,26 @@ export type Props = {
 };
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Props) => {
-  const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
-  console.warn(`${wsBaseUrl}/os-upgrade`);
-
   const [message, setMessage] = useState<OSUpdaterMessage>();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const socket = useSocket(`${wsBaseUrl}/os-upgrade`, );
+  socket.onmessage = (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data);
+      setMessage(data);
+    } catch (_) {}
+  };
+  socket.onopen = () => {
+    setIsOpen(true);
+    socket.send("prepare");
+  }
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
   const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [waitingForServer, setWaitingForServer] = useState(false);
   const [requiredBurn, setRequiredBurn] = useState(false);
@@ -97,16 +106,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Pro
   }, [updateSize, availableSpace, setError]);
 
   useEffect(() => {
-    socket.onopen = () => {
-      setIsOpen(true);
-      socket.send("prepare");
-    };
-    socket.onmessage = (e: MessageEvent) => {
-      try {
-        const data = JSON.parse(e.data);
-        setMessage(data);
-      } catch (_) {}
-    };
     socket.onclose = () => {
       !upgradeFinished && setError(true);
       setIsOpen(false);
