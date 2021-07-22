@@ -30,11 +30,11 @@ export enum OsBurnExplanation {
 }
 
 export type Props = {
-  onNextClick: () => void;
-  onSkipClick: () => void;
-  onBackClick: () => void;
+  onNextClick?: () => void;
+  onSkipClick?: () => void;
+  onBackClick?: () => void;
   onStartUpgradeClick: () => void;
-  isCompleted: boolean;
+  isCompleted?: boolean;
   message?: OSUpdaterMessage,
   upgradeIsPrepared: boolean,
   upgradeIsRequired: boolean,
@@ -45,7 +45,6 @@ export type Props = {
   error: boolean,
   requiredBurn: boolean,
   shouldBurn: boolean,
-  standalone: boolean
 };
 
 export default ({
@@ -64,7 +63,6 @@ export default ({
   requiredBurn,
   shouldBurn,
   error,
-  standalone,
 }: Props) => {
   const errorMessage = error && ErrorMessage.GenericError;
 
@@ -109,12 +107,12 @@ export default ({
         explanation={getExplanation()}
         nextButton={{
           onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
-          label: !upgradeIsRequired ? "Next" : "Update",
+          label: upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit",
           disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || error
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={!standalone || isCompleted || error}
-        showBack={!standalone}
+        showSkip={(onSkipClick !== undefined) && (isCompleted || error)}
+        showBack={(onBackClick !== undefined)}
         backButton={{
           onClick: onBackClick,
           disabled: upgradeIsRunning

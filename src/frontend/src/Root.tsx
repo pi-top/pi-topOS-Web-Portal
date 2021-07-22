@@ -21,15 +21,7 @@ export default () => (
       <Route path="/tour" component={LinksPage} />
       <Route path="/onboarding" component={OnboardingApp} />
       <Route path="/about" component={AboutPageContainer} />
-      <Route path="/updater"
-        render={()=>{return(
-          <UpgradePageContainer
-            standalone={true}
-            isCompleted={false}
-            goToNextPage={()=>null}
-            goToPreviousPage={()=>null} />
-        )}}
-      />
+      <Route path="/updater" component={UpgradePageContainer} />
     </BrowserRouter>
 
   </ErrorBoundary>

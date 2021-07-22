@@ -49,13 +49,12 @@ export type SizeMessage = {
 export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
 
 export type Props = {
-  goToNextPage: () => void;
-  goToPreviousPage: () => void;
-  isCompleted: boolean;
-  standalone: boolean;
+  goToNextPage?: () => void;
+  goToPreviousPage?: () => void;
+  isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -190,7 +189,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Pro
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
         await serverStatus({ timeout: timeoutServerStatusRequestMs });
         clearInterval(interval);
-        goToNextPage();
+        goToNextPage && goToNextPage();
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }
@@ -223,7 +222,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted, standalone }: Pro
       requiredBurn={requiredBurn}
       shouldBurn={shouldBurn}
       error={error}
-      standalone={standalone}
     />
   );
 };
