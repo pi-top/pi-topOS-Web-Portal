@@ -165,7 +165,12 @@ def get_os_updater_instance():
     return os_updater
 
 
-def prepare_os_upgrade(callback):
+def prepare_os_upgrade(callback=None):
+    if callback is None:
+
+        def callback(type, data, percent):
+            return None
+
     updater = get_os_updater_instance()
     try:
         if not is_system_clock_synchronized():
@@ -202,6 +207,11 @@ def start_os_upgrade(callback):
         updater.skip_os_updater_on_reboot()
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
+
+
+def updates_available(callback):
+    prepare_os_upgrade()
+    callback(get_os_updater_instance().cache.install_count > 0)
 
 
 def check_relevant_os_updates():

@@ -2,15 +2,20 @@
 
 from argparse import ArgumentParser
 from os import environ, geteuid
+from threading import Thread
 
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
 from backend.helpers.finalise import onboarding_completed
+from backend.helpers.os_updater import updates_available
+from backend.helpers.wifi_manager import is_connected_to_internet
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
+from pitop.common.notifications import send_notification
 from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 from pitop.system import device_type
 
@@ -63,6 +68,25 @@ if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
     environ["PT_MINISCREEN_SYSTEM"] = "1"
     onboarding_app = OnboardingApp()
     onboarding_app.start()
+
+elif is_connected_to_internet(timeout=2):
+    PTLogger.info("Checking for updates...")
+
+    def notify_user_on_update_available(has_updates):
+        PTLogger.info(f"Updates available? {has_updates}")
+        if has_updates:
+            send_notification(
+                title="pi-topOS Software Updater",
+                text="There are updates available for your system!\nClick the Start Menu -> System Menu -> pi-topOS Updater Tool",
+                timeout=0,
+                icon_name="system-software-update",
+            )
+
+    t = Thread(
+        target=updates_available, args=(notify_user_on_update_available,), daemon=True
+    )
+    t.start()
+
 
 register_device_in_background()
 
