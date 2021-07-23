@@ -10,6 +10,7 @@ from pitop.common.logger import PTLogger
 
 from . import sockets
 from .events import (
+    create_emit_os_autoremove_message,
     create_emit_os_prepare_upgrade_message,
     create_emit_os_size_message,
     create_emit_os_upgrade_message,
@@ -37,6 +38,7 @@ from .helpers.keyboard import (
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.os_updater import (
     check_relevant_os_updates,
+    autoremove_packages,
     os_upgrade_size,
     prepare_os_upgrade,
     start_os_upgrade,
@@ -292,6 +294,14 @@ def os_upgrade(ws):
             thread_arr.append(t)
         elif message == "size":
             os_upgrade_size(create_emit_os_size_message(ws))
+        elif message == "autoremove":
+            t = Thread(
+                target=autoremove_packages,
+                args=(create_emit_os_autoremove_message(ws),),
+                daemon=True,
+            )
+            t.start()
+            thread_arr.append(t)
 
     for t in thread_arr:
         if t.is_alive():

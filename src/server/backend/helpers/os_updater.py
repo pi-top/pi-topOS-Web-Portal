@@ -83,7 +83,7 @@ class OSUpdater:
 
         try:
             self.cache.upgrade()
-            self.cache.upgrade(True)
+            self.cache.upgrade(dist_upgrade=True)
 
             PTLogger.info(f"Will upgrade/install {self.cache.install_count} packages")
             PTLogger.info(
@@ -132,6 +132,27 @@ class OSUpdater:
             self.lock = False
 
         PTLogger.info("OSUpdater: finished upgrade")
+
+    def autoremove(self, callback):
+        PTLogger.info("OSUpdater: starting autoremove")
+        if self.lock:
+            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
+            return
+        self.lock = True
+
+        fetch_packages_progress = FetchProgress(callback)
+        install_progress = InstallProgress(callback)
+        try:
+            callback(MessageType.START, "Starting autoremove", 0.0)
+            self.cache.commit(fetch_packages_progress, install_progress)
+            callback(MessageType.FINISH, "Finished autoremove", 100.0)
+        except Exception as e:
+            PTLogger.error(f"OSUpdater Error: {e}")
+            raise
+        finally:
+            self.lock = False
+
+        PTLogger.info("OSUpdater: finished autoremove")
 
     def select_packages_to_upgrade(self, packages: list) -> None:
         pass
@@ -211,6 +232,14 @@ def start_os_upgrade(callback):
                 "Removing 'extend timeout' breadcrumb for pt-firmware-updater"
             )
             fw_breadcrumb_manager.clear_extend_timeout()
+
+
+def autoremove_packages(callback):
+    updater = get_os_updater_instance()
+    try:
+        updater.autoremove(callback)
+    except Exception as e:
+        callback(MessageType.ERROR, f"{e}", 0.0)
 
 
 def check_relevant_os_updates():
