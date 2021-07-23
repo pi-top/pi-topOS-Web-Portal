@@ -33,7 +33,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-  test-js-no-coverage-report:
+  test-js-coverage-report:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -63,5 +63,6 @@ jobs:
         uses: codecov/codecov-action@v2.0.1
         with:
           files: ./src/frontend/clover.xml
+          flags: jstests
           fail_ci_if_error: true
           verbose: true
