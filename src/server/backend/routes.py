@@ -73,12 +73,12 @@ from .helpers.wifi_manager import (
 )
 
 
-class FrontendApps(Enum):
+class FrontendAppRoutes(Enum):
     TOUR = "/tour"
     ONBOARDING = "/onboarding"
 
     @classmethod
-    def is_valid_route(cls, route):
+    def is_valid(cls, route):
         try:
             cls(str(route))
         except ValueError:
@@ -96,15 +96,16 @@ def abort_on_no_data(data):
 def index():
     PTLogger.debug("Route '/'")
     if not onboarding_completed():
-        PTLogger.error("Onboarding not completed yet. Redirecting...")
-        return redirect(FrontendApps.ONBOARDING.value)
-    return redirect(FrontendApps.TOUR.value)
+        PTLogger.info("Onboarding not completed yet. Redirecting...")
+        return redirect(FrontendAppRoutes.ONBOARDING.value)
+    return redirect(FrontendAppRoutes.TOUR.value)
 
 
 @app.errorhandler(404)
 def not_found(e):
-    if not FrontendApps.is_valid_route(request.path) or (
-        request.path != FrontendApps.ONBOARDING.value and not onboarding_completed()
+    if not FrontendAppRoutes.is_valid(request.path) or (
+        request.path != FrontendAppRoutes.ONBOARDING.value
+        and not onboarding_completed()
     ):
         return redirect("/")
     return app.send_static_file("index.html")
