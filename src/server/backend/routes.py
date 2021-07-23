@@ -1,3 +1,4 @@
+from enum import Enum
 from json import dumps as jdumps
 from threading import Thread
 
@@ -72,6 +73,19 @@ from .helpers.wifi_manager import (
 )
 
 
+class FrontendAppRoutes(Enum):
+    TOUR = "/tour"
+    ONBOARDING = "/onboarding"
+
+    @classmethod
+    def is_valid(cls, route):
+        try:
+            cls(str(route))
+        except ValueError:
+            return False
+        return True
+
+
 def abort_on_no_data(data):
     if data is None or (isinstance(data, str) and len(data) == 0):
         abort(400)
@@ -81,13 +95,19 @@ def abort_on_no_data(data):
 @app.route("/", methods=["GET"])
 def index():
     PTLogger.debug("Route '/'")
-    if onboarding_completed():
-        return redirect("/tour")
-    return redirect("/onboarding")
+    if not onboarding_completed():
+        PTLogger.info("Onboarding not completed yet. Redirecting...")
+        return redirect(FrontendAppRoutes.ONBOARDING.value)
+    return redirect(FrontendAppRoutes.TOUR.value)
 
 
 @app.errorhandler(404)
 def not_found(e):
+    if not FrontendAppRoutes.is_valid(request.path) or (
+        request.path != FrontendAppRoutes.ONBOARDING.value
+        and not onboarding_completed()
+    ):
+        return redirect("/")
     return app.send_static_file("index.html")
 
 
