@@ -25,7 +25,7 @@ jobs:
           pipenv run coverage xml
 
       - name: Upload Python test coverage reports to Codecov
-        uses: codecov/codecov-action@v2.0.1
+        uses: codecov/codecov-action@v2.0.2
         with:
           files: ./src/server/coverage.xml
           flags: unittests
@@ -60,7 +60,7 @@ jobs:
           yarn test --coverage
 
       - name: Upload javascript test coverage reports to Codecov
-        uses: codecov/codecov-action@v2.0.1
+        uses: codecov/codecov-action@v2.0.2
         with:
           files: ./src/frontend/clover.xml
           flags: jstests
