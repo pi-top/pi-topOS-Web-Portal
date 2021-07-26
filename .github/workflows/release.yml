@@ -1,4 +1,4 @@
-name: Create Draft GitHub Release
+name: Release
 
 on:
   workflow_dispatch:
@@ -40,7 +40,7 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "/tmp/artifacts/bin/"
 
-  create-draft-release:
+  release:
     runs-on: ubuntu-20.04
     needs: build-debian
     steps:
@@ -72,7 +72,7 @@ jobs:
         with:
           tag_name: "v${{ env.VERSION }}"
           name: "v${{ env.VERSION }}"
-          draft: true
+          draft: false
           prerelease: false
           files: |
             ./deb/*
