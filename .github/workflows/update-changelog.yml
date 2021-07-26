@@ -24,9 +24,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          branch: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+          branch: "ci_version_bump"
           commit-message: ${{ secrets.CI_CHANGELOG_BUMP_COMMIT_MESSAGE }}
-          title: ${{ secrets.CI_CHANGELOG_BUMP_TITLE }}
-          body: ${{ secrets.CI_CHANGELOG_BUMP_BODY }}
+          title: "Update Changelog"
+          body: ""
           draft: false
           labels: "ci"
