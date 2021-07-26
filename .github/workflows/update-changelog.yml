@@ -25,8 +25,9 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           branch: "ci_version_bump"
-          commit-message: ${{ secrets.CI_CHANGELOG_BUMP_COMMIT_MESSAGE }}
-          title: "Update Changelog"
-          body: ""
+          commit-message: "Update changelog: v${{ env.VERSION }}"
+          title: "Update Debian package changelog for next release"
+          body: "Modify the changelog as necessary (e.g. amend version, tidy format), then squash and merge (leave commit message unchanged).
+Use `release.yml` to create GitHub Release and any additional package management (e.g. upload to public release repositories)."
           draft: false
           labels: "ci"
