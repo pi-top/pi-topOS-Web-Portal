@@ -17,7 +17,7 @@ repos:
     - id: isort
       args: ["--profile", "black"]
 
--   repo: https://github.com/ambv/black
+-   repo: https://github.com/psf/black
     rev: 21.7b0
     hooks:
     - id: black
@@ -28,7 +28,7 @@ repos:
     - id: autopep8
       args: ["-i", "--max-line-length=150"]
 
--   repo: https://gitlab.com/PyCQA/flake8
+-   repo: https://github.com/PyCQA/flake8
     rev: 3.9.2
     hooks:
     - id: flake8
