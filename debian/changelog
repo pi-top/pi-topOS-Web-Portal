@@ -96,9 +96,6 @@ pt-web-portal (0.1.22) buster; urgency=medium
   * [CI] Update debian/changelog for next release (#145)
 
   [ dependabot[bot] ]
-  * Bump @testing-library/user-event from 7.2.1 to 13.1.9 in /src/frontend (#149)
-
-  [ dependabot[bot] ]
   * Bump enzyme-to-json from 3.4.4 to 3.6.2 in /src/frontend (#155)
 
   [ dependabot[bot] ]
@@ -143,9 +140,6 @@ pt-web-portal (0.1.22) buster; urgency=medium
   [ dependabot[bot] ]
   * Bump codecov/codecov-action from 1 to 2.0.1 (#167)
 
-  [ dependabot[bot] ]
-  * Bump @testing-library/user-event from 13.1.9 to 13.2.0 in /src/frontend (#168)
-
   [ pre-commit-ci[bot] ]
   * [pre-commit.ci] pre-commit autoupdate (#171)
   * Additional Python formatting (#162)
@@ -163,7 +157,6 @@ pt-web-portal (0.1.22) buster; urgency=medium
   * [pre-commit.ci] pre-commit autoupdate (#180)
 
   [ dependabot[bot] ]
-  * Bump @testing-library/user-event from 13.2.0 to 13.2.1 in /src/frontend (#179)
   * Update workflows (#181)
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 28 Jul 2021 23:05:53 +0000
