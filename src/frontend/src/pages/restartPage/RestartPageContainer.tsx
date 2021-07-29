@@ -5,7 +5,6 @@ import RestartPage from "./RestartPage";
 
 import configureTour from "../../services/configureTour";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
-import disableStartupNoise from "../../services/disableStartupNoise";
 import enableOSUpdaterService from "../../services/enableOSUpdaterService";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
@@ -20,7 +19,7 @@ import enablePtSysOled from "../../services/enablePtSysOled";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
-const maxProgress = 12; // this is the number of services for setting up
+const maxProgress = 11; // this is the number of services for setting up
 
 const calculatePercentageProgress = (progress: number, maxProgress: number) => {
   if (!Number.isFinite(progress / maxProgress)) {
@@ -100,12 +99,6 @@ export default ({
           updateMimeDatabase,
           "Just finished memorising all the files I can use..."
         )
-          .finally(() =>
-            safelyRunService(
-              disableStartupNoise,
-              "Stopped myself calling out with joy when you turn me on..."
-            )
-          )
           .finally(() =>
             safelyRunService(
               unhideAllBootMessages,

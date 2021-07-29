@@ -80,9 +80,5 @@ def pt_issue():
     return "/etc/pt-issue"
 
 
-def startup_noise_breadcrumb():
-    return etc_pi_top() + "/.silentBoot"
-
-
 def expand_fs_breadcrumb():
     return etc_pi_top() + "/.expandedFs"

@@ -17,7 +17,6 @@ import querySpinner from "../../../../test/helpers/querySpinner";
 
 import configureTour from "../../../services/configureTour";
 import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSession";
-import disableStartupNoise from "../../../services/disableStartupNoise";
 import enableFurtherLinkService from "../../../services/enableFurtherLinkService";
 import enableFirmwareUpdaterService from "../../../services/enableFirmwareUpdaterService";
 import enableOSUpdaterService from "../../../services/enableOSUpdaterService";
@@ -34,7 +33,6 @@ import { act } from "react-dom/test-utils";
 
 jest.mock("../../../services/configureTour");
 jest.mock("../../../services/deprioritiseOpenboxSession");
-jest.mock("../../../services/disableStartupNoise");
 jest.mock("../../../services/enableFurtherLinkService");
 jest.mock("../../../services/enableFirmwareUpdaterService");
 jest.mock("../../../services/enableOSUpdaterService");
@@ -50,7 +48,6 @@ jest.mock("../../../services/enablePtSysOled");
 
 const configureTourMock = configureTour as jest.Mock;
 const deprioritiseOpenboxSessionMock = deprioritiseOpenboxSession as jest.Mock;
-const disableStartupNoiseMock = disableStartupNoise as jest.Mock;
 const enableFurtherLinkServiceMock = enableFurtherLinkService as jest.Mock;
 const enableFirmwareUpdaterServiceMock = enableFirmwareUpdaterService as jest.Mock;
 const enableOSUpdaterServiceMock = enableOSUpdaterService as jest.Mock;
@@ -67,7 +64,6 @@ const enablePtSysOledMock = enablePtSysOled as jest.Mock;
 const mockServices = [
   configureTourMock,
   deprioritiseOpenboxSessionMock,
-  disableStartupNoiseMock,
   enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
   enableOSUpdaterServiceMock,
@@ -235,22 +231,6 @@ describe("RestartPageContainer", () => {
     describe('when deprioritise openbox session fails', () => {
       beforeEach(() => {
         deprioritiseOpenboxSessionMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('when disable startup noise fails', () => {
-      beforeEach(() => {
-        disableStartupNoiseMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

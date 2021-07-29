@@ -24,7 +24,6 @@ from .helpers.finalise import (
     available_space,
     configure_tour,
     deprioritise_openbox_session,
-    disable_startup_noise,
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_mouse_cursor,
@@ -369,13 +368,6 @@ def post_enable_firmware_updater_service():
 def post_enable_further_link_service():
     PTLogger.debug("Route '/enable-further-link-service'")
     enable_further_link_service()
-    return "OK"
-
-
-@app.route("/disable-startup-noise", methods=["POST"])
-def post_disable_startup_noise():
-    PTLogger.debug("Route '/disable-startup-noise'")
-    disable_startup_noise()
     return "OK"
 
 
