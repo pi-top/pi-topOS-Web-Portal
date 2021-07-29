@@ -1,6 +1,6 @@
-pkg/pt-about.svg                            /usr/share/icons/hicolor/scalable/apps
-pkg/pt-about.desktop                        /usr/share/applications/
-pkg/pt-os-setup.desktop                     /usr/lib/pt-web-portal/
-pkg/pt-tour.desktop                         /usr/lib/pt-web-portal/
+debian/extras/pt-about.desktop                        /usr/share/applications/
+debian/extras/pt-about.svg                            /usr/share/icons/hicolor/scalable/apps
+debian/extras/pt-os-setup.desktop                     /usr/lib/pt-web-portal/
+debian/extras/pt-tour.desktop                         /usr/lib/pt-web-portal/
 # Need to overwrite pt-tour.desktop for older systems running pt-os-setup
-pkg/pt-tour.desktop                         /usr/lib/pt-tour/
+debian/extras/pt-tour.desktop                         /usr/lib/pt-tour/
