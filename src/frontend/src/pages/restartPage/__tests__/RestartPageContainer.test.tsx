@@ -17,13 +17,11 @@ import querySpinner from "../../../../test/helpers/querySpinner";
 
 import configureTour from "../../../services/configureTour";
 import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSession";
-import disableStartupNoise from "../../../services/disableStartupNoise";
 import enableFurtherLinkService from "../../../services/enableFurtherLinkService";
 import enableFirmwareUpdaterService from "../../../services/enableFirmwareUpdaterService";
 import enableOSUpdaterService from "../../../services/enableOSUpdaterService";
 import restoreFiles from "../../../services/restoreFiles";
 import unhideAllBootMessages from "../../../services/unhideAllBootMessages";
-import markEulaAgreed from "../../../services/markEulaAgreed";
 import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
@@ -35,13 +33,11 @@ import { act } from "react-dom/test-utils";
 
 jest.mock("../../../services/configureTour");
 jest.mock("../../../services/deprioritiseOpenboxSession");
-jest.mock("../../../services/disableStartupNoise");
 jest.mock("../../../services/enableFurtherLinkService");
 jest.mock("../../../services/enableFirmwareUpdaterService");
 jest.mock("../../../services/enableOSUpdaterService");
 jest.mock("../../../services/restoreFiles");
 jest.mock("../../../services/unhideAllBootMessages");
-jest.mock("../../../services/markEulaAgreed");
 jest.mock("../../../services/stopOnboardingAutostart");
 jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
@@ -52,13 +48,11 @@ jest.mock("../../../services/enablePtSysOled");
 
 const configureTourMock = configureTour as jest.Mock;
 const deprioritiseOpenboxSessionMock = deprioritiseOpenboxSession as jest.Mock;
-const disableStartupNoiseMock = disableStartupNoise as jest.Mock;
 const enableFurtherLinkServiceMock = enableFurtherLinkService as jest.Mock;
 const enableFirmwareUpdaterServiceMock = enableFirmwareUpdaterService as jest.Mock;
 const enableOSUpdaterServiceMock = enableOSUpdaterService as jest.Mock;
 const restoreFilesMock = restoreFiles as jest.Mock;
 const unhideAllBootMessagesMock = unhideAllBootMessages as jest.Mock;
-const markEulaAgreedMock = markEulaAgreed as jest.Mock;
 const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
@@ -70,13 +64,11 @@ const enablePtSysOledMock = enablePtSysOled as jest.Mock;
 const mockServices = [
   configureTourMock,
   deprioritiseOpenboxSessionMock,
-  disableStartupNoiseMock,
   enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
   enableOSUpdaterServiceMock,
   restoreFiles,
   unhideAllBootMessagesMock,
-  markEulaAgreedMock,
   stopOnboardingAutostartMock,
   updateMimeDatabaseMock,
   updateEepromMock,
@@ -252,41 +244,9 @@ describe("RestartPageContainer", () => {
       });
     });
 
-    describe('when disable startup noise fails', () => {
-      beforeEach(() => {
-        disableStartupNoiseMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
     describe('when unhide all boot messages fails', () => {
       beforeEach(() => {
         unhideAllBootMessagesMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('when mark eula agreed fails', () => {
-      beforeEach(() => {
-        markEulaAgreedMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

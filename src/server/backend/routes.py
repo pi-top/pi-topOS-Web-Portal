@@ -24,13 +24,11 @@ from .helpers.finalise import (
     available_space,
     configure_tour,
     deprioritise_openbox_session,
-    disable_startup_noise,
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_mouse_cursor,
     enable_os_updater_service,
     enable_pt_sys_oled,
-    mark_eula_agreed,
     reboot,
     restore_files,
     stop_onboarding_autostart,
@@ -370,20 +368,6 @@ def post_enable_firmware_updater_service():
 def post_enable_further_link_service():
     PTLogger.debug("Route '/enable-further-link-service'")
     enable_further_link_service()
-    return "OK"
-
-
-@app.route("/disable-startup-noise", methods=["POST"])
-def post_disable_startup_noise():
-    PTLogger.debug("Route '/disable-startup-noise'")
-    disable_startup_noise()
-    return "OK"
-
-
-@app.route("/mark-eula-agreed", methods=["POST"])
-def post_mark_eula_agreed():
-    PTLogger.debug("Route '/mark-eula-agreed'")
-    mark_eula_agreed()
     return "OK"
 
 

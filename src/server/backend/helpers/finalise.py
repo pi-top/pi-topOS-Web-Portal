@@ -7,13 +7,7 @@ from pitopcommon.current_session_info import get_user_using_display
 from pitopcommon.logger import PTLogger
 
 from .command_runner import run_command
-from .paths import (
-    boot_cmdline_txt,
-    etc_pi_top,
-    eula_agreed_breadcrumb,
-    startup_noise_breadcrumb,
-    use_test_path,
-)
+from .paths import boot_cmdline_txt, etc_pi_top, use_test_path
 
 
 def available_space() -> str:
@@ -98,16 +92,6 @@ def _touch_etc_pi_top_file(file_path) -> None:
         utime(file_path, None)
     except OSError:
         open(file_path, "a").close()
-
-
-def disable_startup_noise() -> None:
-    PTLogger.info("Function: disable_startup_noise()")
-    _touch_etc_pi_top_file(startup_noise_breadcrumb())
-
-
-def mark_eula_agreed() -> None:
-    PTLogger.info("Function: mark_eula_agreed()")
-    _touch_etc_pi_top_file(eula_agreed_breadcrumb())
 
 
 def unhide_all_boot_messages() -> None:
