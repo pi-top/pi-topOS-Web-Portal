@@ -1,6 +1,9 @@
 from shlex import split
 
 from flask import json
+
+from helpers.expand_fs import path_to_expand_fs_script
+from helpers.paths import expand_fs_breadcrumb
 from tests.data.finalise_data import (
     available_space,
     available_space_out,
@@ -44,12 +47,21 @@ def test_expand_fs_success(app, mocker):
 
     response = app.post("/expand-fs")
 
+    # Runs expand-fs.sh script
     run_mock.assert_any_call(
-        ["nice", "-n", "10", "/usr/lib/pt-web-portal/expand-fs.sh"],
+        ["nice", "-n", "10", path_to_expand_fs_script()],
         capture_output=True,
         check=True,
         env={"DISPLAY": ":0"},
         timeout=120,
+    )
+    # Creates "is expanded" breadcrumb
+    run_mock.assert_any_call(
+        ["nice", "-n", "10", "touch", expand_fs_breadcrumb()],
+        capture_output=True,
+        check=True,
+        env={"DISPLAY": ":0"},
+        timeout=60,
     )
     assert response.status_code == 200
     assert response.data == b"OK"
