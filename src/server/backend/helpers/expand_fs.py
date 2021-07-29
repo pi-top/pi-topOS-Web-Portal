@@ -6,9 +6,14 @@ from .command_runner import run_command
 from .paths import expand_fs_breadcrumb
 
 
+def path_to_expand_fs_script():
+    here = path.abspath(path.dirname(__file__))
+    return path.join(here, "../scripts/expand-fs.sh")
+
+
 def expand_file_system() -> None:
     PTLogger.info("Function: expand_file_system()")
-    run_command("/usr/lib/pt-web-portal/expand-fs.sh", timeout=120, lower_priority=True)
+    run_command(path_to_expand_fs_script(), timeout=120, lower_priority=True)
 
 
 def create_expand_fs_breadcrumb() -> None:

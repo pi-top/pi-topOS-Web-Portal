@@ -26,11 +26,6 @@ def available_space() -> str:
     return space
 
 
-def expand_file_system() -> None:
-    PTLogger.info("Function: expand_file_system()")
-    run_command("/usr/lib/pt-web-portal/expand-fs.sh", timeout=60, lower_priority=True)
-
-
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
