@@ -3,7 +3,7 @@ name: Run Tests and Upload Coverage Report
 on: push
 
 jobs:
-  test-and-upload-coverage-report:
+  test-python-and-upload-coverage-report:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -33,7 +33,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-  test-js-coverage-report:
+  test-js-and-upload-coverage-report:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
