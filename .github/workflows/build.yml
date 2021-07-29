@@ -48,7 +48,6 @@ jobs:
           target_architecture: ${{ env.TARGET_ARCHITECTURE }}
           docker_image: ${{ env.DEB_BUILD_DOCKER_IMAGE }}:${{ env.DEB_BUILD_DOCKER_TAG }}
           build_directory: ./artifacts
-          LINTIAN_TAGS_TO_SUPPRESS: "debian-changelog-line-too-long,spelling-error-in-changelog,unreleased-changelog-distribution"
 
       - name: Generate artifact name
         run: |
