@@ -23,7 +23,6 @@ import enableFirmwareUpdaterService from "../../../services/enableFirmwareUpdate
 import enableOSUpdaterService from "../../../services/enableOSUpdaterService";
 import restoreFiles from "../../../services/restoreFiles";
 import unhideAllBootMessages from "../../../services/unhideAllBootMessages";
-import markEulaAgreed from "../../../services/markEulaAgreed";
 import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
@@ -41,7 +40,6 @@ jest.mock("../../../services/enableFirmwareUpdaterService");
 jest.mock("../../../services/enableOSUpdaterService");
 jest.mock("../../../services/restoreFiles");
 jest.mock("../../../services/unhideAllBootMessages");
-jest.mock("../../../services/markEulaAgreed");
 jest.mock("../../../services/stopOnboardingAutostart");
 jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
@@ -58,7 +56,6 @@ const enableFirmwareUpdaterServiceMock = enableFirmwareUpdaterService as jest.Mo
 const enableOSUpdaterServiceMock = enableOSUpdaterService as jest.Mock;
 const restoreFilesMock = restoreFiles as jest.Mock;
 const unhideAllBootMessagesMock = unhideAllBootMessages as jest.Mock;
-const markEulaAgreedMock = markEulaAgreed as jest.Mock;
 const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
@@ -76,7 +73,6 @@ const mockServices = [
   enableOSUpdaterServiceMock,
   restoreFiles,
   unhideAllBootMessagesMock,
-  markEulaAgreedMock,
   stopOnboardingAutostartMock,
   updateMimeDatabaseMock,
   updateEepromMock,
@@ -271,22 +267,6 @@ describe("RestartPageContainer", () => {
     describe('when unhide all boot messages fails', () => {
       beforeEach(() => {
         unhideAllBootMessagesMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('when mark eula agreed fails', () => {
-      beforeEach(() => {
-        markEulaAgreedMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

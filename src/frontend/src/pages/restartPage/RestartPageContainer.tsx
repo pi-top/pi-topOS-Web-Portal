@@ -10,7 +10,6 @@ import enableOSUpdaterService from "../../services/enableOSUpdaterService";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
 import unhideAllBootMessages from "../../services/unhideAllBootMessages";
-import markEulaAgreed from "../../services/markEulaAgreed";
 import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
@@ -21,7 +20,7 @@ import enablePtSysOled from "../../services/enablePtSysOled";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
-const maxProgress = 9; // this is the number of services for setting up
+const maxProgress = 12; // this is the number of services for setting up
 
 const calculatePercentageProgress = (progress: number, maxProgress: number) => {
   if (!Number.isFinite(progress / maxProgress)) {
@@ -129,12 +128,6 @@ export default ({
             safelyRunService(
               enableFurtherLinkService,
               "Reminded myself to stay connected, so I can help you go Further..."
-            )
-          )
-          .finally(() =>
-            safelyRunService(
-              markEulaAgreed,
-              "Signed that pesky terms document..."
             )
           )
           .finally(() =>

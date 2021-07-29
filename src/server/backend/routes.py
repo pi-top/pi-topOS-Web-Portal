@@ -30,7 +30,6 @@ from .helpers.finalise import (
     enable_mouse_cursor,
     enable_os_updater_service,
     enable_pt_sys_oled,
-    mark_eula_agreed,
     reboot,
     restore_files,
     stop_onboarding_autostart,
@@ -377,13 +376,6 @@ def post_enable_further_link_service():
 def post_disable_startup_noise():
     PTLogger.debug("Route '/disable-startup-noise'")
     disable_startup_noise()
-    return "OK"
-
-
-@app.route("/mark-eula-agreed", methods=["POST"])
-def post_mark_eula_agreed():
-    PTLogger.debug("Route '/mark-eula-agreed'")
-    mark_eula_agreed()
     return "OK"
 
 
