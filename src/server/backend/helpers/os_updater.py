@@ -4,6 +4,7 @@ from backend.helpers.config_manager import ConfigManager
 from backend.helpers.extras import FWUpdaterBreadcrumbManager
 from backend.helpers.finalise import onboarding_completed
 from backend.helpers.wifi_manager import is_connected_to_internet
+from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
@@ -48,6 +49,11 @@ class InstallProgress(apt.progress.base.InstallProgress):  # type: ignore
 
     def update_interface(self):
         apt.progress.base.InstallProgress.update_interface(self)
+
+
+class AutoremoveFilter(apt.cache.Filter):  # type: ignore
+    def apply(self, pkg):
+        return pkg.is_auto_removable or pkg.marked_delete
 
 
 class OSUpdater:
@@ -135,6 +141,7 @@ class OSUpdater:
 
     def autoremove(self, callback):
         PTLogger.info("OSUpdater: starting autoremove")
+        callback(MessageType.START, "Starting autoremove", 0.0)
         if self.lock:
             callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
             return
@@ -143,7 +150,15 @@ class OSUpdater:
         fetch_packages_progress = FetchProgress(callback)
         install_progress = InstallProgress(callback)
         try:
-            callback(MessageType.START, "Starting autoremove", 0.0)
+            pkgs_to_delete = apt.cache.FilteredCache(self.cache)
+            pkgs_to_delete.set_filter(AutoremoveFilter())
+            for pkg in pkgs_to_delete:
+                pkg.mark_delete()
+            callback(
+                MessageType.START,
+                f"The following packages are no longer required and will be removed: {', '.join(pkgs_to_delete.keys())}",
+                0.0,
+            )
             self.cache.commit(fetch_packages_progress, install_progress)
             callback(MessageType.FINISH, "Finished autoremove", 100.0)
         except Exception as e:
@@ -234,10 +249,11 @@ def start_os_upgrade(callback):
             fw_breadcrumb_manager.clear_extend_timeout()
 
 
-def autoremove_packages(callback):
-    updater = get_os_updater_instance()
+def cleanup(callback):
     try:
-        updater.autoremove(callback)
+        get_os_updater_instance().autoremove(callback)
+        run_command("apt-get autoclean --quiet --yes", timeout=60, check=False)
+        run_command("apt-get clean", timeout=60, check=False)
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
 

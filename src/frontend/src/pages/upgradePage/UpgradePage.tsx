@@ -21,6 +21,7 @@ export enum UpgradePageExplanation {
   InProgress = "Please sit back and relax - this may take some time...",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
   WaitingForServer = "Please wait...",
+  CleanupInProgress = "Cleaning up, please wait...",
 }
 
 export enum OsBurnExplanation {
@@ -42,6 +43,7 @@ export type Props = {
   upgradeIsRunning: boolean,
   upgradeFinished: boolean,
   waitingForServer: boolean,
+  cleanupIsRunning: boolean,
   downloadSize: number,
   error: boolean,
   requiredBurn: boolean,
@@ -60,6 +62,7 @@ export default ({
   upgradeIsRunning,
   upgradeFinished,
   downloadSize,
+  cleanupIsRunning,
   waitingForServer,
   requiredBurn,
   shouldBurn,
@@ -89,6 +92,9 @@ export default ({
     }
     if (upgradeIsRunning) {
       return UpgradePageExplanation.InProgress;
+    }
+    if (cleanupIsRunning) {
+      return UpgradePageExplanation.CleanupInProgress;
     }
     if (upgradeIsPrepared) {
       if (downloadSize) {

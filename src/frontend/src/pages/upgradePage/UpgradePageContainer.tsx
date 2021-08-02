@@ -10,6 +10,7 @@ import serverStatus from "../../services/serverStatus"
 import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
+  Cleanup = "AUTOREMOVE",
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
   Upgrade = "OS_UPGRADE",
   Size = "SIZE",
@@ -37,7 +38,7 @@ export type SizeMessagePayload = {
 };
 
 export type UpgradeMessage = {
-  type: OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade;
+  type: OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade | OSUpdaterMessageType.Cleanup;
   payload: UpgradeMessagePayload;
 };
 
@@ -72,6 +73,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
+  const [cleanupIsRunning, setCleanupIsRunning] = useState(false);
   const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState(false);
@@ -142,6 +144,14 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
     if (
       message.type === OSUpdaterMessageType.Upgrade &&
+      message.payload.status === UpdateMessageStatus.Finish
+    ) {
+      setCleanupIsRunning(true);
+      socket.send("cleanup");
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.Cleanup &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
       setUpgradeIsRunning(false);
@@ -220,6 +230,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       downloadSize={updateSize.downloadSize}
       requiredBurn={requiredBurn}
       shouldBurn={shouldBurn}
+      cleanupIsRunning={cleanupIsRunning}
       error={error}
     />
   );
