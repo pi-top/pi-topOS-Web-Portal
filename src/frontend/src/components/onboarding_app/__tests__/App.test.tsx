@@ -158,7 +158,12 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     upgrade: async () => {
 
       fireEvent.click(result.getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _) => {
+      await Promise.all(
+        UpgradePageExplanation.Finish
+            .replace("{continueButtonLabel}", "Next")
+            .replace("{continueButtonAction}", "continue")
+            .split("\n")
+            .map(async (text, _) => {
         text && await waitForText(text);
       }))
     },
@@ -230,15 +235,18 @@ describe("App", () => {
           socket.send(JSON.stringify(Messages.PrepareStart));
           socket.send(JSON.stringify(Messages.PrepareFinish));
         }
-
-        if (data === "size") {
+        else if (data === "size") {
           socket.send(JSON.stringify(Messages.Size));
         }
-
-        if (data === "start") {
+        else if (data === "start") {
           socket.send(JSON.stringify(Messages.UpgradeStart));
           socket.send(JSON.stringify(Messages.UpgradeStatus));
           socket.send(JSON.stringify(Messages.UpgradeFinish));
+        }
+        else if (data === "cleanup") {
+          socket.send(JSON.stringify(Messages.CleanupStart));
+          socket.send(JSON.stringify(Messages.CleanupStatus));
+          socket.send(JSON.stringify(Messages.CleanupFinish));
         }
       });
     });

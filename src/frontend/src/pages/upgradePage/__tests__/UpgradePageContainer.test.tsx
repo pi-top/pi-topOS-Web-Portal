@@ -34,7 +34,8 @@ const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
 const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 
 type ExtendedRenderResult = RenderResult & {
-  waitForPreparation: () => Promise<HTMLElement>;
+  waitForPreparation: () => Promise<HTMLElement>,
+  waitForUpgradeFinish: () => any,
 };
 
 let server: Server;
@@ -107,6 +108,14 @@ describe("UpgradePageContainer", () => {
                 .replace("{time}", "a few")
             )
           ),
+        waitForUpgradeFinish: async () => {
+          await Promise.all(UpgradePageExplanation.Finish
+            .replace("{continueButtonLabel}", "Next")
+            .replace("{continueButtonAction}", "continue")
+            .split("\n").map(async (text, _): Promise<any> => {
+            text && await waitForElement(() => result.getByText(text))
+          }))
+        },
       };
     };
   });
@@ -486,15 +495,18 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
-
-          if (data === "size") {
+          else if (data === "size") {
             socket.send(JSON.stringify(Messages.Size));
           }
-
-          if (data === "start") {
+          else if (data === "start") {
             socket.send(JSON.stringify(Messages.UpgradeStart));
             socket.send(JSON.stringify(Messages.UpgradeStatus));
             socket.send(JSON.stringify(Messages.UpgradeFinish));
+          }
+          else if (data === "cleanup") {
+            socket.send(JSON.stringify(Messages.CleanupStart));
+            socket.send(JSON.stringify(Messages.CleanupStatus));
+            socket.send(JSON.stringify(Messages.CleanupFinish));
           }
         });
       });
@@ -506,67 +518,55 @@ describe("UpgradePageContainer", () => {
     })
 
     it("renders the upgrade finished message", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
     });
 
     it("renders progress bar correctly", async () => {
-      const { getByText, waitForPreparation, container: upgradePage } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(upgradePage.querySelector(".progress")).toMatchSnapshot();
     });
 
     it("renders the received message", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(
-        getByText(Messages.UpgradeFinish.payload.message)
+        getByText(Messages.CleanupFinish.payload.message)
       ).toBeInTheDocument();
     });
 
     it("Upgrade button is not present", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(queryByText("Update")).not.toBeInTheDocument();
     });
 
     it("Next button is present", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
     it("requests to restart the pt-os-web-portal systemd service", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -577,12 +577,10 @@ describe("UpgradePageContainer", () => {
 
     it("doesn't display an error message when restartWebPortalService fails", async () => {
       restartWebPortalServiceMock.mockRejectedValue(new Error("couldn't restart"));
-      const { queryByText, getByText, waitForPreparation } = mount();
+      const { queryByText, getByText, waitForUpgradeFinish, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -592,12 +590,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("calls goToNextPage when next button clicked", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -609,12 +605,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("calls onBackClick when back button clicked", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       fireEvent.click(getByText("Back"));
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
@@ -628,12 +622,10 @@ describe("UpgradePageContainer", () => {
       })
 
       it("renders a spinner", async () => {
-        const { container: upgradePage, getByText, waitForPreparation } = mount();
+        const { container: upgradePage, waitForUpgradeFinish, getByText, waitForPreparation } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -643,12 +635,10 @@ describe("UpgradePageContainer", () => {
       });
 
       it("renders a 'please wait' message", async () => {
-        const { getByText, waitForPreparation } = mount();
+        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -658,12 +648,10 @@ describe("UpgradePageContainer", () => {
       });
 
       it("probes backend server to determine if its online", async () => {
-        const { getByText, waitForPreparation } = mount();
+        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -673,12 +661,10 @@ describe("UpgradePageContainer", () => {
       });
 
       it("probes backend server until its online", async () => {
-        const { getByText, waitForPreparation } = mount();
+        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         serverStatusMock.mockRejectedValue(new Error("I'm offline"));

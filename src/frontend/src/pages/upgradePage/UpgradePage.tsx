@@ -146,7 +146,7 @@ export default ({
             <Spinner size={40} />{" "}
           </>
         )}
-        {message?.type === OSUpdaterMessageType.Upgrade && !waitingForServer && (
+        {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.Cleanup) && !waitingForServer && (
           <div className={styles.progress}>
             <ProgressBar
               percent={message.payload.percent}
