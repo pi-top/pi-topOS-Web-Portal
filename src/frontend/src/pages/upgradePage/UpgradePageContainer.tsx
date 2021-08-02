@@ -10,7 +10,7 @@ import serverStatus from "../../services/serverStatus"
 import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
-  Cleanup = "AUTOREMOVE",
+  Cleanup = "OS_UPGRADE_CLEANUP",
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
   Upgrade = "OS_UPGRADE",
   Size = "SIZE",
@@ -142,12 +142,13 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       return;
     }
 
-    if (
-      message.type === OSUpdaterMessageType.Upgrade &&
-      message.payload.status === UpdateMessageStatus.Finish
-    ) {
-      setCleanupIsRunning(true);
-      socket.send("cleanup");
+    if (message.type === OSUpdaterMessageType.Upgrade) {
+      if (message.payload.status === UpdateMessageStatus.Finish) {
+        setCleanupIsRunning(true);
+        socket.send("cleanup");
+      } else if (message.payload.status === UpdateMessageStatus.Start) {
+        setUpgradeIsRunning(true);
+      }
     }
 
     if (
@@ -156,14 +157,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     ) {
       setUpgradeIsRunning(false);
       setUpgradeIsRequired(false);
+      setCleanupIsRunning(false);
       setUpgradeFinished(true);
-    }
-
-    if (
-      message.type === OSUpdaterMessageType.Upgrade &&
-      message.payload.status === UpdateMessageStatus.Start
-    ) {
-      setUpgradeIsRunning(true);
     }
 
     if (message.type === OSUpdaterMessageType.Size) {

@@ -55,7 +55,7 @@ exports[`UpgradePageContainer when the upgrade finishes renders progress bar cor
   <span
     class="message"
   >
-    Finished upgrade
+    Finished cleanup!
   </span>
 </div>
 `;

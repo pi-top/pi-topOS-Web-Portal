@@ -517,6 +517,11 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.UpgradeStatus));
             socket.send(JSON.stringify(Messages.UpgradeFinish));
           }
+          else if (data === "cleanup") {
+            socket.send(JSON.stringify(Messages.CleanupStart));
+            socket.send(JSON.stringify(Messages.CleanupStatus));
+            socket.send(JSON.stringify(Messages.CleanupFinish));
+          }
         });
       });
     });
@@ -549,7 +554,7 @@ describe("UpgradePageContainer", () => {
       await waitForUpgradeFinish();
 
       expect(
-        getByText(Messages.UpgradeFinish.payload.message)
+        getByText(Messages.CleanupFinish.payload.message)
       ).toBeInTheDocument();
     });
 
