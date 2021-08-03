@@ -298,6 +298,7 @@ class WifiUtil:
         sock.bind(sock_file)
         sock.connect(ctrl_iface)
 
+        sock.send(b"PING")
         retry = CTRL_IFACE_RETRY
         while retry >= 0:
             reply = sock.recv(REPLY_SIZE)
