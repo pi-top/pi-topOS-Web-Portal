@@ -7,7 +7,7 @@ def get_pywifi():
 
         return PyWiFiMock()
 
-    import pywifi
+    from .vendor import pywifi
 
     return pywifi
 
