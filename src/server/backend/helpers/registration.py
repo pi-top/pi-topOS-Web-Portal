@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .paths import etc_pi_top, pi_top_registration_txt
 

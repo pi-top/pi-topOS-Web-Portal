@@ -5,7 +5,7 @@ from threading import Thread
 from time import sleep
 
 import requests
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .finalise import onboarding_completed
 

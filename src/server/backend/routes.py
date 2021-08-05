@@ -5,7 +5,7 @@ from threading import Thread
 from flask import abort
 from flask import current_app as app
 from flask import redirect, request
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from . import sockets
 from .events import (
