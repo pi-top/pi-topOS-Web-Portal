@@ -5,7 +5,7 @@ from time import sleep
 
 from PIL import Image, ImageDraw
 from pitop import Pitop
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .helpers import get_image_file_path
 from .menus import ApMenuPage, EthernetMenuPage, InfoMenuPage, Menus, UsbMenuPage

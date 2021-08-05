@@ -8,9 +8,9 @@ from backend.helpers.device_registration import register_device_in_background
 from backend.helpers.finalise import onboarding_completed
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
-from pitopcommon.command_runner import run_command
-from pitopcommon.logger import PTLogger
-from pitopcommon.sys_info import get_systemd_active_state, stop_systemd_service
+from pitop.common.command_runner import run_command
+from pitop.common.logger import PTLogger
+from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 
 from miniscreen.onboarding.app import OnboardingApp
 

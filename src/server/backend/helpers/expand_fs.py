@@ -1,6 +1,6 @@
 from os import path
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .command_runner import run_command
 from .paths import expand_fs_breadcrumb

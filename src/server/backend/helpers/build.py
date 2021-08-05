@@ -1,6 +1,6 @@
 from json import dumps
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .paths import pt_issue
 

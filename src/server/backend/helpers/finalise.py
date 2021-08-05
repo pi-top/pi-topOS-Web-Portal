@@ -2,9 +2,9 @@ from fileinput import input as finput
 from os import remove, utime
 from pathlib import Path
 
-from pitopcommon.command_runner import run_command_background
-from pitopcommon.current_session_info import get_user_using_display
-from pitopcommon.logger import PTLogger
+from pitop.common.command_runner import run_command_background
+from pitop.common.current_session_info import get_user_using_display
+from pitop.common.logger import PTLogger
 
 from .command_runner import run_command
 from .paths import boot_cmdline_txt, etc_pi_top, use_test_path

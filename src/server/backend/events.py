@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from json import dumps as jdumps
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 
 class MessageType(Enum):
