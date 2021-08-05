@@ -1,5 +1,5 @@
-from pitopcommon.command_runner import run_command
-from pitopcommon.logger import PTLogger
+from pitop.common.command_runner import run_command
+from pitop.common.logger import PTLogger
 
 
 def restart_web_portal_service() -> None:

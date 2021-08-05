@@ -1,7 +1,7 @@
 import os
 from datetime import date
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from ..events import MessageType
 from .modules import get_apt

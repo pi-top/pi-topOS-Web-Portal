@@ -2,7 +2,7 @@ from os import environ
 from shlex import split
 from subprocess import Popen, run
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 
 def run_command_background(command_str: str) -> Popen:

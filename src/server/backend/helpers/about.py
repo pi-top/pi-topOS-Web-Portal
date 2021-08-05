@@ -2,7 +2,7 @@ from json import load as jload
 from re import match
 from typing import Dict
 
-from pitopcommon.common_names import DeviceName
+from pitop.common.common_names import DeviceName
 
 
 def _get_file_lines(filename) -> list:

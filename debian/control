@@ -29,7 +29,7 @@ Depends:
  python3-gevent,
  python3-gevent-websocket,
 # Used for PTLogger
- python3-pitopcommon,
+ python3-pitop,
  python3-waitress,
  python3-websockets,
  raspi-config,

@@ -2,7 +2,7 @@ from enum import Enum
 from time import sleep
 from typing import Dict, List
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .command_runner import run_command
 from .modules import get_pywifi
