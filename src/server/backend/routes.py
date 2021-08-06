@@ -78,7 +78,7 @@ class FrontendAppRoutes(Enum):
     @classmethod
     def is_valid(cls, route):
         try:
-            cls(str(route))
+            cls(str(route[: route.find("/", 1)]))
         except ValueError:
             return False
         return True
