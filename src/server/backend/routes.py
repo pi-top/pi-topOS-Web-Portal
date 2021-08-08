@@ -78,7 +78,11 @@ class FrontendAppRoutes(Enum):
     @classmethod
     def is_valid(cls, route):
         try:
-            cls(str(route[: route.find("/", 1)]))
+            path = route
+            path_delimiter = route.find("/", 1)
+            if path_delimiter > 0:
+                path = route[:path_delimiter]
+            cls(str(path))
         except ValueError:
             return False
         return True
@@ -102,7 +106,7 @@ def index():
 @app.errorhandler(404)
 def not_found(e):
     if not FrontendAppRoutes.is_valid(request.path) or (
-        request.path != FrontendAppRoutes.ONBOARDING.value
+        FrontendAppRoutes.ONBOARDING.value not in request.path
         and not onboarding_completed()
     ):
         return redirect("/")
