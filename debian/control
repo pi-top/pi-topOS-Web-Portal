@@ -32,6 +32,7 @@ Depends:
  python3-pitop,
  python3-waitress,
  python3-websockets,
+ python3-xdg,
  raspi-config,
  rsync,
 Description: pi-topOS Web Portal
