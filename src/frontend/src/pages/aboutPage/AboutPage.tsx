@@ -27,7 +27,7 @@ export default ({ deviceData, isFetchingData, hasError }: Props) => {
         src: piTopLogo,
         alt: "about-screen"
       }}
-      prompt={"pi-topOS Sirius"}
+      prompt={"pi-topOS"}
       explanation=""
       nextButton={{
         onClick: () => {},
