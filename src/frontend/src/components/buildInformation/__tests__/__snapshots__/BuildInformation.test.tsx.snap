@@ -6,35 +6,15 @@ exports[`BuildInformation when build info exists renders correctly 1`] = `
     class="root"
     data-testid="build-info"
   >
-    Build Name: 
-    test-build
+    pi-topOS Build Number : 
+    100
     <br />
-    Build Number: 
-    1234567890
+    Repository ID: 
+    experimental-pkgcld
     <br />
     Build Date: 
-    2020-01-01T00:00:00.000Z
+    2021-08-09
     <br />
-    Build Apt Repo: 
-    test-build-repo
-    <br />
-    Final Apt Repo: 
-    final-test-build-repo
-  </div>
-</div>
-`;
-
-exports[`BuildInformation when build info exists when final repo is "sirius" renders correctly 1`] = `
-<div>
-  <div
-    class="root"
-    data-testid="build-info"
-  >
-    pi-topOS Build Number: 
-    1234567890
-    <br />
-    Release Date: 
-    2020-01-01T00:00:00.000Z
   </div>
 </div>
 `;

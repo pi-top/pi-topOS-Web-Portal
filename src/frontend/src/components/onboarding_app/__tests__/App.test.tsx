@@ -119,12 +119,10 @@ const keyboardVariants = {
 };
 
 const buildInfo: BuildInfo = {
-  buildName: "test-build",
-  buildNumber: "1234567890",
-  buildDate: "01/01/2020",
-  buildRepo: "test-build-repo",
-  finalRepo: "final-test-build-repo",
-  buildHash: "094cdf6bc25b7429eb2820528f031afe",
+  'buildRepo': 'experimental-pkgcld',
+  'buildDate': '2021-08-09',
+  'buildNumber': '100',
+  'buildCommit': '07706af4337c60f4007ef9910c33c6e4daab1646',
 };
 
 const upgradePageText =

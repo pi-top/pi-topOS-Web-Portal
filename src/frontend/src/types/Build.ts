@@ -1,8 +1,6 @@
 export type BuildInfo = {
-  buildName: string;
-  buildNumber: string;
-  buildDate: string;
-  buildRepo: string;
-  finalRepo: string;
-  buildHash: string;
+    buildRepo: string;
+    buildDate: string;
+    buildNumber: string;
+    buildCommit: string;
 }
