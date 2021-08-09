@@ -15,8 +15,6 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
  ${shlibs:Depends},
-# Needed for 'nice' command
- coreutils (>= 8.0),
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Determine process ID using required port
