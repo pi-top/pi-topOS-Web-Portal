@@ -14,7 +14,13 @@ def device_serial_number():
 
 
 def device_data():
-    data = get_pitopOS_info()
+    build_info = get_pitopOS_info()
+    data = {
+        "build_repo": build_info.build_type,
+        "build_date": build_info.date,
+        "build_number": build_info.build_run_number,
+        "build_commit": build_info.commit,
+    }
     data.update({"device": device_type()})
     if data.get("device") == DeviceName.pi_top_4.value:
         data.update({"serial_number": device_serial_number()})

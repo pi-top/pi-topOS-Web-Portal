@@ -11,7 +11,7 @@ def os_build_info():
     build = {
         "buildRepo": build_info.build_type,
         "buildDate": build_info.date,
-        "buildNumber": build_info.number,
+        "buildNumber": build_info.build_run_number,
         "buildCommit": build_info.commit,
     }
     PTLogger.info("OS build information: " + dumps(build))
