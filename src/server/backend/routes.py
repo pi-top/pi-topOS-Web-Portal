@@ -74,6 +74,7 @@ from .helpers.wifi_manager import (
 class FrontendAppRoutes(Enum):
     TOUR = "/tour"
     ONBOARDING = "/onboarding"
+    ABOUT = "/about"
 
     @classmethod
     def is_valid(cls, route):
