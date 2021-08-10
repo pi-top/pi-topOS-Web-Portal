@@ -1,4 +1,5 @@
 import React from "react";
+import cx from 'classnames';
 
 import styles from "./AboutPage.module.css";
 import Layout from "../../components/layout/Layout";
@@ -47,10 +48,10 @@ export default ({ deviceData, isFetchingData, hasError }: Props) => {
             {
               Object.keys(deviceData).map(key => {
                 return <div key={key} className={styles.divTableRow}>
-                  <div className={styles.divTableCell}>
+                  <div className={cx(styles.divTableCell, styles.alignRight)}>
                     <span className={styles.dataTitle}>{toTitleCase(key.replace("_", " "))}</span>
                   </div>
-                  <div className={styles.divTableCell}>
+                  <div className={cx(styles.divTableCell, styles.alignLeft)}>
                     <span className={styles.dataContent}>{deviceData[key]}</span>
                   </div>
                 </div>

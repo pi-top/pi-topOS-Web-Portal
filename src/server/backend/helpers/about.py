@@ -19,7 +19,6 @@ def device_data():
         "build_repo": build_info.build_type,
         "build_date": build_info.build_date,
         "build_number": build_info.build_run_number,
-        "build_commit": build_info.build_commit,
     }
     data.update({"device": device_type()})
     if data.get("device") == DeviceName.pi_top_4.value:
