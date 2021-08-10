@@ -6,14 +6,14 @@ exports[`BuildInformation when build info exists renders correctly 1`] = `
     class="root"
     data-testid="build-info"
   >
-    pi-topOS Build Number : 
+    Build Number: 
     100
-    <br />
-    Repository ID: 
-    experimental-pkgcld
     <br />
     Build Date: 
     2021-08-09
+    <br />
+    Build Apt Repo: 
+    experimental-pkgcld
     <br />
   </div>
 </div>
