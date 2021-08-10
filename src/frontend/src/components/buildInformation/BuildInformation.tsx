@@ -12,6 +12,7 @@ export default ({ info }: Props) => {
     return null;
   }
 
+  // TODO: perform a similar check with latest OS
   if (info.finalRepo === "sirius") {
     return (
       <div data-testid="build-info" className={styles.root}>
@@ -20,14 +21,15 @@ export default ({ info }: Props) => {
       </div>
     );
   }
-
   return (
     <div data-testid="build-info" className={styles.root}>
-      Build Name: {info.buildName}<br />
-      Build Number: {info.buildNumber}<br />
-      Build Date: {info.buildDate}<br />
-      Build Apt Repo: {info.buildRepo}<br />
-      Final Apt Repo: {info.finalRepo}
+      {info.buildOsVersion && <>Build OS Version: {info.buildOsVersion}<br /></>}
+      {info.buildName && <>Build Name: {info.buildName}<br /></>}
+      {info.buildNumber && <>Build Number: {info.buildNumber}<br /></>}
+      {info.buildDate && <>Build Date: {info.buildDate}<br /></>}
+      {info.buildType && <>Build Type: {info.buildType}<br /></>}
+      {info.buildRepo && <>Build Apt Repo: {info.buildRepo}<br /></>}
+      {info.finalRepo && <>Final Apt Repo: {info.finalRepo}</>}
     </div>
   );
 };
