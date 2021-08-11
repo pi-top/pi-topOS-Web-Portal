@@ -49,8 +49,6 @@ Breaks:
  piwiz,
 Replaces:
  piwiz,
-# Need to overwrite pt-tour.desktop for older systems running pt-os-setup
- pt-tour,
 Conflicts:
  piwiz,
 Description: pi-top Web Portal - Desktop management
