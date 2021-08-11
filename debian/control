@@ -20,7 +20,7 @@ Depends:
 # Determine process ID using required port
  lsof,
 # Needed to update the EEPROM
- pt-os-core-services,
+ pt-os-notify-services,
  python3-flask,
  python3-flask-cors,
  python3-flask-sockets,

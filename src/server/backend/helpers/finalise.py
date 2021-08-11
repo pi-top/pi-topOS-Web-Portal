@@ -182,4 +182,4 @@ def get_chromium_command(url):
 
 def update_eeprom():
     PTLogger.info("Function: update_eeprom()")
-    run_command("/usr/lib/pt-system-tools/pt-eeprom -f", timeout=10, check=False)
+    run_command("/usr/lib/pt-os-notify-services/pt-eeprom -f", timeout=10, check=False)
