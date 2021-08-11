@@ -17,6 +17,8 @@ Depends:
  ${shlibs:Depends},
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
+# Enable service
+ further-link,
 # Determine process ID using required port
  lsof,
 # Needed to update the EEPROM
