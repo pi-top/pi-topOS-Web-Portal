@@ -195,7 +195,7 @@ def test_enable_further_link_service_success(app, mocker):
 
     response = app.post("/enable-further-link-service")
     run_mock.assert_called_once_with(
-        ["nice", "-n", "10", "systemctl", "enable", "pt-further-link"],
+        ["nice", "-n", "10", "systemctl", "enable", "further-link"],
         capture_output=True,
         check=True,
         env={"DISPLAY": ":0"},

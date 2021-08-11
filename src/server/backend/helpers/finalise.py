@@ -79,9 +79,7 @@ def enable_firmware_updater_service():
 def enable_further_link_service():
     PTLogger.info("Function: enable_further_link()")
 
-    return run_command(
-        "systemctl enable pt-further-link", timeout=30, lower_priority=True
-    )
+    return run_command("systemctl enable further-link", timeout=30, lower_priority=True)
 
 
 def _touch_etc_pi_top_file(file_path) -> None:
