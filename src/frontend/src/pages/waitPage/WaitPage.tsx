@@ -13,7 +13,7 @@ export type Props = {
 
 export enum ExplanationMessage {
   CheckingFsStatus = "",
-  ExpandingFs = "Getting everything ready...\n\nPlease do not power off or unplug your device!\n\nThis may take a few minutes...\n\nYour device may reboot multiple times during setup.",
+  ExpandingFs = "",
   Rebooting = "Rebooting",
   Default = ""
 }
@@ -55,6 +55,13 @@ export default ({ isCheckingFsStatus, isExpandingFs, isRebooting, hasError }: Pr
       }}
       className={styles.root}
     >
+      {isExpandingFs &&
+      <>
+        <p>Getting everything ready... 👷‍♂️</p>
+        <h1 className={styles.title}>Please <span className="green">do not power off</span> or unplug your device! ⚠️</h1>
+        <p>This may take a few minutes... ⏱</p>
+        <p className={styles.greenTitle}>[ Your device may reboot multiple times during setup ]</p>
+      </>}
       {errorMessage && <span className={styles.error}>{errorMessage}</span>}
     </Layout>
   );

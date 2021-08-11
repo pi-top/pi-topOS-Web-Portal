@@ -18,3 +18,18 @@
 .root img {
   display: none;
 }
+
+.title {
+  font-size: 20px;
+  margin: 10px 0;
+}
+
+.greenTitle {
+  font-style: italic;
+  color: var(--green);
+}
+
+p {
+  font-size: 16px;
+  margin: 10px 0;
+}
