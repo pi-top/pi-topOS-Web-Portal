@@ -17,19 +17,19 @@ import isFileSystemExpanded from "../../../services/isFileSystemExpanded";
 import reboot from "../../../services/reboot";
 import expandFileSystem from "../../../services/expandFileSystem";
 import enableMouseCursor from "../../../services/enableMouseCursor";
-import enablePtMiniscreen from "../../../services/enablePtMiniscreen";
+import enableApMode from "../../../services/enableApMode";
 
 jest.mock("../../../services/isFileSystemExpanded");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/expandFileSystem");
 jest.mock("../../../services/enableMouseCursor");
-jest.mock("../../../services/enablePtMiniscreen");
+jest.mock("../../../services/enableApMode");
 
 const isFileSystemExpandedMock = isFileSystemExpanded as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const expandFileSystemMock = expandFileSystem as jest.Mock;
 const enableMouseCursorMock = enableMouseCursor as jest.Mock;
-const enablePtMiniscreenMock = enableMouseCursor as jest.Mock;
+const enableApModeMock = enableApMode as jest.Mock;
 
 describe("WaitPageContainer", () => {
   let defaultProps: Props;
@@ -40,7 +40,7 @@ describe("WaitPageContainer", () => {
     rebootMock.mockResolvedValue("OK");
     expandFileSystemMock.mockResolvedValue("OK");
     enableMouseCursorMock.mockResolvedValue("OK");
-    enablePtMiniscreenMock.mockResolvedValue("OK");
+    enableApModeMock.mockResolvedValue("OK");
 
     defaultProps = {
       goToNextPage: jest.fn()
@@ -124,6 +124,15 @@ describe("WaitPageContainer", () => {
 
     await waitForElement(() => querySpinner(waitPage));
     expect(querySpinner(waitPage)).toBeInTheDocument();
+
+    await wait();
+  });
+
+  it("attempts to enable AP mode after expanding file system", async () => {
+    const { } = mount();
+    await wait();
+
+    expect(enableApModeMock).toHaveBeenCalled();
 
     await wait();
   });

@@ -10,3 +10,11 @@ def restart_web_portal_service() -> None:
         )
     except Exception as e:
         PTLogger.error(f"restart_web_portal_service(): {e}")
+
+
+def enable_ap_mode() -> None:
+    PTLogger.info("Function enable_ap_mode()")
+    try:
+        run_command("wifi-ap-sta enable", check=False, timeout=20)
+    except Exception as e:
+        PTLogger.error(f"enable_ap_mode(): {e}")
