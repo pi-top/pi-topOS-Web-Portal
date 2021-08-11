@@ -35,7 +35,12 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
-from .helpers.os_updater import os_upgrade_size, prepare_os_upgrade, start_os_upgrade
+from .helpers.os_updater import (
+    check_relevant_os_updates,
+    os_upgrade_size,
+    prepare_os_upgrade,
+    start_os_upgrade,
+)
 from .helpers.registration import set_registration_email
 from .helpers.system import enable_ap_mode, restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
@@ -459,3 +464,9 @@ def FSMePro(filename):
     PTLogger.debug(f"Route '/FSMePro/{filename}'")
     current_dir = path.dirname(path.realpath(__file__))
     return send_from_directory(str(current_dir) + "/../resources/fonts", filename)
+
+
+@app.route("/os-updates", methods=["GET"])
+def get_os_check_update():
+    PTLogger.debug("Route '/os-updates'")
+    return jdumps(check_relevant_os_updates())
