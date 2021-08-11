@@ -105,10 +105,12 @@ def reboot() -> None:
     run_command_background("reboot")
 
 
-def enable_pt_sys_oled():
-    PTLogger.info("Function: enable_pt_sys_oled()")
+def enable_pt_miniscreen():
+    PTLogger.info("Function: enable_pt_miniscreen()")
 
-    return run_command("systemctl enable pt-sys-oled", timeout=30, lower_priority=True)
+    return run_command(
+        "systemctl enable pt-miniscreen", timeout=30, lower_priority=True
+    )
 
 
 def enable_mouse_cursor():

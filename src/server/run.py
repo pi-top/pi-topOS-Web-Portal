@@ -55,9 +55,9 @@ def display_unavailable_port_notification() -> None:
 if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
     PTLogger.info("Onboarding not completed, starting miniscreen app")
 
-    if get_systemd_active_state("pt-sys-oled").lower() == "active":
-        PTLogger.info("Stopping pt-sys-oled.service")
-        stop_systemd_service("pt-sys-oled")
+    if get_systemd_active_state("pt-miniscreen").lower() == "active":
+        PTLogger.info("Stopping pt-miniscreen.service")
+        stop_systemd_service("pt-miniscreen")
 
     # use miniscreen in non-locking mode
     environ["PT_MINISCREEN_SYSTEM"] = "1"

@@ -15,7 +15,7 @@ import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
-import enablePtSysOled from "../../services/enablePtSysOled";
+import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -155,7 +155,7 @@ export default ({
           )
           .finally(() =>
             safelyRunService(
-              enablePtSysOled,
+              enablePtMiniscreen,
               "Reminded myself to tell the miniscreen to do its thing in the morning..."
             )
           )

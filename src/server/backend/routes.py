@@ -28,7 +28,7 @@ from .helpers.finalise import (
     enable_further_link_service,
     enable_mouse_cursor,
     enable_os_updater_service,
-    enable_pt_sys_oled,
+    enable_pt_miniscreen,
     reboot,
     restore_files,
     stop_onboarding_autostart,
@@ -390,10 +390,10 @@ def post_reboot():
     return "OK"  # no response here is also OK!
 
 
-@app.route("/enable-pt-sys-oled", methods=["POST"])
-def post_enable_pt_sys_oled():
-    PTLogger.debug("Route '/enable-pt-sys-oled'")
-    enable_pt_sys_oled()
+@app.route("/enable-pt-miniscreen", methods=["POST"])
+def post_enable_pt_miniscreen():
+    PTLogger.debug("Route '/enable-pt-miniscreen'")
+    enable_pt_miniscreen()
     return "OK"
 
 

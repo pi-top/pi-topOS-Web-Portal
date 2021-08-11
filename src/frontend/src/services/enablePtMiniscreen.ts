@@ -2,9 +2,9 @@ import axios from "axios";
 
 import apiBaseUrl from "./apiBaseUrl";
 
-export default async function enablePtSysOled() {
+export default async function enablePtMiniscreen() {
     await axios.post(
-        `${apiBaseUrl}/enable-pt-sys-oled`,
+        `${apiBaseUrl}/enable-pt-miniscreen`,
         {}
     );
 }

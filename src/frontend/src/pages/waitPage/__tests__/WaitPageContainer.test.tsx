@@ -17,19 +17,19 @@ import isFileSystemExpanded from "../../../services/isFileSystemExpanded";
 import reboot from "../../../services/reboot";
 import expandFileSystem from "../../../services/expandFileSystem";
 import enableMouseCursor from "../../../services/enableMouseCursor";
-import enablePtSysOled from "../../../services/enablePtSysOled";
+import enablePtMiniscreen from "../../../services/enablePtMiniscreen";
 
 jest.mock("../../../services/isFileSystemExpanded");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/expandFileSystem");
 jest.mock("../../../services/enableMouseCursor");
-jest.mock("../../../services/enablePtSysOled");
+jest.mock("../../../services/enablePtMiniscreen");
 
 const isFileSystemExpandedMock = isFileSystemExpanded as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const expandFileSystemMock = expandFileSystem as jest.Mock;
 const enableMouseCursorMock = enableMouseCursor as jest.Mock;
-const enablePtSysOledMock = enableMouseCursor as jest.Mock;
+const enablePtMiniscreenMock = enableMouseCursor as jest.Mock;
 
 describe("WaitPageContainer", () => {
   let defaultProps: Props;
@@ -40,7 +40,7 @@ describe("WaitPageContainer", () => {
     rebootMock.mockResolvedValue("OK");
     expandFileSystemMock.mockResolvedValue("OK");
     enableMouseCursorMock.mockResolvedValue("OK");
-    enablePtSysOledMock.mockResolvedValue("OK");
+    enablePtMiniscreenMock.mockResolvedValue("OK");
 
     defaultProps = {
       goToNextPage: jest.fn()
