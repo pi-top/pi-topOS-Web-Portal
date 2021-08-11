@@ -28,13 +28,15 @@ def available_space() -> str:
 
 def expand_file_system() -> None:
     PTLogger.info("Function: expand_file_system()")
-    run_command("/usr/lib/pt-web-portal/expand-fs.sh", timeout=60, lower_priority=True)
+    run_command(
+        "/usr/lib/pt-os-web-portal/expand-fs.sh", timeout=60, lower_priority=True
+    )
 
 
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
-        "ln -s /usr/lib/pt-web-portal/pt-tour.desktop /etc/xdg/autostart",
+        "ln -s /usr/lib/pt-os-web-portal/pt-tour.desktop /etc/xdg/autostart",
         timeout=60,
         lower_priority=True,
     )
@@ -125,9 +127,9 @@ def restore_files():
     PTLogger.info("Function: restore_files()")
 
     run_command(
-        "rsync -av /usr/lib/pt-web-portal/bak/ /", timeout=30, lower_priority=True
+        "rsync -av /usr/lib/pt-os-web-portal/bak/ /", timeout=30, lower_priority=True
     )
-    run_command("rm -r /usr/lib/pt-web-portal/bak", timeout=30, lower_priority=True)
+    run_command("rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True)
 
 
 def disable_tour():

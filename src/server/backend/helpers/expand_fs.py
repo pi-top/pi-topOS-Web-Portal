@@ -8,7 +8,9 @@ from .paths import expand_fs_breadcrumb
 
 def expand_file_system() -> None:
     PTLogger.info("Function: expand_file_system()")
-    run_command("/usr/lib/pt-web-portal/expand-fs.sh", timeout=120, lower_priority=True)
+    run_command(
+        "/usr/lib/pt-os-web-portal/expand-fs.sh", timeout=120, lower_priority=True
+    )
 
 
 def create_expand_fs_breadcrumb() -> None:

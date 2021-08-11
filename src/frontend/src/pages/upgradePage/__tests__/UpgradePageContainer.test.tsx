@@ -439,7 +439,7 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
-    it("requests to restart the pt-web-portal systemd service", async () => {
+    it("requests to restart the pt-os-web-portal systemd service", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
@@ -499,7 +499,7 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
     });
 
-    describe("when pt-web-portal server is restarting", () => {
+    describe("when pt-os-web-portal server is restarting", () => {
       afterEach(() => {
         jest.useRealTimers();
         restartWebPortalServiceMock.mockRestore();

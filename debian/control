@@ -1,4 +1,4 @@
-Source: pt-web-portal
+Source: pi-topos-web-portal
 Section: utils
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
@@ -9,7 +9,7 @@ Build-Depends:
 Standards-Version: 4.5.1
 Homepage: https://pi-top.com/
 
-Package: pt-web-portal
+Package: pt-os-web-portal
 Architecture: all
 Depends:
  ${misc:Depends},
@@ -39,11 +39,11 @@ Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
 
-Package: pt-web-portal-desktop
+Package: pt-os-web-portal-desktop
 Architecture: all
 Depends:
  ${misc:Depends},
- pt-web-portal,
+ pt-os-web-portal,
  web-renderer,
 Breaks:
  piwiz,

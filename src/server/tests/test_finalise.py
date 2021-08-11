@@ -45,7 +45,7 @@ def test_expand_fs_success(app, mocker):
     response = app.post("/expand-fs")
 
     run_mock.assert_any_call(
-        ["nice", "-n", "10", "/usr/lib/pt-web-portal/expand-fs.sh"],
+        ["nice", "-n", "10", "/usr/lib/pt-os-web-portal/expand-fs.sh"],
         capture_output=True,
         check=True,
         env={"DISPLAY": ":0"},
@@ -72,7 +72,7 @@ def test_configure_tour_success(app, mocker):
             "10",
             "ln",
             "-s",
-            "/usr/lib/pt-web-portal/pt-tour.desktop",
+            "/usr/lib/pt-os-web-portal/pt-tour.desktop",
             "/etc/xdg/autostart",
         ],
         capture_output=True,
