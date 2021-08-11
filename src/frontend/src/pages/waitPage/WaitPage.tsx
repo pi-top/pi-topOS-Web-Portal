@@ -13,7 +13,7 @@ export type Props = {
 
 export enum ExplanationMessage {
   CheckingFsStatus = "",
-  ExpandingFs = "Expanding file system",
+  ExpandingFs = "Getting everything ready...\n\nPlease do not power off or unplug your device!\n\nThis may take a few minutes...\n\nYour device may reboot multiple times during setup.",
   Rebooting = "Rebooting",
   Default = ""
 }
