@@ -13,21 +13,25 @@ import { Server } from "mock-socket";
 
 import UpgradePageContainer, { Props } from "../UpgradePageContainer";
 import querySpinner from "../../../../test/helpers/querySpinner";
-import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
+import { UpgradePageExplanation, ErrorMessage, OsBurnExplanation } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
 import wsBaseUrl from "../../../services/wsBaseUrl";
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
-import { createModuleBlock } from "typescript";
+import getMajorOsUpdates from "../../../services/getMajorOsUpdates";
+import { OsVersionUpdate } from "../../../types/OsVersionUpdate";
+
 
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
+jest.mock("../../../services/getMajorOsUpdates");
 
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
+const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 
 type ExtendedRenderResult = RenderResult & {
   waitForPreparation: () => Promise<HTMLElement>;
@@ -53,8 +57,18 @@ describe("UpgradePageContainer", () => {
         Messages.Size.payload.size.downloadSize +
         1000
     );
+
+    let osUpdatesResponse: OsVersionUpdate;
+    osUpdatesResponse = {
+      shouldBurn: false,
+      requiredBurn: false,
+      latestOSVersion: "",
+      update: false,
+    }
+
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
+    getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
 
     server = createServer();
     server.on("connection", (socket) => {
@@ -199,6 +213,113 @@ describe("UpgradePageContainer", () => {
 
     await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
   });
+
+  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      let osUpdatesResponse: OsVersionUpdate;
+      osUpdatesResponse = {
+        shouldBurn: true,
+        requiredBurn: false,
+        latestOSVersion: "",
+        update: false,
+      }
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
+    });
+
+    it("renders the 'shouldBurn' message", async () => {
+      const { getByText } = mount();
+      await wait();
+
+      await waitForElement(() => getByText(OsBurnExplanation.ShouldBurn));
+      await waitForElement(() => getByText(OsBurnExplanation.ShouldBurnRecommendation));
+    });
+
+
+    it("doesn't render the 'requiredBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+    });
+  })
+
+  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      let osUpdatesResponse: OsVersionUpdate;
+      osUpdatesResponse = {
+        shouldBurn: true,
+        requiredBurn: true,
+        latestOSVersion: "",
+        update: false,
+      }
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
+    });
+
+    it("renders the 'requiredBurn' message", async () => {
+      const { getByText } = mount();
+      await wait();
+
+      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurn));
+      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurnRecommendation));
+    });
+
+
+    it("doesn't render the 'shouldBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.ShouldBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.ShouldBurnRecommendation)).not.toBeInTheDocument();
+    });
+  })
+
+  describe("when checking for major OS updates fails", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
+    });
+
+    it("doesn't render the 'requiredBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+    });
+
+
+    it("doesn't render the 'shouldBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.ShouldBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.ShouldBurnRecommendation)).not.toBeInTheDocument();
+    });
+  })
 
   describe("when preparation fails", () => {
     beforeEach(async () => {

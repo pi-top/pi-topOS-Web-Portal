@@ -22,6 +22,13 @@ export enum UpgradePageExplanation {
   WaitingForServer = "Please wait...",
 }
 
+export enum OsBurnExplanation {
+  ShouldBurn = "There are major OS updates available, so the update process might take a while.",
+  RequiredBurn = "This OS version is out of date and not maintained anymore.",
+  ShouldBurnRecommendation = "We recommend you to download the latest version of pi-topOS from pi-top.com",
+  RequiredBurnRecommendation = "Please, download the latest version of pi-topOS in pi-top.com",
+}
+
 export type Props = {
   onNextClick: () => void;
   onSkipClick: () => void;
@@ -35,7 +42,9 @@ export type Props = {
   upgradeFinished: boolean,
   waitingForServer: boolean,
   downloadSize: number,
-  error: boolean
+  error: boolean,
+  requiredBurn: boolean,
+  shouldBurn: boolean,
 };
 
 export default ({
@@ -51,10 +60,13 @@ export default ({
   upgradeFinished,
   downloadSize,
   waitingForServer,
+  requiredBurn,
+  shouldBurn,
   error,
 }: Props) => {
   const errorMessage = error && ErrorMessage.GenericError;
 
+  const majorUpdatesAvailable = requiredBurn || shouldBurn;
   const getExplanation = () => {
     if (error) {
       return ""
@@ -105,6 +117,21 @@ export default ({
           disabled: upgradeIsRunning
         }}
       >
+
+        {majorUpdatesAvailable && (
+          <>
+          <span className={styles.osUpgradeWarning}>
+            {requiredBurn && OsBurnExplanation.RequiredBurn}
+            {shouldBurn && !requiredBurn && OsBurnExplanation.ShouldBurn}
+          </span>
+          <span className={styles.osUpgradeWarning}>
+            {requiredBurn && OsBurnExplanation.RequiredBurnRecommendation}
+            {shouldBurn && !requiredBurn && OsBurnExplanation.ShouldBurnRecommendation}
+          </span>
+          </>
+        )}
+
+
         { (waitingForServer || !(upgradeIsPrepared || error)) && (
           <>
             <Spinner size={40} />{" "}

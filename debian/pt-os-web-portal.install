@@ -1,4 +1,4 @@
-pkg/pwdptwp.sh                              /usr/lib/pt-os-web-portal
+debian/extra/pwdptwp.sh                     /usr/lib/pt-os-web-portal
 src/expand-fs.sh                            /usr/lib/pt-os-web-portal
 src/notify-on-port-busy.sh                  /usr/lib/pt-os-web-portal
 src/server/Pipfile*                         /usr/lib/pt-os-web-portal
