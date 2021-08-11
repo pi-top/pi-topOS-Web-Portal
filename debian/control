@@ -53,7 +53,6 @@ Replaces:
  pt-tour,
 Conflicts:
  piwiz,
- pt-about,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing
  useful pages of the web portal from the Linux desktop.
