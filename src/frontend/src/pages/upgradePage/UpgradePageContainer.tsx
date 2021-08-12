@@ -161,8 +161,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
       try {
         setUpdateSize(message.payload.size);
-
-        if (!message.payload.size.downloadSize) {
+        if (!message.payload.size.downloadSize && !message.payload.size.requiredSpace) {
           setUpgradeIsRunning(false);
           setUpgradeIsRequired(false);
           setUpgradeFinished(true);
