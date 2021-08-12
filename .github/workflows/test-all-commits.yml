@@ -62,7 +62,7 @@ jobs:
       - name: Upload javascript test coverage reports to Codecov
         uses: codecov/codecov-action@v2.0.2
         with:
-          files: ./src/frontend/clover.xml
+          files: ./src/frontend/coverage/clover.xml
           flags: jstests
           fail_ci_if_error: true
           verbose: true
