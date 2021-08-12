@@ -16,7 +16,8 @@ export enum ErrorMessage {
 
 export enum UpgradePageExplanation {
   Preparing = "Checking the size of update...",
-  UpgradePrepared = "{size} of new packages need to be installed. This might take {time} minutes.",
+  UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
+  UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
   WaitingForServer = "Please wait...",
@@ -90,10 +91,12 @@ export default ({
       return UpgradePageExplanation.InProgress;
     }
     if (upgradeIsPrepared) {
-      return UpgradePageExplanation.UpgradePrepared.replace(
-        "{size}",
-        downloadSize ? prettyBytes(downloadSize) : "a few"
-      ).replace("{time}", "a few");
+      if (downloadSize) {
+        return UpgradePageExplanation.UpgradePreparedWithDownload
+          .replace("{size}", prettyBytes(downloadSize))
+          .replace("{time}", "a few");
+      }
+      return UpgradePageExplanation.UpgradePreparedWithoutDownload
     }
     return UpgradePageExplanation.Preparing;
   };
