@@ -103,7 +103,7 @@ describe("UpgradePageContainer", () => {
         waitForPreparation: () =>
           waitForElement(() =>
             result.getByText(
-              UpgradePageExplanation.UpgradePrepared
+              UpgradePageExplanation.UpgradePreparedWithDownload
                 .replace("{size}", "100 kB")
                 .replace("{time}", "a few")
             )
