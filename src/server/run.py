@@ -11,7 +11,6 @@ from backend.helpers.os_updater import updates_available
 from backend.helpers.wifi_manager import is_connected_to_internet
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
-
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
