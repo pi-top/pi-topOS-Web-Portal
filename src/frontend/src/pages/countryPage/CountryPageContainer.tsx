@@ -31,7 +31,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted, defaultCountry }:
       getCountries()
         .then(setCountries)
         .catch(() => setGetCountriesError(true)),
-      getCurrentCountry().then(setCurrentCountry),
+      getCurrentCountry().then((countryCode) => countryCode !== "00" && setCurrentCountry(countryCode)),
       getTimezones().then(setTimezones),
       getCurrentTimezone().then(setCurrentTimezone)
     ])
