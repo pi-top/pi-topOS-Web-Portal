@@ -76,7 +76,7 @@ elif is_connected_to_internet(timeout=2):
         if has_updates:
             send_notification(
                 title="pi-topOS Software Updater",
-                text="There are updates available for your system!\nClick the Start Menu -> System Menu -> pi-topOS Updater Tool",
+                text="There are updates available for your system!\nClick the Start Menu -> System Tools -> pi-topOS Updater Tool",
                 timeout=0,
                 icon_name="system-software-update",
             )
