@@ -140,28 +140,20 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       return;
     }
 
-<<<<<<< HEAD
     if (
       message.type === OSUpdaterMessageType.Upgrade &&
-=======
-    if (message.type === OSUpdaterMessageType.Upgrade) {
-      if (message.payload.status === UpdateMessageStatus.Finish) {
-        setCleanupIsRunning(true);
-        socket.send("cleanup");
-      } else if (message.payload.status === UpdateMessageStatus.Start) {
-        setUpgradeIsRunning(true);
-      }
-    }
-
-    if (
-      message.type === OSUpdaterMessageType.Cleanup &&
->>>>>>> 3321e2c (Update tests)
       message.payload.status === UpdateMessageStatus.Finish
     ) {
       setUpgradeIsRunning(false);
       setUpgradeIsRequired(false);
-      setCleanupIsRunning(false);
       setUpgradeFinished(true);
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.Upgrade &&
+      message.payload.status === UpdateMessageStatus.Start
+    ) {
+      setUpgradeIsRunning(true);
     }
 
     if (message.type === OSUpdaterMessageType.Size) {

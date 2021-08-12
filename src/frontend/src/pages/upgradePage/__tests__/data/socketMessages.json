@@ -64,29 +64,5 @@
             "percent": 0.0,
             "message": "There was an error while upgrading packages."
         }
-    },
-    "CleanupStart": {
-        "type": "OS_UPGRADE_CLEANUP",
-        "payload": {
-            "status": "START",
-            "percent": 0.0,
-            "message": "Cleaning up..."
-        }
-    },
-    "CleanupStatus": {
-        "type": "OS_UPGRADE_CLEANUP",
-        "payload": {
-            "status": "STATUS",
-            "percent": 0.0,
-            "message": "The following packages are no longer required and will be removed: a-package, another-package"
-        }
-    },
-    "CleanupFinish": {
-        "type": "OS_UPGRADE_CLEANUP",
-        "payload": {
-            "status": "FINISH",
-            "percent": 0.0,
-            "message": "Finished cleanup!"
-        }
     }
 }
