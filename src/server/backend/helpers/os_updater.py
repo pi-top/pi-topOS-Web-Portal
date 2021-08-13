@@ -1,10 +1,10 @@
-import os
 from datetime import date
 
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
 
+from server.backend.helpers.config_manager import ConfigManager
 from server.backend.helpers.extras import FWUpdaterBreadcrumbManager
 
 from ..events import MessageType
@@ -54,8 +54,6 @@ class OSUpdater:
 
     def __init__(self) -> None:
         self.cache: apt.Cache  # type: ignore
-        self.CONFIG_DIRECTORY = "/etc/pi-top/pt-os-updater/"
-        self.LAST_CHECKED_CONFIG_FILE = self.CONFIG_DIRECTORY + "last_checked_date"
 
     def update(self, callback) -> None:
         PTLogger.info("OSUpdater: Updating APT sources")
@@ -137,23 +135,10 @@ class OSUpdater:
     def select_packages_to_upgrade(self, packages: list) -> None:
         pass
 
-    def skip_os_updater_on_reboot(self) -> None:
-        try:
-            if not os.path.exists(self.CONFIG_DIRECTORY):
-                PTLogger.info(f"Creating directory {self.CONFIG_DIRECTORY}")
-                os.makedirs(self.CONFIG_DIRECTORY)
-
-            if os.path.isfile(self.LAST_CHECKED_CONFIG_FILE):
-                PTLogger.info(f"File {self.LAST_CHECKED_CONFIG_FILE} exists, removing")
-                os.remove(self.LAST_CHECKED_CONFIG_FILE)
-
-            with open(self.LAST_CHECKED_CONFIG_FILE, "a") as file:
-                PTLogger.info(
-                    f"Writing {self.LAST_CHECKED_CONFIG_FILE} to skip pt-os-updater on reboot"
-                )
-                file.write(date.today().strftime("%Y-%m-%d") + "\n")
-        except Exception as e:
-            PTLogger.warning(f"OSUpdater: {e}")
+    def update_last_check_config(self) -> None:
+        ConfigManager().set(
+            "os_updater", "last_checked_date", f"{date.today().strftime('%Y-%m-%d')}"
+        )
 
 
 # Global instance
@@ -181,7 +166,7 @@ def prepare_os_upgrade(callback=None):
         updater.update(callback)
         updater.stage_upgrade(callback)
         if updater.cache.install_count == 0:
-            updater.skip_os_updater_on_reboot()
+            updater.update_last_check_config()
         callback(MessageType.FINISH, "Finished preparing", 100.0)
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
@@ -214,7 +199,7 @@ def start_os_upgrade(callback):
             fw_breadcrumb_manager.set_extend_timeout()
 
         updater.upgrade(callback)
-        updater.skip_os_updater_on_reboot()
+        updater.update_last_check_config()
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
     finally:

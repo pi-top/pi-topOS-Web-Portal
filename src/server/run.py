@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from argparse import ArgumentParser
+from datetime import date, datetime
 from os import environ, geteuid
 from threading import Thread
 
@@ -19,6 +20,7 @@ from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 from pitop.system import device_type
 
 from miniscreen.onboarding.app import OnboardingApp
+from server.backend.helpers.config_manager import ConfigManager
 from server.backend.helpers.extras import FWUpdaterBreadcrumbManager
 
 parser = ArgumentParser(description="pi-top backend server")
@@ -87,9 +89,19 @@ elif is_connected_to_internet(timeout=2):
                 "pt-os-web-portal: No updates available."
             )
 
-    t = Thread(target=updates_available, args=(notify_user_on_update_available,))
-    t.daemon = True
-    t.start()
+    last_checked_date_str = ConfigManager().get("os_updater", "last_checked_date")
+    try:
+        last_checked_date = datetime.strptime(last_checked_date_str, "%Y-%m-%d").date()
+        already_checked_today = last_checked_date != date.today()
+    except Exception:
+        already_checked_today = False
+
+    if already_checked_today:
+        PTLogger.info("Skipping update check, already checked today")
+    else:
+        t = Thread(target=updates_available, args=(notify_user_on_update_available,))
+        t.daemon = True
+        t.start()
 
 
 register_device_in_background()
