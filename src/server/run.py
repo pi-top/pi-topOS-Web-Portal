@@ -19,6 +19,7 @@ from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 from pitop.system import device_type
 
 from miniscreen.onboarding.app import OnboardingApp
+from server.backend.helpers.extras import FWUpdaterBreadcrumbManager
 
 parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
@@ -72,7 +73,7 @@ elif is_connected_to_internet(timeout=2):
     PTLogger.info("Checking for updates...")
 
     def notify_user_on_update_available(has_updates):
-        PTLogger.info(f"Updates available? {has_updates}")
+        PTLogger.info(f"{'There are' if has_updates else 'No'} updates available")
         if has_updates:
             send_notification(
                 title="pi-topOS Software Updater",
@@ -80,10 +81,14 @@ elif is_connected_to_internet(timeout=2):
                 timeout=0,
                 icon_name="system-software-update",
             )
+        else:
+            # Tell firmware updater that it can start
+            FWUpdaterBreadcrumbManager().set_ready(
+                "pt-os-web-portal: No updates available."
+            )
 
-    t = Thread(
-        target=updates_available, args=(notify_user_on_update_available,), daemon=True
-    )
+    t = Thread(target=updates_available, args=(notify_user_on_update_available,))
+    t.daemon = True
     t.start()
 
 

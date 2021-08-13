@@ -5,6 +5,8 @@ from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
 
+from server.backend.helpers.extras import FWUpdaterBreadcrumbManager
+
 from ..events import MessageType
 from .modules import get_apt
 from .system_clock import is_system_clock_synchronized, synchronize_system_clock
@@ -201,12 +203,28 @@ def os_upgrade_size(callback):
 
 
 def start_os_upgrade(callback):
+    fw_breadcrumb_manager = FWUpdaterBreadcrumbManager()
     updater = get_os_updater_instance()
     try:
+        # tell firmware updater updater not to timeout
+        if not fw_breadcrumb_manager.is_ready():
+            PTLogger.info(
+                "Creating 'extend timeout' breadcrumb for pt-firmware-updater"
+            )
+            fw_breadcrumb_manager.set_extend_timeout()
+
         updater.upgrade(callback)
         updater.skip_os_updater_on_reboot()
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
+    finally:
+        fw_breadcrumb_manager.set_ready("pt-os-web-portal: Finished update.")
+        # Tell firmware updater to no longer block on extended timeout
+        if fw_breadcrumb_manager.is_extending_timeout():
+            PTLogger.info(
+                "Removing 'extend timeout' breadcrumb for pt-firmware-updater"
+            )
+            fw_breadcrumb_manager.clear_extend_timeout()
 
 
 def updates_available(callback):
