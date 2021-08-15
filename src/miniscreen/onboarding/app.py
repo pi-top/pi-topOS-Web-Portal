@@ -7,33 +7,56 @@ from pitop import Pitop
 from pitop.common.logger import PTLogger
 
 from .helpers import get_image_file_path
-from .menus import ApMenuPage, EthernetMenuPage, InfoMenuPage, Menus, UsbMenuPage
+from .menus import (
+    ApMenuPage,
+    EthernetMenuPage,
+    InfoMenuPage,
+    Menus,
+    OpenBrowserPage,
+    UsbMenuPage,
+    WelcomeMenuPage,
+)
 
 
 class OnboardingApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
-        self.miniscreen.up_button.when_pressed = lambda: self.go_to(
-            self.current_page.type.previous()
-        )
-        self.miniscreen.down_button.when_pressed = lambda: self.go_to(
-            self.current_page.type.next()
-        )
         self.pages = {
+            Menus.WELCOME: WelcomeMenuPage(self.miniscreen.size, self.miniscreen.mode),
             Menus.AP: ApMenuPage(self.miniscreen.size, self.miniscreen.mode),
             Menus.USB: UsbMenuPage(self.miniscreen.size, self.miniscreen.mode),
             Menus.ETHERNET: EthernetMenuPage(
                 self.miniscreen.size, self.miniscreen.mode
             ),
             Menus.INFO: InfoMenuPage(self.miniscreen.size, self.miniscreen.mode),
+            Menus.BROWSER: OpenBrowserPage(self.miniscreen.size, self.miniscreen.mode),
         }
 
-        self.current_page = self.pages.get(Menus.AP)
+        self.current_page = self.pages.get(Menus.WELCOME)
         self.next_page = None
+
+        self.miniscreen.up_button.when_pressed = lambda: self.go_to(
+            self.get_previous_page(self.current_page)
+        )
+        self.miniscreen.down_button.when_pressed = lambda: self.go_to(
+            self.get_next_page(self.current_page)
+        )
 
         self.__auto_play_thread = None
         self.__stop_thread = False
         atexit.register(self.stop)
+
+    def get_previous_page(self, page):
+        candidate = page.type.previous()
+        if self.pages.get(candidate).skip:
+            return self.get_previous_page(self.pages.get(candidate))
+        return candidate
+
+    def get_next_page(self, page):
+        candidate = page.type.next()
+        if self.pages.get(candidate).skip:
+            return self.get_next_page(self.pages.get(candidate))
+        return candidate
 
     def start(self):
         self.__auto_play_thread = Thread(target=self._main, args=())
@@ -74,6 +97,9 @@ class OnboardingApp:
 
                 self.miniscreen.device.display(image)
                 sleep(self.current_page.interval)
+
+                if self.pages.get(Menus.BROWSER).should_display():
+                    self.go_to(Menus.BROWSER)
         except KeyboardInterrupt:
             pass
         finally:

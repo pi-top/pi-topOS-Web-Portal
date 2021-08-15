@@ -1,7 +1,10 @@
 from enum import Enum, IntEnum
+from threading import Thread
+from time import sleep
 
 from PIL import Image, ImageDraw
 from pitop.common.pt_os import get_pitopOS_info
+from pitop.common.sys_info import get_address_for_connected_device
 
 from .connection_methods import ApConnection, EthernetConnection, UsbConnection
 from .helpers import draw_text, get_image_file_path, process_image
@@ -14,17 +17,19 @@ FIRST_DRAW_SLEEP_INTERVAL = 1
 DEFAULT_INTERVAL = 0.2
 
 # Formatting text in miniscreen
-MARGIN_X = 29
+INFO_PAGE_MARGIN_X = 29
 FIRST_LINE_Y = 9
 SECOND_LINE_Y = 25
 THIRD_LINE_Y = 41
 
 
 class Menus(IntEnum):
-    AP = 0
-    USB = 1
-    ETHERNET = 2
-    INFO = 3
+    WELCOME = 0
+    AP = 1
+    USB = 2
+    ETHERNET = 3
+    INFO = 4
+    BROWSER = 5
 
     def next(self):
         next_mode = self.value + 1 if self.value + 1 < len(Menus) else 0
@@ -41,9 +46,111 @@ class MenuPageBase:
         self.size = size
         self.mode = mode
         self.interval = DEFAULT_INTERVAL
+        self.skip = False
 
     def render(self, draw, redraw=False):
         raise NotImplementedError
+
+
+class TitleMenuPage(MenuPageBase):
+    def __init__(
+        self,
+        type,
+        title_image_filename="",
+        size=(0, 0),
+        mode=0,
+    ):
+        super(TitleMenuPage, self).__init__(type, size, mode)
+
+        self.interval = STATIONARY_SLEEP_INTERVAL
+        self.render_state = RenderState.STATIONARY
+
+        self.title_image = process_image(
+            Image.open(get_image_file_path(title_image_filename)), size, mode
+        )
+
+        self.title_image_pos = (0, 0)
+        self.first_draw = True
+
+    def draw_connection_data(self, draw):
+        raise NotImplementedError
+
+    def reset_animation(self):
+        self.title_image_pos = (0, 0)
+        self.render_state = RenderState.STATIONARY
+        self.first_draw = True
+
+    def set_interval(self):
+        if self.first_draw:
+            self.interval = FIRST_DRAW_SLEEP_INTERVAL
+        elif self.render_state == RenderState.STATIONARY:
+            self.interval = STATIONARY_SLEEP_INTERVAL
+        elif self.render_state == RenderState.ANIMATING:
+            self.interval = ANIMATION_SLEEP_INTERVAL
+        else:
+            self.interval = DEFAULT_INTERVAL
+
+    def info(self, draw, redraw=False):
+        raise NotImplementedError
+
+    def render(self, draw, redraw=False):
+        if redraw:
+            self.reset_animation()
+
+        if not self.first_draw:
+            if self.title_image_pos[0] <= -self.size[0]:
+                self.render_state = RenderState.DISPLAYING_INFO
+            elif self.render_state != RenderState.DISPLAYING_INFO:
+                self.render_state = RenderState.ANIMATING
+                self.title_image_pos = (
+                    self.title_image_pos[0] - ANIMATION_SPEED,
+                    0,
+                )
+
+        if self.render_state == RenderState.DISPLAYING_INFO:
+            self.info(draw)
+        else:
+            draw.bitmap(
+                xy=self.title_image_pos,
+                bitmap=self.title_image,
+                fill="white",
+            )
+
+        self.set_interval()
+        self.first_draw = False
+
+
+class WelcomeMenuPage(TitleMenuPage):
+    def __init__(self, size, mode):
+        super(WelcomeMenuPage, self).__init__(
+            type=Menus.WELCOME, size=size, mode=mode, title_image_filename="welcome.png"
+        )
+
+    def info(self, draw, redraw=False):
+        draw_text(
+            draw,
+            text="Press the blue",
+            xy=(15, FIRST_LINE_Y),
+            font_size=14,
+        )
+        draw_text(
+            draw,
+            text="arrow key to",
+            xy=(15, SECOND_LINE_Y),
+            font_size=14,
+        )
+        draw_text(
+            draw,
+            text="move forward!",
+            xy=(15, THIRD_LINE_Y),
+            font_size=14,
+        )
+        draw_text(
+            draw,
+            text="⬅️",
+            font_name="Symbola_hint.ttf",
+            xy=(2, THIRD_LINE_Y),
+        )
 
 
 class InfoMenuPage(MenuPageBase):
@@ -52,26 +159,58 @@ class InfoMenuPage(MenuPageBase):
 
     def render(self, draw, redraw=False):
         build_info = get_pitopOS_info()
-        draw_text(draw, text="pi-topOS", xy=(MARGIN_X / 2, FIRST_LINE_Y))
+        draw_text(draw, text="pi-topOS", xy=(INFO_PAGE_MARGIN_X / 2, FIRST_LINE_Y))
         draw_text(
             draw,
             text=f"Build: {build_info.build_run_number}",
-            xy=(MARGIN_X / 2, SECOND_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X / 2, SECOND_LINE_Y),
         )
         draw_text(
             draw,
             text=f"Date: {build_info.build_date}",
-            xy=(MARGIN_X / 2, THIRD_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X / 2, THIRD_LINE_Y),
         )
 
-    def __get_file_lines(self, filename):
-        lines = list()
-        try:
-            with open(filename) as fp:
-                lines = fp.readlines()
-        except Exception:
-            pass
-        return lines
+
+class OpenBrowserPage(TitleMenuPage):
+    def __init__(self, size, mode):
+        super(OpenBrowserPage, self).__init__(
+            type=Menus.BROWSER,
+            size=size,
+            mode=mode,
+            title_image_filename="connected.png",
+        )
+        self.skip = True
+        self.connected_ip = ""
+        self.already_displayed = False
+        self.thread = Thread(target=self.__monitor_leased_ip, args=(), daemon=True)
+        self.thread.start()
+
+    def should_display(self):
+        should = self.connected_ip != "" and self.already_displayed is False
+        if should:
+            self.already_displayed = True
+        return should
+
+    def __monitor_leased_ip(self):
+        while True:
+            leased_ip = get_address_for_connected_device()
+            self.skip = leased_ip == ""
+            self.connected_ip = leased_ip
+            sleep(0.3)
+
+    def info(self, draw, redraw=False):
+        draw_text(draw, text="Open a web browser,", xy=(5, FIRST_LINE_Y))
+        draw_text(
+            draw,
+            text="and go to",
+            xy=(5, SECOND_LINE_Y),
+        )
+        draw_text(
+            draw,
+            text="http://pi-top.local",
+            xy=(5, THIRD_LINE_Y),
+        )
 
 
 class RenderState(Enum):
@@ -191,17 +330,17 @@ class ApMenuPage(ConnectionMenuPage):
         )
 
     def draw_connection_data(self, draw):
+        draw_text(draw, text="Connect to Wi-Fi:", xy=(10, FIRST_LINE_Y))
         draw_text(
             draw,
             text=self.connection_state.metadata.get("ssid", ""),
-            xy=(MARGIN_X, FIRST_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X, SECOND_LINE_Y),
         )
         draw_text(
             draw,
             text=self.connection_state.metadata.get("passphrase", ""),
-            xy=(MARGIN_X, SECOND_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X, THIRD_LINE_Y),
         )
-        draw_text(draw, text=self.connection_state.ip, xy=(MARGIN_X, THIRD_LINE_Y))
 
 
 class UsbMenuPage(ConnectionMenuPage):
@@ -219,14 +358,18 @@ class UsbMenuPage(ConnectionMenuPage):
         draw_text(
             draw,
             text=str(self.connection_state.metadata.get("username", "")),
-            xy=(MARGIN_X, FIRST_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X, FIRST_LINE_Y),
         )
         draw_text(
             draw,
             text=str(self.connection_state.metadata.get("password", "")),
-            xy=(MARGIN_X, SECOND_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X, SECOND_LINE_Y),
         )
-        draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
+        draw_text(
+            draw,
+            text=str(self.connection_state.ip),
+            xy=(INFO_PAGE_MARGIN_X, THIRD_LINE_Y),
+        )
 
 
 class EthernetMenuPage(ConnectionMenuPage):
@@ -244,11 +387,15 @@ class EthernetMenuPage(ConnectionMenuPage):
         draw_text(
             draw,
             text=str(self.connection_state.metadata.get("username", "")),
-            xy=(MARGIN_X, FIRST_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X, FIRST_LINE_Y),
         )
         draw_text(
             draw,
             text=str(self.connection_state.metadata.get("password", "")),
-            xy=(MARGIN_X, SECOND_LINE_Y),
+            xy=(INFO_PAGE_MARGIN_X, SECOND_LINE_Y),
         )
-        draw_text(draw, text=str(self.connection_state.ip), xy=(MARGIN_X, THIRD_LINE_Y))
+        draw_text(
+            draw,
+            text=str(self.connection_state.ip),
+            xy=(INFO_PAGE_MARGIN_X, THIRD_LINE_Y),
+        )
