@@ -12,7 +12,7 @@ from .command_runner import run_command
 def disable_tour():
     PTLogger.info("Function: disable_tour()")
     try:
-        remove("/etc/xdg/autostart/pt-tour.desktop")
+        remove("/etc/xdg/autostart/pt-os-tour.desktop")
     except FileNotFoundError:
         PTLogger.debug("Tour already disabled.")
 
