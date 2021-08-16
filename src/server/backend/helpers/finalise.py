@@ -36,7 +36,7 @@ def expand_file_system() -> None:
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
-        "ln -s /usr/lib/pt-os-web-portal/pt-tour.desktop /etc/xdg/autostart",
+        "ln -s /usr/lib/pt-os-web-portal/pt-os-tour.desktop /etc/xdg/autostart",
         timeout=60,
         lower_priority=True,
     )
@@ -135,7 +135,7 @@ def restore_files():
 def disable_tour():
     PTLogger.info("Function: disable_tour()")
     try:
-        remove("/etc/xdg/autostart/pt-tour.desktop")
+        remove("/etc/xdg/autostart/pt-os-tour.desktop")
     except FileNotFoundError:
         PTLogger.debug("Tour already disabled.")
 
