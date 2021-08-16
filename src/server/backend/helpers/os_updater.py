@@ -1,7 +1,8 @@
-from datetime import date
+from datetime import date, datetime
 
 from backend.helpers.config_manager import ConfigManager
 from backend.helpers.extras import FWUpdaterBreadcrumbManager
+from backend.helpers.wifi_manager import is_connected_to_internet
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
@@ -251,3 +252,18 @@ def check_relevant_os_updates():
         PTLogger.warning(f"{e}")
     finally:
         return data
+
+
+def should_check_for_updates():
+    if is_connected_to_internet(timeout=2):
+        PTLogger.info("No internet connection detected, skipping update check...")
+        return False
+
+    try:
+        last_checked_date_str = ConfigManager().get("os_updater", "last_checked_date")
+        last_checked_date = datetime.strptime(last_checked_date_str, "%Y-%m-%d").date()
+        should = last_checked_date != date.today()
+    except Exception:
+        should = True
+
+    return should

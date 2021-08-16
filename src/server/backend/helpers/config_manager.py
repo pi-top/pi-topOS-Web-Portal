@@ -17,12 +17,12 @@ class ConfigManager(metaclass=Singleton):
             raise Exception("Failed to open configuration file")
 
     def get(self, section: str, key: str, fallback=None):
+        val = fallback
         try:
             val = self._config.get(section, key)
         except Exception:
             if fallback is None:
                 raise
-            val = fallback
         finally:
             return val
 

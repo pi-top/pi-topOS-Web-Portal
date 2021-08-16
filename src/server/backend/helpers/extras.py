@@ -16,7 +16,7 @@ class FWUpdaterBreadcrumbManager:
             if reason is not None:
                 self.READY_FILE.write_text(reason + "\n")
 
-    def is_ready(self, reason: str = None):
+    def is_ready(self):
         return self.READY_FILE.is_file()
 
     def set_extend_timeout(self):

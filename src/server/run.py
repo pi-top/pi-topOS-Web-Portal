@@ -1,17 +1,14 @@
 #!/usr/bin/python3
 
 from argparse import ArgumentParser
-from datetime import date, datetime
 from os import environ, geteuid
 from threading import Thread
 
 from backend import create_app
-from backend.helpers.config_manager import ConfigManager
 from backend.helpers.device_registration import register_device_in_background
 from backend.helpers.extras import FWUpdaterBreadcrumbManager
 from backend.helpers.finalise import onboarding_completed
-from backend.helpers.os_updater import updates_available
-from backend.helpers.wifi_manager import is_connected_to_internet
+from backend.helpers.os_updater import should_check_for_updates, updates_available
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.command_runner import run_command
@@ -71,7 +68,7 @@ if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
     onboarding_app = OnboardingApp()
     onboarding_app.start()
 
-elif is_connected_to_internet(timeout=2):
+elif should_check_for_updates():
     PTLogger.info("Checking for updates...")
 
     def notify_user_on_update_available(has_updates):
@@ -89,19 +86,9 @@ elif is_connected_to_internet(timeout=2):
                 "pt-os-web-portal: No updates available."
             )
 
-    last_checked_date_str = ConfigManager().get("os_updater", "last_checked_date")
-    try:
-        last_checked_date = datetime.strptime(last_checked_date_str, "%Y-%m-%d").date()
-        already_checked_today = last_checked_date != date.today()
-    except Exception:
-        already_checked_today = False
-
-    if already_checked_today:
-        PTLogger.info("Skipping update check, already checked today")
-    else:
-        t = Thread(target=updates_available, args=(notify_user_on_update_available,))
-        t.daemon = True
-        t.start()
+    t = Thread(target=updates_available, args=(notify_user_on_update_available,))
+    t.daemon = True
+    t.start()
 
 
 register_device_in_background()
