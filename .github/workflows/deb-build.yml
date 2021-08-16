@@ -5,6 +5,8 @@ on:
     branches:
       - bullseye
   push:
+    branches:
+      - bullseye
 
 
 env:
@@ -82,3 +84,11 @@ jobs:
             ./artifacts/**
             !./artifacts/*.deb
             !./artifacts/*.tar.xz
+
+      # Upload experimental build
+      - uses: docker://lpenz/ghaction-packagecloud:v0.3
+        with:
+          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+          files: ./deb/*.dsc
