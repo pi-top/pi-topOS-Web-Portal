@@ -1,11 +1,10 @@
 from datetime import date
 
+from backend.helpers.config_manager import ConfigManager
+from backend.helpers.extras import FWUpdaterBreadcrumbManager
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
-
-from server.backend.helpers.config_manager import ConfigManager
-from server.backend.helpers.extras import FWUpdaterBreadcrumbManager
 
 from ..events import MessageType
 from .modules import get_apt

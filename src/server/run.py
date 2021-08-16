@@ -6,7 +6,9 @@ from os import environ, geteuid
 from threading import Thread
 
 from backend import create_app
+from backend.helpers.config_manager import ConfigManager
 from backend.helpers.device_registration import register_device_in_background
+from backend.helpers.extras import FWUpdaterBreadcrumbManager
 from backend.helpers.finalise import onboarding_completed
 from backend.helpers.os_updater import updates_available
 from backend.helpers.wifi_manager import is_connected_to_internet
@@ -20,8 +22,6 @@ from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 from pitop.system import device_type
 
 from miniscreen.onboarding.app import OnboardingApp
-from server.backend.helpers.config_manager import ConfigManager
-from server.backend.helpers.extras import FWUpdaterBreadcrumbManager
 
 parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
