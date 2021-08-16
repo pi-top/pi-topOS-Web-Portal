@@ -161,6 +161,14 @@ describe("UpgradePageContainer", () => {
     await waitForPreparation();
   });
 
+  it("Back button is present", async () => {
+    const { getByText, waitForPreparation } = mount();
+
+    expect(getByText("Back")).toBeInTheDocument();
+
+    await waitForPreparation();
+  });
+
   it("calls goToPreviousPage when back button clicked", async () => {
     const { getByText, waitForPreparation } = mount();
     await waitForPreparation();
@@ -370,6 +378,13 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText("Skip"));
     });
 
+    it("back button exists", async () => {
+      const { getByText } = mount();
+      await wait();
+
+      await waitForElement(() => getByText("Back"));
+    });
+
     it("calls goToNextPage when Skip button clicked", async () => {
       const { getByText } = mount();
 
@@ -424,14 +439,13 @@ describe("UpgradePageContainer", () => {
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
 
-    it("Back button is disabled", async () => {
-      const { getByText, waitForPreparation } = mount();
+    it("Back button is not rendered", async () => {
+      const { getByText, queryByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
-      await waitForElement(() => getByText("Back"));
-      expect(getByText("Back")).toHaveProperty("disabled", true);
+      expect(queryByText("Back")).not.toBeInTheDocument();
     });
   });
 
