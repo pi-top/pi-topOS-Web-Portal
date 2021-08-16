@@ -123,7 +123,7 @@ export default ({
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || error)}
-        showBack={onBackClick !== undefined || !upgradeIsRunning}
+        showBack={onBackClick !== undefined && !upgradeIsRunning}
         backButton={{
           onClick: onBackClick,
           disabled: upgradeIsRunning
