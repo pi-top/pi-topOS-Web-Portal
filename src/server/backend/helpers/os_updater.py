@@ -1,6 +1,9 @@
-import os
-from datetime import date
+from datetime import date, datetime
 
+from backend.helpers.config_manager import ConfigManager
+from backend.helpers.extras import FWUpdaterBreadcrumbManager
+from backend.helpers.finalise import onboarding_completed
+from backend.helpers.wifi_manager import is_connected_to_internet
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
@@ -52,8 +55,6 @@ class OSUpdater:
 
     def __init__(self) -> None:
         self.cache: apt.Cache  # type: ignore
-        self.CONFIG_DIRECTORY = "/etc/pi-top/pt-os-updater/"
-        self.LAST_CHECKED_CONFIG_FILE = self.CONFIG_DIRECTORY + "last_checked_date"
 
     def update(self, callback) -> None:
         PTLogger.info("OSUpdater: Updating APT sources")
@@ -135,23 +136,10 @@ class OSUpdater:
     def select_packages_to_upgrade(self, packages: list) -> None:
         pass
 
-    def skip_os_updater_on_reboot(self) -> None:
-        try:
-            if not os.path.exists(self.CONFIG_DIRECTORY):
-                PTLogger.info(f"Creating directory {self.CONFIG_DIRECTORY}")
-                os.makedirs(self.CONFIG_DIRECTORY)
-
-            if os.path.isfile(self.LAST_CHECKED_CONFIG_FILE):
-                PTLogger.info(f"File {self.LAST_CHECKED_CONFIG_FILE} exists, removing")
-                os.remove(self.LAST_CHECKED_CONFIG_FILE)
-
-            with open(self.LAST_CHECKED_CONFIG_FILE, "a") as file:
-                PTLogger.info(
-                    f"Writing {self.LAST_CHECKED_CONFIG_FILE} to skip pt-os-updater on reboot"
-                )
-                file.write(date.today().strftime("%Y-%m-%d") + "\n")
-        except Exception as e:
-            PTLogger.warning(f"OSUpdater: {e}")
+    def update_last_check_config(self) -> None:
+        ConfigManager().set(
+            "os_updater", "last_checked_date", f"{date.today().strftime('%Y-%m-%d')}"
+        )
 
 
 # Global instance
@@ -165,7 +153,12 @@ def get_os_updater_instance():
     return os_updater
 
 
-def prepare_os_upgrade(callback):
+def prepare_os_upgrade(callback=None):
+    if callback is None:
+
+        def callback(type, data, percent):
+            return None
+
     updater = get_os_updater_instance()
     try:
         if not is_system_clock_synchronized():
@@ -174,7 +167,7 @@ def prepare_os_upgrade(callback):
         updater.update(callback)
         updater.stage_upgrade(callback)
         if updater.cache.install_count == 0:
-            updater.skip_os_updater_on_reboot()
+            updater.update_last_check_config()
         callback(MessageType.FINISH, "Finished preparing", 100.0)
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
@@ -196,13 +189,28 @@ def os_upgrade_size(callback):
 
 
 def start_os_upgrade(callback):
+    fw_breadcrumb_manager = FWUpdaterBreadcrumbManager()
     updater = get_os_updater_instance()
     try:
+        # tell firmware updater updater not to timeout
+        if not fw_breadcrumb_manager.is_ready():
+            PTLogger.info(
+                "Creating 'extend timeout' breadcrumb for pt-firmware-updater"
+            )
+            fw_breadcrumb_manager.set_extend_timeout()
+
         updater.upgrade(callback)
-        updater.skip_os_updater_on_reboot()
+        updater.update_last_check_config()
     except Exception as e:
         callback(MessageType.ERROR, f"{e}", 0.0)
-
+    finally:
+        fw_breadcrumb_manager.set_ready("pt-os-web-portal: Finished update.")
+        # Tell firmware updater to no longer block on extended timeout
+        if fw_breadcrumb_manager.is_extending_timeout():
+            PTLogger.info(
+                "Removing 'extend timeout' breadcrumb for pt-firmware-updater"
+            )
+            fw_breadcrumb_manager.clear_extend_timeout()
 
 def check_relevant_os_updates():
     URL = "https://backend-test.pi-top.com/utils/v1/OS/checkUpdate"
@@ -239,3 +247,30 @@ def check_relevant_os_updates():
         PTLogger.warning(f"{e}")
     finally:
         return data
+
+
+def updates_available(callback):
+    prepare_os_upgrade()
+    callback(get_os_updater_instance().cache.install_count > 0)
+
+
+def should_check_for_updates():
+    if not onboarding_completed():
+        PTLogger.info("Onboarding not completed yet, skipping update check...")
+        return False
+
+    if not is_connected_to_internet(timeout=2):
+        PTLogger.info("No internet connection detected, skipping update check...")
+        return False
+
+    try:
+        last_checked_date_str = ConfigManager().get("os_updater", "last_checked_date")
+        last_checked_date = datetime.strptime(last_checked_date_str, "%Y-%m-%d").date()
+        should = last_checked_date != date.today()
+        PTLogger.info(
+            f"Should {'' if should else 'not'} check for updates, last checked date was {last_checked_date}"
+        )
+    except Exception:
+        should = True
+
+    return should
