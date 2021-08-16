@@ -255,7 +255,7 @@ def check_relevant_os_updates():
 
 
 def should_check_for_updates():
-    if is_connected_to_internet(timeout=2):
+    if not is_connected_to_internet(timeout=2):
         PTLogger.info("No internet connection detected, skipping update check...")
         return False
 
