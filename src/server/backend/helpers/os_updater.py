@@ -231,7 +231,7 @@ def check_relevant_os_updates():
         "update": False,
     }
     try:
-        response = get(URL, url_query_dict).json()
+        response = get(URL, url_query_dict, timeout=5).json()
         PTLogger.info(f"Response was: {response}")
         for k, v in response.items():
             data.update({k: v})
