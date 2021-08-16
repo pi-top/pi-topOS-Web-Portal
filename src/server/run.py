@@ -68,7 +68,7 @@ if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
     onboarding_app = OnboardingApp()
     onboarding_app.start()
 
-elif should_check_for_updates():
+if should_check_for_updates():
     PTLogger.info("Checking for updates...")
 
     def notify_user_on_update_available(has_updates):
@@ -89,6 +89,10 @@ elif should_check_for_updates():
     t = Thread(target=updates_available, args=(notify_user_on_update_available,))
     t.daemon = True
     t.start()
+else:
+    FWUpdaterBreadcrumbManager().set_ready(
+        "pt-os-web-portal: Already checked for updates today."
+    )
 
 
 register_device_in_background()
