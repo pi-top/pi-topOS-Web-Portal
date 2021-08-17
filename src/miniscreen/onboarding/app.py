@@ -100,6 +100,7 @@ class OnboardingApp:
 
                 if self.pages.get(Menus.BROWSER).should_display():
                     self.go_to(Menus.BROWSER)
+                    self.pages.get(Menus.WELCOME).skip = True
         except KeyboardInterrupt:
             pass
         finally:

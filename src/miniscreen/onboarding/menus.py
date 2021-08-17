@@ -2,12 +2,38 @@ from enum import Enum, IntEnum
 from threading import Thread
 from time import sleep
 
+from isc_dhcp_leases import IscDhcpLeases
 from PIL import Image, ImageDraw
+from pitop.common.command_runner import run_command
 from pitop.common.pt_os import get_pitopOS_info
-from pitop.common.sys_info import get_address_for_connected_device
 
 from .connection_methods import ApConnection, EthernetConnection, UsbConnection
 from .helpers import draw_text, get_image_file_path, process_image
+
+
+# TODO: move to pitop.common
+# from pitop.common.sys_info import get_address_for_connected_device
+def get_address_for_connected_device():
+    def command_succeeds(cmd, timeout):
+        try:
+            run_command(cmd, timeout=timeout, check=True, log_errors=False)
+            return True
+        except Exception:
+            return False
+
+    current_leases = IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
+    current_leases = list(current_leases)
+    current_leases.reverse()
+
+    for lease in current_leases:
+        # Windows machines won't respond to ping requests by default. Using arping
+        # helps us on that case, but since it takes ~1.5s, it's used as a fallback
+        if command_succeeds(f"ping -c1 {lease.ip}", 0.1) or command_succeeds(
+            f"arping -c1 {lease.ip}", 2
+        ):
+            return lease.ip
+    return ""
+
 
 # Tunings to approximately match other sys info pages using GIFs
 ANIMATION_SPEED = 1
