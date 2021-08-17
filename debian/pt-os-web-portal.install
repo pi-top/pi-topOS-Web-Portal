@@ -1,7 +1,8 @@
-debian/extra/pwdptwp.sh                     /usr/lib/pt-os-web-portal
-src/expand-fs.sh                            /usr/lib/pt-os-web-portal
-src/notify-on-port-busy.sh                  /usr/lib/pt-os-web-portal
-src/server/Pipfile*                         /usr/lib/pt-os-web-portal
-src/server/run.py                           /usr/lib/pt-os-web-portal
-src/server/backend                          /usr/lib/pt-os-web-portal
-src/miniscreen                              /usr/lib/pt-os-web-portal
+debian/extra/10-dynamic-swap-in-bg.conf         /lib/systemd/system/dphys-swapfile.service.d/
+debian/extra/pwdptwp.sh                         /usr/lib/pt-os-web-portal
+src/expand-fs.sh                                /usr/lib/pt-os-web-portal
+src/notify-on-port-busy.sh                      /usr/lib/pt-os-web-portal
+src/server/Pipfile*                             /usr/lib/pt-os-web-portal
+src/server/run.py                               /usr/lib/pt-os-web-portal
+src/server/backend                              /usr/lib/pt-os-web-portal
+src/miniscreen                                  /usr/lib/pt-os-web-portal

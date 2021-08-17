@@ -35,6 +35,9 @@ Depends:
  python3-xdg,
  raspi-config,
  rsync,
+Recommends:
+ # Dynamic swap file service runs in background
+ dphys-swapfile,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
