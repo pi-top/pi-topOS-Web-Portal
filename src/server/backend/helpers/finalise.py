@@ -113,16 +113,6 @@ def enable_pt_miniscreen():
     )
 
 
-def enable_mouse_cursor():
-    PTLogger.info("Function: enable_mouse_cursor()")
-
-    return run_command(
-        'sed -i "s/xserver-command=X -nocursor/#xserver-command=X/1" /etc/lightdm/lightdm.conf',
-        timeout=30,
-        lower_priority=True,
-    )
-
-
 def restore_files():
     PTLogger.info("Function: restore_files()")
 
