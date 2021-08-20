@@ -23,7 +23,6 @@ import enableOSUpdaterService from "../../../services/enableOSUpdaterService";
 import restoreFiles from "../../../services/restoreFiles";
 import unhideAllBootMessages from "../../../services/unhideAllBootMessages";
 import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
-import updateMimeDatabase from "../../../services/updateMimeDatabase";
 import reboot from "../../../services/reboot";
 import serverStatus from "../../../services/serverStatus";
 import updateEeprom from "../../../services/updateEeprom";
@@ -39,7 +38,6 @@ jest.mock("../../../services/enableOSUpdaterService");
 jest.mock("../../../services/restoreFiles");
 jest.mock("../../../services/unhideAllBootMessages");
 jest.mock("../../../services/stopOnboardingAutostart");
-jest.mock("../../../services/updateMimeDatabase");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/updateEeprom");
@@ -54,7 +52,6 @@ const enableOSUpdaterServiceMock = enableOSUpdaterService as jest.Mock;
 const restoreFilesMock = restoreFiles as jest.Mock;
 const unhideAllBootMessagesMock = unhideAllBootMessages as jest.Mock;
 const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
-const updateMimeDatabaseMock = updateMimeDatabase as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const updateEepromMock = updateEeprom as jest.Mock;
@@ -70,7 +67,6 @@ const mockServices = [
   restoreFiles,
   unhideAllBootMessagesMock,
   stopOnboardingAutostartMock,
-  updateMimeDatabaseMock,
   updateEepromMock,
   rebootMock,
   enablePtMiniscreenMock,
@@ -263,22 +259,6 @@ describe("RestartPageContainer", () => {
     describe('when stop onboarding autostart fails', () => {
       beforeEach(() => {
         stopOnboardingAutostartMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('when update mime database fails', () => {
-      beforeEach(() => {
-        updateMimeDatabaseMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

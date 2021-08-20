@@ -28,7 +28,6 @@ from .helpers.finalise import (
     stop_onboarding_autostart,
     unhide_all_boot_messages,
     update_eeprom,
-    update_mime_database,
 )
 from .helpers.keyboard import (
     current_keyboard_layout,
@@ -323,13 +322,6 @@ def get_available_space():
 def post_configure_tour():
     PTLogger.debug("Route '/configure-tour'")
     configure_tour()
-    return "OK"
-
-
-@app.route("/update-mime-database", methods=["POST"])
-def post_update_mime_database():
-    PTLogger.debug("Route '/update-mime-database'")
-    update_mime_database()
     return "OK"
 
 

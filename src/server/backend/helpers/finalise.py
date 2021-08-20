@@ -42,11 +42,6 @@ def configure_tour() -> None:
     )
 
 
-def update_mime_database() -> None:
-    PTLogger.info("Function: update_mime_database()")
-    run_command("update-mime-database /usr/share/mime", timeout=90, lower_priority=True)
-
-
 def deprioritise_openbox_session() -> None:
     PTLogger.info("Function: deprioritise_openbox_session()")
     run_command(

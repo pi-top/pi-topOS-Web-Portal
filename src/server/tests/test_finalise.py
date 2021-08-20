@@ -84,27 +84,6 @@ def test_configure_tour_success(app, mocker):
     assert response.data == b"OK"
 
 
-def test_update_mime_db_success(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-    run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict({"stdout": b"", "stderr": b"", "returncode": 0}),
-    )
-
-    response = app.post("/update-mime-database")
-
-    run_mock.assert_called_once_with(
-        ["nice", "-n", "10", "update-mime-database", "/usr/share/mime"],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
-        timeout=90,
-    )
-    assert response.status_code == 200
-    assert response.data == b"OK"
-
-
 def test_deprioritise_openbox_session_success(app, mocker):
     environ_mock = mocker.patch("backend.helpers.command_runner.environ")
     environ_mock.copy = dict
