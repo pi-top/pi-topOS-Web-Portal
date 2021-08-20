@@ -10,7 +10,6 @@ import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterSe
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
 import unhideAllBootMessages from "../../services/unhideAllBootMessages";
 import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
-import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
@@ -96,15 +95,9 @@ export default ({
         setIsSettingUpDevice(true);
 
         safelyRunService(
-          updateMimeDatabase,
-          "Just finished memorising all the files I can use..."
+          unhideAllBootMessages,
+          "Remembered all the exciting stuff I've got to tell you..."
         )
-          .finally(() =>
-            safelyRunService(
-              unhideAllBootMessages,
-              "Remembered all the exciting stuff I've got to tell you..."
-            )
-          )
           .finally(() =>
             safelyRunService(
               enableOSUpdaterService,
