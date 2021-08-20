@@ -15,18 +15,12 @@ from .events import (
 )
 from .helpers.about import device_data
 from .helpers.build import os_build_info
-from .helpers.expand_fs import (
-    create_expand_fs_breadcrumb,
-    expand_file_system,
-    is_file_system_expanded,
-)
 from .helpers.finalise import (
     available_space,
     configure_tour,
     deprioritise_openbox_session,
     enable_firmware_updater_service,
     enable_further_link_service,
-    enable_mouse_cursor,
     enable_os_updater_service,
     enable_pt_miniscreen,
     reboot,
@@ -325,14 +319,6 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
-@app.route("/expand-fs", methods=["POST"])
-def post_expand_fs():
-    PTLogger.debug("Route '/expand-fs'")
-    expand_file_system()
-    create_expand_fs_breadcrumb()
-    return "OK"
-
-
 @app.route("/configure-tour", methods=["POST"])
 def post_configure_tour():
     PTLogger.debug("Route '/configure-tour'")
@@ -403,24 +389,11 @@ def post_enable_pt_miniscreen():
     return "OK"
 
 
-@app.route("/enable-mouse-cursor", methods=["POST"])
-def post_enable_mouse_cursor():
-    PTLogger.debug("Route '/enable-mouse-cursor'")
-    enable_mouse_cursor()
-    return "OK"
-
-
 @app.route("/restore-files", methods=["POST"])
 def post_restore_files():
     PTLogger.debug("Route '/restore-files'")
     restore_files()
     return "OK"
-
-
-@app.route("/is-fs-expanded", methods=["GET"])
-def get_is_fs_expanded():
-    PTLogger.debug("Route '/is-fs-expanded'")
-    return jdumps({"expanded": is_file_system_expanded()})
 
 
 @app.route("/python-sdk-docs-url", methods=["GET"])

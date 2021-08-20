@@ -40,7 +40,6 @@ import getAvailableSpace from "../../../services/getAvailableSpace";
 import getNetworks from "../../../services/getNetworks";
 import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
 import connectToNetwork from "../../../services/connectToNetwork";
-import expandFileSystem from "../../../services/expandFileSystem";
 
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
@@ -67,12 +66,10 @@ jest.mock("../../../services/getCurrentKeyboard");
 jest.mock("../../../services/setKeyboard");
 jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
-jest.mock("../../../services/expandFileSystem");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
 
 
-const expandFileSystemMock = expandFileSystem as jest.Mock;
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
 const currentLocaleMock = getCurrentLocale as jest.Mock;
@@ -185,7 +182,7 @@ describe("App", () => {
   beforeAll(() => {
     // app services
     getBuildInfoMock.mockResolvedValue(buildInfo);
-    expandFileSystemMock.mockResolvedValue("OK");
+
 
     // language page services
     const currentLocale = createLocaleFromCode("en_GB");
