@@ -1,5 +1,4 @@
 import atexit
-from os import path
 from threading import Thread
 from time import sleep
 
@@ -37,10 +36,7 @@ class OnboardingApp:
         atexit.register(self.stop)
 
     def start(self):
-        target = self._main
-        if not path.exists("/etc/pi-top/.expandedFs"):
-            target = self._show_busy
-        self.__auto_play_thread = Thread(target=target, args=())
+        self.__auto_play_thread = Thread(target=self._main, args=())
         self.__auto_play_thread.daemon = True
         self.__auto_play_thread.start()
 
@@ -52,16 +48,6 @@ class OnboardingApp:
     def go_to(self, page):
         self.next_page = self.pages.get(page)
         PTLogger.info(f"Moving to {self.next_page.type.name} page")
-
-    def _show_busy(self):
-        try:
-            self.miniscreen.play_animated_image_file(
-                get_image_file_path("spinner.gif"), background=False, loop=True
-            )
-        except KeyboardInterrupt:
-            pass
-        finally:
-            self.miniscreen.stop_animated_image()
 
     def _main(self):
         try:
