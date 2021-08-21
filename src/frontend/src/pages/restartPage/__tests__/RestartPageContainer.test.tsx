@@ -19,7 +19,6 @@ import configureTour from "../../../services/configureTour";
 import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSession";
 import enableFurtherLinkService from "../../../services/enableFurtherLinkService";
 import enableFirmwareUpdaterService from "../../../services/enableFirmwareUpdaterService";
-import enableOSUpdaterService from "../../../services/enableOSUpdaterService";
 import restoreFiles from "../../../services/restoreFiles";
 import unhideAllBootMessages from "../../../services/unhideAllBootMessages";
 import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
@@ -34,7 +33,6 @@ jest.mock("../../../services/configureTour");
 jest.mock("../../../services/deprioritiseOpenboxSession");
 jest.mock("../../../services/enableFurtherLinkService");
 jest.mock("../../../services/enableFirmwareUpdaterService");
-jest.mock("../../../services/enableOSUpdaterService");
 jest.mock("../../../services/restoreFiles");
 jest.mock("../../../services/unhideAllBootMessages");
 jest.mock("../../../services/stopOnboardingAutostart");
@@ -48,7 +46,6 @@ const configureTourMock = configureTour as jest.Mock;
 const deprioritiseOpenboxSessionMock = deprioritiseOpenboxSession as jest.Mock;
 const enableFurtherLinkServiceMock = enableFurtherLinkService as jest.Mock;
 const enableFirmwareUpdaterServiceMock = enableFirmwareUpdaterService as jest.Mock;
-const enableOSUpdaterServiceMock = enableOSUpdaterService as jest.Mock;
 const restoreFilesMock = restoreFiles as jest.Mock;
 const unhideAllBootMessagesMock = unhideAllBootMessages as jest.Mock;
 const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
@@ -63,7 +60,7 @@ const mockServices = [
   deprioritiseOpenboxSessionMock,
   enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
-  enableOSUpdaterServiceMock,
+
   restoreFiles,
   unhideAllBootMessagesMock,
   stopOnboardingAutostartMock,

@@ -21,7 +21,6 @@ from .helpers.finalise import (
     deprioritise_openbox_session,
     enable_firmware_updater_service,
     enable_further_link_service,
-    enable_os_updater_service,
     enable_pt_miniscreen,
     reboot,
     restore_files,
@@ -336,13 +335,6 @@ def post_deprioritise_openbox_session():
 def post_stop_onboarding_autostart():
     PTLogger.debug("Route '/stop-onboarding-autostart'")
     stop_onboarding_autostart()
-    return "OK"
-
-
-@app.route("/enable-os-updater-service", methods=["POST"])
-def post_enable_os_updater_service():
-    PTLogger.debug("Route '/enable-os-updater-service'")
-    enable_os_updater_service()
     return "OK"
 
 

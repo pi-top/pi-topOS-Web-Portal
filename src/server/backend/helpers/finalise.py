@@ -57,14 +57,6 @@ def stop_onboarding_autostart() -> None:
     remove("/etc/xdg/autostart/pt-os-setup.desktop")
 
 
-def enable_os_updater_service():
-    PTLogger.info("Function: enable_os_updater()")
-
-    return run_command(
-        "systemctl enable pt-os-updater", timeout=30, lower_priority=True
-    )
-
-
 def enable_firmware_updater_service():
     PTLogger.info("Function: enable_firmware_updater()")
 

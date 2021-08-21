@@ -5,7 +5,6 @@ import RestartPage from "./RestartPage";
 
 import configureTour from "../../services/configureTour";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
-import enableOSUpdaterService from "../../services/enableOSUpdaterService";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
 import unhideAllBootMessages from "../../services/unhideAllBootMessages";
@@ -98,12 +97,6 @@ export default ({
           unhideAllBootMessages,
           "Remembered all the exciting stuff I've got to tell you..."
         )
-          .finally(() =>
-            safelyRunService(
-              enableOSUpdaterService,
-              "Reminded myself to keep an eye out for cool new stuff..."
-            )
-          )
           .finally(() =>
             safelyRunService(
               enableFirmwareUpdaterService,
