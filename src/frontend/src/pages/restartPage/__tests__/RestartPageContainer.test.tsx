@@ -20,7 +20,6 @@ import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSes
 import enableFurtherLinkService from "../../../services/enableFurtherLinkService";
 import enableFirmwareUpdaterService from "../../../services/enableFirmwareUpdaterService";
 import restoreFiles from "../../../services/restoreFiles";
-import unhideAllBootMessages from "../../../services/unhideAllBootMessages";
 import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 import reboot from "../../../services/reboot";
 import serverStatus from "../../../services/serverStatus";
@@ -34,7 +33,6 @@ jest.mock("../../../services/deprioritiseOpenboxSession");
 jest.mock("../../../services/enableFurtherLinkService");
 jest.mock("../../../services/enableFirmwareUpdaterService");
 jest.mock("../../../services/restoreFiles");
-jest.mock("../../../services/unhideAllBootMessages");
 jest.mock("../../../services/stopOnboardingAutostart");
 jest.mock("../../../services/reboot");
 jest.mock("../../../services/serverStatus");
@@ -47,7 +45,6 @@ const deprioritiseOpenboxSessionMock = deprioritiseOpenboxSession as jest.Mock;
 const enableFurtherLinkServiceMock = enableFurtherLinkService as jest.Mock;
 const enableFirmwareUpdaterServiceMock = enableFirmwareUpdaterService as jest.Mock;
 const restoreFilesMock = restoreFiles as jest.Mock;
-const unhideAllBootMessagesMock = unhideAllBootMessages as jest.Mock;
 const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 const rebootMock = reboot as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
@@ -60,9 +57,7 @@ const mockServices = [
   deprioritiseOpenboxSessionMock,
   enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
-
-  restoreFiles,
-  unhideAllBootMessagesMock,
+  restoreFilesMock,
   stopOnboardingAutostartMock,
   updateEepromMock,
   rebootMock,
@@ -224,22 +219,6 @@ describe("RestartPageContainer", () => {
     describe('when deprioritise openbox session fails', () => {
       beforeEach(() => {
         deprioritiseOpenboxSessionMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('when unhide all boot messages fails', () => {
-      beforeEach(() => {
-        unhideAllBootMessagesMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

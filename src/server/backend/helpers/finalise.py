@@ -1,4 +1,3 @@
-from fileinput import input as finput
 from os import remove, utime
 from pathlib import Path
 
@@ -7,7 +6,7 @@ from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
 from .command_runner import run_command
-from .paths import boot_cmdline_txt, etc_pi_top, use_test_path
+from .paths import etc_pi_top, use_test_path
 
 
 def available_space() -> str:
@@ -79,12 +78,6 @@ def _touch_etc_pi_top_file(file_path) -> None:
         utime(file_path, None)
     except OSError:
         open(file_path, "a").close()
-
-
-def unhide_all_boot_messages() -> None:
-    PTLogger.info("Function: unhide_all_boot_messages()")
-    for line in finput(boot_cmdline_txt(), inplace=True):
-        print(line.replace(" fbcon=map:2", "").rstrip())
 
 
 def reboot() -> None:

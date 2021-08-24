@@ -25,7 +25,6 @@ from .helpers.finalise import (
     reboot,
     restore_files,
     stop_onboarding_autostart,
-    unhide_all_boot_messages,
     update_eeprom,
 )
 from .helpers.keyboard import (
@@ -349,13 +348,6 @@ def post_enable_firmware_updater_service():
 def post_enable_further_link_service():
     PTLogger.debug("Route '/enable-further-link-service'")
     enable_further_link_service()
-    return "OK"
-
-
-@app.route("/unhide-all-boot-messages", methods=["POST"])
-def post_unhide_all_boot_messages():
-    PTLogger.debug("Route '/unhide-all-boot-messages'")
-    unhide_all_boot_messages()
     return "OK"
 
 

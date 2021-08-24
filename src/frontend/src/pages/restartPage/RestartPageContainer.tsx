@@ -7,7 +7,6 @@ import configureTour from "../../services/configureTour";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
-import unhideAllBootMessages from "../../services/unhideAllBootMessages";
 import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
@@ -94,15 +93,9 @@ export default ({
         setIsSettingUpDevice(true);
 
         safelyRunService(
-          unhideAllBootMessages,
-          "Remembered all the exciting stuff I've got to tell you..."
+          enableFirmwareUpdaterService,
+          "Reminded myself to keep an eye out for cool new stuff for my friends..."
         )
-          .finally(() =>
-            safelyRunService(
-              enableFirmwareUpdaterService,
-              "Reminded myself to keep an eye out for cool new stuff for my friends..."
-            )
-          )
           .finally(() =>
             safelyRunService(
               enableFurtherLinkService,
