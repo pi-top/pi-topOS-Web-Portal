@@ -34,27 +34,6 @@ def test_available_space(app, mocker):
     assert body == str(available_space)
 
 
-def test_expand_fs_success(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-    run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict({"stdout": b"", "stderr": b"", "returncode": 0}),
-    )
-
-    response = app.post("/expand-fs")
-
-    run_mock.assert_any_call(
-        ["nice", "-n", "10", "/usr/lib/pt-os-web-portal/expand-fs.sh"],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
-        timeout=120,
-    )
-    assert response.status_code == 200
-    assert response.data == b"OK"
-
-
 def test_configure_tour_success(app, mocker):
     environ_mock = mocker.patch("backend.helpers.command_runner.environ")
     environ_mock.copy = dict

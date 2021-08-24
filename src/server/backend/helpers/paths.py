@@ -81,7 +81,3 @@ def pt_issue():
     if use_test_path():
         return get_test_file_path("pt-issue")
     return "/etc/pt-issue"
-
-
-def expand_fs_breadcrumb():
-    return etc_pi_top() + "/.expandedFs"
