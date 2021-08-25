@@ -120,7 +120,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
         <span
           class="dialogTitle"
         >
-          New pi‑topOS version available!
+          This version of pi-topOS is no longer supported
         </span>
       </h3>
     </header>
@@ -130,7 +130,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.
+        This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features even if you fully update the system.
       </span>
       <br />
       <span
@@ -148,13 +148,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        Please, download the latest version of pi‑topOS from 
-        <button
-          class="unstyled link"
-          type="button"
-        >
-          https://pi-top.com
-        </button>
+        You can also find instructions for downloading and installing the latest version of pi‑topOS from our website.
       </span>
       <br />
       <div
@@ -223,13 +217,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        We recommend you to download the latest version of pi‑topOS from 
-        <button
-          class="unstyled link"
-          type="button"
-        >
-          https://pi-top.com
-        </button>
+        You can also find instructions for downloading and installing the latest version of pi‑topOS from our website.
       </span>
       <br />
       <div

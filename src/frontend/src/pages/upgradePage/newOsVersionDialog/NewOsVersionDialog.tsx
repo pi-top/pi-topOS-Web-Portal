@@ -15,11 +15,10 @@ export type Props = {
 };
 
 export enum OsBurnExplanation {
-  ShouldBurn = "There are major OS updates available, so the update process might take a while.",
-  RequireBurn = "This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.",
-  ShouldBurnRecommendation = "We recommend you to download the latest version of pi‑topOS from ",
-  RequireBurnRecommendation = "Please, download the latest version of pi‑topOS from ",
-  GoToWebsite = "For more information, go to "
+  ShouldBurn = "There is a major OS update available so the update process will take a while. We recommend reburning the SD card.",
+  RequireBurn = "This OS version is out of date and not maintained. Your pi-top will not have the latest security updates and features, even if you fully update the system.",
+  Recommendation = "You can also find instructions for downloading and installing the latest version of pi‑topOS from our website.",
+  GoToWebsite = "For more information, go to ",
 }
 
 const getFormattedLink = (url: string) => {
@@ -28,10 +27,12 @@ const getFormattedLink = (url: string) => {
   );
 };
 
-const getMessage = () => {
+const getMessage = (requireBurn: boolean) => {
   return (
     <>
-      <span className={styles.dialogTitle}>New pi‑topOS version available!</span>
+      <span className={styles.dialogTitle}>
+        {requireBurn? "This version of pi-topOS is no longer supported": "Major OS update required"}
+      </span>
     </>
   );
 };
@@ -44,8 +45,8 @@ export default ({
 }: Props) => {
 
   return (
-    <Dialog active={active} message={getMessage()} className={styles.newOsVersionAvailableDialog}>
-      <div className={styles.content}>        
+    <Dialog active={active} message={getMessage(requireBurn)} className={styles.newOsVersionAvailableDialog}>
+      <div className={styles.content}>
 
           <span className={styles.osUpgradeWarning}>
             {requireBurn && OsBurnExplanation.RequireBurn}
@@ -60,9 +61,7 @@ export default ({
           <br></br>
 
           <span className={styles.osUpgradeWarning}>
-            {requireBurn && OsBurnExplanation.RequireBurnRecommendation}
-            {shouldBurn && !requireBurn && OsBurnExplanation.ShouldBurnRecommendation}
-            {getFormattedLink("https://pi-top.com")}
+            {OsBurnExplanation.Recommendation}
           </span>
           <br></br>
 
