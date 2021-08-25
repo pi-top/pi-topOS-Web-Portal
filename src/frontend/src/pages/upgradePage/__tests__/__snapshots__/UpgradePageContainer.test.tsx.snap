@@ -96,3 +96,153 @@ exports[`UpgradePageContainer when the upgrade is being installed renders progre
   </span>
 </div>
 `;
+
+exports[`UpgradePageContainer when there are major OS updates available and user 'requireBurn' renders the correct message 1`] = `
+<div
+  aria-pressed="false"
+  class="backdrop"
+  data-testid="dialog"
+  role="button"
+>
+  <div
+    aria-hidden="false"
+    aria-modal="true"
+    class="dialog newOsVersionAvailableDialog"
+    role="dialog"
+  >
+    <header
+      class="header"
+    >
+      <h3
+        class="messageContainer"
+        data-testid="dialog-message"
+      >
+        <span
+          class="dialogTitle"
+        >
+          New pi‑topOS version available!
+        </span>
+      </h3>
+    </header>
+    <div
+      class="content"
+    >
+      <span
+        class="osUpgradeWarning"
+      >
+        This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        For more information, go to 
+        <button
+          class="unstyled link"
+          type="button"
+        >
+          https://pi-top.com/help/out-of-date
+        </button>
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        Please, download the latest version of pi‑topOS in 
+        <button
+          class="unstyled link"
+          type="button"
+        >
+          https://pi-top.com
+        </button>
+      </span>
+      <br />
+      <div
+        class="actions"
+      >
+        <button
+          class="styled"
+          type="button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UpgradePageContainer when there are major OS updates available and user 'shouldBurn' renders the correct message 1`] = `
+<div
+  aria-pressed="false"
+  class="backdrop"
+  data-testid="dialog"
+  role="button"
+>
+  <div
+    aria-hidden="false"
+    aria-modal="true"
+    class="dialog newOsVersionAvailableDialog"
+    role="dialog"
+  >
+    <header
+      class="header"
+    >
+      <h3
+        class="messageContainer"
+        data-testid="dialog-message"
+      >
+        <span
+          class="dialogTitle"
+        >
+          New pi‑topOS version available!
+        </span>
+      </h3>
+    </header>
+    <div
+      class="content"
+    >
+      <span
+        class="osUpgradeWarning"
+      >
+        There are major OS updates available, so the update process might take a while.
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        For more information, go to 
+        <button
+          class="unstyled link"
+          type="button"
+        >
+          https://pi-top.com/help/out-of-date
+        </button>
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        We recommend you to download the latest version of pi‑topOS from 
+        <button
+          class="unstyled link"
+          type="button"
+        >
+          https://pi-top.com
+        </button>
+      </span>
+      <br />
+      <div
+        class="actions"
+      >
+        <button
+          class="styled"
+          type="button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
