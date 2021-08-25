@@ -32,11 +32,3 @@
   font-size: 18px;
 }
 
-.osUpgradeWarning {
-  color: var(--red, red);
-  font-size: 14px;
-  font-weight: bold;
-  margin: 0 auto;
-  text-align: center;
-  margin-bottom: 15px;
-}

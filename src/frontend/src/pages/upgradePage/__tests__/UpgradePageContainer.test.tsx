@@ -13,7 +13,8 @@ import { Server } from "mock-socket";
 
 import UpgradePageContainer, { Props } from "../UpgradePageContainer";
 import querySpinner from "../../../../test/helpers/querySpinner";
-import { UpgradePageExplanation, ErrorMessage, OsBurnExplanation } from "../UpgradePage";
+import { OsBurnExplanation } from "../newOsVersionDialog/NewOsVersionDialog";
+import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
 import wsBaseUrl from "../../../services/wsBaseUrl";
