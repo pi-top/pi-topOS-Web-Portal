@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Line as ProgressBar } from "rc-progress";
 import prettyBytes from "pretty-bytes";
 
@@ -39,7 +39,7 @@ export type Props = {
   waitingForServer: boolean,
   downloadSize: number,
   error: boolean,
-  requiredBurn: boolean,
+  requireBurn: boolean,
   shouldBurn: boolean,
 };
 
@@ -56,11 +56,15 @@ export default ({
   upgradeFinished,
   downloadSize,
   waitingForServer,
-  requiredBurn,
+  requireBurn,
   shouldBurn,
   error,
 }: Props) => {
-  const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(requiredBurn || shouldBurn);
+  const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
+  
+  useEffect(() => {
+    setIsNewOsDialogActive(requireBurn || shouldBurn);
+  }, [requireBurn, shouldBurn]);
 
   const errorMessage = error && ErrorMessage.GenericError;
 
@@ -128,7 +132,7 @@ export default ({
 
       <NewOsVersionDialogContainer
         active={isNewOsDialogActive}
-        requiredBurn={requiredBurn}
+        requireBurn={requireBurn}
         shouldBurn={shouldBurn}
         onClose={() => setIsNewOsDialogActive(false)}
       />

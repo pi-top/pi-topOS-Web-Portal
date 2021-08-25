@@ -1,6 +1,6 @@
 export type OsVersionUpdate = {
   shouldBurn: boolean;
-  requiredBurn: boolean;
+  requireBurn: boolean;
   latestOSVersion: string;
   update: boolean;
 };

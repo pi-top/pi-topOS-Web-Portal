@@ -7,7 +7,7 @@ import styles from "./NewOsVersionDialog.module.css";
 
 export type Props = {
   active: boolean;
-  requiredBurn: boolean;
+  requireBurn: boolean;
   shouldBurn: boolean;
   onClose: () => void;
 };
@@ -15,9 +15,9 @@ export type Props = {
 
 export enum OsBurnExplanation {
   ShouldBurn = "There are major OS updates available, so the update process might take a while.",
-  RequiredBurn = "This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.",
+  RequireBurn = "This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.",
   ShouldBurnRecommendation = "We recommend you to download the latest version of pi‑topOS from https://pi-top.com",
-  RequiredBurnRecommendation = "Please, download the latest version of pi‑topOS in https://pi-top.com",
+  RequireBurnRecommendation = "Please, download the latest version of pi‑topOS in https://pi-top.com",
   GoToWebsite = "For more information, go to https://pi-top.com/help/out-of-date"
 }
 
@@ -31,7 +31,7 @@ const getMessage = () => {
 
 export default ({
   active,
-  requiredBurn,
+  requireBurn,
   shouldBurn,
   onClose,
 }: Props) => {
@@ -41,8 +41,8 @@ export default ({
       <div className={styles.content}>        
 
           <span className={styles.osUpgradeWarning}>
-            {requiredBurn && OsBurnExplanation.RequiredBurn}
-            {shouldBurn && !requiredBurn && OsBurnExplanation.ShouldBurn}
+            {requireBurn && OsBurnExplanation.RequireBurn}
+            {shouldBurn && !requireBurn && OsBurnExplanation.ShouldBurn}
           </span>
           <br></br>
 
@@ -50,8 +50,8 @@ export default ({
           <br></br>
 
           <span className={styles.osUpgradeWarning}>
-            {requiredBurn && OsBurnExplanation.RequiredBurnRecommendation}
-            {shouldBurn && !requiredBurn && OsBurnExplanation.ShouldBurnRecommendation}
+            {requireBurn && OsBurnExplanation.RequireBurnRecommendation}
+            {shouldBurn && !requireBurn && OsBurnExplanation.ShouldBurnRecommendation}
           </span>
           <br></br>
 

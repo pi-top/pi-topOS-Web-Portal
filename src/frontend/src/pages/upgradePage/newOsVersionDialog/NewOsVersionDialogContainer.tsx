@@ -4,7 +4,7 @@ import NewOsVersionDialog from "./NewOsVersionDialog";
 
 export type Props = {
   active: boolean;
-  requiredBurn: boolean;
+  requireBurn: boolean;
   shouldBurn: boolean;
   onClose: () => void;
 };
