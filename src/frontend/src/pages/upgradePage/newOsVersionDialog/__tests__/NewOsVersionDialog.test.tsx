@@ -22,7 +22,7 @@ describe("NewOsVersionDialog", () => {
     defaultProps = {
       active: true,
       shouldBurn: false,
-      requiredBurn: false,
+      requireBurn: false,
       onClose: jest.fn(),
     };
 

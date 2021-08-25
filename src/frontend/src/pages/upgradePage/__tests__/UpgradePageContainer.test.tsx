@@ -63,7 +63,7 @@ describe("UpgradePageContainer", () => {
     let osUpdatesResponse: OsVersionUpdate;
     osUpdatesResponse = {
       shouldBurn: false,
-      requiredBurn: false,
+      requireBurn: false,
       latestOSVersion: "",
       update: false,
     }
@@ -243,7 +243,7 @@ describe("UpgradePageContainer", () => {
       let osUpdatesResponse: OsVersionUpdate;
       osUpdatesResponse = {
         shouldBurn: true,
-        requiredBurn: false,
+        requireBurn: false,
         latestOSVersion: "",
         update: false,
       }
@@ -261,12 +261,12 @@ describe("UpgradePageContainer", () => {
     });
 
 
-    it("doesn't render the 'requiredBurn' message", async () => {
+    it("doesn't render the 'requireBurn' message", async () => {
       const { queryByText } = mount();
       await wait();
 
-      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
-      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequireBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequireBurnRecommendation)).not.toBeInTheDocument();
     });
   })
 
@@ -281,7 +281,7 @@ describe("UpgradePageContainer", () => {
       let osUpdatesResponse: OsVersionUpdate;
       osUpdatesResponse = {
         shouldBurn: true,
-        requiredBurn: true,
+        requireBurn: true,
         latestOSVersion: "",
         update: false,
       }
@@ -290,12 +290,12 @@ describe("UpgradePageContainer", () => {
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
-    it("renders the 'requiredBurn' message", async () => {
+    it("renders the 'requireBurn' message", async () => {
       const { getByText } = mount();
       await wait();
 
-      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurn));
-      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurnRecommendation));
+      await waitForElement(() => getByText(OsBurnExplanation.RequireBurn));
+      await waitForElement(() => getByText(OsBurnExplanation.RequireBurnRecommendation));
     });
 
 
@@ -321,12 +321,12 @@ describe("UpgradePageContainer", () => {
       getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
     });
 
-    it("doesn't render the 'requiredBurn' message", async () => {
+    it("doesn't render the 'requireBurn' message", async () => {
       const { queryByText } = mount();
       await wait();
 
-      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
-      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequireBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequireBurnRecommendation)).not.toBeInTheDocument();
     });
 
 

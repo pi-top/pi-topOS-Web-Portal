@@ -22,7 +22,7 @@ describe("NewOsVersionDialogContainer", () => {
 
     defaultProps = {
       active: true,
-      requiredBurn: false,
+      requireBurn: false,
       shouldBurn: false,
       onClose: jest.fn()
     };
