@@ -18,7 +18,7 @@ export enum OsBurnExplanation {
   ShouldBurn = "There are major OS updates available, so the update process might take a while.",
   RequireBurn = "This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.",
   ShouldBurnRecommendation = "We recommend you to download the latest version of pi‑topOS from ",
-  RequireBurnRecommendation = "Please, download the latest version of pi‑topOS in ",
+  RequireBurnRecommendation = "Please, download the latest version of pi‑topOS from ",
   GoToWebsite = "For more information, go to "
 }
 

@@ -148,7 +148,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        Please, download the latest version of pi‑topOS in 
+        Please, download the latest version of pi‑topOS from 
         <button
           class="unstyled link"
           type="button"
