@@ -5,6 +5,8 @@ import Button from "../../../components/atoms/button/Button";
 
 import styles from "./NewOsVersionDialog.module.css";
 
+import { runningOnWebRenderer } from "../../../helpers/utils";
+
 export type Props = {
   active: boolean;
   requireBurn: boolean;
@@ -12,14 +14,19 @@ export type Props = {
   onClose: () => void;
 };
 
-
 export enum OsBurnExplanation {
   ShouldBurn = "There are major OS updates available, so the update process might take a while.",
   RequireBurn = "This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features.",
-  ShouldBurnRecommendation = "We recommend you to download the latest version of pi‑topOS from https://pi-top.com",
-  RequireBurnRecommendation = "Please, download the latest version of pi‑topOS in https://pi-top.com",
-  GoToWebsite = "For more information, go to https://pi-top.com/help/out-of-date"
+  ShouldBurnRecommendation = "We recommend you to download the latest version of pi‑topOS from ",
+  RequireBurnRecommendation = "Please, download the latest version of pi‑topOS in ",
+  GoToWebsite = "For more information, go to "
 }
+
+const getFormattedLink = (url: string) => {
+  return (
+    <Button className={styles.link} unstyled onClick= {() => !runningOnWebRenderer() && window.open(url)}>{url}</Button>
+  );
+};
 
 const getMessage = () => {
   return (
@@ -46,12 +53,16 @@ export default ({
           </span>
           <br></br>
 
-          <span className={styles.osUpgradeWarning}>{OsBurnExplanation.GoToWebsite}</span>
+          <span className={styles.osUpgradeWarning}>
+            {OsBurnExplanation.GoToWebsite}
+            {getFormattedLink("https://pi-top.com/help/out-of-date")}
+          </span>
           <br></br>
 
           <span className={styles.osUpgradeWarning}>
             {requireBurn && OsBurnExplanation.RequireBurnRecommendation}
             {shouldBurn && !requireBurn && OsBurnExplanation.ShouldBurnRecommendation}
+            {getFormattedLink("https://pi-top.com")}
           </span>
           <br></br>
 

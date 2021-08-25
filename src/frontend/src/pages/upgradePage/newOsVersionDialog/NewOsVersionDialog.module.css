@@ -40,3 +40,9 @@
   text-align: center;
   margin-bottom: 15px;
 }
+
+.link {
+  color: var(--green);
+  font-weight: lighter;
+  font-size: 14px;
+}
