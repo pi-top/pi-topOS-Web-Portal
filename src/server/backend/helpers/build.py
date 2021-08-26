@@ -2,6 +2,7 @@ from json import dumps
 
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
+from pitop.common.sys_info import get_package_information
 
 
 def os_build_info():
@@ -21,6 +22,16 @@ def os_build_info():
             "buildRepo": build_info.build_repo,
             "finalRepo": build_info.final_repo,
         }
+
+    pt_os_web_portal_version = get_package_information("pt-os-web-portal")
+    if (
+        pt_os_web_portal_version
+        and hasattr(pt_os_web_portal_version, "installed")
+        and hasattr(pt_os_web_portal_version.installed, "version")
+    ):
+        build.update(
+            {"ptOsWebPortalVersion": pt_os_web_portal_version.installed.version}
+        )
 
     PTLogger.info("OS build information: " + dumps(build))
     return build

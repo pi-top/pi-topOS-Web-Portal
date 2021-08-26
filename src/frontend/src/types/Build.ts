@@ -8,4 +8,5 @@ export type BuildInfo = {
   buildName: string;
   buildRepo: string;
   finalRepo: string;
+  ptOsWebPortalVersion: string;
 }
