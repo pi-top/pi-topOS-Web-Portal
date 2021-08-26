@@ -4,3 +4,4 @@ src/server/Pipfile*                         /usr/lib/pt-os-web-portal
 src/server/run.py                           /usr/lib/pt-os-web-portal
 src/server/backend                          /usr/lib/pt-os-web-portal
 src/miniscreen                              /usr/lib/pt-os-web-portal
+resources                                   /usr/lib/pt-os-web-portal

@@ -1,10 +1,11 @@
 from enum import Enum
 from json import dumps as jdumps
+from os import path
 from threading import Thread
 
 from flask import abort
 from flask import current_app as app
-from flask import redirect, request
+from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 
 from . import sockets
@@ -463,3 +464,10 @@ def post_enable_ap_mode():
 def get_os_check_update():
     PTLogger.debug("Route '/os-updates'")
     return jdumps(check_relevant_os_updates())
+
+
+@app.route("/FSMePro/<filename>", methods=["GET"])
+def FSMePro(filename):
+    PTLogger.debug(f"Route '/FSMePro/{filename}'")
+    current_dir = path.dirname(path.realpath(__file__))
+    return send_from_directory(str(current_dir) + "/../resources/fonts", filename)
