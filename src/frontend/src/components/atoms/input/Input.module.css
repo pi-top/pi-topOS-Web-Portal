@@ -14,7 +14,12 @@
   padding: 10px;
   transition: border ease-in-out 0.2s;
   width: 100%;
-  outline: none;
+}
+
+.input:focus {
+  outline: var(--green, green);
+  outline-width: 1px;
+  outline-style: solid
 }
 
 .input:disabled {
