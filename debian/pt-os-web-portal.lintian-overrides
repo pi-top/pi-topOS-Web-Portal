@@ -1,1 +1,9 @@
 pt-os-web-portal: package-contains-documentation-outside-usr-share-doc usr/lib/pt-os-web-portal/backend/build/*
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-Bold.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-BoldItalic.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-Heavy.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-HeavyItalic.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-Italic.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-Light.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-LightItalic.ttf
+pt-os-web-portal: truetype-font-prohibits-installable-embedding [preview/print only] usr/lib/pt-os-web-portal/resources/fonts/FSMePro-Regular.ttf
