@@ -29,7 +29,8 @@ export default ({ info }: Props) => {
       {info.buildDate && <>Build Date: {info.buildDate}<br /></>}
       {info.buildType && <>Build Type: {info.buildType}<br /></>}
       {info.buildRepo && <>Build Apt Repo: {info.buildRepo}<br /></>}
-      {info.finalRepo && <>Final Apt Repo: {info.finalRepo}</>}
+      {info.finalRepo && <>Final Apt Repo: {info.finalRepo}<br /></>}
+      {info.ptOsWebPortalVersion && <>Web Portal Version: {info.ptOsWebPortalVersion}</>}
     </div>
   );
 };
