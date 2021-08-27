@@ -72,7 +72,6 @@ class FrontendAppRoutes(Enum):
     TOUR = "/tour"
     ONBOARDING = "/onboarding"
     ABOUT = "/about"
-    UPDATER = "/updater"
 
     @classmethod
     def is_valid(cls, route):

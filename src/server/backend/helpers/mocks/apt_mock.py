@@ -61,17 +61,8 @@ class CacheMock:
         return {}
 
 
-class FilterMock:
-    pass
-
-
-class AptCacheMock:
-    Filter = FilterMock
-
-
 class AptMock:
     Cache = CacheMock
-    cache = AptCacheMock
 
 
 class ProgressMock:

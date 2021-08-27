@@ -1,6 +1,3 @@
-const wsBaseUrl =
-    "ws://" +
-    window.location.hostname +
-    ":80/";
+const wsBaseUrl = "ws://" + window.location.host + ":80/";
 
 export default wsBaseUrl;

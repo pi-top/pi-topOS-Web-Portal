@@ -16,10 +16,9 @@ export enum ErrorMessage {
 
 export enum UpgradePageExplanation {
   Preparing = "Checking the size of update...",
-  UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
-  UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
+  UpgradePrepared = "{size} of new packages need to be installed. This might take {time} minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
-  Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
+  Finish = "Great, system update has been successfully installed!\n\nPlease click the Next button to restart the application and continue.",
   WaitingForServer = "Please wait...",
 }
 
@@ -31,11 +30,11 @@ export enum OsBurnExplanation {
 }
 
 export type Props = {
-  onNextClick?: () => void;
-  onSkipClick?: () => void;
-  onBackClick?: () => void;
+  onNextClick: () => void;
+  onSkipClick: () => void;
+  onBackClick: () => void;
   onStartUpgradeClick: () => void;
-  isCompleted?: boolean;
+  isCompleted: boolean;
   message?: OSUpdaterMessage,
   upgradeIsPrepared: boolean,
   upgradeIsRequired: boolean,
@@ -76,32 +75,22 @@ export default ({
       return UpgradePageExplanation.WaitingForServer;
     }
     if (upgradeFinished) {
-      return UpgradePageExplanation.Finish.replace(
-        "{continueButtonLabel}",
-        continueButtonLabel
-      ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
+      return UpgradePageExplanation.Finish;
     }
     if (!upgradeIsRequired) {
-      return UpgradePageExplanation.Finish.replace(
-        "{continueButtonLabel}",
-        continueButtonLabel
-      ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
+      return UpgradePageExplanation.Finish;
     }
     if (upgradeIsRunning) {
       return UpgradePageExplanation.InProgress;
     }
     if (upgradeIsPrepared) {
-      if (downloadSize) {
-        return UpgradePageExplanation.UpgradePreparedWithDownload
-          .replace("{size}", prettyBytes(downloadSize))
-          .replace("{time}", "a few");
-      }
-      return UpgradePageExplanation.UpgradePreparedWithoutDownload
+      return UpgradePageExplanation.UpgradePrepared.replace(
+        "{size}",
+        downloadSize ? prettyBytes(downloadSize) : "a few"
+      ).replace("{time}", "a few");
     }
     return UpgradePageExplanation.Preparing;
   };
-
-  const continueButtonLabel = upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
 
   return (
     <>
@@ -118,12 +107,11 @@ export default ({
         explanation={getExplanation()}
         nextButton={{
           onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
-          label: continueButtonLabel,
+          label: !upgradeIsRequired ? "Next" : "Update",
           disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || error
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={onSkipClick !== undefined && (isCompleted || error)}
-        showBack={onBackClick !== undefined && !upgradeIsRunning}
+        showSkip={isCompleted || error}
         backButton={{
           onClick: onBackClick,
           disabled: upgradeIsRunning
@@ -149,7 +137,7 @@ export default ({
             <Spinner size={40} />{" "}
           </>
         )}
-        {(message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && (
+        {message?.type === OSUpdaterMessageType.Upgrade && !waitingForServer && (
           <div className={styles.progress}>
             <ProgressBar
               percent={message.payload.percent}
