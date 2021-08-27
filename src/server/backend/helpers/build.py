@@ -2,7 +2,15 @@ from json import dumps
 
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
-from pitop.common.sys_info import get_package_information
+
+
+def get_package_information(package_name: str):
+    try:
+        from apt import Cache
+    except ModuleNotFoundError:
+        return None
+    apt_cache = Cache()
+    return apt_cache.get(package_name)
 
 
 def os_build_info():
