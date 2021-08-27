@@ -1,4 +1,5 @@
 from enum import Enum, IntEnum
+from pathlib import Path
 from threading import Thread
 from time import sleep
 
@@ -6,6 +7,7 @@ from isc_dhcp_leases import IscDhcpLeases
 from PIL import Image, ImageDraw
 from pitop.common.command_runner import run_command
 from pitop.common.pt_os import get_pitopOS_info
+from pitop.common.sys_info import get_internal_ip
 
 from .connection_methods import ApConnection, EthernetConnection, UsbConnection
 from .helpers import draw_text, get_image_file_path, process_image
@@ -34,6 +36,15 @@ def get_address_for_connected_device():
             return lease.ip
     return ""
 
+# TODO: move to pitop.common
+# from pitop.common.XXX import is_connected_to_internet
+def is_connected_to_internet() -> bool:
+    try:
+        run_command("ping -c1 8.8.8.8", timeout=2, check=True, log_errors=False)
+        return True
+    except Exception:
+        return False
+
 
 # Tunings to approximately match other sys info pages using GIFs
 ANIMATION_SPEED = 1
@@ -52,10 +63,11 @@ THIRD_LINE_Y = 41
 class Menus(IntEnum):
     WELCOME = 0
     AP = 1
-    USB = 2
-    ETHERNET = 3
-    INFO = 4
-    BROWSER = 5
+    BROWSER = 2
+    CARRY_ON = 3
+    #USB = 2
+    #ETHERNET = 3
+    #INFO = 4
 
     def next(self):
         next_mode = self.value + 1 if self.value + 1 < len(Menus) else 0
@@ -76,6 +88,9 @@ class MenuPageBase:
 
     def render(self, draw, redraw=False):
         raise NotImplementedError
+
+    def should_display(self):
+        return not self.skip
 
 
 class TitleMenuPage(MenuPageBase):
@@ -161,21 +176,61 @@ class WelcomeMenuPage(TitleMenuPage):
         )
         draw_text(
             draw,
-            text="arrow key to",
+            text="down key",
             xy=(15, SECOND_LINE_Y),
             font_size=14,
         )
         draw_text(
             draw,
-            text="move forward!",
+            text="to page!",
             xy=(15, THIRD_LINE_Y),
+            font_size=14,
+        )
+
+    def render(self, draw, redraw=False):
+        super(WelcomeMenuPage, self).render(draw, redraw)
+
+
+class CarryOnMenuPage(TitleMenuPage):
+    def __init__(self, size, mode):
+        super(CarryOnMenuPage, self).__init__(
+            type=Menus.CARRY_ON, size=size, mode=mode, title_image_filename="carryon.png"
+        )
+        self.already_displayed = False
+        self.thread = Thread(target=self.__monitor_breadcrumb, args=(), daemon=True)
+        self.thread.start()
+
+    def should_display(self):
+        should = not self.skip and self.already_displayed is False
+        if should:
+            self.already_displayed = True
+        return should
+
+    def __monitor_breadcrumb(self):
+        breadcrumb_path = "/tmp/.com.pi-top.pt-os-web-portal.miniscreen.onboarding"
+        file = Path(breadcrumb_path)
+        while True:
+            self.skip = not file.exists()
+            sleep(0.3)
+
+    def info(self, draw, redraw=False):
+        draw_text(
+            draw,
+            text="Now, continue",
+            xy=(10, FIRST_LINE_Y),
             font_size=14,
         )
         draw_text(
             draw,
-            text="⬅️",
-            font_name="Symbola_hint.ttf",
-            xy=(2, THIRD_LINE_Y),
+            text="onboarding in",
+            xy=(10, SECOND_LINE_Y),
+            font_size=14,
+        )
+        draw_text(
+            draw,
+            text="the browser",
+            xy=(10, THIRD_LINE_Y),
+            font_size=14,
         )
 
 
@@ -209,34 +264,52 @@ class OpenBrowserPage(TitleMenuPage):
         self.skip = True
         self.connected_ip = ""
         self.already_displayed = False
-        self.thread = Thread(target=self.__monitor_leased_ip, args=(), daemon=True)
+        self.thread = Thread(target=self.__monitor_connections, args=(), daemon=True)
         self.thread.start()
 
     def should_display(self):
-        should = self.connected_ip != "" and self.already_displayed is False
+        should = not self.skip and self.already_displayed is False
         if should:
             self.already_displayed = True
         return should
 
-    def __monitor_leased_ip(self):
+    def __monitor_connections(self):
         while True:
-            leased_ip = get_address_for_connected_device()
-            self.skip = leased_ip == ""
-            self.connected_ip = leased_ip
+            self.connected_ip = get_address_for_connected_device()
+            self.skip = self.connected_ip == "" and not is_connected_to_internet()
             sleep(0.3)
 
+    def get_ip_to_connect(self):
+        if not self.connected_ip:
+            return
+        ip_arr = self.connected_ip.split(".")
+        for interface in ("ptusb0", "wlan_ap0"):
+            iface_ip = get_internal_ip(interface)
+            iface_ip_arr = iface_ip.split(".")
+            if ip_arr[:3] == iface_ip_arr[:3]:
+                return iface_ip
+
     def info(self, draw, redraw=False):
-        draw_text(draw, text="Open a web browser,", xy=(5, FIRST_LINE_Y))
         draw_text(
             draw,
-            text="and go to",
-            xy=(5, SECOND_LINE_Y),
-        )
+            text="Open a browser to",
+            font_size=11,
+            xy=(5, FIRST_LINE_Y))
         draw_text(
             draw,
             text="http://pi-top.local",
-            xy=(5, THIRD_LINE_Y),
+            font_size=11,
+            xy=(5, SECOND_LINE_Y),
         )
+        ip_to_connect = self.get_ip_to_connect()
+        if ip_to_connect:
+            draw_text(
+                draw,
+                text=f"or http://{ip_to_connect}",
+                font_size=11,
+                xy=(5, THIRD_LINE_Y),
+            )
+
 
 
 class RenderState(Enum):
@@ -356,7 +429,10 @@ class ApMenuPage(ConnectionMenuPage):
         )
 
     def draw_connection_data(self, draw):
-        draw_text(draw, text="Connect to Wi-Fi:", xy=(10, FIRST_LINE_Y))
+        draw_text(
+            draw,
+            text="Wi-Fi network:",
+            xy=(10, 6))
         draw_text(
             draw,
             text=self.connection_state.metadata.get("ssid", ""),

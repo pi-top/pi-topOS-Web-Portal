@@ -9,27 +9,23 @@ from pitop.common.logger import PTLogger
 from .helpers import get_image_file_path
 from .menus import (
     ApMenuPage,
-    EthernetMenuPage,
-    InfoMenuPage,
+    CarryOnMenuPage,
     Menus,
     OpenBrowserPage,
-    UsbMenuPage,
     WelcomeMenuPage,
+    RenderState,
 )
 
 
 class OnboardingApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
+        self.page_order = [Menus.WELCOME, Menus.AP, Menus.BROWSER, Menus.CARRY_ON]
         self.pages = {
             Menus.WELCOME: WelcomeMenuPage(self.miniscreen.size, self.miniscreen.mode),
             Menus.AP: ApMenuPage(self.miniscreen.size, self.miniscreen.mode),
-            Menus.USB: UsbMenuPage(self.miniscreen.size, self.miniscreen.mode),
-            Menus.ETHERNET: EthernetMenuPage(
-                self.miniscreen.size, self.miniscreen.mode
-            ),
-            Menus.INFO: InfoMenuPage(self.miniscreen.size, self.miniscreen.mode),
             Menus.BROWSER: OpenBrowserPage(self.miniscreen.size, self.miniscreen.mode),
+            Menus.CARRY_ON: CarryOnMenuPage(self.miniscreen.size, self.miniscreen.mode),
         }
 
         self.current_page = self.pages.get(Menus.WELCOME)
@@ -47,13 +43,19 @@ class OnboardingApp:
         atexit.register(self.stop)
 
     def get_previous_page(self, page):
-        candidate = page.type.previous()
+        curr_idx = self.page_order.index(page.type)
+        prev_idx = len(self.page_order) - 1 if curr_idx - 1 < 0 else curr_idx - 1
+
+        candidate = self.page_order[prev_idx]
         if self.pages.get(candidate).skip:
             return self.get_previous_page(self.pages.get(candidate))
         return candidate
 
     def get_next_page(self, page):
-        candidate = page.type.next()
+        curr_idx = self.page_order.index(page.type)
+        next_idx = 0 if curr_idx + 1 == len(self.page_order) else curr_idx + 1
+
+        candidate = self.page_order[next_idx]
         if self.pages.get(candidate).skip:
             return self.get_next_page(self.pages.get(candidate))
         return candidate
@@ -98,9 +100,16 @@ class OnboardingApp:
                 self.miniscreen.device.display(image)
                 sleep(self.current_page.interval)
 
-                if self.pages.get(Menus.BROWSER).should_display():
+                # Transitions
+                if self.current_page == self.pages.get(Menus.AP) \
+                    and self.pages.get(Menus.AP).render_state == RenderState.DISPLAYING_INFO \
+                    and self.pages.get(Menus.BROWSER).should_display():
                     self.go_to(Menus.BROWSER)
-                    self.pages.get(Menus.WELCOME).skip = True
+                elif self.current_page == self.pages.get(Menus.BROWSER) \
+                    and self.pages.get(Menus.BROWSER).render_state == RenderState.DISPLAYING_INFO \
+                    and self.pages.get(Menus.CARRY_ON).should_display():
+                    self.go_to(Menus.CARRY_ON)
+
         except KeyboardInterrupt:
             pass
         finally:
