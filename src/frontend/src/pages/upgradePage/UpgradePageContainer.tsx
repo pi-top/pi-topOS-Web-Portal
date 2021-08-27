@@ -7,7 +7,6 @@ import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
 import restartWebPortalService from "../../services/restartWebPortalService";
 import serverStatus from "../../services/serverStatus"
-import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
@@ -67,26 +66,12 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [waitingForServer, setWaitingForServer] = useState(false);
-  const [requiredBurn, setRequiredBurn] = useState(false);
-  const [shouldBurn, setShouldBurn] = useState(false);
 
   useEffect(() => {
     getAvailableSpace()
       .then((setAvailableSpace))
       .catch(() => null);
   }, []);
-
-  useEffect(() => {
-    getMajorOsUpdates()
-      .then((response) => {
-        setShouldBurn(response.shouldBurn);
-        setRequiredBurn(response.requiredBurn);
-      })
-      .catch(() => {
-        setShouldBurn(false);
-        setRequiredBurn(false);
-      })
-    }, []);
 
   useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
@@ -219,8 +204,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       upgradeFinished={upgradeFinished}
       waitingForServer={waitingForServer}
       downloadSize={updateSize.downloadSize}
-      requiredBurn={requiredBurn}
-      shouldBurn={shouldBurn}
       error={error}
     />
   );
