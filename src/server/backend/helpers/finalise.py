@@ -1,4 +1,4 @@
-from os import remove, utime
+from os import remove
 from pathlib import Path
 
 from pitop.common.command_runner import run_command_background
@@ -6,7 +6,7 @@ from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
 from .command_runner import run_command
-from .paths import etc_pi_top, use_test_path
+from .paths import use_test_path
 
 
 def available_space() -> str:
@@ -61,16 +61,6 @@ def enable_further_link_service():
     PTLogger.info("Function: enable_further_link()")
 
     return run_command("systemctl enable further-link", timeout=30, lower_priority=True)
-
-
-def _touch_etc_pi_top_file(file_path) -> None:
-    # create /etc/pi-top if it doesn't exist
-    Path(etc_pi_top()).mkdir(exist_ok=True)
-
-    try:
-        utime(file_path, None)
-    except OSError:
-        open(file_path, "a").close()
 
 
 def reboot() -> None:
