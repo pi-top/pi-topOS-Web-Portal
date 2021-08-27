@@ -36,7 +36,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 PTLogger.setup_logging(
-    logger_name="pt-web-portal",
+    logger_name="pt-os-web-portal",
     logging_level=args.log_level,
     log_to_journal=args.no_journal is False,
 )
@@ -48,16 +48,16 @@ def is_root() -> bool:
 
 def display_unavailable_port_notification() -> None:
     return run_command(
-        "systemctl start pt-web-portal-port-busy", timeout=10, log_errors=False
+        "systemctl start pt-os-web-portal-port-busy", timeout=10, log_errors=False
     )
 
 
 if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
     PTLogger.info("Onboarding not completed, starting miniscreen app")
 
-    if get_systemd_active_state("pt-sys-oled").lower() == "active":
-        PTLogger.info("Stopping pt-sys-oled.service")
-        stop_systemd_service("pt-sys-oled")
+    if get_systemd_active_state("pt-miniscreen").lower() == "active":
+        PTLogger.info("Stopping pt-miniscreen.service")
+        stop_systemd_service("pt-miniscreen")
 
     # use miniscreen in non-locking mode
     environ["PT_MINISCREEN_SYSTEM"] = "1"

@@ -2,9 +2,9 @@ import axios from "axios";
 
 import apiBaseUrl from "./apiBaseUrl";
 
-export default async function enableMouseCursor() {
+export default async function enablePtMiniscreen() {
     await axios.post(
-        `${apiBaseUrl}/enable-mouse-cursor`,
+        `${apiBaseUrl}/enable-pt-miniscreen`,
         {}
     );
 }

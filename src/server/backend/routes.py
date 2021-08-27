@@ -1,10 +1,11 @@
 from enum import Enum
 from json import dumps as jdumps
+from os import path
 from threading import Thread
 
 from flask import abort
 from flask import current_app as app
-from flask import redirect, request
+from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 
 from . import sockets
@@ -15,26 +16,17 @@ from .events import (
 )
 from .helpers.about import device_data
 from .helpers.build import os_build_info
-from .helpers.expand_fs import (
-    create_expand_fs_breadcrumb,
-    expand_file_system,
-    is_file_system_expanded,
-)
 from .helpers.finalise import (
     available_space,
     configure_tour,
     deprioritise_openbox_session,
     enable_firmware_updater_service,
     enable_further_link_service,
-    enable_mouse_cursor,
-    enable_os_updater_service,
-    enable_pt_sys_oled,
+    enable_pt_miniscreen,
     reboot,
     restore_files,
     stop_onboarding_autostart,
-    unhide_all_boot_messages,
     update_eeprom,
-    update_mime_database,
 )
 from .helpers.keyboard import (
     current_keyboard_layout,
@@ -45,7 +37,7 @@ from .helpers.keyboard import (
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.os_updater import os_upgrade_size, prepare_os_upgrade, start_os_upgrade
 from .helpers.registration import set_registration_email
-from .helpers.system import restart_web_portal_service
+from .helpers.system import enable_ap_mode, restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.tour import (
     close_pt_browser,
@@ -74,11 +66,16 @@ from .helpers.wifi_manager import (
 class FrontendAppRoutes(Enum):
     TOUR = "/tour"
     ONBOARDING = "/onboarding"
+    ABOUT = "/about"
 
     @classmethod
     def is_valid(cls, route):
         try:
-            cls(str(route[: route.find("/", 1)]))
+            path = route
+            path_delimiter = route.find("/", 1)
+            if path_delimiter > 0:
+                path = route[:path_delimiter]
+            cls(str(path))
         except ValueError:
             return False
         return True
@@ -102,7 +99,7 @@ def index():
 @app.errorhandler(404)
 def not_found(e):
     if not FrontendAppRoutes.is_valid(request.path) or (
-        request.path != FrontendAppRoutes.ONBOARDING.value
+        FrontendAppRoutes.ONBOARDING.value not in request.path
         and not onboarding_completed()
     ):
         return redirect("/")
@@ -314,25 +311,10 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
-@app.route("/expand-fs", methods=["POST"])
-def post_expand_fs():
-    PTLogger.debug("Route '/expand-fs'")
-    expand_file_system()
-    create_expand_fs_breadcrumb()
-    return "OK"
-
-
 @app.route("/configure-tour", methods=["POST"])
 def post_configure_tour():
     PTLogger.debug("Route '/configure-tour'")
     configure_tour()
-    return "OK"
-
-
-@app.route("/update-mime-database", methods=["POST"])
-def post_update_mime_database():
-    PTLogger.debug("Route '/update-mime-database'")
-    update_mime_database()
     return "OK"
 
 
@@ -350,13 +332,6 @@ def post_stop_onboarding_autostart():
     return "OK"
 
 
-@app.route("/enable-os-updater-service", methods=["POST"])
-def post_enable_os_updater_service():
-    PTLogger.debug("Route '/enable-os-updater-service'")
-    enable_os_updater_service()
-    return "OK"
-
-
 @app.route("/enable-firmware-updater-service", methods=["POST"])
 def post_enable_firmware_updater_service():
     PTLogger.debug("Route '/enable-firmware-updater-service'")
@@ -371,13 +346,6 @@ def post_enable_further_link_service():
     return "OK"
 
 
-@app.route("/unhide-all-boot-messages", methods=["POST"])
-def post_unhide_all_boot_messages():
-    PTLogger.debug("Route '/unhide-all-boot-messages'")
-    unhide_all_boot_messages()
-    return "OK"
-
-
 @app.route("/reboot", methods=["POST"])
 def post_reboot():
     PTLogger.debug("Route '/reboot'")
@@ -385,17 +353,10 @@ def post_reboot():
     return "OK"  # no response here is also OK!
 
 
-@app.route("/enable-pt-sys-oled", methods=["POST"])
-def post_enable_pt_sys_oled():
-    PTLogger.debug("Route '/enable-pt-sys-oled'")
-    enable_pt_sys_oled()
-    return "OK"
-
-
-@app.route("/enable-mouse-cursor", methods=["POST"])
-def post_enable_mouse_cursor():
-    PTLogger.debug("Route '/enable-mouse-cursor'")
-    enable_mouse_cursor()
+@app.route("/enable-pt-miniscreen", methods=["POST"])
+def post_enable_pt_miniscreen():
+    PTLogger.debug("Route '/enable-pt-miniscreen'")
+    enable_pt_miniscreen()
     return "OK"
 
 
@@ -404,12 +365,6 @@ def post_restore_files():
     PTLogger.debug("Route '/restore-files'")
     restore_files()
     return "OK"
-
-
-@app.route("/is-fs-expanded", methods=["GET"])
-def get_is_fs_expanded():
-    PTLogger.debug("Route '/is-fs-expanded'")
-    return jdumps({"expanded": is_file_system_expanded()})
 
 
 @app.route("/python-sdk-docs-url", methods=["GET"])
@@ -490,3 +445,17 @@ def post_restart_web_portal_service():
     PTLogger.debug("Route '/restart-web-portal-service'")
     restart_web_portal_service()
     return "OK"
+
+
+@app.route("/enable-ap-mode", methods=["POST"])
+def post_enable_ap_mode():
+    PTLogger.debug("Route '/enable-ap-mode'")
+    enable_ap_mode()
+    return "OK"
+
+
+@app.route("/FSMePro/<filename>", methods=["GET"])
+def FSMePro(filename):
+    PTLogger.debug(f"Route '/FSMePro/{filename}'")
+    current_dir = path.dirname(path.realpath(__file__))
+    return send_from_directory(str(current_dir) + "/../resources/fonts", filename)

@@ -24,12 +24,10 @@ describe("BuildInformation", () => {
       defaultProps = {
         ...defaultProps,
         info: {
-          buildName: "test-build",
-          buildNumber: "1234567890",
-          buildDate: "2020-01-01T00:00:00.000Z",
-          buildRepo: "test-build-repo",
-          finalRepo: "final-test-build-repo",
-          buildHash: "094cdf6bc25b7429eb2820528f031afe",
+          'buildRepo': 'experimental-pkgcld',
+          'buildDate': '2021-08-09',
+          'buildNumber': '100',
+          'buildCommit': '07706af4337c60f4007ef9910c33c6e4daab1646',
         },
       };
 
@@ -40,22 +38,5 @@ describe("BuildInformation", () => {
       expect(buildInformation).toMatchSnapshot();
     });
 
-    describe('when final repo is "sirius"', () => {
-      beforeEach(() => {
-        defaultProps = {
-          ...defaultProps,
-          info: {
-            ...defaultProps.info!,
-            finalRepo: "sirius",
-          },
-        };
-
-        rerender(<BuildInformation {...defaultProps} />);
-      });
-
-      it("renders correctly", () => {
-        expect(buildInformation).toMatchSnapshot();
-      });
-    });
   });
 });

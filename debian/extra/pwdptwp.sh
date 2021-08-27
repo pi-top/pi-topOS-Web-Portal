@@ -1,5 +1,5 @@
 #!/bin/bash
-export TEXTDOMAIN=pt-web-portal
+export TEXTDOMAIN=pt-os-web-portal
 
 # shellcheck disable=SC1091
 . gettext.sh

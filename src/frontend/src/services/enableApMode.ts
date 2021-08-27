@@ -2,9 +2,9 @@ import axios from "axios";
 
 import apiBaseUrl from "./apiBaseUrl";
 
-export default async function updateMimeDatabase() {
+export default async function enableApMode() {
   await axios.post(
-    `${apiBaseUrl}/update-mime-database`,
+    `${apiBaseUrl}/enable-ap-mode`,
     {}
   );
 }

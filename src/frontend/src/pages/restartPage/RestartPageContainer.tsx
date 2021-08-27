@@ -5,17 +5,14 @@ import RestartPage from "./RestartPage";
 
 import configureTour from "../../services/configureTour";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
-import enableOSUpdaterService from "../../services/enableOSUpdaterService";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
-import unhideAllBootMessages from "../../services/unhideAllBootMessages";
 import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
-import updateMimeDatabase from "../../services/updateMimeDatabase";
 import reboot from "../../services/reboot";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
-import enablePtSysOled from "../../services/enablePtSysOled";
+import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -96,27 +93,9 @@ export default ({
         setIsSettingUpDevice(true);
 
         safelyRunService(
-          updateMimeDatabase,
-          "Just finished memorising all the files I can use..."
+          enableFirmwareUpdaterService,
+          "Reminded myself to keep an eye out for cool new stuff for my friends..."
         )
-          .finally(() =>
-            safelyRunService(
-              unhideAllBootMessages,
-              "Remembered all the exciting stuff I've got to tell you..."
-            )
-          )
-          .finally(() =>
-            safelyRunService(
-              enableOSUpdaterService,
-              "Reminded myself to keep an eye out for cool new stuff..."
-            )
-          )
-          .finally(() =>
-            safelyRunService(
-              enableFirmwareUpdaterService,
-              "Reminded myself to keep an eye out for cool new stuff for my friends..."
-            )
-          )
           .finally(() =>
             safelyRunService(
               enableFurtherLinkService,
@@ -155,7 +134,7 @@ export default ({
           )
           .finally(() =>
             safelyRunService(
-              enablePtSysOled,
+              enablePtMiniscreen,
               "Reminded myself to tell the miniscreen to do its thing in the morning..."
             )
           )

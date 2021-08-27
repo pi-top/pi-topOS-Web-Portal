@@ -1,4 +1,4 @@
-Source: pt-web-portal
+Source: pi-topos-web-portal
 Section: utils
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
@@ -9,20 +9,20 @@ Build-Depends:
 Standards-Version: 4.5.1
 Homepage: https://pi-top.com/
 
-Package: pt-web-portal
+Package: pt-os-web-portal
 Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
  ${shlibs:Depends},
-# Needed for 'nice' command
- coreutils (>= 8.0),
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
+# Enable service
+ further-link,
 # Determine process ID using required port
  lsof,
 # Needed to update the EEPROM
- pt-os-core-services,
+ pt-os-notify-services,
  python3-flask,
  python3-flask-cors,
  python3-flask-sockets,
@@ -32,27 +32,20 @@ Depends:
  python3-pitop,
  python3-waitress,
  python3-websockets,
+# Required for openbox xdg autostart
+  python3-xdg,
  raspi-config,
  rsync,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
 
-Package: pt-web-portal-desktop
+Package: pt-os-web-portal-desktop
 Architecture: all
 Depends:
  ${misc:Depends},
- pt-web-portal,
+ pt-os-web-portal,
  web-renderer,
-Breaks:
- piwiz,
-Replaces:
- piwiz,
-# Need to overwrite pt-tour.desktop for older systems running pt-os-setup
- pt-tour,
-Conflicts:
- piwiz,
- pt-about,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing
  useful pages of the web portal from the Linux desktop.

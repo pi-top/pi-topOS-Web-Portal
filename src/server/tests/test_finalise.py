@@ -34,27 +34,6 @@ def test_available_space(app, mocker):
     assert body == str(available_space)
 
 
-def test_expand_fs_success(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-    run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict({"stdout": b"", "stderr": b"", "returncode": 0}),
-    )
-
-    response = app.post("/expand-fs")
-
-    run_mock.assert_any_call(
-        ["nice", "-n", "10", "/usr/lib/pt-web-portal/expand-fs.sh"],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
-        timeout=120,
-    )
-    assert response.status_code == 200
-    assert response.data == b"OK"
-
-
 def test_configure_tour_success(app, mocker):
     environ_mock = mocker.patch("backend.helpers.command_runner.environ")
     environ_mock.copy = dict
@@ -72,34 +51,13 @@ def test_configure_tour_success(app, mocker):
             "10",
             "ln",
             "-s",
-            "/usr/lib/pt-web-portal/pt-tour.desktop",
+            "/usr/lib/pt-os-web-portal/pt-os-tour.desktop",
             "/etc/xdg/autostart",
         ],
         capture_output=True,
         check=True,
         env={"DISPLAY": ":0"},
         timeout=60,
-    )
-    assert response.status_code == 200
-    assert response.data == b"OK"
-
-
-def test_update_mime_db_success(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-    run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict({"stdout": b"", "stderr": b"", "returncode": 0}),
-    )
-
-    response = app.post("/update-mime-database")
-
-    run_mock.assert_called_once_with(
-        ["nice", "-n", "10", "update-mime-database", "/usr/share/mime"],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
-        timeout=90,
     )
     assert response.status_code == 200
     assert response.data == b"OK"
@@ -195,7 +153,7 @@ def test_enable_further_link_service_success(app, mocker):
 
     response = app.post("/enable-further-link-service")
     run_mock.assert_called_once_with(
-        ["nice", "-n", "10", "systemctl", "enable", "pt-further-link"],
+        ["nice", "-n", "10", "systemctl", "enable", "further-link"],
         capture_output=True,
         check=True,
         env={"DISPLAY": ":0"},

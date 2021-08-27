@@ -1,5 +1,4 @@
 import atexit
-from os import path
 from threading import Thread
 from time import sleep
 
@@ -37,7 +36,7 @@ class OnboardingApp:
         atexit.register(self.stop)
 
     def start(self):
-        self.__auto_play_thread = Thread(target=self.__run_in_background, args=())
+        self.__auto_play_thread = Thread(target=self._main, args=())
         self.__auto_play_thread.daemon = True
         self.__auto_play_thread.start()
 
@@ -50,15 +49,14 @@ class OnboardingApp:
         self.next_page = self.pages.get(page)
         PTLogger.info(f"Moving to {self.next_page.type.name} page")
 
-    def __run_in_background(self):
+    def _main(self):
         try:
-            fs_expanded_breadcrumb = "/etc/pi-top/.expandedFs"
-            one_loop_only = path.exists(fs_expanded_breadcrumb)
-            startup_animation_path = get_image_file_path("pi-top_startup.gif")
+            # Play startup animation
             self.miniscreen.play_animated_image_file(
-                startup_animation_path, background=False, loop=not one_loop_only
+                get_image_file_path("pi-top_startup.gif"), background=False, loop=False
             )
 
+            # Do main app
             empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
             force_redraw = False
             while self.__stop_thread is False:
