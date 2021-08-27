@@ -46,12 +46,6 @@ Depends:
  ${misc:Depends},
  pt-os-web-portal,
  web-renderer,
-Breaks:
- piwiz,
-Replaces:
- piwiz,
-Conflicts:
- piwiz,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing
  useful pages of the web portal from the Linux desktop.
