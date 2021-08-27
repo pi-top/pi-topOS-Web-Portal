@@ -1,0 +1,20 @@
+.textarea {
+  composes: text from '../../../globalStyles/Typography.module.css';
+  background: none;
+  /* border: none; */
+  box-sizing: border-box;
+  min-height: 1rem;
+  padding: 2rem;
+  width: 100%;
+  /* resize: none; */
+  /* outline: none; */
+
+  font-size: 16px;
+  color: var(--black, black);
+  /* overflow: hidden; */
+}
+
+.textarea:focus,
+.textarea:active {
+  /* outline: none; */
+}

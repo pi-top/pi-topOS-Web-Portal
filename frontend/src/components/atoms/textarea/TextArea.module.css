@@ -1,0 +1,17 @@
+.root {
+
+}
+
+.textarea {
+    composes: fontBodyLarge from '../../../globalStyles/Typography.module.css';
+    background: none;
+    box-sizing: border-box;
+    min-height: 1rem;
+    padding: 2rem;
+    width: 100%;
+}
+
+.textarea:focus,
+.textarea:active {
+    /* outline: none !important; */
+}

@@ -10,6 +10,7 @@ import styles from "./UpgradePage.module.css";
 
 import { OSUpdaterMessage, OSUpdaterMessageType } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
+import UpgradeHistoryTextArea from "./upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
@@ -67,6 +68,21 @@ export default ({
   }, [requireBurn, shouldBurn]);
 
   const errorMessage = error && ErrorMessage.GenericError;
+
+  const parseMessage = (message: OSUpdaterMessage) => {
+    if (message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) {
+      return JSON.stringify(message.payload?.message)
+    } else if (upgradeIsPrepared) {
+      if (downloadSize) {
+        return UpgradePageExplanation.UpgradePreparedWithDownload
+          .replace("{size}", prettyBytes(downloadSize))
+          .replace("{time}", "a few");
+      }
+      return UpgradePageExplanation.UpgradePreparedWithoutDownload
+    } else {
+      return ""
+    }
+  }
 
   const getExplanation = () => {
     if (error) {
@@ -137,12 +153,18 @@ export default ({
         onClose={() => setIsNewOsDialogActive(false)}
       />
 
+        { message && //?.type === OSUpdaterMessageType.PrepareUpgrade &&
+          <UpgradeHistoryTextArea
+            message={parseMessage(message)}
+          />
+        }
 
         { (waitingForServer || !(upgradeIsPrepared || error)) && (
           <>
             <Spinner size={40} />{" "}
           </>
         )}
+
         {(message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && (
           <div className={styles.progress}>
             <ProgressBar
@@ -150,6 +172,7 @@ export default ({
               strokeWidth={2}
               strokeColor="#71c0b4"
             />
+
             <span className={styles.message}>{message.payload.message}</span>
           </div>
         )}
