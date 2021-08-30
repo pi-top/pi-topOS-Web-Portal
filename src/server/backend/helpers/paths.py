@@ -5,7 +5,10 @@ from flask import current_app as app
 
 
 def use_test_path():
-    return app.config["TESTING"] or platform == "darwin"
+    try:
+        return app.config["TESTING"] or platform == "darwin"
+    except Exception:
+        return False
 
 
 def get_test_file_path(filename):
