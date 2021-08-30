@@ -1,7 +1,5 @@
 import React, { ReactNode } from 'react';
-// import cx from 'classnames';
 
-// import styles from './TextArea.module.css';
 
 export type Props = {
     children?: ReactNode;
@@ -17,17 +15,6 @@ export type State = {
     value: string;
 };
 
-// export default ({ children, className, onChange, disabled, value, ...props }: Props) => (
-//   <div className={cx(styles.root, className)}>
-//     <textarea
-//       disabled={disabled}
-//       className={cx(styles.textarea, className)}
-//       onChange={onChange}
-//       value={value}
-//       {...props}
-//     />
-//   </div>
-// );
 
 export default class TextArea extends React.Component<Props, State> {
     element: HTMLTextAreaElement | null
@@ -54,7 +41,12 @@ export default class TextArea extends React.Component<Props, State> {
     }
 
     render() {
-        return <textarea {...this.props} ref={e => this.element = e} />
+        return <textarea
+            className={this.props.className}
+            onChange={this.props.onChange}
+            value={this.props.value}
+            disabled={this.props.disabled}
+            defaultValue={this.props.defaultValue}
+            ref={e => this.element = e} />
     }
-
 }

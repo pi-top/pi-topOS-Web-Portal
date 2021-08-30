@@ -118,7 +118,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (
-      (message.type === OSUpdaterMessageType.PrepareUpgrade || message.type === OSUpdaterMessageType.Upgrade) && message.payload?.percent
+      (message.type === OSUpdaterMessageType.PrepareUpgrade || message.type === OSUpdaterMessageType.Upgrade)
+      && message.payload?.percent
     ) {
         document.title = "[" + message.payload.percent + "%] pi-topOS System Update";
     }
