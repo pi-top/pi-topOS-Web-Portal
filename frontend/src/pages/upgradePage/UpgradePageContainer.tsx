@@ -57,6 +57,7 @@ export type Props = {
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
+  document.title = "pi-topOS System Update"
 
   const socket = useSocket(`${wsBaseUrl}/os-upgrade`, );
   socket.onmessage = (e: MessageEvent) => {
@@ -114,6 +115,12 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   useEffect(() => {
     if (!message) {
       return;
+    }
+
+    if (
+      (message.type === OSUpdaterMessageType.PrepareUpgrade || message.type === OSUpdaterMessageType.Upgrade) && message.payload?.percent
+    ) {
+        document.title = "[" + message.payload.percent + "%] pi-topOS System Update";
     }
 
     if (
