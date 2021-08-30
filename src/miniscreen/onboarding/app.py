@@ -12,8 +12,8 @@ from .menus import (
     CarryOnMenuPage,
     Menus,
     OpenBrowserPage,
-    WelcomeMenuPage,
     RenderState,
+    WelcomeMenuPage,
 )
 
 
@@ -101,13 +101,19 @@ class OnboardingApp:
                 sleep(self.current_page.interval)
 
                 # Transitions
-                if self.current_page == self.pages.get(Menus.AP) \
-                    and self.pages.get(Menus.AP).render_state == RenderState.DISPLAYING_INFO \
-                    and self.pages.get(Menus.BROWSER).should_display():
+                if (
+                    self.current_page == self.pages.get(Menus.AP)
+                    and self.pages.get(Menus.AP).render_state
+                    == RenderState.DISPLAYING_INFO
+                    and self.pages.get(Menus.BROWSER).should_display()
+                ):
                     self.go_to(Menus.BROWSER)
-                elif self.current_page == self.pages.get(Menus.BROWSER) \
-                    and self.pages.get(Menus.BROWSER).render_state == RenderState.DISPLAYING_INFO \
-                    and self.pages.get(Menus.CARRY_ON).should_display():
+                elif (
+                    self.current_page == self.pages.get(Menus.BROWSER)
+                    and self.pages.get(Menus.BROWSER).render_state
+                    == RenderState.DISPLAYING_INFO
+                    and self.pages.get(Menus.CARRY_ON).should_display()
+                ):
                     self.go_to(Menus.CARRY_ON)
 
         except KeyboardInterrupt:

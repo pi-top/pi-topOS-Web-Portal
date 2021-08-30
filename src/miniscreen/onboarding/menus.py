@@ -36,6 +36,7 @@ def get_address_for_connected_device():
             return lease.ip
     return ""
 
+
 # TODO: move to pitop.common
 # from pitop.common.XXX import is_connected_to_internet
 def is_connected_to_internet() -> bool:
@@ -65,9 +66,9 @@ class Menus(IntEnum):
     AP = 1
     BROWSER = 2
     CARRY_ON = 3
-    #USB = 2
-    #ETHERNET = 3
-    #INFO = 4
+    # USB = 2
+    # ETHERNET = 3
+    # INFO = 4
 
     def next(self):
         next_mode = self.value + 1 if self.value + 1 < len(Menus) else 0
@@ -194,7 +195,10 @@ class WelcomeMenuPage(TitleMenuPage):
 class CarryOnMenuPage(TitleMenuPage):
     def __init__(self, size, mode):
         super(CarryOnMenuPage, self).__init__(
-            type=Menus.CARRY_ON, size=size, mode=mode, title_image_filename="carryon.png"
+            type=Menus.CARRY_ON,
+            size=size,
+            mode=mode,
+            title_image_filename="carryon.png",
         )
         self.already_displayed = False
         self.thread = Thread(target=self.__monitor_breadcrumb, args=(), daemon=True)
@@ -290,11 +294,7 @@ class OpenBrowserPage(TitleMenuPage):
                 return iface_ip
 
     def info(self, draw, redraw=False):
-        draw_text(
-            draw,
-            text="Open a browser to",
-            font_size=11,
-            xy=(5, FIRST_LINE_Y))
+        draw_text(draw, text="Open a browser to", font_size=11, xy=(5, FIRST_LINE_Y))
         draw_text(
             draw,
             text="http://pi-top.local",
@@ -309,7 +309,6 @@ class OpenBrowserPage(TitleMenuPage):
                 font_size=11,
                 xy=(5, THIRD_LINE_Y),
             )
-
 
 
 class RenderState(Enum):
@@ -429,10 +428,7 @@ class ApMenuPage(ConnectionMenuPage):
         )
 
     def draw_connection_data(self, draw):
-        draw_text(
-            draw,
-            text="Wi-Fi network:",
-            xy=(10, 6))
+        draw_text(draw, text="Wi-Fi network:", xy=(10, 6))
         draw_text(
             draw,
             text=self.connection_state.metadata.get("ssid", ""),
