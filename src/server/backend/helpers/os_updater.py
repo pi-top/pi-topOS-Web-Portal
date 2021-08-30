@@ -212,6 +212,7 @@ def start_os_upgrade(callback):
             )
             fw_breadcrumb_manager.clear_extend_timeout()
 
+
 def check_relevant_os_updates():
     URL = "https://backend-test.pi-top.com/utils/v1/OS/checkUpdate"
     BUILD_INFO_TO_API_LOOKUP = {
