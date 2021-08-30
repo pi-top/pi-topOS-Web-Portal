@@ -2,15 +2,19 @@
 
 from argparse import ArgumentParser
 from os import environ, geteuid
+from threading import Thread
 
 from backend import create_app
 from backend.helpers.device_registration import register_device_in_background
+from backend.helpers.extras import FWUpdaterBreadcrumbManager
 from backend.helpers.finalise import onboarding_completed
+from backend.helpers.os_updater import should_check_for_updates, updates_available
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
+from pitop.common.notifications import send_notification
 from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 from pitop.system import device_type
 
@@ -63,6 +67,33 @@ if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
     environ["PT_MINISCREEN_SYSTEM"] = "1"
     onboarding_app = OnboardingApp()
     onboarding_app.start()
+
+if should_check_for_updates():
+    PTLogger.info("Checking for updates...")
+
+    def notify_user_on_update_available(has_updates):
+        PTLogger.info(f"{'There are' if has_updates else 'No'} updates available")
+        if has_updates:
+            send_notification(
+                title="pi-topOS Software Updater",
+                text="There are updates available for your system!\nClick the Start Menu -> System Tools -> pi-topOS Updater Tool",
+                timeout=0,
+                icon_name="system-software-update",
+            )
+        else:
+            # Tell firmware updater that it can start
+            FWUpdaterBreadcrumbManager().set_ready(
+                "pt-os-web-portal: No updates available."
+            )
+
+    t = Thread(target=updates_available, args=(notify_user_on_update_available,))
+    t.daemon = True
+    t.start()
+else:
+    FWUpdaterBreadcrumbManager().set_ready(
+        "pt-os-web-portal: Already checked for updates today."
+    )
+
 
 register_device_in_background()
 

@@ -206,10 +206,10 @@ def current_wifi_ssid() -> str:
     return wm.ssid_connected()
 
 
-def is_connected_to_internet() -> bool:
+def is_connected_to_internet(timeout=10) -> bool:
     try:
         PTLogger.info("Checking internet connection")
-        run_command("ping -c1 8.8.8.8", timeout=10, check=True)
+        run_command("ping -c1 8.8.8.8", timeout=timeout, check=True)
         PTLogger.info("Connected to internet")
         return True
     except Exception:
