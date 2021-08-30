@@ -27,3 +27,8 @@ class FWUpdaterBreadcrumbManager:
 
     def clear_extend_timeout(self):
         self.EXTEND_TIMEOUT_FILE.unlink()
+
+
+def leave_miniscreen_onboarding_app_breadcrumb():
+    path = "/tmp/.com.pi-top.pt-os-web-portal.miniscreen.onboarding"
+    Path(path).touch(exist_ok=True)

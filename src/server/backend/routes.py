@@ -16,6 +16,7 @@ from .events import (
 )
 from .helpers.about import device_data
 from .helpers.build import os_build_info
+from .helpers.extras import leave_miniscreen_onboarding_app_breadcrumb
 from .helpers.finalise import (
     available_space,
     configure_tour,
@@ -471,3 +472,10 @@ def FSMePro(filename):
 def get_os_check_update():
     PTLogger.debug("Route '/os-updates'")
     return jdumps(check_relevant_os_updates())
+
+
+@app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
+def post_onboarding_miniscreen_app_breadcrumb():
+    PTLogger.debug("Route '/onboarding-miniscreen-app-breadcrumb'")
+    leave_miniscreen_onboarding_app_breadcrumb()
+    return "OK"
