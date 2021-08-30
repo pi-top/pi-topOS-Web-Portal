@@ -26,7 +26,7 @@ export default ({ goToNextPage }: Props) => {
         onClick: () => {
           leaveMiniscreenAppBreadcrumb()
             .catch(() => null)
-            .then(() => goToNextPage())
+            .then(goToNextPage)
         },
         label: 'Yes'
       }}
