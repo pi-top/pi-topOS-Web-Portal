@@ -4,7 +4,7 @@
 WEB_PORTAL_PORT="80"
 PID_USING_WEB_PORTAL_PORT=$(sudo lsof -ti :"${WEB_PORTAL_PORT}")
 
-/usr/bin/pt-notify-send \
+/usr/bin/notify-send \
 	--expire-time=0 \
 	--icon=system-error \
 	"Error - pi-top web portal" \
