@@ -25,7 +25,7 @@ pi-topos-web-portal (0.2.1) bullseye; urgency=medium
   * Depend on notify-send-ng; use notify-send command
   * Updated master workflow files
 
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:46:54 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:47:54 +0000
 
 pi-topos-web-portal (0.2.0) bullseye; urgency=medium
 
