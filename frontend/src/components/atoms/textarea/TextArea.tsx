@@ -11,20 +11,12 @@ export type Props = {
     defaultValue?: string;
 };
 
-export type State = {
-    value: string;
-};
 
-
-export default class TextArea extends React.Component<Props, State> {
+export default class TextArea extends React.Component<Props> {
     element: HTMLTextAreaElement | null
-    state: State
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            value: this.props.defaultValue || ""
-        };
         this.element = null;
     }
 
