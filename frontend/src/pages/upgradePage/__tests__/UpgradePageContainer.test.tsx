@@ -7,7 +7,7 @@ import {
   wait,
   queryByText,
   BoundFunction,
-  QueryByBoundAttribute
+  QueryByBoundAttribute,
 } from "@testing-library/react";
 
 import { act } from "react-dom/test-utils";
@@ -52,6 +52,7 @@ const createServer = () => {
 
 describe("UpgradePageContainer", () => {
   let defaultProps: Props;
+  let queryByTestId: BoundFunction<QueryByBoundAttribute>;
   let mount: (props?: Props) => ExtendedRenderResult;
 
   beforeEach(async () => {
@@ -103,6 +104,7 @@ describe("UpgradePageContainer", () => {
       const result = render(<UpgradePageContainer {...props} />);
       return {
         ...result,
+        queryByTestId,
         waitForPreparation: () =>
           waitForElement(() =>
             result.getByText(
@@ -188,10 +190,32 @@ describe("UpgradePageContainer", () => {
     await waitForPreparation();
   });
 
-  it("renders the preparing upgrade spinner", async () => {
-    const { container: upgradePage, waitForPreparation } = mount();
+  it("renders the textarea component while preparing", async () => {
+    const { waitForPreparation, container: upgradePage } = mount();
 
-    expect(querySpinner(upgradePage)).toBeInTheDocument();
+    await waitForElement(() => upgradePage.querySelector(".textarea"));
+    const textAreaElement = upgradePage.querySelector(".textarea");
+    expect(textAreaElement).toBeInTheDocument()
+
+    await waitForPreparation();
+  });
+
+  it("messages are displayed in the textarea component while preparing", async () => {
+    const { getByText, waitForPreparation, container: upgradePage } = mount();
+
+    await waitForElement(() => upgradePage.querySelector(".textarea"));
+    const textAreaElement = upgradePage.querySelector(".textarea");
+    expect(textAreaElement).toMatchSnapshot();
+
+    await waitForPreparation();
+  });
+
+  it("renders progress bar correctly", async () => {
+    const { getByText, waitForPreparation, container: upgradePage } = mount();
+
+    await waitForElement(() => upgradePage.querySelector(".progress"));
+    const progressBar = upgradePage.querySelector(".progress");
+    expect(progressBar).toMatchSnapshot();
 
     await waitForPreparation();
   });
@@ -209,12 +233,13 @@ describe("UpgradePageContainer", () => {
     await waitForPreparation();
   });
 
-  it("stops rendering the preparing upgrade spinner when prepared", async () => {
-    const { container: upgradePage, waitForPreparation } = mount();
+  it("stops rendering the textarea component when prepared", async () => {
+    const { waitForPreparation, container: upgradePage } = mount();
 
     await waitForPreparation();
 
-    expect(querySpinner(upgradePage)).not.toBeInTheDocument();
+    const textAreaElement = upgradePage.querySelector(".textarea");
+    expect(textAreaElement).not.toBeInTheDocument()
   });
 
   it("Upgrade button is enabled when prepared", async () => {
@@ -373,11 +398,12 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText(ErrorMessage.GenericError));
     });
 
-    it("doesn't render the spinner", async () => {
+    it("renders the textarea component", async () => {
       const { container: upgradePage, getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.GenericError));
 
-      expect(querySpinner(upgradePage)).not.toBeInTheDocument();
+      const textAreaElement = upgradePage.querySelector(".textarea");
+      expect(textAreaElement).toBeInTheDocument()
     });
 
     it("doesn't render the explanation message", async () => {
@@ -429,22 +455,20 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       await waitForElement(() => upgradePage.querySelector(".progress"));
       const progressBar = upgradePage.querySelector(".progress");
       expect(progressBar).toMatchSnapshot();
     });
 
-    it("renders the received message", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+    it("renders the received messages in the textarea component", async () => {
+      const { getByText, waitForPreparation, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
-      expect(
-        queryByText(Messages.UpgradeStatus.payload.message)
-      ).toBeInTheDocument();
+      await waitForElement(() => upgradePage.querySelector(".textarea"));
+      const textAreaElement = upgradePage.querySelector(".textarea");
+      expect(textAreaElement).toMatchSnapshot();
     });
 
     it("Upgrade button is disabled", async () => {
@@ -508,6 +532,26 @@ describe("UpgradePageContainer", () => {
       ).not.toBeInTheDocument();
     });
 
+    it("renders the textarea component", async () => {
+      const { waitForPreparation, container: upgradePage, getByText } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      await waitForElement(() => upgradePage.querySelector(".textarea"));
+      const textAreaElement = upgradePage.querySelector(".textarea");
+      expect(textAreaElement).toBeInTheDocument()
+    });
+
+    it("renders the received messages in the textarea component", async () => {
+      const { getByText, waitForPreparation, container: upgradePage } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      await waitForElement(() => upgradePage.querySelector(".textarea"));
+      const textAreaElement = upgradePage.querySelector(".textarea");
+      expect(textAreaElement).toMatchSnapshot();
+    });
+
     it("Back button is enabled", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
@@ -515,6 +559,38 @@ describe("UpgradePageContainer", () => {
 
       await waitForElement(() => getByText(ErrorMessage.GenericError));
       expect(getByText("Back")).toHaveProperty("disabled", false);
+    });
+
+    it("Skip button is enabled", async () => {
+      const { getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      await waitForElement(() => getByText("Skip"));
+      expect(getByText("Skip")).toHaveProperty("disabled", false);
+    });
+
+    it("calls goToNextPage when Skip button clicked", async () => {
+      const { getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      await waitForElement(() => getByText("Skip"));
+      fireEvent.click(getByText("Skip"));
+
+      expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    });
+
+    it("Upgrade button is disabled", async () => {
+      const { getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      await waitForElement(() => getByText("Update"));
+      expect(getByText("Update")).toHaveProperty("disabled", true);
     });
   });
 
@@ -560,15 +636,15 @@ describe("UpgradePageContainer", () => {
       expect(upgradePage.querySelector(".progress")).toMatchSnapshot();
     });
 
-    it("renders the received message", async () => {
-      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
+    it("renders the received messages in the textarea component", async () => {
+      const { getByText, waitForPreparation, waitForUpgradeFinish, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
 
-      expect(
-        getByText(Messages.UpgradeFinish.payload.message)
-      ).toBeInTheDocument();
+      await waitForElement(() => upgradePage.querySelector(".textarea"));
+      const textAreaElement = upgradePage.querySelector(".textarea");
+      expect(textAreaElement).toMatchSnapshot();
     });
 
     it("Upgrade button is not present", async () => {
@@ -603,6 +679,7 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't display an error message when restartWebPortalService fails", async () => {
+      // we expect restartWebPortalService to fail since the backend server restarts
       restartWebPortalServiceMock.mockRejectedValue(new Error("couldn't restart"));
       const { queryByText, getByText, waitForUpgradeFinish, waitForPreparation } = mount();
       await waitForPreparation();
@@ -711,59 +788,6 @@ describe("UpgradePageContainer", () => {
         // we don't check again
         expect(serverStatusMock).toHaveBeenCalledTimes(3);
       });
-    });
-  });
-
-  describe("on upgrade error", () => {
-    beforeEach(() => {
-      server = createServer();
-      server.on("connection", (socket) => {
-        socket.on("message", (data) => {
-          if (data === "prepare") {
-            socket.send(JSON.stringify(Messages.PrepareStart));
-            socket.send(JSON.stringify(Messages.PrepareFinish));
-          }
-
-          if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
-          }
-
-          if (data === "start") {
-            socket.send(JSON.stringify(Messages.UpgradeStart));
-            socket.send(JSON.stringify(Messages.UpgradeError));
-          }
-        });
-      });
-    });
-
-    it("renders the error message", async () => {
-      const { getByText, waitForPreparation } = mount();
-      await waitForPreparation();
-      fireEvent.click(getByText("Update"));
-
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
-    });
-
-    it("skip button exists", async () => {
-      const { getByText, waitForPreparation } = mount();
-      await waitForPreparation();
-      fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
-
-      await waitForElement(() => getByText("Skip"));
-      expect(getByText("Skip")).toHaveProperty("disabled", false);
-    });
-
-    it("calls goToNextPage when Skip button clicked", async () => {
-      const { getByText, waitForPreparation } = mount();
-      await waitForPreparation();
-      fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
-
-      await waitForElement(() => getByText("Skip"));
-      fireEvent.click(getByText("Skip"));
-
-      expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
   });
 

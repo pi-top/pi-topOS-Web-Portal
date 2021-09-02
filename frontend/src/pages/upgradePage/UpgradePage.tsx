@@ -3,6 +3,7 @@ import { Line as ProgressBar } from "rc-progress";
 import prettyBytes from "pretty-bytes";
 
 import Layout from "../../components/layout/Layout";
+import Spinner from "../../components/atoms/spinner/Spinner";
 
 import upgradePage from "../../assets/images/upgrade-page.png";
 import styles from "./UpgradePage.module.css";
@@ -152,6 +153,12 @@ export default ({
         { message && message?.type === OSUpdaterMessageType.PrepareUpgrade &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
+
+        { (waitingForServer || !(upgradeIsPrepared || error)) && (
+          <>
+            <Spinner size={40} />{" "}
+          </>
+        )}
 
         {(message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && !error && (
           <div className={styles.progress}>
