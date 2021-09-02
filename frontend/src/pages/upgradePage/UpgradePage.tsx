@@ -154,7 +154,7 @@ export default ({
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { (waitingForServer || !(upgradeIsPrepared || error)) && (
+        { (waitingForServer && !error ) && (
           <>
             <Spinner size={40} />{" "}
           </>
