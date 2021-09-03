@@ -1,6 +1,6 @@
 from time import sleep
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .command_runner import run_command
 from .wifi_manager import is_connected_to_internet

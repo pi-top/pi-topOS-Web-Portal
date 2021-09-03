@@ -18,5 +18,5 @@ override_dh_clean:
 	dh_clean
 
 override_dh_installsystemd:
-	dh_installsystemd --no-stop-on-upgrade --name=pt-web-portal
-	dh_installsystemd --no-enable --no-start --name=pt-web-portal-port-busy
+	dh_installsystemd --no-stop-on-upgrade --name=pt-os-web-portal
+	dh_installsystemd --no-enable --no-start --name=pt-os-web-portal-port-busy

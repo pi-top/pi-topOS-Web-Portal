@@ -1,6 +1,7 @@
 from enum import Enum, IntEnum
 
 from PIL import Image, ImageDraw
+from pitop.common.pt_os import get_pitopOS_info
 
 from .connection_methods import ApConnection, EthernetConnection, UsbConnection
 from .helpers import draw_text, get_image_file_path, process_image
@@ -50,16 +51,16 @@ class InfoMenuPage(MenuPageBase):
         super(InfoMenuPage, self).__init__(type=Menus.INFO, size=size, mode=mode)
 
     def render(self, draw, redraw=False):
-        build_data = self.build_data()
+        build_info = get_pitopOS_info()
         draw_text(draw, text="pi-topOS", xy=(MARGIN_X / 2, FIRST_LINE_Y))
         draw_text(
             draw,
-            text=f"Build: {build_data.get('build_number')}",
+            text=f"Build: {build_info.build_run_number}",
             xy=(MARGIN_X / 2, SECOND_LINE_Y),
         )
         draw_text(
             draw,
-            text=f"Date: {build_data.get('build_date')}",
+            text=f"Date: {build_info.build_date}",
             xy=(MARGIN_X / 2, THIRD_LINE_Y),
         )
 
@@ -71,18 +72,6 @@ class InfoMenuPage(MenuPageBase):
         except Exception:
             pass
         return lines
-
-    def build_data(self):
-        headers = ("Build Number", "Build Date")
-        data = {}
-        for line in self.__get_file_lines("/etc/pt-issue"):
-            try:
-                title, value = line.strip().split(": ")
-                if title in headers:
-                    data[title.replace(" ", "_").lower()] = value
-            except Exception:
-                continue
-        return data
 
 
 class RenderState(Enum):

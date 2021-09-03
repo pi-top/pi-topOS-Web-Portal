@@ -55,7 +55,7 @@ export default ({
   };
 
   return (
-    <Dialog active={active} message={getMessage()}>
+    <Dialog className={styles.dialog} active={active} message={getMessage()}>
       <div className={styles.content}>
         {isConnecting && <Spinner size={50} />}
 

@@ -3,35 +3,35 @@ name: Run Tests and Upload Coverage Report
 on: push
 
 jobs:
-  test-python-and-upload-coverage-report:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.3.4
+  # test-python-and-upload-coverage-report:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2.3.4
 
-      - name: Setup Python
-        uses: actions/setup-python@v2.2.2
-        with:
-          python-version: 3.7
+  #    - name: Setup Python
+  #      uses: actions/setup-python@v2.2.2
+  #      with:
+  #        python-version: 3.7
 
-      - name: Install pipenv
-        uses: dschep/install-pipenv-action@v1
+  #    - name: Install pipenv
+  #      uses: dschep/install-pipenv-action@v1
 
-      - name: Run Python tests and generate coverage report
-        run: |
-          cd src/server
-          pipenv install --dev
-          PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend
-          pipenv run coverage xml
+  #    - name: Run Python tests and generate coverage report
+  #      run: |
+  #        cd src/server
+  #        pipenv install --dev
+  #        PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend
+  #        pipenv run coverage xml
 
-      - name: Upload Python test coverage reports to Codecov
-        uses: codecov/codecov-action@v2.0.2
-        with:
-          files: ./src/server/coverage.xml
-          flags: unittests
-          env_vars: OS,PYTHON
-          fail_ci_if_error: true
-          verbose: true
+  #    - name: Upload Python test coverage reports to Codecov
+  #      uses: codecov/codecov-action@v2.0.2
+  #      with:
+  #        files: ./src/server/coverage.xml
+  #        flags: unittests
+  #        env_vars: OS,PYTHON
+  #        fail_ci_if_error: true
+  #        verbose: true
 
   test-js-and-upload-coverage-report:
     runs-on: ubuntu-20.04
@@ -62,7 +62,7 @@ jobs:
       - name: Upload javascript test coverage reports to Codecov
         uses: codecov/codecov-action@v2.0.2
         with:
-          files: ./src/frontend/clover.xml
+          files: ./src/frontend/coverage/clover.xml
           flags: jstests
           fail_ci_if_error: true
           verbose: true

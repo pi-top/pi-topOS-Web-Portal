@@ -17,6 +17,6 @@ def create_app(test=False):
         app.config["TESTING"] = True
 
     with app.app_context():
-        from . import routes  # noqa: F401
+        from . import routes
 
         return app

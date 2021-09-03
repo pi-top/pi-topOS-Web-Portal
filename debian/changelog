@@ -1,3 +1,38 @@
+pi-topos-web-portal (0.2.1-1) bullseye; urgency=medium
+
+  * Bump actions/checkout from 2.2.0 to 2.3.4 (#182)
+  * Remove unnecessary breadcrumbs (#184)
+  * New workflows (#185)
+  * Bump importlib-metadata from 4.6.1 to 4.6.3 in /src/server (#186)
+  * Update master workflow files
+  * Update master workflow files
+  * Vendor pywifi (#187)
+  * pitopcommon -> pitop (#190)
+  * Update dependency: pt-system-tools -> pt-os-core-services
+  * Miniscreen app only runs on pi-top[4] (#193)
+  * Check main URL path for redirections (#194)
+  * Bullseye release: `pt-os-web-portal` (#195)
+  * OS version check (#219)
+  * Add OS Updater app (#220)
+  * Only upload to PackageCloud on master branch changes
+  * Bump url-parse from 1.5.1 to 1.5.3 in /src/frontend (#218)
+  * Bump color-string from 1.5.3 to 1.6.0 in /src/frontend (#217)
+  * Bump typescript from 4.3.5 to 4.4.2 in /src/frontend (#216)
+  * Bump @types/jest from 26.0.24 to 27.0.1 in /src/frontend (#203)
+  * Bump path-parse from 1.0.6 to 1.0.7 in /src/frontend (#202)
+  * Bump react-router-dom from 5.2.0 to 5.2.1 in /src/frontend (#221)
+  * Updated master workflow files
+  * Depend on notify-send-ng; use notify-send command
+  * Updated master workflow files
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:47:54 +0000
+
+pi-topos-web-portal (0.2.0) bullseye; urgency=medium
+
+  * Rename package
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 11 Aug 2021 15:08:44 +0000
+
 pt-web-portal (0.1.22) buster; urgency=medium
 
   [ Jorge Capona ]

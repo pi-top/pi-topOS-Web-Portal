@@ -1,8 +1,12 @@
 export type BuildInfo = {
-  buildName: string;
-  buildNumber: string;
   buildDate: string;
+  buildNumber: string;
+  buildCommit: string;
+  schemaVersion: string;
+  buildType: string;
+  buildOsVersion: string;
+  buildName: string;
   buildRepo: string;
   finalRepo: string;
-  buildHash: string;
+  ptOsWebPortalVersion: string;
 }

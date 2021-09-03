@@ -1,9 +1,9 @@
 from os import remove
 from pathlib import Path
 
-from pitopcommon.command_runner import run_command_background
-from pitopcommon.current_session_info import get_user_using_display
-from pitopcommon.logger import PTLogger
+from pitop.common.command_runner import run_command_background
+from pitop.common.current_session_info import get_user_using_display
+from pitop.common.logger import PTLogger
 
 from .about import device_serial_number
 from .command_runner import run_command
@@ -12,7 +12,7 @@ from .command_runner import run_command
 def disable_tour():
     PTLogger.info("Function: disable_tour()")
     try:
-        remove("/etc/xdg/autostart/pt-tour.desktop")
+        remove("/etc/xdg/autostart/pt-os-tour.desktop")
     except FileNotFoundError:
         PTLogger.debug("Tour already disabled.")
 

@@ -16,6 +16,12 @@
   width: 100%;
 }
 
+.input:focus {
+  outline: var(--green, green);
+  outline-width: 1px;
+  outline-style: solid
+}
+
 .input:disabled {
   opacity: var(--disabledInputOpacity, 0.5);
 }

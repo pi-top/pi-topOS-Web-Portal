@@ -58,3 +58,5 @@ CMakeLists.txt.user*
 # Test coverage files
 src/server/*.xml
 src/frontend/coverage/
+
+.mypy_cache

@@ -40,7 +40,6 @@ import getAvailableSpace from "../../../services/getAvailableSpace";
 import getNetworks from "../../../services/getNetworks";
 import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
 import connectToNetwork from "../../../services/connectToNetwork";
-import expandFileSystem from "../../../services/expandFileSystem";
 
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
@@ -67,12 +66,10 @@ jest.mock("../../../services/getCurrentKeyboard");
 jest.mock("../../../services/setKeyboard");
 jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
-jest.mock("../../../services/expandFileSystem");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
 
 
-const expandFileSystemMock = expandFileSystem as jest.Mock;
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
 const currentLocaleMock = getCurrentLocale as jest.Mock;
@@ -119,12 +116,10 @@ const keyboardVariants = {
 };
 
 const buildInfo: BuildInfo = {
-  buildName: "test-build",
-  buildNumber: "1234567890",
-  buildDate: "01/01/2020",
-  buildRepo: "test-build-repo",
-  finalRepo: "final-test-build-repo",
-  buildHash: "094cdf6bc25b7429eb2820528f031afe",
+  'buildRepo': 'experimental-pkgcld',
+  'buildDate': '2021-08-09',
+  'buildNumber': '100',
+  'buildCommit': '07706af4337c60f4007ef9910c33c6e4daab1646',
 };
 
 const upgradePageText =
@@ -160,7 +155,12 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     upgrade: async () => {
 
       fireEvent.click(result.getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _) => {
+      await Promise.all(
+        UpgradePageExplanation.Finish
+            .replace("{continueButtonLabel}", "Next")
+            .replace("{continueButtonAction}", "continue")
+            .split("\n")
+            .map(async (text, _) => {
         text && await waitForText(text);
       }))
     },
@@ -182,7 +182,7 @@ describe("App", () => {
   beforeAll(() => {
     // app services
     getBuildInfoMock.mockResolvedValue(buildInfo);
-    expandFileSystemMock.mockResolvedValue("OK");
+
 
     // language page services
     const currentLocale = createLocaleFromCode("en_GB");
@@ -232,12 +232,10 @@ describe("App", () => {
           socket.send(JSON.stringify(Messages.PrepareStart));
           socket.send(JSON.stringify(Messages.PrepareFinish));
         }
-
-        if (data === "size") {
+        else if (data === "size") {
           socket.send(JSON.stringify(Messages.Size));
         }
-
-        if (data === "start") {
+        else if (data === "start") {
           socket.send(JSON.stringify(Messages.UpgradeStart));
           socket.send(JSON.stringify(Messages.UpgradeStatus));
           socket.send(JSON.stringify(Messages.UpgradeFinish));

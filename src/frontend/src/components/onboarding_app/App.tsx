@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import { Route, Switch } from "react-router-dom";
 
-import WaitPageContainer from "../../pages/waitPage/WaitPageContainer";
 import SplashPage from "../../pages/splashPage/SplashPage";
 import WifiPageContainer from "../../pages/wifiPage/WifiPageContainer";
 import UpgradePageContainer from "../../pages/upgradePage/UpgradePageContainer";
@@ -44,14 +43,6 @@ export default () => {
   return (
     <>
       <Switch>
-      <Route
-          exact
-          path={PageRoute.Wait}
-          render={({ history }) => (
-            <WaitPageContainer goToNextPage={() => history.push(PageRoute.Splash)} />
-          )}
-        />
-
         <Route
           exact
           path={PageRoute.Splash}

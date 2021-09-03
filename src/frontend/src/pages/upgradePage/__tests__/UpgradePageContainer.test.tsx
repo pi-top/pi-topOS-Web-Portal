@@ -13,24 +13,29 @@ import { Server } from "mock-socket";
 
 import UpgradePageContainer, { Props } from "../UpgradePageContainer";
 import querySpinner from "../../../../test/helpers/querySpinner";
-import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
+import { UpgradePageExplanation, ErrorMessage, OsBurnExplanation } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
 import wsBaseUrl from "../../../services/wsBaseUrl";
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
-import { createModuleBlock } from "typescript";
+import getMajorOsUpdates from "../../../services/getMajorOsUpdates";
+import { OsVersionUpdate } from "../../../types/OsVersionUpdate";
+
 
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
+jest.mock("../../../services/getMajorOsUpdates");
 
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
+const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 
 type ExtendedRenderResult = RenderResult & {
-  waitForPreparation: () => Promise<HTMLElement>;
+  waitForPreparation: () => Promise<HTMLElement>,
+  waitForUpgradeFinish: () => any,
 };
 
 let server: Server;
@@ -53,8 +58,18 @@ describe("UpgradePageContainer", () => {
         Messages.Size.payload.size.downloadSize +
         1000
     );
+
+    let osUpdatesResponse: OsVersionUpdate;
+    osUpdatesResponse = {
+      shouldBurn: false,
+      requiredBurn: false,
+      latestOSVersion: "",
+      update: false,
+    }
+
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
+    getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
 
     server = createServer();
     server.on("connection", (socket) => {
@@ -88,11 +103,19 @@ describe("UpgradePageContainer", () => {
         waitForPreparation: () =>
           waitForElement(() =>
             result.getByText(
-              UpgradePageExplanation.UpgradePrepared
+              UpgradePageExplanation.UpgradePreparedWithDownload
                 .replace("{size}", "100 kB")
                 .replace("{time}", "a few")
             )
           ),
+        waitForUpgradeFinish: async () => {
+          await Promise.all(UpgradePageExplanation.Finish
+            .replace("{continueButtonLabel}", "Next")
+            .replace("{continueButtonAction}", "continue")
+            .split("\n").map(async (text, _): Promise<any> => {
+            text && await waitForElement(() => result.getByText(text))
+          }))
+        },
       };
     };
   });
@@ -134,6 +157,14 @@ describe("UpgradePageContainer", () => {
     const { queryByText, waitForPreparation } = mount();
 
     expect(queryByText("Skip")).not.toBeInTheDocument();
+
+    await waitForPreparation();
+  });
+
+  it("Back button is present", async () => {
+    const { getByText, waitForPreparation } = mount();
+
+    expect(getByText("Back")).toBeInTheDocument();
 
     await waitForPreparation();
   });
@@ -200,6 +231,113 @@ describe("UpgradePageContainer", () => {
     await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
   });
 
+  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      let osUpdatesResponse: OsVersionUpdate;
+      osUpdatesResponse = {
+        shouldBurn: true,
+        requiredBurn: false,
+        latestOSVersion: "",
+        update: false,
+      }
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
+    });
+
+    it("renders the 'shouldBurn' message", async () => {
+      const { getByText } = mount();
+      await wait();
+
+      await waitForElement(() => getByText(OsBurnExplanation.ShouldBurn));
+      await waitForElement(() => getByText(OsBurnExplanation.ShouldBurnRecommendation));
+    });
+
+
+    it("doesn't render the 'requiredBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+    });
+  })
+
+  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      let osUpdatesResponse: OsVersionUpdate;
+      osUpdatesResponse = {
+        shouldBurn: true,
+        requiredBurn: true,
+        latestOSVersion: "",
+        update: false,
+      }
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
+    });
+
+    it("renders the 'requiredBurn' message", async () => {
+      const { getByText } = mount();
+      await wait();
+
+      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurn));
+      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurnRecommendation));
+    });
+
+
+    it("doesn't render the 'shouldBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.ShouldBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.ShouldBurnRecommendation)).not.toBeInTheDocument();
+    });
+  })
+
+  describe("when checking for major OS updates fails", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
+    });
+
+    it("doesn't render the 'requiredBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+    });
+
+
+    it("doesn't render the 'shouldBurn' message", async () => {
+      const { queryByText } = mount();
+      await wait();
+
+      expect(queryByText(OsBurnExplanation.ShouldBurn)).not.toBeInTheDocument();
+      expect(queryByText(OsBurnExplanation.ShouldBurnRecommendation)).not.toBeInTheDocument();
+    });
+  })
+
   describe("when preparation fails", () => {
     beforeEach(async () => {
       server = createServer();
@@ -238,6 +376,13 @@ describe("UpgradePageContainer", () => {
       await wait();
 
       await waitForElement(() => getByText("Skip"));
+    });
+
+    it("back button exists", async () => {
+      const { getByText } = mount();
+      await wait();
+
+      await waitForElement(() => getByText("Back"));
     });
 
     it("calls goToNextPage when Skip button clicked", async () => {
@@ -294,14 +439,13 @@ describe("UpgradePageContainer", () => {
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
 
-    it("Back button is disabled", async () => {
-      const { getByText, waitForPreparation } = mount();
+    it("Back button is not rendered", async () => {
+      const { getByText, queryByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
-      await waitForElement(() => getByText("Back"));
-      expect(getByText("Back")).toHaveProperty("disabled", true);
+      expect(queryByText("Back")).not.toBeInTheDocument();
     });
   });
 
@@ -365,12 +509,10 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
-
-          if (data === "size") {
+          else if (data === "size") {
             socket.send(JSON.stringify(Messages.Size));
           }
-
-          if (data === "start") {
+          else if (data === "start") {
             socket.send(JSON.stringify(Messages.UpgradeStart));
             socket.send(JSON.stringify(Messages.UpgradeStatus));
             socket.send(JSON.stringify(Messages.UpgradeFinish));
@@ -385,32 +527,26 @@ describe("UpgradePageContainer", () => {
     })
 
     it("renders the upgrade finished message", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
     });
 
     it("renders progress bar correctly", async () => {
-      const { getByText, waitForPreparation, container: upgradePage } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(upgradePage.querySelector(".progress")).toMatchSnapshot();
     });
 
     it("renders the received message", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(
         getByText(Messages.UpgradeFinish.payload.message)
@@ -418,34 +554,28 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Upgrade button is not present", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(queryByText("Update")).not.toBeInTheDocument();
     });
 
     it("Next button is present", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
-    it("requests to restart the pt-web-portal systemd service", async () => {
-      const { getByText, waitForPreparation } = mount();
+    it("requests to restart the pt-os-web-portal systemd service", async () => {
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -456,12 +586,10 @@ describe("UpgradePageContainer", () => {
 
     it("doesn't display an error message when restartWebPortalService fails", async () => {
       restartWebPortalServiceMock.mockRejectedValue(new Error("couldn't restart"));
-      const { queryByText, getByText, waitForPreparation } = mount();
+      const { queryByText, getByText, waitForUpgradeFinish, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -471,12 +599,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("calls goToNextPage when next button clicked", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
       jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
@@ -488,18 +614,16 @@ describe("UpgradePageContainer", () => {
     });
 
     it("calls onBackClick when back button clicked", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => getByText(text))
-      }))
+      await waitForUpgradeFinish();
 
       fireEvent.click(getByText("Back"));
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
     });
 
-    describe("when pt-web-portal server is restarting", () => {
+    describe("when pt-os-web-portal server is restarting", () => {
       afterEach(() => {
         jest.useRealTimers();
         restartWebPortalServiceMock.mockRestore();
@@ -507,12 +631,10 @@ describe("UpgradePageContainer", () => {
       })
 
       it("renders a spinner", async () => {
-        const { container: upgradePage, getByText, waitForPreparation } = mount();
+        const { container: upgradePage, waitForUpgradeFinish, getByText, waitForPreparation } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -522,12 +644,10 @@ describe("UpgradePageContainer", () => {
       });
 
       it("renders a 'please wait' message", async () => {
-        const { getByText, waitForPreparation } = mount();
+        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -537,12 +657,10 @@ describe("UpgradePageContainer", () => {
       });
 
       it("probes backend server to determine if its online", async () => {
-        const { getByText, waitForPreparation } = mount();
+        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         fireEvent.click(getByText("Next"));
@@ -552,12 +670,10 @@ describe("UpgradePageContainer", () => {
       });
 
       it("probes backend server until its online", async () => {
-        const { getByText, waitForPreparation } = mount();
+        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
         await waitForPreparation();
         fireEvent.click(getByText("Update"));
-        await Promise.all(UpgradePageExplanation.Finish.split("\n").map(async (text, _): Promise<any> => {
-          text && await waitForElement(() => getByText(text))
-        }))
+        await waitForUpgradeFinish();
         jest.useFakeTimers();
 
         serverStatusMock.mockRejectedValue(new Error("I'm offline"));

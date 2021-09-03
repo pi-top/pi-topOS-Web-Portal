@@ -7,6 +7,7 @@ import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
 import restartWebPortalService from "../../services/restartWebPortalService";
 import serverStatus from "../../services/serverStatus"
+import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
@@ -48,24 +49,36 @@ export type SizeMessage = {
 export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
 
 export type Props = {
-  goToNextPage: () => void;
-  goToPreviousPage: () => void;
-  isCompleted: boolean;
+  goToNextPage?: () => void;
+  goToPreviousPage?: () => void;
+  isCompleted?: boolean;
 };
 
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
-  const socket = useSocket(`${wsBaseUrl}/os-upgrade`);
-
   const [message, setMessage] = useState<OSUpdaterMessage>();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const socket = useSocket(`${wsBaseUrl}/os-upgrade`, );
+  socket.onmessage = (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data);
+      setMessage(data);
+    } catch (_) {}
+  };
+  socket.onopen = () => {
+    setIsOpen(true);
+    socket.send("prepare");
+  }
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
   const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [waitingForServer, setWaitingForServer] = useState(false);
+  const [requiredBurn, setRequiredBurn] = useState(false);
+  const [shouldBurn, setShouldBurn] = useState(false);
 
   useEffect(() => {
     getAvailableSpace()
@@ -74,22 +87,24 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, []);
 
   useEffect(() => {
+    getMajorOsUpdates()
+      .then((response) => {
+        setShouldBurn(response.shouldBurn);
+        setRequiredBurn(response.requiredBurn);
+      })
+      .catch(() => {
+        setShouldBurn(false);
+        setRequiredBurn(false);
+      })
+    }, []);
+
+  useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
       setError(true);
     }
   }, [updateSize, availableSpace, setError]);
 
   useEffect(() => {
-    socket.onopen = () => {
-      setIsOpen(true);
-      socket.send("prepare");
-    };
-    socket.onmessage = (e: MessageEvent) => {
-      try {
-        const data = JSON.parse(e.data);
-        setMessage(data);
-      } catch (_) {}
-    };
     socket.onclose = () => {
       !upgradeFinished && setError(true);
       setIsOpen(false);
@@ -146,8 +161,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
       try {
         setUpdateSize(message.payload.size);
-
-        if (!message.payload.size.downloadSize) {
+        if (!message.payload.size.downloadSize && !message.payload.size.requiredSpace) {
           setUpgradeIsRunning(false);
           setUpgradeIsRequired(false);
           setUpgradeFinished(true);
@@ -174,7 +188,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
         await serverStatus({ timeout: timeoutServerStatusRequestMs });
         clearInterval(interval);
-        goToNextPage();
+        goToNextPage && goToNextPage();
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }
@@ -204,6 +218,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       upgradeFinished={upgradeFinished}
       waitingForServer={waitingForServer}
       downloadSize={updateSize.downloadSize}
+      requiredBurn={requiredBurn}
+      shouldBurn={shouldBurn}
       error={error}
     />
   );

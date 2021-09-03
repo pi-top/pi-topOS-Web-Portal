@@ -5,19 +5,14 @@ exports[`App renders build information correctly when loaded 1`] = `
   class="root"
   data-testid="build-info"
 >
-  Build Name: 
-  test-build
-  <br />
   Build Number: 
-  1234567890
+  100
   <br />
   Build Date: 
-  01/01/2020
+  2021-08-09
   <br />
   Build Apt Repo: 
-  test-build-repo
+  experimental-pkgcld
   <br />
-  Final Apt Repo: 
-  final-test-build-repo
 </div>
 `;
