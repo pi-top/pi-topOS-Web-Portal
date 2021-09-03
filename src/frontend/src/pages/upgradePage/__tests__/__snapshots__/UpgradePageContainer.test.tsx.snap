@@ -130,7 +130,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        This OS version is out of date and not maintained anymore: your pi-top will not have the latest security updates and features even if you fully update the system.
+        This OS version is out of date and not maintained. Your pi-top will not have the latest security updates and features, even if you fully update the system.
       </span>
       <br />
       <span
@@ -189,7 +189,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
         <span
           class="dialogTitle"
         >
-          New pi‑topOS version available!
+          Major OS update required
         </span>
       </h3>
     </header>
@@ -199,7 +199,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        There are major OS updates available, so the update process might take a while.
+        There is a major OS update available so the update process will take a while. We recommend reburning the SD card.
       </span>
       <br />
       <span
