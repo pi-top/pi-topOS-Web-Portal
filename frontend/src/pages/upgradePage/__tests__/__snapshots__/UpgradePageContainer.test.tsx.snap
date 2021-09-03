@@ -151,6 +151,16 @@ exports[`UpgradePageContainer when the upgrade is being installed renders progre
 </div>
 `;
 
+exports[`UpgradePageContainer when the upgrade is being installed renders the received messages in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  disabled=""
+>
+  Starting install & upgrade process
+dpkg-exec: Running dpkg
+</textarea>
+`;
+
 exports[`UpgradePageContainer when there are major OS updates available and user 'requireBurn' renders the correct message 1`] = `
 <div
   aria-pressed="false"
@@ -287,12 +297,4 @@ exports[`UpgradePageContainer when there are major OS updates available and user
     </div>
   </div>
 </div>
-exports[`UpgradePageContainer when the upgrade is being installed renders the received messages in the textarea component 1`] = `
-<textarea
-  class="textarea"
-  disabled=""
->
-  Starting install & upgrade process
-dpkg-exec: Running dpkg
-</textarea>
 `;

@@ -5,7 +5,6 @@ import {
   RenderResult,
   waitForElement,
   wait,
-  queryByText,
   BoundFunction,
   QueryByBoundAttribute,
 } from "@testing-library/react";
@@ -52,7 +51,6 @@ const createServer = () => {
 
 describe("UpgradePageContainer", () => {
   let defaultProps: Props;
-  let queryByTestId: BoundFunction<QueryByBoundAttribute>;
   let mount: (props?: Props) => ExtendedRenderResult;
 
   beforeEach(async () => {
@@ -104,7 +102,6 @@ describe("UpgradePageContainer", () => {
       const result = render(<UpgradePageContainer {...props} />);
       return {
         ...result,
-        queryByTestId,
         waitForPreparation: () =>
           waitForElement(() =>
             result.getByText(
