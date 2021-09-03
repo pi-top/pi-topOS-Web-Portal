@@ -34,6 +34,7 @@ export default class TextArea extends React.Component<Props> {
 
     render() {
         return <textarea
+            data-testid="textarea"
             className={this.props.className}
             onChange={this.props.onChange}
             value={this.props.value}

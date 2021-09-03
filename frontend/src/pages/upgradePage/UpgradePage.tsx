@@ -146,11 +146,11 @@ export default ({
         onClose={() => setIsNewOsDialogActive(false)}
       />
 
-        { message && message?.type === OSUpdaterMessageType.Upgrade &&
+        { !waitingForServer && message && message?.type === OSUpdaterMessageType.Upgrade &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { message && message?.type === OSUpdaterMessageType.PrepareUpgrade &&
+        { !waitingForServer && message && message?.type === OSUpdaterMessageType.PrepareUpgrade &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
@@ -161,7 +161,7 @@ export default ({
         )}
 
         {(message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && !error && (
-          <div className={styles.progress}>
+          <div data-testid="progress" className={styles.progress}>
             <ProgressBar
               percent={message.payload.percent}
               strokeWidth={2}

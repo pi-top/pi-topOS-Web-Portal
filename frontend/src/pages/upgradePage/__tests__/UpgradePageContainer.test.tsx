@@ -61,6 +61,7 @@ describe("UpgradePageContainer", () => {
         1000
     );
 
+    // no major OS updates are available by default
     let osUpdatesResponse: OsVersionUpdate;
     osUpdatesResponse = {
       shouldBurn: false,
@@ -75,21 +76,7 @@ describe("UpgradePageContainer", () => {
 
     server = createServer();
     server.on("connection", (socket) => {
-      socket.on("message", (data) => {
-        if (data === "prepare") {
-          socket.send(JSON.stringify(Messages.PrepareStart));
-          socket.send(JSON.stringify(Messages.PrepareFinish));
-        }
-
-        if (data === "size") {
-          socket.send(JSON.stringify(Messages.Size));
-        }
-
-        if (data === "start") {
-          socket.send(JSON.stringify(Messages.UpgradeStart));
-          socket.send(JSON.stringify(Messages.UpgradeStatus));
-        }
-      });
+      socket.on("message", () => {});
     });
 
     defaultProps = {
@@ -102,7 +89,7 @@ describe("UpgradePageContainer", () => {
       const result = render(<UpgradePageContainer {...props} />);
       return {
         ...result,
-        waitForPreparation: () =>
+        waitForPreparation: async () =>
           waitForElement(() =>
             result.getByText(
               UpgradePageExplanation.UpgradePreparedWithDownload
@@ -129,254 +116,194 @@ describe("UpgradePageContainer", () => {
   });
 
   it("renders the correct banner image", async () => {
-    const { queryByAltText, waitForPreparation } = mount();
+    const { queryByAltText } = mount();
     await wait();
 
     expect(queryByAltText("upgrade-page-banner")).toMatchSnapshot();
-
-    await waitForPreparation();
   });
 
   it("renders prompt correctly", async () => {
-    const { container: upgradePage, waitForPreparation } = mount();
-    await wait();
+    const { container: upgradePage } = mount();
 
     const prompt = upgradePage.querySelector(".prompt");
     expect(prompt).toMatchSnapshot();
-
-    await waitForPreparation();
   });
 
-  it("Upgrade button is disabled if upgrade is not ready", async () => {
-    const { getByText, waitForPreparation } = mount();
+  it("Update button is present", async () => {
+    const { getByText } = mount();
+
+    expect(getByText("Update")).toBeInTheDocument();
+  });
+
+  it("Upgrade button is disabled", async () => {
+    const { getByText } = mount();
 
     expect(getByText("Update")).toHaveProperty("disabled", true);
-
-    await waitForPreparation();
-  });
-
-  it("skip button is not present while preparing", async () => {
-    const { queryByText, waitForPreparation } = mount();
-
-    expect(queryByText("Skip")).not.toBeInTheDocument();
-
-    await waitForPreparation();
   });
 
   it("Back button is present", async () => {
-    const { getByText, waitForPreparation } = mount();
+    const { getByText } = mount();
 
     expect(getByText("Back")).toBeInTheDocument();
-
-    await waitForPreparation();
   });
 
   it("calls goToPreviousPage when back button clicked", async () => {
-    const { getByText, waitForPreparation } = mount();
-    await waitForPreparation();
+    const { getByText } = mount();
 
     fireEvent.click(getByText("Back"));
     expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
   });
 
-  it("renders the preparing upgrade message", async () => {
-    const { queryByText, waitForPreparation } = mount();
-
-    expect(queryByText(UpgradePageExplanation.Preparing)).toBeInTheDocument();
-
-    await waitForPreparation();
-  });
-
-  it("renders the textarea component while preparing", async () => {
-    const { waitForPreparation, container: upgradePage } = mount();
-
-    await waitForElement(() => upgradePage.querySelector(".textarea"));
-    const textAreaElement = upgradePage.querySelector(".textarea");
-    expect(textAreaElement).toBeInTheDocument()
-
-    await waitForPreparation();
-  });
-
-  it("messages are displayed in the textarea component while preparing", async () => {
-    const { getByText, waitForPreparation, container: upgradePage } = mount();
-
-    await waitForElement(() => upgradePage.querySelector(".textarea"));
-    const textAreaElement = upgradePage.querySelector(".textarea");
-    expect(textAreaElement).toMatchSnapshot();
-
-    await waitForPreparation();
-  });
-
-  it("renders progress bar correctly", async () => {
-    const { getByText, waitForPreparation, container: upgradePage } = mount();
-
-    await waitForElement(() => upgradePage.querySelector(".progress"));
-    const progressBar = upgradePage.querySelector(".progress");
-    expect(progressBar).toMatchSnapshot();
-
-    await waitForPreparation();
-  });
-
-  it("does not render skip button while preparing", async () => {
-    const { queryByText, waitForPreparation } = mount();
+  it("Skip button is not present", async () => {
+    const { queryByText } = mount();
 
     expect(queryByText("Skip")).not.toBeInTheDocument();
-
-    await waitForPreparation();
-  });
-
-  it("renders the upgrade is prepared message when prepared", async () => {
-    const { waitForPreparation } = mount();
-    await waitForPreparation();
-  });
-
-  it("stops rendering the textarea component when prepared", async () => {
-    const { waitForPreparation, container: upgradePage } = mount();
-
-    await waitForPreparation();
-
-    const textAreaElement = upgradePage.querySelector(".textarea");
-    expect(textAreaElement).not.toBeInTheDocument()
-  });
-
-  it("Upgrade button is enabled when prepared", async () => {
-    const { getByText, waitForPreparation } = mount();
-
-    await waitForPreparation();
-
-    expect(getByText("Update")).toHaveProperty("disabled", false);
-  });
-
-  it("starts upgrade when Upgrade button clicked", async () => {
-    const { getByText, waitForPreparation } = mount();
-
-    await waitForPreparation();
-    fireEvent.click(getByText("Update"));
-
-    await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
   });
 
   it("renders the new OS version available dialog", async () => {
-    const { queryByTestId, waitForPreparation } = mount();
+    const { queryByTestId } = mount();
 
-    await waitForPreparation();
     expect(queryByTestId("dialog")).toBeInTheDocument();
   });
 
   it("hides the new OS version available dialog", async () => {
-    const { queryByTestId, waitForPreparation } = mount();
+    const { queryByTestId } = mount();
 
-    await waitForPreparation();
     expect(queryByTestId("dialog")).toHaveClass("hidden");
   });
 
-  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+  describe("while preparing updates", () => {
     beforeEach(async () => {
       server = createServer();
       server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareStart));
+        socket.on("message", (data) => {
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
         });
       });
-      let osUpdatesResponse: OsVersionUpdate;
-      osUpdatesResponse = {
-        shouldBurn: true,
-        requireBurn: false,
-        latestOSVersion: "",
-        update: false,
-      }
-      serverStatusMock.mockResolvedValue("OK");
-      restartWebPortalServiceMock.mockResolvedValue("OK");
-      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
-    it("shows the OS version update dialog", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+    it("renders the textarea component", async () => {
+      const { findByTestId, queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+      await findByTestId("textarea");
+      expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
-    it("hides the dialog on Close click", async() => {
-      const { queryByTestId, getByText } = mount();
-      await wait();
-      fireEvent.click(getByText("Close"));
+    it("messages are displayed in the textarea component", async () => {
+      const { findByTestId, queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).toHaveClass("hidden");
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
+      expect(textAreaElement).toMatchSnapshot();
     });
 
-    it("renders the correct message", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+    it("renders progress bar correctly", async () => {
+      const { findByTestId, queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).toMatchSnapshot();
+      await findByTestId("progress");
+      const progressBar = queryByTestId("progress");
+      expect(progressBar).toMatchSnapshot();
     });
 
-  })
+    it("doesn't render the Skip button", async () => {
+      const { queryByText } = mount();
 
-  describe("when there are major OS updates available and user 'requireBurn'", () => {
+      expect(queryByText("Skip")).not.toBeInTheDocument();
+    });
+
+    it("renders the preparing upgrade message", () => {
+      const { queryByText } = mount();
+
+      expect(queryByText(UpgradePageExplanation.Preparing)).toBeInTheDocument();
+    });
+
+    it("Upgrade button is disabled", async () => {
+      const { getByText } = mount();
+
+      expect(getByText("Update")).toHaveProperty("disabled", true);
+    });
+
+    it("Back button is present", async () => {
+      const { getByText } = mount();
+
+      expect(getByText("Back")).toBeInTheDocument();
+    });
+
+    it("calls goToPreviousPage when back button clicked", async () => {
+      const { getByText } = mount();
+
+      fireEvent.click(getByText("Back"));
+      expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
+    });
+
+  });
+
+  describe("when updates are prepared", () => {
     beforeEach(async () => {
       server = createServer();
       server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareStart));
+        socket.on("message", (data) => {
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+
+          if (data === "start") {
+            socket.send(JSON.stringify(Messages.UpgradeStart));
+            socket.send(JSON.stringify(Messages.UpgradeStatus));
+          }
         });
       });
-      let osUpdatesResponse: OsVersionUpdate;
-      osUpdatesResponse = {
-        shouldBurn: true,
-        requireBurn: true,
-        latestOSVersion: "",
-        update: false,
-      }
-      serverStatusMock.mockResolvedValue("OK");
-      restartWebPortalServiceMock.mockResolvedValue("OK");
-      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
-    it("shows the OS version update dialog", async () => {
-      const { queryByTestId } = mount();
-      await wait();
-
-      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+    it("renders the 'upgrade is prepared' message", async () => {
+      const { waitForPreparation } = mount();
+      await waitForPreparation();
     });
 
-    it("hides the dialog on Close click", async() => {
-      const { queryByTestId, getByText } = mount();
-      await wait();
-      fireEvent.click(getByText("Close"));
+    it("stops rendering the textarea component", async () => {
+      const { waitForPreparation, container: upgradePage } = mount();
 
-      expect(queryByTestId("dialog")).toHaveClass("hidden");
+      await waitForPreparation();
+
+      const textAreaElement = upgradePage.querySelector(".textarea");
+      expect(textAreaElement).not.toBeInTheDocument()
     });
 
-    it("renders the correct message", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+    it("Upgrade button is enabled", async () => {
+      const { getByText, waitForPreparation } = mount();
 
-      expect(queryByTestId("dialog")).toMatchSnapshot();
-    });
-  })
+      await waitForPreparation();
 
-  describe("when checking for major OS updates fails", () => {
-    beforeEach(async () => {
-      server = createServer();
-      server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareStart));
-        });
-      });
-      serverStatusMock.mockResolvedValue("OK");
-      restartWebPortalServiceMock.mockResolvedValue("OK");
-      getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
+      expect(getByText("Update")).toHaveProperty("disabled", false);
     });
 
-    it("new OS version dialog is not displayed", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+    it("starts upgrade when Upgrade button clicked", async () => {
+      const { getByText, waitForPreparation } = mount();
 
-      expect(queryByTestId("dialog")).toHaveClass("hidden");
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
     });
-  })
+
+    it("Skip button is not present", async () => {
+      const { queryByText } = mount();
+
+      expect(queryByText("Skip")).not.toBeInTheDocument();
+    });
+
+  });
 
   describe("when preparation fails", () => {
     beforeEach(async () => {
@@ -396,14 +323,23 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { container: upgradePage, getByText } = mount();
+      const { getByText, findByTestId, queryByTestId } = mount();
       await waitForElement(() => getByText(ErrorMessage.GenericError));
 
-      const textAreaElement = upgradePage.querySelector(".textarea");
-      expect(textAreaElement).toBeInTheDocument()
+      await findByTestId("textarea");
+      expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
-    it("doesn't render the explanation message", async () => {
+    it("messages are displayed in the textarea component", async () => {
+      const { getByText, findByTestId, queryByTestId } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
+      expect(textAreaElement).toMatchSnapshot();
+    });
+
+    it("doesn't render the 'preparing updates' message", async () => {
       const { getByText, queryByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.GenericError));
 
@@ -412,14 +348,14 @@ describe("UpgradePageContainer", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("skip button exists", async () => {
+    it("Skip button exists", async () => {
       const { getByText } = mount();
       await wait();
 
       await waitForElement(() => getByText("Skip"));
     });
 
-    it("back button exists", async () => {
+    it("Back button exists", async () => {
       const { getByText } = mount();
       await wait();
 
@@ -437,7 +373,28 @@ describe("UpgradePageContainer", () => {
   });
 
   describe("when the upgrade is being installed", () => {
-    it("renders the upgrade is in progress message", async () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+
+          if (data === "start") {
+            socket.send(JSON.stringify(Messages.UpgradeStart));
+            socket.send(JSON.stringify(Messages.UpgradeStatus));
+          }
+        });
+      });
+    });
+
+    it("renders the 'upgrade is in progress' message", async () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
@@ -458,13 +415,22 @@ describe("UpgradePageContainer", () => {
       expect(progressBar).toMatchSnapshot();
     });
 
-    it("renders the received messages in the textarea component", async () => {
-      const { getByText, waitForPreparation, container: upgradePage } = mount();
+    it("renders the textarea component", async () => {
+      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => upgradePage.querySelector(".textarea"));
-      const textAreaElement = upgradePage.querySelector(".textarea");
+      await findByTestId("textarea");
+      expect(queryByTestId("textarea")).toBeInTheDocument();
+    });
+
+    it("messages are displayed in the textarea component", async () => {
+      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
       expect(textAreaElement).toMatchSnapshot();
     });
 
@@ -485,6 +451,12 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
       expect(queryByText("Back")).not.toBeInTheDocument();
+    });
+
+    it("Skip button is not present", async () => {
+      const { queryByText } = mount();
+
+      expect(queryByText("Skip")).not.toBeInTheDocument();
     });
   });
 
@@ -519,33 +491,32 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText(ErrorMessage.GenericError));
     });
 
-    it("doesn't render the explanation message", async () => {
+    it("doesn't render the 'upgrading' message", async () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
       expect(
-        queryByText(UpgradePageExplanation.Preparing)
+        queryByText(UpgradePageExplanation.InProgress)
       ).not.toBeInTheDocument();
     });
 
     it("renders the textarea component", async () => {
-      const { waitForPreparation, container: upgradePage, getByText } = mount();
+      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => upgradePage.querySelector(".textarea"));
-      const textAreaElement = upgradePage.querySelector(".textarea");
-      expect(textAreaElement).toBeInTheDocument()
+      await findByTestId("textarea");
+      expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
-    it("renders the received messages in the textarea component", async () => {
-      const { getByText, waitForPreparation, container: upgradePage } = mount();
+    it("messages are displayed in the textarea component", async () => {
+      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => upgradePage.querySelector(".textarea"));
-      const textAreaElement = upgradePage.querySelector(".textarea");
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
       expect(textAreaElement).toMatchSnapshot();
     });
 
@@ -633,14 +604,24 @@ describe("UpgradePageContainer", () => {
       expect(upgradePage.querySelector(".progress")).toMatchSnapshot();
     });
 
-    it("renders the received messages in the textarea component", async () => {
-      const { getByText, waitForPreparation, waitForUpgradeFinish, container: upgradePage } = mount();
+    it("renders the textarea component", async () => {
+      const { waitForUpgradeFinish, waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
 
-      await waitForElement(() => upgradePage.querySelector(".textarea"));
-      const textAreaElement = upgradePage.querySelector(".textarea");
+      await findByTestId("textarea");
+      expect(queryByTestId("textarea")).toBeInTheDocument();
+    });
+
+    it("messages are displayed in the textarea component", async () => {
+      const { waitForUpgradeFinish, waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForUpgradeFinish();
+
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
       expect(textAreaElement).toMatchSnapshot();
     });
 
@@ -785,6 +766,20 @@ describe("UpgradePageContainer", () => {
         // we don't check again
         expect(serverStatusMock).toHaveBeenCalledTimes(3);
       });
+
+      it("doesn't render the textarea component", async () => {
+        const { waitForUpgradeFinish, waitForPreparation, getByText, queryByTestId } = mount();
+        await waitForPreparation();
+        fireEvent.click(getByText("Update"));
+        await waitForUpgradeFinish();
+        jest.useFakeTimers();
+
+        fireEvent.click(getByText("Next"));
+        await wait();
+        jest.runOnlyPendingTimers();
+
+        expect(queryByTestId("textarea")).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -795,12 +790,48 @@ describe("UpgradePageContainer", () => {
           Messages.Size.payload.size.downloadSize -
           1000
       );
+
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+        });
+      });
     });
 
     it("renders the error message", async () => {
       const { getByText } = mount();
 
       await waitForElement(() => getByText(ErrorMessage.GenericError));
+    });
+
+    it("Skip button exists", async () => {
+      const { getByText } = mount();
+
+      await waitForElement(() => getByText("Skip"));
+    });
+
+    it("calls goToNextPage when Skip button clicked", async () => {
+      const { getByText } = mount();
+
+      await waitForElement(() => getByText("Skip"));
+      fireEvent.click(getByText("Skip"));
+
+      expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    });
+
+    it("Upgrade button is disabled", async () => {
+      const { getByText } = mount();
+
+      await waitForElement(() => getByText("Update"));
+      expect(getByText("Update")).toHaveProperty("disabled", true);
     });
   });
 
@@ -809,6 +840,19 @@ describe("UpgradePageContainer", () => {
       getAvailableSpaceMock.mockRejectedValue(
         new Error("nah mate couldn't tell ya")
       );
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+        });
+      });
     });
 
     it("renders the error message", async () => {
@@ -816,5 +860,135 @@ describe("UpgradePageContainer", () => {
 
       await waitForElement(() => getByText(ErrorMessage.GenericError));
     });
+
+    it("Skip button exists", async () => {
+      const { getByText } = mount();
+
+      await waitForElement(() => getByText("Skip"));
+    });
+
+    it("calls goToNextPage when Skip button clicked", async () => {
+      const { getByText } = mount();
+
+      await waitForElement(() => getByText("Skip"));
+      fireEvent.click(getByText("Skip"));
+
+      expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    });
+
+    it("Upgrade button is disabled", async () => {
+      const { getByText } = mount();
+
+      await waitForElement(() => getByText("Update"));
+      expect(getByText("Update")).toHaveProperty("disabled", true);
+    });
   });
+
+  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      let osUpdatesResponse: OsVersionUpdate;
+      osUpdatesResponse = {
+        shouldBurn: true,
+        requireBurn: false,
+        latestOSVersion: "",
+        update: false,
+      }
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
+    });
+
+    it("shows the OS version update dialog", async () => {
+      const { queryByTestId } = mount();
+      await wait();
+
+      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+    });
+
+    it("hides the dialog on Close click", async() => {
+      const { queryByTestId, getByText } = mount();
+      await wait();
+      fireEvent.click(getByText("Close"));
+
+      expect(queryByTestId("dialog")).toHaveClass("hidden");
+    });
+
+    it("renders the correct message", async () => {
+      const { queryByTestId } = mount();
+      await wait();
+
+      expect(queryByTestId("dialog")).toMatchSnapshot();
+    });
+
+  })
+
+  describe("when there are major OS updates available and user 'requireBurn'", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      let osUpdatesResponse: OsVersionUpdate;
+      osUpdatesResponse = {
+        shouldBurn: true,
+        requireBurn: true,
+        latestOSVersion: "",
+        update: false,
+      }
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
+    });
+
+    it("shows the OS version update dialog", async () => {
+      const { queryByTestId } = mount();
+      await wait();
+
+      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+    });
+
+    it("hides the dialog on Close click", async() => {
+      const { queryByTestId, getByText } = mount();
+      await wait();
+      fireEvent.click(getByText("Close"));
+
+      expect(queryByTestId("dialog")).toHaveClass("hidden");
+    });
+
+    it("renders the correct message", async () => {
+      const { queryByTestId } = mount();
+      await wait();
+
+      expect(queryByTestId("dialog")).toMatchSnapshot();
+    });
+  })
+
+  describe("when checking for major OS updates fails", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", () => {
+          socket.send(JSON.stringify(Messages.PrepareStart));
+        });
+      });
+      serverStatusMock.mockResolvedValue("OK");
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
+    });
+
+    it("new OS version dialog is not displayed", async () => {
+      const { queryByTestId } = mount();
+      await wait();
+
+      expect(queryByTestId("dialog")).toHaveClass("hidden");
+    });
+  })
 });

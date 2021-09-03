@@ -1,47 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UpgradePageContainer messages are displayed in the textarea component while preparing 1`] = `
-<textarea
-  class="textarea"
-  disabled=""
->
-  Preparing OS upgrade
-Finished preparing
-</textarea>
-`;
-
-exports[`UpgradePageContainer renders progress bar correctly 1`] = `
-<div
-  class="progress"
->
-  <svg
-    class="rc-progress-line "
-    preserveAspectRatio="none"
-    viewBox="0 0 100 2"
-  >
-    <path
-      class="rc-progress-line-trail"
-      d="M 1,1
-           L 99,1"
-      fill-opacity="0"
-      stroke="#D9D9D9"
-      stroke-linecap="round"
-      stroke-width="1"
-    />
-    <path
-      class="rc-progress-line-path"
-      d="M 1,1
-           L 99,1"
-      fill-opacity="0"
-      stroke="#71c0b4"
-      stroke-linecap="round"
-      stroke-width="2"
-      style="stroke-dasharray: 100px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
-    />
-  </svg>
-</div>
-`;
-
 exports[`UpgradePageContainer renders prompt correctly 1`] = `
 <h1
   class="prompt"
@@ -65,9 +23,20 @@ exports[`UpgradePageContainer renders the correct banner image 1`] = `
 />
 `;
 
-exports[`UpgradePageContainer when the upgrade fails renders the received messages in the textarea component 1`] = `
+exports[`UpgradePageContainer when preparation fails messages are displayed in the textarea component 1`] = `
 <textarea
   class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  There was a problem during OS upgrade. Please continue, you'll be able to upgrade once the system reboots.
+</textarea>
+`;
+
+exports[`UpgradePageContainer when the upgrade fails messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
   disabled=""
 >
   Starting install & upgrade process
@@ -76,9 +45,22 @@ There was an error while upgrading packages.
 </textarea>
 `;
 
+exports[`UpgradePageContainer when the upgrade finishes messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Starting install & upgrade process
+dpkg-exec: Running dpkg
+Finished upgrade
+</textarea>
+`;
+
 exports[`UpgradePageContainer when the upgrade finishes renders progress bar correctly 1`] = `
 <div
   class="progress"
+  data-testid="progress"
 >
   <svg
     class="rc-progress-line "
@@ -108,20 +90,21 @@ exports[`UpgradePageContainer when the upgrade finishes renders progress bar cor
 </div>
 `;
 
-exports[`UpgradePageContainer when the upgrade finishes renders the received messages in the textarea component 1`] = `
+exports[`UpgradePageContainer when the upgrade is being installed messages are displayed in the textarea component 1`] = `
 <textarea
   class="textarea"
+  data-testid="textarea"
   disabled=""
 >
   Starting install & upgrade process
 dpkg-exec: Running dpkg
-Finished upgrade
 </textarea>
 `;
 
 exports[`UpgradePageContainer when the upgrade is being installed renders progress bar correctly 1`] = `
 <div
   class="progress"
+  data-testid="progress"
 >
   <svg
     class="rc-progress-line "
@@ -149,16 +132,6 @@ exports[`UpgradePageContainer when the upgrade is being installed renders progre
     />
   </svg>
 </div>
-`;
-
-exports[`UpgradePageContainer when the upgrade is being installed renders the received messages in the textarea component 1`] = `
-<textarea
-  class="textarea"
-  disabled=""
->
-  Starting install & upgrade process
-dpkg-exec: Running dpkg
-</textarea>
 `;
 
 exports[`UpgradePageContainer when there are major OS updates available and user 'requireBurn' renders the correct message 1`] = `
@@ -296,5 +269,48 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       </div>
     </div>
   </div>
+</div>
+`;
+
+exports[`UpgradePageContainer while preparing updates messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Preparing OS upgrade
+</textarea>
+`;
+
+exports[`UpgradePageContainer while preparing updates renders progress bar correctly 1`] = `
+<div
+  class="progress"
+  data-testid="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 2"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="2"
+      style="stroke-dasharray: 0px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear;"
+    />
+  </svg>
 </div>
 `;
