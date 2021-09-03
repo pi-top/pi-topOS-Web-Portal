@@ -31,4 +31,3 @@
   composes: fontError from '../../globalStyles/Typography.module.css';
   font-size: 18px;
 }
-

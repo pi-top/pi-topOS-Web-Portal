@@ -61,7 +61,7 @@ export default ({
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
-  
+
   useEffect(() => {
     setIsNewOsDialogActive(requireBurn || shouldBurn);
   }, [requireBurn, shouldBurn]);
