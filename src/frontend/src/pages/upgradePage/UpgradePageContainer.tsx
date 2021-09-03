@@ -79,7 +79,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [error, setError] = useState(false);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [waitingForServer, setWaitingForServer] = useState(false);
-  const [requiredBurn, setRequiredBurn] = useState(false);
+  const [requireBurn, setRequireBurn] = useState(false);
   const [shouldBurn, setShouldBurn] = useState(false);
 
   useEffect(() => {
@@ -92,11 +92,11 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     getMajorOsUpdates()
       .then((response) => {
         setShouldBurn(response.shouldBurn);
-        setRequiredBurn(response.requiredBurn);
+        setRequireBurn(response.requireBurn);
       })
       .catch(() => {
         setShouldBurn(false);
-        setRequiredBurn(false);
+        setRequireBurn(false);
       })
     }, []);
 
@@ -223,7 +223,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       upgradeFinished={upgradeFinished}
       waitingForServer={waitingForServer}
       downloadSize={updateSize.downloadSize}
-      requiredBurn={requiredBurn}
+      requireBurn={requireBurn}
       shouldBurn={shouldBurn}
       cleanupIsRunning={cleanupIsRunning}
       error={error}

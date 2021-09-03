@@ -280,7 +280,7 @@ def check_relevant_os_updates():
     )
     data = {
         "shouldBurn": False,
-        "requiredBurn": False,
+        "requireBurn": False,
         "latestOSVersion": "",
         "update": False,
     }

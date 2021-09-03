@@ -1,0 +1,49 @@
+.newOsVersionAvailableDialog {
+  max-width: 412px;
+  width: 95vw;
+  padding: 50px;
+}
+
+.dialogTitle {
+  margin: -45px 0 0 0;
+  display: block;
+  font-size: 1.17em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin-top: -45px;
+}
+
+.message {
+  composes: text from '../../../globalStyles/Typography.module.css';
+  margin: 0px 70px 30px 70px;
+}
+
+.actions {
+  position: relative;
+  width: 450px;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.osUpgradeWarning {
+  color: var(--black, black);
+  font-size: 14px;
+  font-weight: lighter;
+  margin: 0 auto;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.link {
+  color: var(--green);
+  font-weight: lighter;
+  font-size: 14px;
+}

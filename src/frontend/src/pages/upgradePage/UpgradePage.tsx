@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Line as ProgressBar } from "rc-progress";
 import prettyBytes from "pretty-bytes";
 
@@ -9,6 +9,7 @@ import upgradePage from "../../assets/images/upgrade-page.png";
 import styles from "./UpgradePage.module.css";
 
 import { OSUpdaterMessage, OSUpdaterMessageType } from "./UpgradePageContainer"
+import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
 
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
@@ -24,12 +25,6 @@ export enum UpgradePageExplanation {
   CleanupInProgress = "Cleaning up, please wait...",
 }
 
-export enum OsBurnExplanation {
-  ShouldBurn = "There are major OS updates available, so the update process might take a while.",
-  RequiredBurn = "This OS version is out of date and not maintained anymore.",
-  ShouldBurnRecommendation = "We recommend you to download the latest version of pi-topOS from pi-top.com",
-  RequiredBurnRecommendation = "Please, download the latest version of pi-topOS in pi-top.com",
-}
 
 export type Props = {
   onNextClick?: () => void;
@@ -46,7 +41,7 @@ export type Props = {
   cleanupIsRunning: boolean,
   downloadSize: number,
   error: boolean,
-  requiredBurn: boolean,
+  requireBurn: boolean,
   shouldBurn: boolean,
 };
 
@@ -64,13 +59,18 @@ export default ({
   downloadSize,
   cleanupIsRunning,
   waitingForServer,
-  requiredBurn,
+  requireBurn,
   shouldBurn,
   error,
 }: Props) => {
+  const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
+
+  useEffect(() => {
+    setIsNewOsDialogActive(requireBurn || shouldBurn);
+  }, [requireBurn, shouldBurn]);
+
   const errorMessage = error && ErrorMessage.GenericError;
 
-  const majorUpdatesAvailable = requiredBurn || shouldBurn;
   const getExplanation = () => {
     if (error) {
       return ""
@@ -136,18 +136,12 @@ export default ({
         }}
       >
 
-        {majorUpdatesAvailable && (
-          <>
-          <span className={styles.osUpgradeWarning}>
-            {requiredBurn && OsBurnExplanation.RequiredBurn}
-            {shouldBurn && !requiredBurn && OsBurnExplanation.ShouldBurn}
-          </span>
-          <span className={styles.osUpgradeWarning}>
-            {requiredBurn && OsBurnExplanation.RequiredBurnRecommendation}
-            {shouldBurn && !requiredBurn && OsBurnExplanation.ShouldBurnRecommendation}
-          </span>
-          </>
-        )}
+      <NewOsVersionDialogContainer
+        active={isNewOsDialogActive}
+        requireBurn={requireBurn}
+        shouldBurn={shouldBurn}
+        onClose={() => setIsNewOsDialogActive(false)}
+      />
 
 
         { (waitingForServer || !(upgradeIsPrepared || error)) && (
