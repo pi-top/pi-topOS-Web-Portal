@@ -11,14 +11,13 @@ from backend.helpers.finalise import onboarding_completed
 from backend.helpers.os_updater import should_check_for_updates, updates_available
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+from miniscreen_onboarding.app import OnboardingApp
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
 from pitop.common.notifications import send_notification
 from pitop.common.sys_info import get_systemd_active_state, stop_systemd_service
 from pitop.system import device_type
-
-from miniscreen.onboarding.app import OnboardingApp
 
 parser = ArgumentParser(description="pi-top backend server")
 parser.add_argument(
