@@ -11,7 +11,7 @@ from pitop.common.sys_info import get_internal_ip
 
 from .connection_methods import ApConnection, EthernetConnection, UsbConnection
 from .helpers import draw_text, get_image_file_path, process_image
-from .helpers.extras import miniscreen_onboarding_app_breadcrumb
+from .helpers.extras import started_onboarding_breadcrumb
 
 
 # TODO: move to pitop.common
@@ -212,7 +212,7 @@ class CarryOnMenuPage(TitleMenuPage):
         return should
 
     def __monitor_breadcrumb(self):
-        file = Path(miniscreen_onboarding_app_breadcrumb)
+        file = Path(started_onboarding_breadcrumb)
         while True:
             self.skip = not file.exists()
             sleep(0.3)

@@ -29,10 +29,10 @@ class FWUpdaterBreadcrumbManager:
         self.EXTEND_TIMEOUT_FILE.unlink()
 
 
-miniscreen_onboarding_app_breadcrumb = (
+started_onboarding_breadcrumb = (
     "/tmp/.com.pi-top.pt-os-web-portal.miniscreen.onboarding"
 )
 
 
-def leave_miniscreen_onboarding_app_breadcrumb():
-    Path(miniscreen_onboarding_app_breadcrumb).touch(exist_ok=True)
+def leave_started_onboarding_breadcrumb():
+    Path(started_onboarding_breadcrumb).touch(exist_ok=True)
