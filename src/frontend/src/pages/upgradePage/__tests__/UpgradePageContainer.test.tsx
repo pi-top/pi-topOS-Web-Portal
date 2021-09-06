@@ -6,6 +6,8 @@ import {
   waitForElement,
   wait,
   queryByText,
+  BoundFunction,
+  QueryByBoundAttribute
 } from "@testing-library/react";
 
 import { act } from "react-dom/test-utils";
@@ -13,7 +15,7 @@ import { Server } from "mock-socket";
 
 import UpgradePageContainer, { Props } from "../UpgradePageContainer";
 import querySpinner from "../../../../test/helpers/querySpinner";
-import { UpgradePageExplanation, ErrorMessage, OsBurnExplanation } from "../UpgradePage";
+import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
 import wsBaseUrl from "../../../services/wsBaseUrl";
@@ -36,6 +38,7 @@ const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 type ExtendedRenderResult = RenderResult & {
   waitForPreparation: () => Promise<HTMLElement>,
   waitForUpgradeFinish: () => any,
+  queryByTestId: BoundFunction<QueryByBoundAttribute>,
 };
 
 let server: Server;
@@ -62,7 +65,7 @@ describe("UpgradePageContainer", () => {
     let osUpdatesResponse: OsVersionUpdate;
     osUpdatesResponse = {
       shouldBurn: false,
-      requiredBurn: false,
+      requireBurn: false,
       latestOSVersion: "",
       update: false,
     }
@@ -231,6 +234,20 @@ describe("UpgradePageContainer", () => {
     await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
   });
 
+  it("renders the new OS version available dialog", async () => {
+    const { queryByTestId, waitForPreparation } = mount();
+
+    await waitForPreparation();
+    expect(queryByTestId("dialog")).toBeInTheDocument();
+  });
+
+  it("hides the new OS version available dialog", async () => {
+    const { queryByTestId, waitForPreparation } = mount();
+
+    await waitForPreparation();
+    expect(queryByTestId("dialog")).toHaveClass("hidden");
+  });
+
   describe("when there are major OS updates available and user 'shouldBurn'", () => {
     beforeEach(async () => {
       server = createServer();
@@ -242,7 +259,7 @@ describe("UpgradePageContainer", () => {
       let osUpdatesResponse: OsVersionUpdate;
       osUpdatesResponse = {
         shouldBurn: true,
-        requiredBurn: false,
+        requireBurn: false,
         latestOSVersion: "",
         update: false,
       }
@@ -251,25 +268,31 @@ describe("UpgradePageContainer", () => {
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
-    it("renders the 'shouldBurn' message", async () => {
-      const { getByText } = mount();
+    it("shows the OS version update dialog", async () => {
+      const { queryByTestId } = mount();
       await wait();
 
-      await waitForElement(() => getByText(OsBurnExplanation.ShouldBurn));
-      await waitForElement(() => getByText(OsBurnExplanation.ShouldBurnRecommendation));
+      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
     });
 
+    it("hides the dialog on Close click", async() => {
+      const { queryByTestId, getByText } = mount();
+      await wait();
+      fireEvent.click(getByText("Close"));
 
-    it("doesn't render the 'requiredBurn' message", async () => {
-      const { queryByText } = mount();
+      expect(queryByTestId("dialog")).toHaveClass("hidden");
+    });
+
+    it("renders the correct message", async () => {
+      const { queryByTestId } = mount();
       await wait();
 
-      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
-      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
+      expect(queryByTestId("dialog")).toMatchSnapshot();
     });
+
   })
 
-  describe("when there are major OS updates available and user 'shouldBurn'", () => {
+  describe("when there are major OS updates available and user 'requireBurn'", () => {
     beforeEach(async () => {
       server = createServer();
       server.on("connection", (socket) => {
@@ -280,7 +303,7 @@ describe("UpgradePageContainer", () => {
       let osUpdatesResponse: OsVersionUpdate;
       osUpdatesResponse = {
         shouldBurn: true,
-        requiredBurn: true,
+        requireBurn: true,
         latestOSVersion: "",
         update: false,
       }
@@ -289,21 +312,26 @@ describe("UpgradePageContainer", () => {
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
-    it("renders the 'requiredBurn' message", async () => {
-      const { getByText } = mount();
+    it("shows the OS version update dialog", async () => {
+      const { queryByTestId } = mount();
       await wait();
 
-      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurn));
-      await waitForElement(() => getByText(OsBurnExplanation.RequiredBurnRecommendation));
+      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
     });
 
+    it("hides the dialog on Close click", async() => {
+      const { queryByTestId, getByText } = mount();
+      await wait();
+      fireEvent.click(getByText("Close"));
 
-    it("doesn't render the 'shouldBurn' message", async () => {
-      const { queryByText } = mount();
+      expect(queryByTestId("dialog")).toHaveClass("hidden");
+    });
+
+    it("renders the correct message", async () => {
+      const { queryByTestId } = mount();
       await wait();
 
-      expect(queryByText(OsBurnExplanation.ShouldBurn)).not.toBeInTheDocument();
-      expect(queryByText(OsBurnExplanation.ShouldBurnRecommendation)).not.toBeInTheDocument();
+      expect(queryByTestId("dialog")).toMatchSnapshot();
     });
   })
 
@@ -320,21 +348,11 @@ describe("UpgradePageContainer", () => {
       getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
     });
 
-    it("doesn't render the 'requiredBurn' message", async () => {
-      const { queryByText } = mount();
+    it("new OS version dialog is not displayed", async () => {
+      const { queryByTestId } = mount();
       await wait();
 
-      expect(queryByText(OsBurnExplanation.RequiredBurn)).not.toBeInTheDocument();
-      expect(queryByText(OsBurnExplanation.RequiredBurnRecommendation)).not.toBeInTheDocument();
-    });
-
-
-    it("doesn't render the 'shouldBurn' message", async () => {
-      const { queryByText } = mount();
-      await wait();
-
-      expect(queryByText(OsBurnExplanation.ShouldBurn)).not.toBeInTheDocument();
-      expect(queryByText(OsBurnExplanation.ShouldBurnRecommendation)).not.toBeInTheDocument();
+      expect(queryByTestId("dialog")).toHaveClass("hidden");
     });
   })
 
