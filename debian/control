@@ -24,16 +24,8 @@ Depends:
  notify-send-ng,
 # Needed to update the EEPROM
  pt-os-notify-services,
- python3-flask,
- python3-flask-cors,
- python3-flask-sockets,
- python3-gevent,
- python3-gevent-websocket,
-# Used for PTLogger
- python3-pitop,
- python3-waitress,
- python3-websockets,
 # Required for openbox xdg autostart
+# as part of onboarding on Bullseye
  python3-xdg,
  raspi-config,
  rsync,

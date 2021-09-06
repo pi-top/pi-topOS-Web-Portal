@@ -1,4 +1,5 @@
 from flask import json
+
 from tests.data.locale_data import default_locale, formatted_locales
 
 

@@ -1,4 +1,5 @@
 import pytest
+
 from tests.data.wifi_manager_data import network_profiles, wpa_cli_status
 
 

@@ -1,7 +1,9 @@
 #!/usr/bin/make -f
 
+export PYBUILD_NAME=pt_os_web_portal
+
 %:
-	dh $@
+	dh $@ --buildsystem=pybuild
 
 override_dh_auto_build:
 	cd src/frontend/ && \

@@ -1,4 +1,5 @@
 from flask import json
+
 from tests.data.wifi_country_data import country_code_sample, wifi_country_list
 from tests.utils import dotdict
 
