@@ -4,6 +4,8 @@ import introScreen from "../../assets/images/intro-screen.png";
 import styles from "./SplashPage.module.css";
 import Layout from "../../components/layout/Layout";
 
+import leaveMiniscreenAppBreadcrumb from "../../services/leaveMiniscreenAppBreadcrumb";
+
 export type Props = {
   goToNextPage: () => void;
 };
@@ -21,7 +23,11 @@ export default ({ goToNextPage }: Props) => {
         </>
       }
       nextButton={{
-        onClick: goToNextPage,
+        onClick: () => {
+          leaveMiniscreenAppBreadcrumb()
+            .catch(() => null)
+            .then(goToNextPage)
+        },
         label: 'Yes'
       }}
       className={styles.root}

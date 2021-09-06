@@ -20,7 +20,7 @@ def app():
 
 @pytest.fixture(scope="session")
 def socket_app():
-    p = Popen(["python", "run.py", "--test-mode"])
+    p = Popen(["python", "__main__.py", "--test-mode"])
     sleep(1)
     yield
     p.kill()

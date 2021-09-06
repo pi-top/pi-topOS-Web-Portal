@@ -3,9 +3,9 @@ from os import path
 from PIL import Image, ImageFont
 
 
-def draw_text(canvas, text, xy, font_size=12):
+def draw_text(canvas, text, xy, font_size=12, font_name=""):
     font = ImageFont.truetype(
-        "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Regular.ttf",
+        font_name if font_name else "Roboto-Regular.ttf",
         size=font_size,
     )
     canvas.text(
