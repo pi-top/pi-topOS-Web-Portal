@@ -22,7 +22,7 @@ exports[`ErrorPage renders correctly 1`] = `
       <h1
         class="prompt"
       >
-        I've had some
+        I've had some 
         <span
           class="green"
         >
@@ -37,7 +37,7 @@ exports[`ErrorPage renders correctly 1`] = `
         class="explanation"
       >
         Please restart me by using the switch shown and contact
-
+         
         <span
           class="green"
         >
@@ -47,7 +47,7 @@ exports[`ErrorPage renders correctly 1`] = `
       <span
         class="explanation"
       >
-        If you are using a
+        If you are using a 
         <span
           class="green"
         >

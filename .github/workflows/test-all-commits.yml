@@ -42,7 +42,7 @@ jobs:
       # Workaround: At the moment, only lock files in the project root are
       # supported...
       # https://github.com/actions/setup-node#caching-packages-dependencies
-      - run: cp src/frontend/yarn.lock .
+      - run: cp frontend/yarn.lock .
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -55,14 +55,14 @@ jobs:
 
       - name: Run Node tests
         run: |
-          cd src/frontend
+          cd frontend
           yarn install
           yarn test --coverage
 
       - name: Upload javascript test coverage reports to Codecov
         uses: codecov/codecov-action@v2.0.2
         with:
-          files: ./src/frontend/coverage/clover.xml
+          files: ./frontend/coverage/clover.xml
           flags: jstests
           fail_ci_if_error: true
           verbose: true
