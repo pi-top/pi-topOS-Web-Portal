@@ -9,9 +9,9 @@ from pitop.common.command_runner import run_command
 from pitop.common.pt_os import get_pitopOS_info
 from pitop.common.sys_info import get_internal_ip
 
+from ..backend.helpers.extras import started_onboarding_breadcrumb
 from .connection_methods import ApConnection, EthernetConnection, UsbConnection
 from .helpers import draw_text, get_image_file_path, process_image
-from .helpers.extras import started_onboarding_breadcrumb
 
 
 # TODO: move to pitop.common

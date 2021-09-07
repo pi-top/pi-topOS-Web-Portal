@@ -1,16 +1,16 @@
 from datetime import date, datetime
 
-from backend.helpers.config_manager import ConfigManager
-from backend.helpers.extras import FWUpdaterBreadcrumbManager
-from backend.helpers.finalise import onboarding_completed
-from backend.helpers.wifi_manager import is_connected_to_internet
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
 
 from ..events import MessageType
+from .config_manager import ConfigManager
+from .extras import FWUpdaterBreadcrumbManager
+from .finalise import onboarding_completed
 from .modules import get_apt
 from .system_clock import is_system_clock_synchronized, synchronize_system_clock
+from .wifi_manager import is_connected_to_internet
 
 (apt, apt.progress, apt_pkg) = get_apt()
 

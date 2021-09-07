@@ -3,8 +3,8 @@ from subprocess import Popen
 from time import sleep
 
 import pytest
-from backend import create_app
 
+from pt_os_web_portal.backend import create_app
 from tests.data.finalise_data import cmd_line_before
 from tests.data.keyboard_data import keyboard_file_before
 
