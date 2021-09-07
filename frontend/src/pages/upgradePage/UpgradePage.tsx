@@ -10,7 +10,7 @@ import styles from "./UpgradePage.module.css";
 
 import { OSUpdaterMessage, OSUpdaterMessageType } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
-import UpgradeHistoryTextArea from "./upgradeHistoryTextArea/UpgradeHistoryTextArea";
+import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
