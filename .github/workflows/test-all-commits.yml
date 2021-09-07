@@ -42,7 +42,7 @@ jobs:
       # Workaround: At the moment, only lock files in the project root are
       # supported...
       # https://github.com/actions/setup-node#caching-packages-dependencies
-      - run: cp src/frontend/yarn.lock .
+      - run: cp frontend/yarn.lock .
 
       - name: Setup Node
         uses: actions/setup-node@v2
