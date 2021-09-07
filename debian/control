@@ -13,9 +13,8 @@ Homepage: https://pi-top.com/
 
 Package: pt-os-web-portal
 Architecture: all
-Depends:
+Depends: ${python3:Depends},
  ${misc:Depends},
- ${python3:Depends},
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling
@@ -34,14 +33,13 @@ Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
 
-# Package: pt-os-web-portal-desktop
-# Architecture: all
-# Depends:
-#  ${misc:Depends},
-#  pt-os-web-portal,
-#  web-renderer,
-# Description: pi-top Web Portal - Desktop management
-#  This package primarily adds desktop files for accessing
-#  useful pages of the web portal from the Linux desktop.
-#  This includes handling of the initial onboarding of pi-topOS
-#  as well as additional apps such as 'about' and 'settings'.
+Package: pt-os-web-portal-desktop
+Architecture: all
+Depends: ${misc:Depends},
+# pt-os-web-portal,
+# web-renderer,
+Description: pi-top Web Portal - Desktop management
+ This package primarily adds desktop files for accessing
+ useful pages of the web portal from the Linux desktop.
+ This includes handling of the initial onboarding of pi-topOS
+ as well as additional apps such as 'about' and 'settings'.
