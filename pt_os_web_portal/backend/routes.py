@@ -267,7 +267,9 @@ def os_upgrade(ws):
         message = ws.receive()
 
         funcs = {
+            "update_sources": get_os_updater().update_sources,
             "prepare": get_os_updater().prepare_os_upgrade,
+            "prepare_web_portal": get_os_updater().prepare_web_portal,
             "start": get_os_updater().start_os_upgrade,
             "size": get_os_updater().os_upgrade_size,
         }

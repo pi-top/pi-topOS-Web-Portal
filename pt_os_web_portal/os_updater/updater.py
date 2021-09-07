@@ -21,49 +21,54 @@ class OSUpdater:
         t = Thread(target=self.prepare_os_upgrade, args=(), daemon=True)
         t.start()
 
-    def prepare_os_upgrade(self, ws=None):
+    def update_sources(self, ws=None):
         if not is_system_clock_synchronized():
             synchronize_system_clock()
 
-        post_event(AppEvents.OS_UPDATER_PREPARE, "started")
-
-        callback = self.message_handler.create_emit_os_prepare_upgrade_message(ws)
-
+        post_event(AppEvents.OS_UPDATE_SOURCES, "started")
+        callback = self.message_handler.create_emit_update_sources_message(ws)
         try:
-            if callable(callback):
-                callback(MessageType.START, "Preparing OS upgrade", 0.0)
-
+            callback(MessageType.START, "Updating sources", 0.0)
             self.manager.update(callback)
-            self.manager.stage_upgrade(callback)
+            callback(MessageType.FINISH, "Finished updating sources", 100.0)
+            post_event(AppEvents.OS_UPDATE_SOURCES, "success")
+        except Exception as e:
+            post_event(AppEvents.OS_UPDATE_SOURCES, "failed")
+            callback(MessageType.ERROR, f"{e}", 0.0)
+
+    def prepare_os_upgrade(self, ws=None, packages=[]):
+        
+        post_event(AppEvents.OS_UPDATER_PREPARE, "started")
+        callback = self.message_handler.create_emit_os_prepare_upgrade_message(ws)
+        try:
+            callback(MessageType.START, "Preparing OS upgrade", 0.0)
+            self.manager.stage_upgrade(callback, packages)
 
             if self.manager.cache.install_count == 0:
                 self.manager.update_last_check_config()
 
-            if callable(callback):
-                callback(MessageType.FINISH, "Finished preparing", 100.0)
-
+            callback(MessageType.FINISH, "Finished preparing", 100.0)
             post_event(AppEvents.OS_UPDATER_PREPARE, "success")
         except Exception as e:
             post_event(AppEvents.OS_UPDATER_PREPARE, "failed")
+            callback(MessageType.ERROR, f"{e}", 0.0)
 
-            if callable(callback):
-                callback(MessageType.ERROR, f"{e}", 0.0)
+    def prepare_web_portal(self, ws=None):
+        self.prepare_os_upgrade(ws, packages=["pt-os-web-portal"])
 
     def os_upgrade_size(self, ws=None):
         callback = self.message_handler.create_emit_os_size_message(ws)
         try:
-            if callable(callback):
-                callback(
-                    MessageType.STATUS,
-                    {
-                        "downloadSize": self.manager.download_size(),
-                        "requiredSpace": self.manager.required_space(),
-                    },
-                )
+            callback(
+                MessageType.STATUS,
+                {
+                    "downloadSize": self.manager.download_size(),
+                    "requiredSpace": self.manager.required_space(),
+                },
+            )
         except Exception as e:
             PTLogger.info(f"os_upgrade_size: {e}")
-            if callable(callback):
-                callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
+            callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
 
     def start_os_upgrade(self, ws=None):
         post_event(AppEvents.OS_UPDATER_UPGRADE, "started")
@@ -74,8 +79,7 @@ class OSUpdater:
             self.manager.update_last_check_config()
             post_event(AppEvents.OS_UPDATER_UPGRADE, "success")
         except Exception as e:
-            if callable(callback):
-                callback(MessageType.ERROR, f"{e}", 0.0)
+            callback(MessageType.ERROR, f"{e}", 0.0)
             post_event(AppEvents.OS_UPDATER_UPGRADE, "failed")
 
     def should_check_for_updates(self, ws=None):
