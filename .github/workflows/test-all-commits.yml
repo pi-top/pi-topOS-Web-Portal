@@ -55,7 +55,7 @@ jobs:
 
       - name: Run Node tests
         run: |
-          cd src/frontend
+          cd frontend
           yarn install
           yarn test --coverage
 
