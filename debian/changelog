@@ -1,8 +1,5 @@
-pi-top-os-web-portal (0.2.1-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.3.0-1) bullseye; urgency=medium
 
-  * Updated master workflow files
-  * Bump react-dom from 16.13.0 to 17.0.2 in /src/frontend (#225)
-  * [pre-commit.ci] pre-commit autoupdate (#222)
   * Fix truetype-font-prohibits-installable-embedding (#226)
   * Display new OS version warning in a dialog (#214)
   * Rework onboarding miniscreen flow (#204)
