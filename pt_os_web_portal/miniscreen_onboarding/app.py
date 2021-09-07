@@ -6,7 +6,6 @@ from PIL import Image, ImageDraw
 from pitop import Pitop
 from pitop.common.logger import PTLogger
 
-from .helpers import get_image_file_path
 from .menus import (
     ApMenuPage,
     CarryOnMenuPage,
@@ -29,7 +28,7 @@ class OnboardingApp:
         }
 
         self.current_page = self.pages.get(Menus.WELCOME)
-        self.next_page = None
+        self.page_to_move_to = None
 
         self.miniscreen.up_button.when_pressed = lambda: self.go_to(
             self.get_previous_page(self.current_page)
@@ -44,7 +43,8 @@ class OnboardingApp:
 
     def get_previous_page(self, page):
         curr_idx = self.page_order.index(page.type)
-        prev_idx = len(self.page_order) - 1 if curr_idx - 1 < 0 else curr_idx - 1
+        # Don't go to bottom page
+        prev_idx = 0 if curr_idx - 1 < 0 else curr_idx - 1
 
         candidate = self.page_order[prev_idx]
         if self.pages.get(candidate).skip:
@@ -53,7 +53,8 @@ class OnboardingApp:
 
     def get_next_page(self, page):
         curr_idx = self.page_order.index(page.type)
-        next_idx = 0 if curr_idx + 1 == len(self.page_order) else curr_idx + 1
+        # Don't go to top page
+        next_idx = curr_idx if curr_idx + 1 == len(self.page_order) else curr_idx + 1
 
         candidate = self.page_order[next_idx]
         if self.pages.get(candidate).skip:
@@ -71,52 +72,47 @@ class OnboardingApp:
             self.__auto_play_thread.join()
 
     def go_to(self, page):
-        self.next_page = self.pages.get(page)
-        PTLogger.info(f"Moving to {self.next_page.type.name} page")
+        self.page_to_move_to = self.pages.get(page)
+        PTLogger.info(f"Moving to {self.page_to_move_to.type.name} page")
 
     def _main(self):
-        try:
-            # Play startup animation
-            self.miniscreen.play_animated_image_file(
-                get_image_file_path("pi-top_startup.gif"), background=False, loop=False
-            )
+        empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
 
-            # Do main app
-            empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
-            force_redraw = False
-            while self.__stop_thread is False:
-                image = empty_image.copy()
-                draw = ImageDraw.Draw(image)
+        while self.__stop_thread is False:
+            image = empty_image.copy()
+            draw = ImageDraw.Draw(image)
 
-                self.current_page.render(draw, redraw=force_redraw)
-                force_redraw = False
+            # Update page
+            force_redraw = self.page_to_move_to is not None
+            if self.page_to_move_to:
+                self.current_page = self.page_to_move_to
+                self.page_to_move_to = None
+                self.current_page.first_draw = True
 
-                if self.next_page:
-                    self.current_page = self.next_page
-                    self.next_page = None
-                    force_redraw = True
-                    self.current_page.first_draw = True
+            # Draw current page to image
+            self.current_page.render(draw, redraw=force_redraw)
 
-                self.miniscreen.device.display(image)
-                sleep(self.current_page.interval)
+            # Display image
+            self.miniscreen.device.display(image)
 
-                # Transitions
-                if (
-                    self.current_page == self.pages.get(Menus.AP)
-                    and self.pages.get(Menus.AP).render_state
+            # Wait
+            sleep(self.current_page.interval)
+
+            # Transitions
+            def showing_info_on_current_page():
+                return (
+                    self.pages.get(self.current_page).render_state
                     == RenderState.DISPLAYING_INFO
-                    and self.pages.get(Menus.BROWSER).should_display()
-                ):
-                    self.go_to(Menus.BROWSER)
-                elif (
-                    self.current_page == self.pages.get(Menus.BROWSER)
-                    and self.pages.get(Menus.BROWSER).render_state
-                    == RenderState.DISPLAYING_INFO
-                    and self.pages.get(Menus.CARRY_ON).should_display()
-                ):
-                    self.go_to(Menus.CARRY_ON)
+                )
 
-        except KeyboardInterrupt:
-            pass
-        finally:
-            self.miniscreen.stop_animated_image()
+            def current_page_should_go_to_next_page():
+                if self.current_page != Menus.AP and self.current_page != Menus.BROWSER:
+                    return False
+
+                return (
+                    showing_info_on_current_page(self.current_page)
+                    and self.get_next_page(self.current_page).should_display()
+                )
+
+            if current_page_should_go_to_next_page():
+                self.go_to(self.get_next_page(self.current_page))
