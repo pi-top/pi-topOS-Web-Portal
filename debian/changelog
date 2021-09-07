@@ -1,4 +1,4 @@
-pi-topos-web-portal (0.2.1-1) bullseye; urgency=medium
+pt-os-web-portal (0.2.1-1) bullseye; urgency=medium
 
   * Bump actions/checkout from 2.2.0 to 2.3.4 (#182)
   * Remove unnecessary breadcrumbs (#184)
@@ -27,7 +27,7 @@ pi-topos-web-portal (0.2.1-1) bullseye; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:47:54 +0000
 
-pi-topos-web-portal (0.2.0) bullseye; urgency=medium
+pt-os-web-portal (0.2.0) bullseye; urgency=medium
 
   * Rename package
 
