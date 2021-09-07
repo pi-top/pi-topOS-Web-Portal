@@ -14,7 +14,7 @@ exports[`LanguagePage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  Me too! What
+  Me too! What 
   <span
     class="green"
   >
