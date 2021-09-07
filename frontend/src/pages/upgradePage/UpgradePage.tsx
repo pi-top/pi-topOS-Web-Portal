@@ -23,6 +23,7 @@ export enum UpgradePageExplanation {
   InProgress = "Please sit back and relax - this may take some time...",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
   WaitingForServer = "Please wait...",
+  UpdatingWebPortal = "Please wait while we prepare your system to be updated...",
 }
 
 
@@ -42,6 +43,7 @@ export type Props = {
   error: boolean,
   requireBurn: boolean,
   shouldBurn: boolean,
+  checkingWebPortal: boolean,
 };
 
 export default ({
@@ -59,6 +61,7 @@ export default ({
   waitingForServer,
   requireBurn,
   shouldBurn,
+  checkingWebPortal,
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
@@ -70,7 +73,7 @@ export default ({
   const errorMessage = error && ErrorMessage.GenericError;
 
   const parseMessage = (message: OSUpdaterMessage) => {
-    if (message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) {
+    if (message?.type === OSUpdaterMessageType.UpdateSources || message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.PrepareUpgrade) {
       return JSON.stringify(message.payload?.message).trim().replace(/^"(.*)"$/, '$1');
     }
     return ""
@@ -105,6 +108,9 @@ export default ({
           .replace("{time}", "a few");
       }
       return UpgradePageExplanation.UpgradePreparedWithoutDownload
+    }
+    if (checkingWebPortal) {
+      return UpgradePageExplanation.UpdatingWebPortal;
     }
     return UpgradePageExplanation.Preparing;
   };
@@ -150,17 +156,17 @@ export default ({
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { !waitingForServer && message && message?.type === OSUpdaterMessageType.PrepareUpgrade &&
+        { !waitingForServer && message && message?.type === OSUpdaterMessageType.UpdateSources &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { (waitingForServer && !error ) && (
+        { !error && waitingForServer && (
           <>
             <Spinner size={40} />{" "}
           </>
         )}
 
-        {(message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && !error && (
+        {message?.type === OSUpdaterMessageType.Upgrade && !waitingForServer && !error && (
           <div data-testid="progress" className={styles.progress}>
             <ProgressBar
               percent={message.payload.percent}
