@@ -4,7 +4,7 @@ exports[`UpgradePageContainer renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  OK, I need to be
+  OK, I need to be 
   <span
     class="green"
   >
@@ -173,7 +173,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        For more information, go to
+        For more information, go to 
         <button
           class="unstyled link"
           type="button"
@@ -242,7 +242,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       <span
         class="osUpgradeWarning"
       >
-        For more information, go to
+        For more information, go to 
         <button
           class="unstyled link"
           type="button"

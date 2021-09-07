@@ -4,7 +4,7 @@ exports[`WifiPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  Connect me to
+  Connect me to 
   <span
     class="green"
   >
@@ -28,13 +28,13 @@ exports[`WifiPage when networks are passed when option without a password is sel
   class="messageContainer"
   data-testid="dialog-message"
 >
-  The WiFi network
+  The WiFi network 
   <span
     class="green"
   >
     unsecured-ssid
   </span>
-
+   
   does not require
    a password
 </h3>
