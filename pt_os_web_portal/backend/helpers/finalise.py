@@ -28,7 +28,7 @@ def available_space() -> str:
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
-        "ln -s /usr/lib/pt-os-web-portal/pt-os-tour.desktop /etc/xdg/autostart",
+        "ln -s /usr/lib/pt-os-web-portal/applications/pt-os-tour.desktop /etc/xdg/autostart",
         timeout=60,
         lower_priority=True,
     )

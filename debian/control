@@ -16,7 +16,6 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
- ${shlibs:Depends},
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling

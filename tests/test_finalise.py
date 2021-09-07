@@ -52,7 +52,7 @@ def test_configure_tour_success(app, mocker):
             "10",
             "ln",
             "-s",
-            "/usr/lib/pt-os-web-portal/pt-os-tour.desktop",
+            "/usr/lib/pt-os-web-portal/applications/pt-os-tour.desktop",
             "/etc/xdg/autostart",
         ],
         capture_output=True,
