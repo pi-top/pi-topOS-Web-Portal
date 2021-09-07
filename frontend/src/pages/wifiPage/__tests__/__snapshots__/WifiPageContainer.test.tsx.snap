@@ -5,13 +5,13 @@ exports[`WifiPageContainer when networks are loaded successfully when option wit
   class="messageContainer"
   data-testid="dialog-message"
 >
-  The WiFi network 
+  The WiFi network
   <span
     class="green"
   >
     password-protected-ssid
   </span>
-   
+
   requires
    a password
 </h3>

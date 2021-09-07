@@ -14,7 +14,7 @@ exports[`TermsPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  OK, here are our 
+  OK, here are our
   <span
     class="green"
   >

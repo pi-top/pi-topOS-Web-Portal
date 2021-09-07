@@ -14,7 +14,7 @@ exports[`KeyboardPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  QWERTY, 
+  QWERTY,
   <span
     class="green"
   >

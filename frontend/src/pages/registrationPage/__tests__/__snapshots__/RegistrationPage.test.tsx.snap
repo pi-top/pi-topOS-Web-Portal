@@ -15,7 +15,7 @@ exports[`RegistrationPage renders prompt correctly 1`] = `
   class="prompt"
 >
   Hey, would you like to be kept
-   
+
   <span
     class="green"
   >
