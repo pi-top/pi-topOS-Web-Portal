@@ -19,12 +19,11 @@ Depends: ${python3:Depends},
  fonts-roboto-unhinted,
 # Service enabling
  further-link,
-# Port busy service
- lsof,
- notify-send-ng,
 # Needed to update the EEPROM
  pt-os-notify-services,
+# Get system information
  raspi-config,
+# Restore notification support
  rsync,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
