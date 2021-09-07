@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CountryPage renders correct image 1`] = `
+<img
+  alt="country-screen"
+  class="image"
+  draggable="false"
+  src="country-screen.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`CountryPage renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Ok, now where
+  <span
+    class="green"
+  >
+    in the world
+  </span>
+   are we?
+</h1>
+`;

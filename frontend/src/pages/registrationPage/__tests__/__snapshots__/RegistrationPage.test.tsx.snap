@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RegistrationPage renders correct image 1`] = `
+<img
+  alt="registration-screen-banner"
+  class="image"
+  draggable="false"
+  src="registration-screen.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`RegistrationPage renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Hey, would you like to be kept
+
+  <span
+    class="green"
+  >
+    up to date
+  </span>
+  ?
+</h1>
+`;
+
+exports[`RegistrationPage when clicking over privacy policy renders dialog message correctly 1`] = `
+<h3
+  class="messageContainer"
+  data-testid="dialog-message"
+>
+  <span
+    class="dialogTitle"
+  >
+    PI-TOP PRIVACY POLICY
+  </span>
+</h3>
+`;

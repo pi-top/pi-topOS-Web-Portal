@@ -1,10 +1,12 @@
-Source: pi-topos-web-portal
+Source: pi-top-os-web-portal
 Section: utils
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
+ python3-all,
+ python3-setuptools,
  npm,
 Standards-Version: 4.5.1
 Homepage: https://pi-top.com/
@@ -14,28 +16,15 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
- ${shlibs:Depends},
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling
  further-link,
-# Port busy service
- lsof,
- notify-send-ng,
 # Needed to update the EEPROM
  pt-os-notify-services,
- python3-flask,
- python3-flask-cors,
- python3-flask-sockets,
- python3-gevent,
- python3-gevent-websocket,
-# Used for PTLogger
- python3-pitop,
- python3-waitress,
- python3-websockets,
-# Required for openbox xdg autostart
- python3-xdg,
+# Get system information
  raspi-config,
+# Restore notification support
  rsync,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
@@ -45,7 +34,12 @@ Package: pt-os-web-portal-desktop
 Architecture: all
 Depends:
  ${misc:Depends},
+# Port busy service
+ lsof,
+ notify-send-ng,
+# Backend
  pt-os-web-portal,
+# Rendering
  web-renderer,
 Description: pi-top Web Portal - Desktop management
  This package primarily adds desktop files for accessing

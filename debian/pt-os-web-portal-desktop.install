@@ -1,5 +1,3 @@
-debian/extra/pt-os-about.svg                         /usr/share/icons/hicolor/scalable/apps
-debian/extra/pt-os-about.desktop                     /usr/share/applications/
-debian/extra/pt-os-setup.desktop                     /usr/lib/pt-os-web-portal/
-debian/extra/pt-os-tour.desktop                      /usr/lib/pt-os-web-portal/
-debian/extra/pt-os-updater.desktop                   /usr/share/applications/
+debian/extra/*.svg                          /usr/share/icons/hicolor/scalable/apps
+debian/extra/*.desktop                      /usr/share/applications
+debian/extra/notify                         /usr/lib/pt-os-web-portal

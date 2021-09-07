@@ -8,7 +8,7 @@ Restart=on-failure
 RestartSec=0
 Environment="PYTHONUNBUFFERED=1"
 Environment="PYTHONDONTWRITEBYTECODE=1"
-ExecStart=/usr/lib/pt-os-web-portal/__main__.py
+ExecStart=/usr/bin/pt-os-web-portal
 
 [Install]
 WantedBy=multi-user.target

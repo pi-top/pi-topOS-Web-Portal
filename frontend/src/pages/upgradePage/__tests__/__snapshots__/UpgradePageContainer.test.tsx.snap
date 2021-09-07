@@ -1,0 +1,236 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpgradePageContainer renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  OK, I need to be
+  <span
+    class="green"
+  >
+    updated
+  </span>
+</h1>
+`;
+
+exports[`UpgradePageContainer renders the correct banner image 1`] = `
+<img
+  alt="upgrade-page-banner"
+  class="image"
+  draggable="false"
+  src="upgrade-page.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`UpgradePageContainer when the upgrade finishes renders progress bar correctly 1`] = `
+<div
+  class="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 2"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="2"
+      style="stroke-dasharray: 0px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: 0s, 0s;"
+    />
+  </svg>
+  <span
+    class="message"
+  >
+    Finished upgrade
+  </span>
+</div>
+`;
+
+exports[`UpgradePageContainer when the upgrade is being installed renders progress bar correctly 1`] = `
+<div
+  class="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 2"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="2"
+      style="stroke-dasharray: 50px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
+    />
+  </svg>
+  <span
+    class="message"
+  >
+    dpkg-exec: Running dpkg
+  </span>
+</div>
+`;
+
+exports[`UpgradePageContainer when there are major OS updates available and user 'requireBurn' renders the correct message 1`] = `
+<div
+  aria-pressed="false"
+  class="backdrop"
+  data-testid="dialog"
+  role="button"
+>
+  <div
+    aria-hidden="false"
+    aria-modal="true"
+    class="dialog newOsVersionAvailableDialog"
+    role="dialog"
+  >
+    <header
+      class="header"
+    >
+      <h3
+        class="messageContainer"
+        data-testid="dialog-message"
+      >
+        <span
+          class="dialogTitle"
+        >
+          This version of pi-topOS is no longer supported
+        </span>
+      </h3>
+    </header>
+    <div
+      class="content"
+    >
+      <span
+        class="osUpgradeWarning"
+      >
+        This OS version is out of date and not maintained. Your pi-top will not have the latest security updates and features, even if you fully update the system.
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        For more information, go to
+        <button
+          class="unstyled link"
+          type="button"
+        >
+          https://pi-top.com/help/out-of-date
+        </button>
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        You can also find instructions for downloading and installing the latest version of pi‑topOS from our website.
+      </span>
+      <br />
+      <div
+        class="actions"
+      >
+        <button
+          class="styled"
+          type="button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UpgradePageContainer when there are major OS updates available and user 'shouldBurn' renders the correct message 1`] = `
+<div
+  aria-pressed="false"
+  class="backdrop"
+  data-testid="dialog"
+  role="button"
+>
+  <div
+    aria-hidden="false"
+    aria-modal="true"
+    class="dialog newOsVersionAvailableDialog"
+    role="dialog"
+  >
+    <header
+      class="header"
+    >
+      <h3
+        class="messageContainer"
+        data-testid="dialog-message"
+      >
+        <span
+          class="dialogTitle"
+        >
+          Major OS update required
+        </span>
+      </h3>
+    </header>
+    <div
+      class="content"
+    >
+      <span
+        class="osUpgradeWarning"
+      >
+        There is a major OS update available so the update process will take a while. We recommend reburning the SD card.
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        For more information, go to
+        <button
+          class="unstyled link"
+          type="button"
+        >
+          https://pi-top.com/help/out-of-date
+        </button>
+      </span>
+      <br />
+      <span
+        class="osUpgradeWarning"
+      >
+        You can also find instructions for downloading and installing the latest version of pi‑topOS from our website.
+      </span>
+      <br />
+      <div
+        class="actions"
+      >
+        <button
+          class="styled"
+          type="button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
