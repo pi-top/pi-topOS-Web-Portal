@@ -1,10 +1,14 @@
 #!/bin/bash -e
 
-cd src/frontend/onboarding
-yarn install
-yarn test:coverage
-cd ../../../
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
-cd src/server
-PYTHONPATH=backend python3 -m pytest -v --cov-report term-missing --cov=backend
-cd ../../../
+(
+  cd "${DIR}/frontend"
+  yarn install
+  yarn test:coverage
+)
+
+(
+  cd "${DIR}/pt_os_web_portal"
+  PYTHONPATH=backend python3 -m pytest -v --cov-report term-missing --cov=backend
+)
