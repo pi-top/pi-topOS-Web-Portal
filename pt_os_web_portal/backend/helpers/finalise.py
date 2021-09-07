@@ -1,4 +1,4 @@
-from os import remove
+from os import path, remove
 from pathlib import Path
 
 from pitop.common.command_runner import run_command_background
@@ -28,7 +28,7 @@ def available_space() -> str:
 def configure_tour() -> None:
     PTLogger.info("Function: configure_tour()")
     run_command(
-        "ln -s /usr/lib/pt-os-web-portal/applications/pt-os-tour.desktop /etc/xdg/autostart",
+        f"ln -s {path.dirname(path.realpath(__file__))}../../resources/pt-os-tour.desktop /etc/xdg/autostart",
         timeout=60,
         lower_priority=True,
     )

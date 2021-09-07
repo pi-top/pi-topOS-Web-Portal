@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 
 export PYBUILD_NAME=pt_os_web_portal
+# Override default 'python3-pt-os-web-portal' behaviour
+# which comes from building multiple binary packages
 export PYBUILD_DESTDIR_python3=debian/pt-os-web-portal/
 
 %:
