@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 export PYBUILD_NAME=pt_os_web_portal
+export PYBUILD_DESTDIR_python3=debian/pt-os-web-portal/
 
 %:
 	dh $@ --buildsystem=pybuild
