@@ -1,3 +1,4 @@
+from os import path
 from shlex import split
 
 from flask import json
@@ -52,7 +53,8 @@ def test_configure_tour_success(app, mocker):
             "10",
             "ln",
             "-s",
-            "/usr/lib/pt-os-web-portal/applications/pt-os-tour.desktop",
+            path.dirname(path.realpath(__file__))
+            + "/../pt_os_web_portal/resources/pt-os-tour.desktop",
             "/etc/xdg/autostart",
         ],
         capture_output=True,
