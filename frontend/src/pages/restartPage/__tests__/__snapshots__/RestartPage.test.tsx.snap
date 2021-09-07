@@ -14,7 +14,7 @@ exports[`RestartPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  Right, I need a quick
+  Right, I need a quick 
   <span
     class="green"
   >
