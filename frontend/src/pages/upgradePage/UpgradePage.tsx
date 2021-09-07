@@ -10,6 +10,7 @@ import styles from "./UpgradePage.module.css";
 
 import { OSUpdaterMessage, OSUpdaterMessageType } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
+import UpgradeHistoryTextArea from "./upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
@@ -67,6 +68,13 @@ export default ({
   }, [requireBurn, shouldBurn]);
 
   const errorMessage = error && ErrorMessage.GenericError;
+
+  const parseMessage = (message: OSUpdaterMessage) => {
+    if (message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) {
+      return JSON.stringify(message.payload?.message).trim().replace(/^"(.*)"$/, '$1');
+    }
+    return ""
+  }
 
   const getExplanation = () => {
     if (error) {
@@ -129,6 +137,7 @@ export default ({
           disabled: upgradeIsRunning
         }}
       >
+        {errorMessage && <span className={styles.error}>{errorMessage}</span>}
 
       <NewOsVersionDialogContainer
         active={isNewOsDialogActive}
@@ -137,24 +146,29 @@ export default ({
         onClose={() => setIsNewOsDialogActive(false)}
       />
 
+        { !waitingForServer && message && message?.type === OSUpdaterMessageType.Upgrade &&
+          <UpgradeHistoryTextArea message={parseMessage(message)} />
+        }
 
-        { (waitingForServer || !(upgradeIsPrepared || error)) && (
+        { !waitingForServer && message && message?.type === OSUpdaterMessageType.PrepareUpgrade &&
+          <UpgradeHistoryTextArea message={parseMessage(message)} />
+        }
+
+        { (waitingForServer && !error ) && (
           <>
             <Spinner size={40} />{" "}
           </>
         )}
-        {(message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && (
-          <div className={styles.progress}>
+
+        {(message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && !error && (
+          <div data-testid="progress" className={styles.progress}>
             <ProgressBar
               percent={message.payload.percent}
               strokeWidth={2}
               strokeColor="#71c0b4"
             />
-            <span className={styles.message}>{message.payload.message}</span>
           </div>
         )}
-
-        {errorMessage && <span className={styles.error}>{errorMessage}</span>}
       </Layout>
     </>
   );
