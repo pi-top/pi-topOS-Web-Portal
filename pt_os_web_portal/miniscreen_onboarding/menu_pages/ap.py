@@ -2,7 +2,7 @@ from ..menus import Menus
 from ._connection_base import ConnectionMenuPage
 from .attr.margins import INFO_PAGE_MARGIN_X, SECOND_LINE_Y, THIRD_LINE_Y
 from .connection.methods import ApConnection
-from .helpers import draw_text
+from .render.helpers import draw_text
 
 
 class ApMenuPage(ConnectionMenuPage):

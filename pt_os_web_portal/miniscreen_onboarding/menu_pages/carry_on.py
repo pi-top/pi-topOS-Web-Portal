@@ -6,7 +6,7 @@ from ...backend.helpers.extras import started_onboarding_breadcrumb
 from ..menus import Menus
 from ._title_base import TitleMenuPage
 from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from .helpers import draw_text
+from .render.helpers import draw_text
 
 
 class CarryOnMenuPage(TitleMenuPage):

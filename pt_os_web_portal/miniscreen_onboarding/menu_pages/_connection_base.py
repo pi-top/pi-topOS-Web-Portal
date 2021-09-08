@@ -9,7 +9,7 @@ from .attr.speeds import (
     STATIONARY_SLEEP_INTERVAL,
 )
 from .attr.states import RenderState
-from .helpers import get_image_file_path, process_image
+from .render.helpers import get_image_file_path, process_image
 
 
 class ConnectionMenuPage(MenuPageBase):

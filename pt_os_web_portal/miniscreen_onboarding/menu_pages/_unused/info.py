@@ -3,7 +3,7 @@ from pitop.common.pt_os import get_pitopOS_info
 from ..menus import Menus
 from ._base import MenuPageBase
 from .attr.margins import FIRST_LINE_Y, INFO_PAGE_MARGIN_X, SECOND_LINE_Y, THIRD_LINE_Y
-from .helpers import draw_text
+from .render.helpers import draw_text
 
 
 class InfoMenuPage(MenuPageBase):
