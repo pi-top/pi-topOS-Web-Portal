@@ -6,14 +6,14 @@ from PIL import Image, ImageDraw
 from pitop import Pitop
 from pitop.common.logger import PTLogger
 
-from .menus import (
+from .menu_pages import (
     ApMenuPage,
     CarryOnMenuPage,
-    Menus,
-    OpenBrowserPage,
-    RenderState,
+    OpenBrowserMenuPage,
     WelcomeMenuPage,
 )
+from .menu_pages.attr.states import RenderState
+from .menus import Menus
 
 
 class OnboardingApp:
@@ -23,7 +23,9 @@ class OnboardingApp:
         self.pages = {
             Menus.WELCOME: WelcomeMenuPage(self.miniscreen.size, self.miniscreen.mode),
             Menus.AP: ApMenuPage(self.miniscreen.size, self.miniscreen.mode),
-            Menus.BROWSER: OpenBrowserPage(self.miniscreen.size, self.miniscreen.mode),
+            Menus.BROWSER: OpenBrowserMenuPage(
+                self.miniscreen.size, self.miniscreen.mode
+            ),
             Menus.CARRY_ON: CarryOnMenuPage(self.miniscreen.size, self.miniscreen.mode),
         }
 
