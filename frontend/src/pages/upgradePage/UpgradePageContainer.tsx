@@ -52,10 +52,11 @@ export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
 export type Props = {
   goToNextPage?: () => void;
   goToPreviousPage?: () => void;
+  onWebPortalUpgrade?: () => void;
   isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -70,11 +71,13 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   socket.onopen = () => {
     setIsOpen(true);
     socket.send("update_sources");
+    setIsUpdatingSources(true);
   }
 
   const [checkingWebPortal, setCheckingWebPortal] = useState(true);
+  const [updatingSources, setIsUpdatingSources] = useState(false);
   const [, setPreparingWebPortalUpgrade] = useState(true);
-  const [, setInstallingWebPortalUpgrade] = useState(false);
+  const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
   const [, setFinishedInstallingWebPortalUpgrade] = useState(false);
 
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
@@ -149,8 +152,17 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
     if (
       message.type === OSUpdaterMessageType.UpdateSources &&
+      message.payload.status === UpdateMessageStatus.Error
+    ) {
+      setIsUpdatingSources(false);
+      setError(true);
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.UpdateSources &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
+      setIsUpdatingSources(false);
       if (checkingWebPortal) {
         socket.send("prepare_web_portal");
       } else {
@@ -203,7 +215,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       }
 
       try {
-        const noUpdatesAvailable = !message.payload.size.downloadSize && !message.payload.size.requiredSpace;
+        const noUpdatesAvailable = !(message.payload.size.downloadSize && message.payload.size.requiredSpace);
         if (noUpdatesAvailable && checkingWebPortal) {
           // no web-portal updates, prepare to update all packages now
           setPreparingWebPortalUpgrade(false);
@@ -238,9 +250,9 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
-        await serverStatus({ timeout: timeoutServerStatusRequestMs });
-        window.location.reload();
+        serverStatus({ timeout: timeoutServerStatusRequestMs })
         clearInterval(interval);
+        onWebPortalUpgrade && onWebPortalUpgrade();
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }
@@ -269,6 +281,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       shouldBurn={shouldBurn}
       checkingWebPortal={checkingWebPortal}
       error={error}
+      updatingSources={updatingSources}
+      installingWebPortalUpgrade={installingWebPortalUpgrade}
     />
   );
 };

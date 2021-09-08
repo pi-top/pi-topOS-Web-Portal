@@ -1,4 +1,36 @@
 {
+    "UpdateSourcesStart": {
+        "type": "OS_UPDATE_SOURCES",
+        "payload": {
+            "status": "START",
+            "percent": 0,
+            "message": "Starting to update sources"
+        }
+    },
+    "UpdateSourcesStatus": {
+        "type": "OS_UPDATE_SOURCES",
+        "payload": {
+            "status": "STATUS",
+            "percent": 50.0,
+            "message": "Updating blah"
+        }
+    },
+    "UpdateSourcesFinish": {
+        "type": "OS_UPDATE_SOURCES",
+        "payload": {
+            "status": "FINISH",
+            "percent": 100.0,
+            "message": "Finished updating sources"
+        }
+    },
+    "UpdateSourcesError": {
+        "type": "OS_UPDATE_SOURCES",
+        "payload": {
+            "status": "ERROR",
+            "percent": 0.0,
+            "message": "There was a problem updating sources"
+        }
+    },
     "PrepareStart": {
         "type": "OS_PREPARE_UPGRADE",
         "payload": {
@@ -29,6 +61,16 @@
             "size": {
                 "downloadSize": 100000,
                 "requiredSpace": 50000
+            },
+            "status": "STATUS"
+        }
+    },
+    "NoSize": {
+        "type": "SIZE",
+        "payload": {
+            "size": {
+                "downloadSize": 0,
+                "requiredSpace": 0
             },
             "status": "STATUS"
         }

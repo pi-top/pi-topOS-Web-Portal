@@ -140,6 +140,7 @@ export default () => {
             <UpgradePageContainer
               isCompleted={completedPages.includes(Page.Upgrade)}
               goToPreviousPage={() => history.push(PageRoute.Wifi)}
+              onWebPortalUpgrade={() => window.location.reload()}
               goToNextPage={() => {
                 addCompleted(Page.Upgrade);
                 history.push(PageRoute.Registration);

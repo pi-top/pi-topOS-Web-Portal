@@ -82,6 +82,7 @@ describe("UpgradePageContainer", () => {
     defaultProps = {
       goToNextPage: jest.fn(),
       goToPreviousPage: jest.fn(),
+      onWebPortalUpgrade: jest.fn(),
       isCompleted: false,
     };
 
@@ -135,7 +136,7 @@ describe("UpgradePageContainer", () => {
     expect(getByText("Update")).toBeInTheDocument();
   });
 
-  it("Upgrade button is disabled", async () => {
+  it("Update button is disabled", async () => {
     const { getByText } = mount();
 
     expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -172,20 +173,24 @@ describe("UpgradePageContainer", () => {
     expect(queryByTestId("dialog")).toHaveClass("hidden");
   });
 
-  describe("while preparing updates", () => {
+  describe("while updating sources", () => {
     beforeEach(async () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
-          if (data === "prepare") {
-            socket.send(JSON.stringify(Messages.PrepareStart));
-          }
-
-          if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
           }
         });
       });
+    });
+
+    it("renders the 'updating sources' message", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+
+      expect(getByText(UpgradePageExplanation.UpdatingSources)).toBeInTheDocument();
     });
 
     it("renders the textarea component", async () => {
@@ -217,13 +222,7 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
 
-    it("renders the preparing upgrade message", () => {
-      const { queryByText } = mount();
-
-      expect(queryByText(UpgradePageExplanation.Preparing)).toBeInTheDocument();
-    });
-
-    it("Upgrade button is disabled", async () => {
+    it("Update button is disabled", async () => {
       const { getByText } = mount();
 
       expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -244,81 +243,132 @@ describe("UpgradePageContainer", () => {
 
   });
 
-  describe("when updates are prepared", () => {
+  describe("when sources are updated", () => {
+    describe("and there are updates to the web-portal package", () => {
+      beforeEach(async () => {
+        server = createServer();
+        server.on("connection", (socket) => {
+          socket.on("message", (data) => {
+            if (data === "update_sources") {
+              socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+              socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+              socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+            }
+
+            if (data === "prepare_web_portal") {
+              socket.send(JSON.stringify(Messages.PrepareStart));
+              socket.send(JSON.stringify(Messages.PrepareFinish));
+            }
+
+            if (data === "size") {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+
+            if (data === "start") {
+              socket.send(JSON.stringify(Messages.UpgradeStart));
+              socket.send(JSON.stringify(Messages.UpgradeStatus));
+            }
+          });
+        });
+      });
+      it("renders the 'preparing your system to be updated' message", async () => {
+        const { getByText } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      });
+
+      it("renders the textarea component", async () => {
+        const { getByText, container: upgradePage } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+        const textAreaElement = upgradePage.querySelector(".textarea");
+        expect(textAreaElement).toBeInTheDocument()
+      });
+
+      it("textarea component displays web-portal upgrade messages", async () => {
+        const { getByText, findByTestId, queryByTestId } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+        await findByTestId("textarea");
+        const textAreaElement = queryByTestId("textarea");
+        expect(textAreaElement).toMatchSnapshot();
+      });
+
+      it("Update button is disabled", async () => {
+        const { getByText } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+        expect(getByText("Update")).toHaveProperty("disabled", true);
+      });
+    });
+
+    describe("and there are no updates to the web-portal package", () => {
+      beforeEach(async () => {
+        let times = 0;
+        server = createServer();
+        server.on("connection", (socket) => {
+          socket.on("message", (data) => {
+            if (data === "update_sources") {
+              socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+              socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+              socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+            }
+
+            if (data === "prepare_web_portal" || data === "prepare") {
+              if(times == 0) {
+                socket.send(JSON.stringify(Messages.PrepareStart));
+                socket.send(JSON.stringify(Messages.PrepareFinish));
+                times = times + 1;
+              } else {
+                socket.send(JSON.stringify(Messages.PrepareStart));
+                // socket.send(JSON.stringify(Messages.PrepareFinish));
+              }
+            }
+
+            if (data === "size") {
+              socket.send(JSON.stringify(Messages.NoSize));
+            }
+          });
+        });
+      });
+
+      it("renders the 'checking size of update' message", async () => {
+        const { getByText } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
+      });
+
+      it("doesn't render the textarea component", async () => {
+        const { getByText, container: upgradePage } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
+
+        const textAreaElement = upgradePage.querySelector(".textarea");
+        expect(textAreaElement).not.toBeInTheDocument()
+      });
+
+      it("Update button is disabled", async () => {
+        const { getByText } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
+
+        expect(getByText("Update")).toHaveProperty("disabled", true);
+      });
+    });
+  });
+
+  describe("when updating sources fails", () => {
     beforeEach(async () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
-          if (data === "prepare") {
-            socket.send(JSON.stringify(Messages.PrepareStart));
-            socket.send(JSON.stringify(Messages.PrepareFinish));
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesError));
           }
-
-          if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
-          }
-
-          if (data === "start") {
-            socket.send(JSON.stringify(Messages.UpgradeStart));
-            socket.send(JSON.stringify(Messages.UpgradeStatus));
-          }
-        });
-      });
-    });
-
-    it("renders the 'upgrade is prepared' message", async () => {
-      const { waitForPreparation } = mount();
-      await waitForPreparation();
-    });
-
-    it("stops rendering the textarea component", async () => {
-      const { waitForPreparation, container: upgradePage } = mount();
-
-      await waitForPreparation();
-
-      const textAreaElement = upgradePage.querySelector(".textarea");
-      expect(textAreaElement).not.toBeInTheDocument()
-    });
-
-    it("Upgrade button is enabled", async () => {
-      const { getByText, waitForPreparation } = mount();
-
-      await waitForPreparation();
-
-      expect(getByText("Update")).toHaveProperty("disabled", false);
-    });
-
-    it("starts upgrade when Upgrade button clicked", async () => {
-      const { getByText, waitForPreparation } = mount();
-
-      await waitForPreparation();
-      fireEvent.click(getByText("Update"));
-
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
-    });
-
-    it("Skip button is not present", async () => {
-      const { queryByText } = mount();
-
-      expect(queryByText("Skip")).not.toBeInTheDocument();
-    });
-
-  });
-
-  describe("when preparation fails", () => {
-    beforeEach(async () => {
-      server = createServer();
-      server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareError));
         });
       });
     });
 
     it("renders the error message", async () => {
       const { getByText } = mount();
-      await wait();
-
       await waitForElement(() => getByText(ErrorMessage.GenericError));
     });
 
@@ -370,14 +420,21 @@ describe("UpgradePageContainer", () => {
 
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
+
   });
 
-  describe("when the upgrade is being installed", () => {
+  describe("while updating web-portal", () => {
     beforeEach(async () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
-          if (data === "prepare") {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare_web_portal") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
@@ -394,15 +451,311 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders the updating web-portal message", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+    });
+
+    it("renders the textarea component", async () => {
+      const { getByText, queryByTestId } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+      expect(queryByTestId("textarea")).toBeInTheDocument();
+    });
+
+    it("textarea component displays web-portal upgrade messages", async () => {
+      const { getByText, findByTestId, queryByTestId } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
+      expect(textAreaElement).toMatchSnapshot();
+    });
+
+    it("Update button is present", async () => {
+      const { getByText, queryByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+      expect(queryByText("Update")).toBeInTheDocument();
+    });
+
+    it("Update button is disabled", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+      await waitForElement(() => getByText("Update"));
+      expect(getByText("Update")).toHaveProperty("disabled", true);
+    });
+
+    it("Skip button is not present", async () => {
+      const { getByText, queryByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal));
+
+      expect(queryByText("Skip")).not.toBeInTheDocument();
+    });
+
+  });
+
+  describe("when updating web-portal succeeds", () => {
+    beforeEach(async () => {
+      jest.useRealTimers();
+
+      restartWebPortalServiceMock.mockResolvedValue("OK");
+      serverStatusMock.mockResolvedValue("OK");
+
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+
+          if (data === "start") {
+            socket.send(JSON.stringify(Messages.UpgradeStart));
+            socket.send(JSON.stringify(Messages.UpgradeStatus));
+            socket.send(JSON.stringify(Messages.UpgradeFinish));
+          }
+        });
+      });
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      restartWebPortalServiceMock.mockRestore();
+      serverStatusMock.mockRestore();
+    })
+
+    it("renders the 'please wait' message while restarting web-portal service", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+    });
+
+    it("Update button is present", async () => {
+      const { getByText, queryByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      expect(queryByText("Update")).toBeInTheDocument();
+    });
+
+    it("Update button is disabled", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      await waitForElement(() => getByText("Update"));
+      expect(getByText("Update")).toHaveProperty("disabled", true);
+    });
+
+    it("requests to restart the pt-os-web-portal systemd service", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      expect(restartWebPortalServiceMock).toHaveBeenCalled();
+    });
+
+    it("doesn't display an error message when restartWebPortalService fails", async () => {
+      // we expect restartWebPortalService to fail since the backend server restarts
+      restartWebPortalServiceMock.mockRejectedValue(new Error("backend server restarted"));
+      const { getByText, queryByText} = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+      jest.useFakeTimers();
+      jest.runOnlyPendingTimers();
+
+      expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
+    });
+
+    it("renders a spinner while server is restarting", async () => {
+      const { getByText, container: upgradePage} = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      expect(querySpinner(upgradePage)).toBeInTheDocument();
+    });
+
+    it("probes backend server to determine if its online", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+      jest.useFakeTimers();
+      jest.runAllTimers();
+
+      expect(serverStatusMock).toHaveBeenCalledTimes(1);
+    });
+
+    it.skip("probes backend server until its online", async () => {
+      jest.useFakeTimers();
+      const { getByText } = mount();
+      jest.runAllTimers();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      expect(serverStatusMock).not.toBeCalled();
+      serverStatusMock.mockRejectedValue(new Error("I'm offline, try again later"));
+
+      jest.runOnlyPendingTimers();
+
+      // checks twice
+      jest.runOnlyPendingTimers();
+      expect(serverStatusMock).toHaveBeenCalledTimes(1);
+      jest.runOnlyPendingTimers();
+      expect(serverStatusMock).toHaveBeenCalledTimes(2);
+      // server is back online
+      serverStatusMock.mockResolvedValue("OK");
+      jest.runOnlyPendingTimers();
+      expect(serverStatusMock).toHaveBeenCalledTimes(3);
+      await wait();
+      jest.runOnlyPendingTimers();
+      // we don't check again
+      expect(serverStatusMock).toHaveBeenCalledTimes(3);
+    });
+
+    it("doesn't render the textarea component", async () => {
+      const { getByText, queryByTestId } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+      jest.useFakeTimers();
+      jest.runOnlyPendingTimers();
+
+      expect(queryByTestId("textarea")).not.toBeInTheDocument();
+    });
+
+    it("calls onWebPortalUpgrade", async () => {
+      jest.useFakeTimers();
+      const { getByText } = mount();
+      jest.runAllTimers();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
+
+      expect(defaultProps.onWebPortalUpgrade).toHaveBeenCalled();
+    });
+  });
+
+  describe("when updating web-portal fails", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+
+          if (data === "start") {
+            socket.send(JSON.stringify(Messages.UpgradeStart));
+            socket.send(JSON.stringify(Messages.UpgradeStatus));
+            socket.send(JSON.stringify(Messages.UpgradeError));
+          }
+        });
+      });
+    });
+
+    it("renders the error message", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+    });
+
+    it("Skip button is present", async () => {
+      const { getByText, queryByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      expect(queryByText("Skip")).toBeInTheDocument();
+    });
+
+    it("calls goToNextPage when Skip button clicked", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      await waitForElement(() => getByText("Skip"));
+      fireEvent.click(getByText("Skip"));
+
+      expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    });
+
+    it("Update button is present", async () => {
+      const { getByText, queryByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      expect(queryByText("Update")).toBeInTheDocument();
+    });
+
+    it("Update button is disabled", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      await waitForElement(() => getByText("Update"));
+      expect(getByText("Update")).toHaveProperty("disabled", true);
+    });
+
+    it("renders the textarea component", async () => {
+      const { getByText, queryByTestId } = mount();
+      await waitForElement(() => getByText(ErrorMessage.GenericError));
+
+      expect(queryByTestId("textarea")).toBeInTheDocument();
+    });
+  });
+
+  // describe("when updating web-portal succeeds and there are system updates", () => {
+  // describe("when updating web-portal succeeds and there are no system updates", () => {
+
+
+  describe("when the system is being updated", () => {
+    beforeEach(async () => {
+      let times = 0;
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+
+          }
+
+          if (data === "start") {
+            socket.send(JSON.stringify(Messages.UpgradeStart));
+            socket.send(JSON.stringify(Messages.UpgradeStatus));
+          }
+        });
+      });
+    });
+
     it("renders the 'upgrade is in progress' message", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
 
-      await waitForElement(() =>
-        queryByText(UpgradePageExplanation.InProgress)
-      );
+      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
     });
 
     it("renders progress bar correctly", async () => {
@@ -434,7 +787,7 @@ describe("UpgradePageContainer", () => {
       expect(textAreaElement).toMatchSnapshot();
     });
 
-    it("Upgrade button is disabled", async () => {
+    it("Update button is disabled", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
@@ -460,18 +813,31 @@ describe("UpgradePageContainer", () => {
     });
   });
 
-  describe("when the upgrade fails", () => {
+  describe("when the system upgrade fails", () => {
     beforeEach(async () => {
+      let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
-          if (data === "prepare") {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
 
           if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+
           }
 
           if (data === "start") {
@@ -491,7 +857,7 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText(ErrorMessage.GenericError));
     });
 
-    it("doesn't render the 'upgrading' message", async () => {
+    it("doesn't render the 'is upgrading' message", async () => {
       const { getByText, waitForPreparation, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
@@ -551,7 +917,7 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
-    it("Upgrade button is disabled", async () => {
+    it("Update button is disabled", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
@@ -564,17 +930,32 @@ describe("UpgradePageContainer", () => {
 
   describe("when the upgrade finishes", () => {
     beforeEach(() => {
+      let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
-          if (data === "prepare") {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
-          else if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
+
+          if (data === "size") {
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+
           }
-          else if (data === "start") {
+
+          if (data === "start") {
             socket.send(JSON.stringify(Messages.UpgradeStart));
             socket.send(JSON.stringify(Messages.UpgradeStatus));
             socket.send(JSON.stringify(Messages.UpgradeFinish));
@@ -643,7 +1024,7 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
-    it("requests to restart the pt-os-web-portal systemd service", async () => {
+    it("doesn't request to restart the pt-os-web-portal systemd service", async () => {
       const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
@@ -653,22 +1034,8 @@ describe("UpgradePageContainer", () => {
       fireEvent.click(getByText("Next"));
       await wait();
       jest.runOnlyPendingTimers();
-      expect(restartWebPortalServiceMock).toHaveBeenCalled();
-    });
-
-    it("doesn't display an error message when restartWebPortalService fails", async () => {
-      // we expect restartWebPortalService to fail since the backend server restarts
-      restartWebPortalServiceMock.mockRejectedValue(new Error("couldn't restart"));
-      const { queryByText, getByText, waitForUpgradeFinish, waitForPreparation } = mount();
-      await waitForPreparation();
-      fireEvent.click(getByText("Update"));
-      await waitForUpgradeFinish();
-      jest.useFakeTimers();
-
-      fireEvent.click(getByText("Next"));
-      await wait();
       jest.runOnlyPendingTimers();
-      expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
+      expect(restartWebPortalServiceMock).not.toHaveBeenCalled();
     });
 
     it("calls goToNextPage when next button clicked", async () => {
@@ -696,91 +1063,6 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
     });
 
-    describe("when pt-os-web-portal server is restarting", () => {
-      afterEach(() => {
-        jest.useRealTimers();
-        restartWebPortalServiceMock.mockRestore();
-        serverStatusMock.mockRestore();
-      })
-
-      it("renders a spinner", async () => {
-        const { container: upgradePage, waitForUpgradeFinish, getByText, waitForPreparation } = mount();
-        await waitForPreparation();
-        fireEvent.click(getByText("Update"));
-        await waitForUpgradeFinish();
-        jest.useFakeTimers();
-
-        fireEvent.click(getByText("Next"));
-        await wait();
-        jest.runOnlyPendingTimers();
-        expect(querySpinner(upgradePage)).toBeInTheDocument();
-      });
-
-      it("renders a 'please wait' message", async () => {
-        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
-        await waitForPreparation();
-        fireEvent.click(getByText("Update"));
-        await waitForUpgradeFinish();
-        jest.useFakeTimers();
-
-        fireEvent.click(getByText("Next"));
-        await wait();
-        jest.runOnlyPendingTimers();
-        await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer));
-      });
-
-      it("probes backend server to determine if its online", async () => {
-        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
-        await waitForPreparation();
-        fireEvent.click(getByText("Update"));
-        await waitForUpgradeFinish();
-        jest.useFakeTimers();
-
-        fireEvent.click(getByText("Next"));
-        await wait();
-        jest.runOnlyPendingTimers();
-        expect(serverStatusMock).toHaveBeenCalledTimes(1);
-      });
-
-      it("probes backend server until its online", async () => {
-        const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
-        await waitForPreparation();
-        fireEvent.click(getByText("Update"));
-        await waitForUpgradeFinish();
-        jest.useFakeTimers();
-
-        serverStatusMock.mockRejectedValue(new Error("I'm offline"));
-        fireEvent.click(getByText("Next"));
-
-        // checks twice
-        jest.runOnlyPendingTimers();
-        expect(serverStatusMock).toBeCalledTimes(1);
-        jest.runOnlyPendingTimers();
-        expect(serverStatusMock).toHaveBeenCalledTimes(2);
-        // server is back online
-        serverStatusMock.mockResolvedValue("OK");
-        jest.runOnlyPendingTimers();
-        expect(serverStatusMock).toHaveBeenCalledTimes(3);
-        await wait();
-        jest.runOnlyPendingTimers();
-        // we don't check again
-        expect(serverStatusMock).toHaveBeenCalledTimes(3);
-      });
-
-      it("doesn't render the textarea component", async () => {
-        const { waitForUpgradeFinish, waitForPreparation, getByText, queryByTestId } = mount();
-        await waitForPreparation();
-        fireEvent.click(getByText("Update"));
-        await waitForUpgradeFinish();
-        jest.useFakeTimers();
-
-        fireEvent.click(getByText("Next"));
-        await wait();
-        jest.runOnlyPendingTimers();
-
-        expect(queryByTestId("textarea")).not.toBeInTheDocument();
-      });
-    });
   });
 
   describe("when there's not enough space left on device", () => {
@@ -793,14 +1075,26 @@ describe("UpgradePageContainer", () => {
 
       server = createServer();
       server.on("connection", (socket) => {
+        let times = 0;
         socket.on("message", (data) => {
-          if (data === "prepare") {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
 
           if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
           }
         });
       });
@@ -827,7 +1121,7 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
-    it("Upgrade button is disabled", async () => {
+    it("Update button is disabled", async () => {
       const { getByText } = mount();
 
       await waitForElement(() => getByText("Update"));
@@ -840,16 +1134,28 @@ describe("UpgradePageContainer", () => {
       getAvailableSpaceMock.mockRejectedValue(
         new Error("nah mate couldn't tell ya")
       );
+      let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
-          if (data === "prepare") {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
 
           if (data === "size") {
-            socket.send(JSON.stringify(Messages.Size));
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
           }
         });
       });
@@ -876,7 +1182,7 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
-    it("Upgrade button is disabled", async () => {
+    it("Update button is disabled", async () => {
       const { getByText } = mount();
 
       await waitForElement(() => getByText("Update"));
@@ -886,10 +1192,29 @@ describe("UpgradePageContainer", () => {
 
   describe("when there are major OS updates available and user 'shouldBurn'", () => {
     beforeEach(async () => {
+      let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareStart));
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+          }
         });
       });
       let osUpdatesResponse: OsVersionUpdate;
@@ -905,23 +1230,23 @@ describe("UpgradePageContainer", () => {
     });
 
     it("shows the OS version update dialog", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+      const { queryByTestId, waitForPreparation } = mount();
+      await waitForPreparation();
 
       expect(queryByTestId("dialog")).not.toHaveClass("hidden");
     });
 
     it("hides the dialog on Close click", async() => {
-      const { queryByTestId, getByText } = mount();
-      await wait();
+      const { queryByTestId, waitForPreparation, getByText } = mount();
+      await waitForPreparation();
       fireEvent.click(getByText("Close"));
 
       expect(queryByTestId("dialog")).toHaveClass("hidden");
     });
 
     it("renders the correct message", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+      const { waitForPreparation, queryByTestId } = mount();
+      await waitForPreparation();
 
       expect(queryByTestId("dialog")).toMatchSnapshot();
     });
@@ -930,10 +1255,29 @@ describe("UpgradePageContainer", () => {
 
   describe("when there are major OS updates available and user 'requireBurn'", () => {
     beforeEach(async () => {
+      let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareStart));
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+          }
         });
       });
       let osUpdatesResponse: OsVersionUpdate;
@@ -949,23 +1293,23 @@ describe("UpgradePageContainer", () => {
     });
 
     it("shows the OS version update dialog", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+      const { waitForPreparation, queryByTestId } = mount();
+      await waitForPreparation();
 
       expect(queryByTestId("dialog")).not.toHaveClass("hidden");
     });
 
     it("hides the dialog on Close click", async() => {
-      const { queryByTestId, getByText } = mount();
-      await wait();
+      const { waitForPreparation, getByText, queryByTestId } = mount();
+      await waitForPreparation();
       fireEvent.click(getByText("Close"));
 
       expect(queryByTestId("dialog")).toHaveClass("hidden");
     });
 
     it("renders the correct message", async () => {
-      const { queryByTestId } = mount();
-      await wait();
+      const { waitForPreparation, queryByTestId } = mount();
+      await waitForPreparation();
 
       expect(queryByTestId("dialog")).toMatchSnapshot();
     });
@@ -973,10 +1317,29 @@ describe("UpgradePageContainer", () => {
 
   describe("when checking for major OS updates fails", () => {
     beforeEach(async () => {
+      let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
-        socket.on("message", () => {
-          socket.send(JSON.stringify(Messages.PrepareStart));
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare" || data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            if (times == 0) {
+              socket.send(JSON.stringify(Messages.NoSize));
+              times = times + 1;
+            } else {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+          }
         });
       });
       serverStatusMock.mockResolvedValue("OK");
