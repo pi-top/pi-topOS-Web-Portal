@@ -96,10 +96,7 @@ class OnboardingApp:
             draw = ImageDraw.Draw(image)
 
             def showing_info_on_current_page():
-                return (
-                    self.pages.get(self.current_page).render_state
-                    == RenderState.DISPLAYING_INFO
-                )
+                return self.current_page.render_state == RenderState.DISPLAYING_INFO
 
             def current_page_should_go_to_next_page():
                 if self.current_page not in [Menus.AP, Menus.BROWSER]:
