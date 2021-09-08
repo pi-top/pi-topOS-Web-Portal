@@ -28,7 +28,6 @@ class OnboardingApp:
         }
 
         self.current_page = self.pages.get(Menus.WELCOME)
-        self.page_to_move_to = None
 
         self.miniscreen.up_button.when_pressed = lambda: self.go_to(
             self.get_previous_page(self.current_page)
@@ -43,37 +42,49 @@ class OnboardingApp:
 
     def get_previous_page(self, page):
         curr_idx = self.page_order.index(page.type)
-        # Don't go to bottom page
-        prev_idx = 0 if curr_idx - 1 < 0 else curr_idx - 1
+        # Return current page if at end
+        if curr_idx - 1 <= 0:
+            return self.pages.get(self.page_order[curr_idx])
 
-        candidate = self.page_order[prev_idx]
-        if self.pages.get(candidate).skip:
-            return self.get_previous_page(self.pages.get(candidate))
+        candidate = self.pages.get(self.page_order[curr_idx - 1])
+        if candidate.skip:
+            return self.get_next_page(candidate)
         return candidate
 
     def get_next_page(self, page):
         curr_idx = self.page_order.index(page.type)
-        # Don't go to top page
-        next_idx = curr_idx if curr_idx + 1 == len(self.page_order) else curr_idx + 1
+        # Return current page if at end
+        if curr_idx + 1 >= len(self.page_order):
+            return self.pages.get(self.page_order[curr_idx])
 
-        candidate = self.page_order[next_idx]
-        if self.pages.get(candidate).skip:
-            return self.get_next_page(self.pages.get(candidate))
+        candidate = self.pages.get(self.page_order[curr_idx + 1])
+        if candidate.skip:
+            return self.get_next_page(candidate)
         return candidate
 
     def start(self):
+        PTLogger.info("Starting...")
+
         self.__auto_play_thread = Thread(target=self._main, args=())
         self.__auto_play_thread.daemon = True
         self.__auto_play_thread.start()
 
     def stop(self):
+        PTLogger.info("Stopping...")
+
         self.__stop_thread = True
         if self.__auto_play_thread and self.__auto_play_thread.is_alive():
             self.__auto_play_thread.join()
 
     def go_to(self, page):
-        self.page_to_move_to = self.pages.get(page)
-        PTLogger.info(f"Moving to {self.page_to_move_to.type.name} page")
+        if self.current_page == page:
+            PTLogger.debug(
+                f"Already on page '{self.current_page.type.name}' - nothing to do"
+            )
+            return
+        self.current_page = page
+        self.current_page.first_draw = True
+        PTLogger.info(f"Set page to {self.current_page.type.name}")
 
     def _main(self):
         empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
@@ -82,23 +93,6 @@ class OnboardingApp:
             image = empty_image.copy()
             draw = ImageDraw.Draw(image)
 
-            # Update page
-            force_redraw = self.page_to_move_to is not None
-            if self.page_to_move_to:
-                self.current_page = self.page_to_move_to
-                self.page_to_move_to = None
-                self.current_page.first_draw = True
-
-            # Draw current page to image
-            self.current_page.render(draw, redraw=force_redraw)
-
-            # Display image
-            self.miniscreen.device.display(image)
-
-            # Wait
-            sleep(self.current_page.interval)
-
-            # Transitions
             def showing_info_on_current_page():
                 return (
                     self.pages.get(self.current_page).render_state
@@ -106,7 +100,7 @@ class OnboardingApp:
                 )
 
             def current_page_should_go_to_next_page():
-                if self.current_page != Menus.AP and self.current_page != Menus.BROWSER:
+                if self.current_page not in [Menus.AP, Menus.BROWSER]:
                     return False
 
                 return (
@@ -114,5 +108,23 @@ class OnboardingApp:
                     and self.get_next_page(self.current_page).should_display()
                 )
 
+            PTLogger.debug("Main loop: Handling automatic page change...")
             if current_page_should_go_to_next_page():
                 self.go_to(self.get_next_page(self.current_page))
+
+            PTLogger.debug("Main loop: Drawing current page to image...")
+            self.current_page.render(draw, redraw=self.current_page.first_draw)
+
+            PTLogger.debug("Main loop: Displaying image...")
+            self.miniscreen.device.display(image)
+
+            PTLogger.debug("Main loop: Sleeping...")
+            interval_resolution = 0.005
+            sleep_time = 0
+            # Stop sleeping if the page has changed
+            while (
+                not self.current_page.first_draw
+                and sleep_time < self.current_page.interval
+            ):
+                sleep(interval_resolution)
+                sleep_time = sleep_time + interval_resolution
