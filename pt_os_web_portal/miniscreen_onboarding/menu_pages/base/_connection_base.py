@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw
 
-from ._base import MenuPageBase
 from .attr.speeds import (
     ANIMATION_SLEEP_INTERVAL,
     ANIMATION_SPEED,
@@ -9,6 +8,7 @@ from .attr.speeds import (
     STATIONARY_SLEEP_INTERVAL,
 )
 from .attr.states import RenderState
+from .base._base import MenuPageBase
 from .render.helpers import get_image_file_path, process_image
 
 

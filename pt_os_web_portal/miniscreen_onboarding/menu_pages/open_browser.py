@@ -8,8 +8,8 @@ from pitop.common.sys_info import (
 )
 
 from ..menus import Menus
-from ._title_base import TitleMenuPage
 from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
+from .base._title_base import TitleMenuPage
 from .render.helpers import draw_text
 
 
