@@ -2,11 +2,11 @@ from pathlib import Path
 from threading import Thread
 from time import sleep
 
-from ...backend.helpers.extras import started_onboarding_breadcrumb
-from ..menus import Menus
-from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from .base._title_base import TitleMenuPage
-from .render.helpers import draw_text
+from ....backend.helpers.extras import started_onboarding_breadcrumb
+from ...menus import Menus
+from ..attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
+from ..base._title_base import TitleMenuPage
+from ..render.helpers import draw_text
 
 
 class CarryOnMenuPage(TitleMenuPage):
