@@ -1,12 +1,15 @@
+from signal import pause
+
 import click
 
-from .app import OnboardingApp
+from . import OnboardingApp
 
 
 @click.command()
-def main(journal, log_level) -> None:
+def main() -> None:
     onboarding_app = OnboardingApp()
     onboarding_app.start()
+    pause()
 
 
 if __name__ == "__main__":
