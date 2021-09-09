@@ -17,9 +17,8 @@ def setup_os_update_event_handlers():
 class OSUpdateManager:
     lock = False
 
-    def __init__(self, ws=None) -> None:
+    def __init__(self) -> None:
         self.cache: apt.Cache  # type: ignore
-        self.ws = ws
 
     def update(self, callback) -> None:
         PTLogger.info("OSUpdater: Updating APT sources")

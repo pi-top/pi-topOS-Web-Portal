@@ -77,7 +77,6 @@ def create_emit_os_size_message(ws):
 class OSUpdater:
     def __init__(self):
         self.manager = OSUpdateManager()
-        pass
 
     def prepare_os_upgrade(self, ws=None):
         if not is_system_clock_synchronized():
@@ -123,29 +122,33 @@ class OSUpdater:
                 callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
 
     def start_os_upgrade(self, ws=None):
-        fw_breadcrumb_manager = FWUpdaterBreadcrumbManager()
+        post_event("os_updater_upgrade", "started")
+
         callback = create_emit_os_upgrade_message(ws) if ws else None
         try:
-            # tell firmware updater updater not to timeout
-            if not fw_breadcrumb_manager.is_ready():
-                PTLogger.info(
-                    "Creating 'extend timeout' breadcrumb for pt-firmware-updater"
-                )
-                fw_breadcrumb_manager.set_extend_timeout()
-
             self.manager.upgrade(callback)
             self.manager.update_last_check_config()
+            post_event("os_updater_upgrade", "success")
         except Exception as e:
             if callable(callback):
                 callback(MessageType.ERROR, f"{e}", 0.0)
-        finally:
-            fw_breadcrumb_manager.set_ready("pt-os-web-portal: Finished update.")
-            # Tell firmware updater to no longer block on extended timeout
-            if fw_breadcrumb_manager.is_extending_timeout():
-                PTLogger.info(
-                    "Removing 'extend timeout' breadcrumb for pt-firmware-updater"
-                )
-                fw_breadcrumb_manager.clear_extend_timeout()
+            post_event("os_updater_upgrade", "failed")
+
+    @property
+    def last_checked_date(self):
+        last_checked_date = None
+
+        try:
+            last_checked_date_str = ConfigManager().get(
+                "os_updater", "last_checked_date"
+            )
+            last_checked_date = datetime.strptime(
+                last_checked_date_str, "%Y-%m-%d"
+            ).date()
+        except Exception:
+            pass
+
+        return last_checked_date
 
     def should_check_for_updates(self, ws=None):
         if not onboarding_completed():
@@ -156,21 +159,7 @@ class OSUpdater:
             PTLogger.info("No internet connection detected, skipping update check...")
             return False
 
-        try:
-            last_checked_date_str = ConfigManager().get(
-                "os_updater", "last_checked_date"
-            )
-            last_checked_date = datetime.strptime(
-                last_checked_date_str, "%Y-%m-%d"
-            ).date()
-            should = last_checked_date != date.today()
-            PTLogger.info(
-                f"Should {'' if should else 'not'} check for updates, last checked date was {last_checked_date}"
-            )
-        except Exception:
-            should = True
-
-        return should
+        return self.last_checked_date != date.today()
 
     def updates_available(self, ws=None):
         self.prepare_os_upgrade()
