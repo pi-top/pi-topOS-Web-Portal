@@ -9,10 +9,10 @@ from ..attr.speeds import (
 )
 from ..attr.states import RenderState
 from ..render.helpers import get_image_file_path, process_image
-from ._base import MenuPageBase
+from ._base import PageBase
 
 
-class TitleMenuPage(MenuPageBase):
+class TitlePage(PageBase):
     def __init__(
         self,
         type,
@@ -20,7 +20,7 @@ class TitleMenuPage(MenuPageBase):
         size=(0, 0),
         mode=0,
     ):
-        super(TitleMenuPage, self).__init__(type, size, mode)
+        super(TitlePage, self).__init__(type, size, mode)
 
         self.interval = STATIONARY_SLEEP_INTERVAL
         self.render_state = RenderState.STATIONARY

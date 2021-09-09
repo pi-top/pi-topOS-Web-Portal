@@ -9,10 +9,10 @@ from ..attr.speeds import (
 )
 from ..attr.states import RenderState
 from ..render.helpers import get_image_file_path, process_image
-from ._base import MenuPageBase
+from ._base import PageBase
 
 
-class ConnectionMenuPage(MenuPageBase):
+class ConnectionPage(PageBase):
     def __init__(
         self,
         type,
@@ -22,7 +22,7 @@ class ConnectionMenuPage(MenuPageBase):
         size=(0, 0),
         mode=0,
     ):
-        super(ConnectionMenuPage, self).__init__(type, size, mode)
+        super(ConnectionPage, self).__init__(type, size, mode)
 
         self.connection_state = connection_state
         self.interval = STATIONARY_SLEEP_INTERVAL

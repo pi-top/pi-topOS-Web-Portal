@@ -8,15 +8,15 @@ from pitop.common.sys_info import (
 )
 
 from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from .base._title_base import TitleMenuPage
-from .pages import MenuPages
+from .base._title_base import TitlePage
+from .pages import Pages
 from .render.helpers import draw_text
 
 
-class OpenBrowserMenuPage(TitleMenuPage):
+class OpenBrowserPage(TitlePage):
     def __init__(self, size, mode):
-        super(OpenBrowserMenuPage, self).__init__(
-            type=MenuPages.BROWSER,
+        super(OpenBrowserPage, self).__init__(
+            type=Pages.BROWSER,
             size=size,
             mode=mode,
             title_image_filename="connected.png",
