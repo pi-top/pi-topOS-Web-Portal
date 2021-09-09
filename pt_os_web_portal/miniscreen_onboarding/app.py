@@ -71,14 +71,14 @@ class OnboardingApp:
         return candidate
 
     def start(self):
-        PTLogger.info("Starting...")
+        PTLogger.info("Miniscreen onboarding: Starting...")
 
         self.__auto_play_thread = Thread(target=self._main, args=())
         self.__auto_play_thread.daemon = True
         self.__auto_play_thread.start()
 
     def stop(self):
-        PTLogger.info("Stopping...")
+        PTLogger.info("Miniscreen onboarding: Stopping...")
 
         self.__stop_thread = True
         if self.__auto_play_thread and self.__auto_play_thread.is_alive():
@@ -87,12 +87,14 @@ class OnboardingApp:
     def go_to(self, page):
         if self.current_page == page:
             PTLogger.debug(
-                f"Already on page '{self.current_page.type.name}' - nothing to do"
+                f"Miniscreen onboarding: Already on page '{self.current_page.type.name}' - nothing to do"
             )
             return
         self.current_page = page
         self.current_page.first_draw = True
-        PTLogger.info(f"Set page to {self.current_page.type.name}")
+        PTLogger.info(
+            f"Miniscreen onboarding: Set page to {self.current_page.type.name}"
+        )
 
     def _main(self):
         empty_image = Image.new(self.miniscreen.mode, self.miniscreen.size)
@@ -113,17 +115,21 @@ class OnboardingApp:
                     and self.get_next_page(self.current_page).should_display()
                 )
 
-            PTLogger.debug("Main loop: Handling automatic page change...")
+            PTLogger.debug(
+                "Miniscreen onboarding: Main loop - Handling automatic page change..."
+            )
             if current_page_should_go_to_next_page():
                 self.go_to(self.get_next_page(self.current_page))
 
-            PTLogger.debug("Main loop: Drawing current page to image...")
+            PTLogger.debug(
+                "Miniscreen onboarding: Main loop - Drawing current page to image..."
+            )
             self.current_page.render(draw, redraw=self.current_page.first_draw)
 
-            PTLogger.debug("Main loop: Displaying image...")
+            PTLogger.debug("Miniscreen onboarding: Main loop - Displaying image...")
             self.miniscreen.device.display(image)
 
-            PTLogger.debug("Main loop: Sleeping...")
+            PTLogger.debug("Miniscreen onboarding: Main loop - Sleeping...")
             interval_resolution = 0.005
             sleep_time = 0
             # Stop sleeping if the page has changed
