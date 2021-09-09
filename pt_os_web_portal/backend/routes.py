@@ -10,9 +10,7 @@ from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
 from ..event import post_event
-from ..os_updater.manager import (
-    check_relevant_os_updates,  # TODO: move into separate file
-)
+from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
 from .helpers.about import device_data
 from .helpers.build import os_build_info
@@ -465,7 +463,7 @@ def FSMePro(filename):
 @app.route("/os-updates", methods=["GET"])
 def get_os_check_update():
     PTLogger.debug("Route '/os-updates'")
-    return jdumps(check_relevant_os_updates())
+    return jdumps(check_relevant_pi_top_os_version_updates())
 
 
 @app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
