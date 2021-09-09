@@ -15,7 +15,6 @@ from .os_updater import OSUpdater
 class App:
     def __init__(self, test_mode):
         self.os_updater = OSUpdater()
-        self.miniscreen_onboarding = OnboardingApp()
         self.device_registration_mgr = DeviceRegistrationManager()
         self.wsgi_server = WSGIServer(
             ("", 80),
@@ -40,7 +39,7 @@ class App:
             PTLogger.info(
                 "Onboarding not completed - starting miniscreen onboarding application"
             )
-            self.miniscreen_onboarding.start()
+            OnboardingApp().start()
 
         self.listener_mgr.start()
         self.wsgi_server.serve_forever()
