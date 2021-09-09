@@ -1,9 +1,9 @@
+from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
 from pitop.system import device_type
-from pywsgi import WSGIServer
 
 from .backend import create_app
 from .backend.helpers.finalise import onboarding_completed
