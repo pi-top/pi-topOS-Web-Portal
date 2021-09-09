@@ -1,82 +1,28 @@
 from datetime import date, datetime
-from enum import Enum, auto
-from json import dumps as jdumps
 
 from pitop.common.logger import PTLogger
 
 from .backend.helpers.extras import FWUpdaterBreadcrumbManager
-from .backend.helpers.os_update_manager import OSUpdateManager
+from .backend.helpers.os_update_manager import (
+    MessageType,
+    OSUpdateManager,
+    OSUpdaterFrontendMessageHandler,
+)
 from .config_manager import ConfigManager
-from .event import post_event
+from .event import post_event, subscribe
 from .finalise import onboarding_completed
 from .system_clock import is_system_clock_synchronized, synchronize_system_clock
 from .wifi_manager import is_connected_to_internet
 
 
-class MessageType(Enum):
-    ERROR = auto()
-    START = auto()
-    STATUS = auto()
-    FINISH = auto()
-
-
-class EventNames(Enum):
-    OS_UPGRADE = auto()
-    OS_PREPARE_UPGRADE = auto()
-    SIZE = auto()
-
-
-def create_emit_os_prepare_upgrade_message(ws):
-    def emit_os_prepare_upgrade_message(
-        message_type: MessageType, status_message: str, percent: float
-    ) -> None:
-        data = {
-            "type": EventNames.OS_PREPARE_UPGRADE.name,
-            "payload": {
-                "status": message_type.name,
-                "percent": percent,
-                "message": status_message.strip(),
-            },
-        }
-        PTLogger.info(str(data))
-        ws.send(jdumps(data))
-
-    return emit_os_prepare_upgrade_message
-
-
-def create_emit_os_upgrade_message(ws):
-    def emit_os_upgrade_message(
-        message_type: MessageType, status_message: str, percent: float
-    ) -> None:
-        data = {
-            "type": EventNames.OS_UPGRADE.name,
-            "payload": {
-                "status": message_type.name,
-                "percent": percent,
-                "message": status_message.strip(),
-            },
-        }
-        PTLogger.info(str(data))
-        ws.send(jdumps(data))
-
-    return emit_os_upgrade_message
-
-
-def create_emit_os_size_message(ws):
-    def emit_os_size_message(message_type, size):
-        data = {
-            "type": EventNames.SIZE.name,
-            "payload": {"size": size, "status": message_type.name},
-        }
-        PTLogger.info(str(data))
-        ws.send(jdumps(data))
-
-    return emit_os_size_message
+def setup_os_update_event_handlers():
+    subscribe("os_updater_prepare_started", OSUpdateManager().update)
 
 
 class OSUpdater:
     def __init__(self):
         self.manager = OSUpdateManager()
+        self.message_handler = OSUpdaterFrontendMessageHandler()
 
     def prepare_os_upgrade(self, ws=None):
         if not is_system_clock_synchronized():
@@ -84,7 +30,11 @@ class OSUpdater:
 
         post_event("os_updater_prepare", "started")
 
-        callback = create_emit_os_prepare_upgrade_message(ws) if ws else None
+        callback = (
+            self.message_handler.create_emit_os_prepare_upgrade_message(ws)
+            if ws
+            else None
+        )
         try:
             if callable(callback):
                 callback(MessageType.START, "Preparing OS upgrade", 0.0)
@@ -106,7 +56,7 @@ class OSUpdater:
                 callback(MessageType.ERROR, f"{e}", 0.0)
 
     def os_upgrade_size(self, ws=None):
-        callback = create_emit_os_size_message(ws) if ws else None
+        callback = self.message_handler.create_emit_os_size_message(ws) if ws else None
         try:
             if callable(callback):
                 callback(
@@ -124,7 +74,9 @@ class OSUpdater:
     def start_os_upgrade(self, ws=None):
         post_event("os_updater_upgrade", "started")
 
-        callback = create_emit_os_upgrade_message(ws) if ws else None
+        callback = (
+            self.message_handler.create_emit_os_upgrade_message(ws) if ws else None
+        )
         try:
             self.manager.upgrade(callback)
             self.manager.update_last_check_config()

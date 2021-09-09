@@ -1,15 +1,75 @@
 from datetime import date
+from enum import Enum, auto
+from json import dumps as jdumps
 
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
 
-from ..events import MessageType
 from .config_manager import ConfigManager
-from .event import subscribe
 from .modules import get_apt
 
 (apt, apt.progress, apt_pkg) = get_apt()
+
+
+class MessageType(Enum):
+    ERROR = auto()
+    START = auto()
+    STATUS = auto()
+    FINISH = auto()
+
+
+class EventNames(Enum):
+    OS_UPGRADE = auto()
+    OS_PREPARE_UPGRADE = auto()
+    SIZE = auto()
+
+
+class OSUpdaterFrontendMessageHandler:
+    def create_emit_os_prepare_upgrade_message(self, ws):
+        def emit_os_prepare_upgrade_message(
+            message_type: MessageType, status_message: str, percent: float
+        ) -> None:
+            data = {
+                "type": EventNames.OS_PREPARE_UPGRADE.name,
+                "payload": {
+                    "status": message_type.name,
+                    "percent": percent,
+                    "message": status_message.strip(),
+                },
+            }
+            PTLogger.info(str(data))
+            ws.send(jdumps(data))
+
+        return emit_os_prepare_upgrade_message
+
+    def create_emit_os_upgrade_message(self, ws):
+        def emit_os_upgrade_message(
+            message_type: MessageType, status_message: str, percent: float
+        ) -> None:
+            data = {
+                "type": EventNames.OS_UPGRADE.name,
+                "payload": {
+                    "status": message_type.name,
+                    "percent": percent,
+                    "message": status_message.strip(),
+                },
+            }
+            PTLogger.info(str(data))
+            ws.send(jdumps(data))
+
+        return emit_os_upgrade_message
+
+    def create_emit_os_size_message(self, ws):
+        def emit_os_size_message(message_type, size):
+            data = {
+                "type": EventNames.SIZE.name,
+                "payload": {"size": size, "status": message_type.name},
+            }
+            PTLogger.info(str(data))
+            ws.send(jdumps(data))
+
+        return emit_os_size_message
 
 
 class FetchProgress(apt.progress.base.AcquireProgress):  # type: ignore
@@ -83,10 +143,6 @@ def check_relevant_os_updates():
         PTLogger.warning(f"{e}")
     finally:
         return data
-
-
-def setup_os_update_event_handlers():
-    subscribe("os_updater_prepare_started", OSUpdateManager().update)
 
 
 class OSUpdateManager:
