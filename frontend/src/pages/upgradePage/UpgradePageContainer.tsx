@@ -251,7 +251,8 @@ export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isComplete
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
         serverStatus({ timeout: timeoutServerStatusRequestMs })
-        clearInterval(interval);
+          .then(() => clearInterval(interval))
+          .catch(() => {})
         onWebPortalUpgrade && onWebPortalUpgrade();
       } catch (_) {}
     }, serverStatusRequestIntervalMs);

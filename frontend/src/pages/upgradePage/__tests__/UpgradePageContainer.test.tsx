@@ -111,6 +111,7 @@ describe("UpgradePageContainer", () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     getAvailableSpaceMock.mockRestore();
     serverStatusMock.mockRestore();
     restartWebPortalServiceMock.mockRestore();
@@ -582,23 +583,24 @@ describe("UpgradePageContainer", () => {
     });
 
     it("probes backend server to determine if its online", async () => {
-      const { getByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
       jest.useFakeTimers();
+      const { getByText } = mount();
       jest.runAllTimers();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
 
-      expect(serverStatusMock).toHaveBeenCalledTimes(1);
+      expect(serverStatusMock).toHaveBeenCalled();
     });
 
     it.skip("probes backend server until its online", async () => {
+      serverStatusMock.mockRejectedValue(new Error("I'm offline, try again later"));
       jest.useFakeTimers();
       const { getByText } = mount();
       jest.runAllTimers();
       await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
 
       expect(serverStatusMock).not.toBeCalled();
-      serverStatusMock.mockRejectedValue(new Error("I'm offline, try again later"));
-
       jest.runOnlyPendingTimers();
 
       // checks twice
@@ -967,7 +969,8 @@ describe("UpgradePageContainer", () => {
       jest.useRealTimers();
       restartWebPortalServiceMock.mockRestore();
       serverStatusMock.mockRestore();
-    })
+      act(() => server.close());
+    });
 
     it("renders the upgrade finished message", async () => {
       const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
