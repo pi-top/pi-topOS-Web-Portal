@@ -2,19 +2,17 @@ from datetime import date
 
 from pitop.common.logger import PTLogger
 
-from .backend.helpers.extras import FWUpdaterBreadcrumbManager
-from .backend.helpers.finalise import onboarding_completed
-from .backend.helpers.os_update_manager import (
-    MessageType,
-    OSUpdateManager,
-    OSUpdaterFrontendMessageHandler,
-)
-from .backend.helpers.system_clock import (
+from ..backend.helpers.extras import FWUpdaterBreadcrumbManager
+from ..backend.helpers.finalise import onboarding_completed
+from ..backend.helpers.system_clock import (
     is_system_clock_synchronized,
     synchronize_system_clock,
 )
-from .backend.helpers.wifi_manager import is_connected_to_internet
-from .event import post_event, subscribe
+from ..backend.helpers.wifi_manager import is_connected_to_internet
+from ..event import post_event, subscribe
+from .manager import OSUpdateManager
+from .message_handler import OSUpdaterFrontendMessageHandler
+from .types import MessageType
 
 
 def setup_os_update_event_handlers():
