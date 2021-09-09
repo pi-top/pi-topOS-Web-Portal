@@ -36,4 +36,4 @@ and copies it into the Flask project in the correct place.
 After running `build.sh`, the server can be run in production mode by
 moving into the server folder and running
 
-`python3 run.py`
+`python3 __main__.py`
