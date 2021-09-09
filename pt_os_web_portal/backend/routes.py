@@ -31,7 +31,7 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
-from .helpers.os_updater import (
+from .helpers.os_update_manager import (
     check_relevant_os_updates,  # TODO: move into separate file
 )
 from .helpers.registration import set_registration_email

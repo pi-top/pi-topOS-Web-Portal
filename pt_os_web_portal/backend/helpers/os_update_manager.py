@@ -6,7 +6,7 @@ from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
 
-from .config_manager import ConfigManager
+from ...config_manager import ConfigManager
 from .modules import get_apt
 
 (apt, apt.progress, apt_pkg) = get_apt()
