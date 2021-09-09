@@ -1,16 +1,9 @@
-from datetime import date, datetime
-
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
 
 from ..events import MessageType
-from .config_manager import ConfigManager
-from .extras import FWUpdaterBreadcrumbManager
-from .finalise import onboarding_completed
 from .modules import get_apt
-from .system_clock import is_system_clock_synchronized, synchronize_system_clock
-from .wifi_manager import is_connected_to_internet
 
 (apt, apt.progress, apt_pkg) = get_apt()
 
@@ -50,169 +43,7 @@ class InstallProgress(apt.progress.base.InstallProgress):  # type: ignore
         apt.progress.base.InstallProgress.update_interface(self)
 
 
-class OSUpdater:
-    lock = False
-
-    def __init__(self) -> None:
-        self.cache: apt.Cache  # type: ignore
-
-    def update(self, callback) -> None:
-        PTLogger.info("OSUpdater: Updating APT sources")
-        if self.lock:
-            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
-            return
-        self.lock = True
-        fetch_sources_progress = FetchProgress(callback)
-
-        try:
-            self.cache = apt.Cache()
-            self.cache.update(fetch_sources_progress)
-            self.cache.open(None)
-        except Exception as e:
-            PTLogger.error(f"OSUpdater Error: {e}")
-            raise
-        finally:
-            self.lock = False
-
-    def stage_upgrade(self, callback) -> None:
-        PTLogger.info("OSUpdater: Stagging packages for upgrade")
-        if self.lock:
-            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
-            return
-        self.lock = True
-
-        try:
-            self.cache.upgrade()
-            self.cache.upgrade(True)
-
-            PTLogger.info(f"Will upgrade/install {self.cache.install_count} packages")
-            PTLogger.info(
-                f"Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
-            )
-            PTLogger.info(
-                f"After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
-            )
-        except Exception as e:
-            PTLogger.error(f"OSUpdater Error: {e}")
-            raise
-        finally:
-            self.lock = False
-
-    def download_size(self):
-        size = self.cache.required_download if self.cache else 0
-        PTLogger.info(
-            f"download_size: Need to download {apt_pkg.size_to_str(size)} - ({size} B)"
-        )
-        return size
-
-    def required_space(self):
-        size = self.cache.required_space if self.cache else 0
-        PTLogger.info(
-            f"required_space: {apt_pkg.size_to_str(size)} - ({size} B) needed for upgrade"
-        )
-        return size
-
-    def upgrade(self, callback):
-        PTLogger.info("OSUpdater: starting upgrade")
-        if self.lock:
-            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
-            return
-        self.lock = True
-
-        fetch_packages_progress = FetchProgress(callback)
-        install_progress = InstallProgress(callback)
-        try:
-            callback(MessageType.START, "Starting install & upgrade process", 0.0)
-            self.cache.commit(fetch_packages_progress, install_progress)
-            callback(MessageType.FINISH, "Finished upgrade", 100.0)
-        except Exception as e:
-            PTLogger.error(f"OSUpdater Error: {e}")
-            raise
-        finally:
-            self.lock = False
-
-        PTLogger.info("OSUpdater: finished upgrade")
-
-    def select_packages_to_upgrade(self, packages: list) -> None:
-        pass
-
-    def update_last_check_config(self) -> None:
-        ConfigManager().set(
-            "os_updater", "last_checked_date", f"{date.today().strftime('%Y-%m-%d')}"
-        )
-
-
-# Global instance
-os_updater = None
-
-
-def get_os_updater_instance():
-    global os_updater
-    if os_updater is None:
-        os_updater = OSUpdater()
-    return os_updater
-
-
-def prepare_os_upgrade(callback=None):
-    if callback is None:
-
-        def callback(type, data, percent):
-            return None
-
-    updater = get_os_updater_instance()
-    try:
-        if not is_system_clock_synchronized():
-            synchronize_system_clock()
-        callback(MessageType.START, "Preparing OS upgrade", 0.0)
-        updater.update(callback)
-        updater.stage_upgrade(callback)
-        if updater.cache.install_count == 0:
-            updater.update_last_check_config()
-        callback(MessageType.FINISH, "Finished preparing", 100.0)
-    except Exception as e:
-        callback(MessageType.ERROR, f"{e}", 0.0)
-
-
-def os_upgrade_size(callback):
-    updater = get_os_updater_instance()
-    try:
-        callback(
-            MessageType.STATUS,
-            {
-                "downloadSize": updater.download_size(),
-                "requiredSpace": updater.required_space(),
-            },
-        )
-    except Exception as e:
-        PTLogger.info(f"os_upgrade_size: {e}")
-        callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
-
-
-def start_os_upgrade(callback):
-    fw_breadcrumb_manager = FWUpdaterBreadcrumbManager()
-    updater = get_os_updater_instance()
-    try:
-        # tell firmware updater updater not to timeout
-        if not fw_breadcrumb_manager.is_ready():
-            PTLogger.info(
-                "Creating 'extend timeout' breadcrumb for pt-firmware-updater"
-            )
-            fw_breadcrumb_manager.set_extend_timeout()
-
-        updater.upgrade(callback)
-        updater.update_last_check_config()
-    except Exception as e:
-        callback(MessageType.ERROR, f"{e}", 0.0)
-    finally:
-        fw_breadcrumb_manager.set_ready("pt-os-web-portal: Finished update.")
-        # Tell firmware updater to no longer block on extended timeout
-        if fw_breadcrumb_manager.is_extending_timeout():
-            PTLogger.info(
-                "Removing 'extend timeout' breadcrumb for pt-firmware-updater"
-            )
-            fw_breadcrumb_manager.clear_extend_timeout()
-
-
+# TODO: Move/rename this for 'pi-topOS version check'
 def check_relevant_os_updates():
     URL = "https://backend-test.pi-top.com/utils/v1/OS/checkUpdate"
     BUILD_INFO_TO_API_LOOKUP = {
@@ -248,30 +79,3 @@ def check_relevant_os_updates():
         PTLogger.warning(f"{e}")
     finally:
         return data
-
-
-def updates_available(callback):
-    prepare_os_upgrade()
-    callback(get_os_updater_instance().cache.install_count > 0)
-
-
-def should_check_for_updates():
-    if not onboarding_completed():
-        PTLogger.info("Onboarding not completed yet, skipping update check...")
-        return False
-
-    if not is_connected_to_internet(timeout=2):
-        PTLogger.info("No internet connection detected, skipping update check...")
-        return False
-
-    try:
-        last_checked_date_str = ConfigManager().get("os_updater", "last_checked_date")
-        last_checked_date = datetime.strptime(last_checked_date_str, "%Y-%m-%d").date()
-        should = last_checked_date != date.today()
-        PTLogger.info(
-            f"Should {'' if should else 'not'} check for updates, last checked date was {last_checked_date}"
-        )
-    except Exception:
-        should = True
-
-    return should
