@@ -30,15 +30,17 @@ class OSUpdaterFrontendMessageHandler:
         def emit_os_prepare_upgrade_message(
             message_type: MessageType, status_message: str, percent: float
         ) -> None:
+            message = status_message.strip()
             data = {
                 "type": EventNames.OS_PREPARE_UPGRADE.name,
                 "payload": {
                     "status": message_type.name,
                     "percent": percent,
-                    "message": status_message.strip(),
+                    "message": message,
                 },
             }
-            PTLogger.info(str(data))
+            PTLogger.info(f"APT Source: {percent}% '{message}'")
+
             if ws:
                 ws.send(jdumps(data))
 
@@ -48,15 +50,16 @@ class OSUpdaterFrontendMessageHandler:
         def emit_os_upgrade_message(
             message_type: MessageType, status_message: str, percent: float
         ) -> None:
+            message = status_message.strip()
             data = {
                 "type": EventNames.OS_UPGRADE.name,
                 "payload": {
                     "status": message_type.name,
                     "percent": percent,
-                    "message": status_message.strip(),
+                    "message": message,
                 },
             }
-            PTLogger.info(str(data))
+            PTLogger.info(f"OS Upgrade: {percent}% '{message}'")
             if ws:
                 ws.send(jdumps(data))
 
@@ -68,7 +71,7 @@ class OSUpdaterFrontendMessageHandler:
                 "type": EventNames.SIZE.name,
                 "payload": {"size": size, "status": message_type.name},
             }
-            PTLogger.info(str(data))
+            PTLogger.info(f"OS upgrade size: {size}")
             if ws:
                 ws.send(jdumps(data))
 
@@ -178,7 +181,7 @@ class OSUpdateManager:
             self.lock = False
 
     def stage_upgrade(self, callback) -> None:
-        PTLogger.info("OSUpdater: Stagging packages for upgrade")
+        PTLogger.info("OS Updater: Staging packages for upgrade")
         if self.lock:
             callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
             return
@@ -188,12 +191,14 @@ class OSUpdateManager:
             self.cache.upgrade()
             self.cache.upgrade(True)
 
-            PTLogger.info(f"Will upgrade/install {self.cache.install_count} packages")
             PTLogger.info(
-                f"Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
+                f"OS Update: Will upgrade/install {self.cache.install_count} packages"
             )
             PTLogger.info(
-                f"After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
+                f"OS Update: Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
+            )
+            PTLogger.info(
+                f"OS Update: After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
             )
         except Exception as e:
             PTLogger.error(f"OSUpdater Error: {e}")
