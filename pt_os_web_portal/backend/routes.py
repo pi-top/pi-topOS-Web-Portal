@@ -68,6 +68,10 @@ from .helpers.wifi_manager import (
 )
 
 
+def get_os_updater():
+    return app.config["OS_UPDATER"]
+
+
 class FrontendAppRoutes(Enum):
     TOUR = "/tour"
     ONBOARDING = "/onboarding"
@@ -275,7 +279,7 @@ def os_upgrade(ws):
     while not ws.closed:
         message = ws.receive()
         if message == "prepare":
-            # OSUpdater(ws).prepare_os_upgrade()
+            get_os_updater().prepare_os_upgrade(ws)
             # t = Thread(
             #     target=prepare_os_upgrade,
             #     args=(create_emit_os_prepare_upgrade_message(ws),),

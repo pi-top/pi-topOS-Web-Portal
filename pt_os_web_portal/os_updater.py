@@ -12,11 +12,11 @@ from .wifi_manager import is_connected_to_internet
 
 
 class OSUpdater:
-    def __init__(self, ws=None):
+    def __init__(self):
         # self.manager = OSUpdateManager()
         pass
 
-    def prepare_os_upgrade(self):
+    def prepare_os_upgrade(self, ws=None):
         if not is_system_clock_synchronized():
             synchronize_system_clock()
 
