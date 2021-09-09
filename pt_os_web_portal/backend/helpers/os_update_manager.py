@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from enum import Enum, auto
 from json import dumps as jdumps
 
@@ -39,7 +39,8 @@ class OSUpdaterFrontendMessageHandler:
                 },
             }
             PTLogger.info(str(data))
-            ws.send(jdumps(data))
+            if ws:
+                ws.send(jdumps(data))
 
         return emit_os_prepare_upgrade_message
 
@@ -56,7 +57,8 @@ class OSUpdaterFrontendMessageHandler:
                 },
             }
             PTLogger.info(str(data))
-            ws.send(jdumps(data))
+            if ws:
+                ws.send(jdumps(data))
 
         return emit_os_upgrade_message
 
@@ -67,7 +69,8 @@ class OSUpdaterFrontendMessageHandler:
                 "payload": {"size": size, "status": message_type.name},
             }
             PTLogger.info(str(data))
-            ws.send(jdumps(data))
+            if ws:
+                ws.send(jdumps(data))
 
         return emit_os_size_message
 
@@ -75,7 +78,12 @@ class OSUpdaterFrontendMessageHandler:
 class FetchProgress(apt.progress.base.AcquireProgress):  # type: ignore
     def __init__(self, callback):
         apt.progress.base.AcquireProgress.__init__(self)
-        self.callback = callback
+        self._callback = callback
+
+    @property
+    def callback(self):
+        if callable(self._callback):
+            return self._callback
 
     def pulse(self, owner):
         current_item = self.current_items + 1
@@ -230,6 +238,22 @@ class OSUpdateManager:
 
     def select_packages_to_upgrade(self, packages: list) -> None:
         pass
+
+    @property
+    def last_checked_date(self):
+        last_checked_date = None
+
+        try:
+            last_checked_date_str = ConfigManager().get(
+                "os_updater", "last_checked_date"
+            )
+            last_checked_date = datetime.strptime(
+                last_checked_date_str, "%Y-%m-%d"
+            ).date()
+        except Exception:
+            pass
+
+        return last_checked_date
 
     def update_last_check_config(self) -> None:
         ConfigManager().set(
