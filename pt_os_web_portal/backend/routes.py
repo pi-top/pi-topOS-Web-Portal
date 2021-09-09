@@ -268,10 +268,12 @@ def os_upgrade(ws):
 
         funcs = {
             "update_sources": get_os_updater().update_sources,
-            "prepare": get_os_updater().prepare_os_upgrade,
-            "prepare_web_portal": get_os_updater().prepare_web_portal,
+            "prepare": get_os_updater().stage_packages,
+            "prepare_web_portal": lambda: get_os_updater().stage_packages(
+                ["pt-os-web-portal"]
+            ),
             "start": get_os_updater().start_os_upgrade,
-            "size": get_os_updater().os_upgrade_size,
+            "size": get_os_updater().upgrade_size,
         }
 
         if not funcs.get(message):
