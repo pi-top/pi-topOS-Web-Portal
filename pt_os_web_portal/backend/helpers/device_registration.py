@@ -1,13 +1,10 @@
 import json
 import os
 from pathlib import Path
-from threading import Thread
 from time import sleep
 
 import requests
 from pitop.common.logger import PTLogger
-
-from .finalise import onboarding_completed
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
 REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
@@ -164,25 +161,3 @@ def send_register_device_request():
 
     PTLogger.info("Creating breadcrumb to avoid registering again")
     create_device_registered_breadcrumb()
-
-
-def register_device():
-    if not onboarding_completed():
-        PTLogger.debug("Onboarding not completed, skipping device registration")
-        return
-
-    if device_is_registered():
-        PTLogger.debug("Device already registered, skipping...")
-        return
-
-    try:
-        PTLogger.debug("Waiting a minute before attempting device registration...")
-        sleep(60)
-        send_register_device_request()
-    except Exception as e:
-        PTLogger.error(f"There was an error registering device: {e}.")
-
-
-def register_device_in_background():
-    t = Thread(target=register_device, args=(), daemon=True)
-    t.start()
