@@ -5,7 +5,7 @@ from flask_sockets import Sockets
 sockets: Sockets
 
 
-def create_app(test=False):
+def create_app(test_mode, os_updater):
     app = Flask(
         __name__, static_url_path="", static_folder="./build", template_folder="./build"
     )
@@ -13,8 +13,10 @@ def create_app(test=False):
     sockets = Sockets(app)
 
     CORS(app)
-    if test:
+    if test_mode:
         app.config["TESTING"] = True
+    if os_updater:
+        app.config["OS_UPDATER"] = os_updater
 
     with app.app_context():
         from . import routes

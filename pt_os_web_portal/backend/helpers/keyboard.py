@@ -1,9 +1,9 @@
 from fileinput import input as finput
 from typing import Optional, Tuple
 
+from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger
 
-from .command_runner import run_command
 from .paths import default_keyboard_conf
 
 

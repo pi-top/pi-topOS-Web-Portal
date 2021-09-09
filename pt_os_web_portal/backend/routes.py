@@ -7,16 +7,13 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
+from pitop.common.sys_info import is_connected_to_internet
 
+from ..event import post_event
+from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
-from .events import (
-    create_emit_os_prepare_upgrade_message,
-    create_emit_os_size_message,
-    create_emit_os_upgrade_message,
-)
 from .helpers.about import device_data
 from .helpers.build import os_build_info
-from .helpers.extras import leave_started_onboarding_breadcrumb
 from .helpers.finalise import (
     available_space,
     configure_tour,
@@ -36,12 +33,6 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
-from .helpers.os_updater import (
-    check_relevant_os_updates,
-    os_upgrade_size,
-    prepare_os_upgrade,
-    start_os_upgrade,
-)
 from .helpers.registration import set_registration_email
 from .helpers.system import enable_ap_mode, restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
@@ -61,12 +52,11 @@ from .helpers.wifi_country import (
     list_wifi_countries,
     set_wifi_country,
 )
-from .helpers.wifi_manager import (
-    attempt_connection,
-    current_wifi_ssid,
-    get_ssids,
-    is_connected_to_internet,
-)
+from .helpers.wifi_manager import attempt_connection, current_wifi_ssid, get_ssids
+
+
+def get_os_updater():
+    return app.config["OS_UPDATER"]
 
 
 class FrontendAppRoutes(Enum):
@@ -275,24 +265,26 @@ def os_upgrade(ws):
 
     while not ws.closed:
         message = ws.receive()
-        if message == "prepare":
-            t = Thread(
-                target=prepare_os_upgrade,
-                args=(create_emit_os_prepare_upgrade_message(ws),),
-                daemon=True,
+
+        funcs = {
+            "prepare": get_os_updater().prepare_os_upgrade,
+            "start": get_os_updater().start_os_upgrade,
+            "size": get_os_updater().os_upgrade_size,
+        }
+
+        if not funcs.get(message):
+            PTLogger.warning(
+                f"Invalid message from websocket '{message}' - doing nothing"
             )
-            t.start()
-            thread_arr.append(t)
-        elif message == "start":
-            t = Thread(
-                target=start_os_upgrade,
-                args=(create_emit_os_upgrade_message(ws),),
-                daemon=True,
-            )
-            t.start()
-            thread_arr.append(t)
-        elif message == "size":
-            os_upgrade_size(create_emit_os_size_message(ws))
+            return
+
+        t = Thread(
+            target=funcs.get(message),
+            args=(ws,),
+            daemon=True,
+        )
+        t.start()
+        thread_arr.append(t)
 
     for t in thread_arr:
         if t.is_alive():
@@ -471,11 +463,11 @@ def FSMePro(filename):
 @app.route("/os-updates", methods=["GET"])
 def get_os_check_update():
     PTLogger.debug("Route '/os-updates'")
-    return jdumps(check_relevant_os_updates())
+    return jdumps(check_relevant_pi_top_os_version_updates())
 
 
 @app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
 def post_onboarding_miniscreen_app_breadcrumb():
     PTLogger.debug("Route '/onboarding-miniscreen-app-breadcrumb'")
-    leave_started_onboarding_breadcrumb()
+    post_event("ready_to_be_a_maker", True)
     return "OK"
