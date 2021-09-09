@@ -716,7 +716,6 @@ describe("UpgradePageContainer", () => {
   // describe("when updating web-portal succeeds and there are system updates", () => {
   // describe("when updating web-portal succeeds and there are no system updates", () => {
 
-
   describe("when the system is being updated", () => {
     beforeEach(async () => {
       let times = 0;
