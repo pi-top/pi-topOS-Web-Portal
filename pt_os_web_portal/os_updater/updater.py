@@ -91,7 +91,6 @@ class OSUpdater:
 
     def updates_available(self, ws=None):
         self.prepare_os_upgrade()
-        # self.wait_for_prepare_to_finish()
         return self.manager.cache.install_count > 0
 
     def do_update_check(self, ws=None):
