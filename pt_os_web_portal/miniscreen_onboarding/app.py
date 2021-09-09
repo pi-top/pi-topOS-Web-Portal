@@ -10,27 +10,35 @@ from ..event import subscribe
 from .menu_pages import (
     ApMenuPage,
     CarryOnMenuPage,
+    MenuPages,
     OpenBrowserMenuPage,
     WelcomeMenuPage,
 )
-from .menu_pages.attr.states import RenderState
-from .menus import Menus
 
 
 class OnboardingApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
-        self.page_order = [Menus.WELCOME, Menus.AP, Menus.BROWSER, Menus.CARRY_ON]
+        self.page_order = [
+            MenuPages.WELCOME,
+            MenuPages.AP,
+            MenuPages.BROWSER,
+            MenuPages.CARRY_ON,
+        ]
         self.pages = {
-            Menus.WELCOME: WelcomeMenuPage(self.miniscreen.size, self.miniscreen.mode),
-            Menus.AP: ApMenuPage(self.miniscreen.size, self.miniscreen.mode),
-            Menus.BROWSER: OpenBrowserMenuPage(
+            MenuPages.WELCOME: WelcomeMenuPage(
                 self.miniscreen.size, self.miniscreen.mode
             ),
-            Menus.CARRY_ON: CarryOnMenuPage(self.miniscreen.size, self.miniscreen.mode),
+            MenuPages.AP: ApMenuPage(self.miniscreen.size, self.miniscreen.mode),
+            MenuPages.BROWSER: OpenBrowserMenuPage(
+                self.miniscreen.size, self.miniscreen.mode
+            ),
+            MenuPages.CARRY_ON: CarryOnMenuPage(
+                self.miniscreen.size, self.miniscreen.mode
+            ),
         }
 
-        self.current_page = self.pages.get(Menus.WELCOME)
+        self.current_page = self.pages.get(MenuPages.WELCOME)
 
         self.miniscreen.up_button.when_pressed = lambda: self.go_to(
             self.get_previous_page(self.current_page)
@@ -46,7 +54,7 @@ class OnboardingApp:
         def handle_ready_to_be_a_maker_event(ready):
             PTLogger.info("READY TO BE A MAKER, BABY")
             # Enable carry on page
-            self.pages.get(Menus.CARRY_ON).visible = True
+            self.pages.get(MenuPages.CARRY_ON).visible = True
 
         subscribe("ready_to_be_a_maker", handle_ready_to_be_a_maker_event)
 
@@ -103,15 +111,12 @@ class OnboardingApp:
             image = empty_image.copy()
             draw = ImageDraw.Draw(image)
 
-            def showing_info_on_current_page():
-                return self.current_page.render_state == RenderState.DISPLAYING_INFO
-
             def current_page_should_go_to_next_page():
-                if self.current_page not in [Menus.AP, Menus.BROWSER]:
+                if self.current_page not in [MenuPages.AP, MenuPages.BROWSER]:
                     return False
 
                 return (
-                    showing_info_on_current_page(self.current_page)
+                    self.current_page.is_showing_info()
                     and not self.get_next_page(self.current_page).visible
                     and self.get_next_page(self.current_page).first_draw is False
                 )

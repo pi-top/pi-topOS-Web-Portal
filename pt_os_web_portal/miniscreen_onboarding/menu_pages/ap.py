@@ -1,14 +1,14 @@
-from ...menus import Menus
-from ..attr.margins import INFO_PAGE_MARGIN_X, SECOND_LINE_Y, THIRD_LINE_Y
-from ..connection.methods import ApConnection
-from ..render.helpers import draw_text
+from .attr.margins import INFO_PAGE_MARGIN_X, SECOND_LINE_Y, THIRD_LINE_Y
 from .base._connection_base import ConnectionMenuPage
+from .connection.methods import ApConnection
+from .pages import MenuPages
+from .render.helpers import draw_text
 
 
 class ApMenuPage(ConnectionMenuPage):
     def __init__(self, size, mode):
         super(ApMenuPage, self).__init__(
-            type=Menus.AP,
+            type=MenuPages.AP,
             connection_state=ApConnection(),
             title_image_filename="ap_title.png",
             info_image_filename="ap_info.png",

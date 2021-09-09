@@ -7,16 +7,16 @@ from pitop.common.sys_info import (
     is_connected_to_internet,
 )
 
-from ...menus import Menus
-from ..attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from ..render.helpers import draw_text
+from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
 from .base._title_base import TitleMenuPage
+from .pages import MenuPages
+from .render.helpers import draw_text
 
 
 class OpenBrowserMenuPage(TitleMenuPage):
     def __init__(self, size, mode):
         super(OpenBrowserMenuPage, self).__init__(
-            type=Menus.BROWSER,
+            type=MenuPages.BROWSER,
             size=size,
             mode=mode,
             title_image_filename="connected.png",

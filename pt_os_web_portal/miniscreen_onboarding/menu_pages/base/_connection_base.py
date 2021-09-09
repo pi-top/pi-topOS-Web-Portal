@@ -1,14 +1,14 @@
 from PIL import Image, ImageDraw
 
-from ...attr.speeds import (
+from ..attr.speeds import (
     ANIMATION_SLEEP_INTERVAL,
     ANIMATION_SPEED,
     DEFAULT_INTERVAL,
     FIRST_DRAW_SLEEP_INTERVAL,
     STATIONARY_SLEEP_INTERVAL,
 )
-from ...attr.states import RenderState
-from ...render.helpers import get_image_file_path, process_image
+from ..attr.states import RenderState
+from ..render.helpers import get_image_file_path, process_image
 from ._base import MenuPageBase
 
 
@@ -49,6 +49,9 @@ class ConnectionMenuPage(MenuPageBase):
         self.title_image_pos = (0, 0)
         self.first_draw = True
         self.is_connected = False
+
+    def is_showing_info(self):
+        return self.render_state == RenderState.DISPLAYING_INFO
 
     def draw_connection_data(self, draw):
         raise NotImplementedError

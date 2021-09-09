@@ -1,13 +1,16 @@
-from ...menus import Menus
-from ..attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from ..render.helpers import draw_text
+from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
 from .base._title_base import TitleMenuPage
+from .pages import MenuPages
+from .render.helpers import draw_text
 
 
 class WelcomeMenuPage(TitleMenuPage):
     def __init__(self, size, mode):
         super(WelcomeMenuPage, self).__init__(
-            type=Menus.WELCOME, size=size, mode=mode, title_image_filename="welcome.png"
+            type=MenuPages.WELCOME,
+            size=size,
+            mode=mode,
+            title_image_filename="welcome.png",
         )
 
     def info(self, draw, redraw=False):

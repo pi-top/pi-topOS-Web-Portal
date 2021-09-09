@@ -1,14 +1,14 @@
 from PIL import Image
 
-from ...attr.speeds import (
+from ..attr.speeds import (
     ANIMATION_SLEEP_INTERVAL,
     ANIMATION_SPEED,
     DEFAULT_INTERVAL,
     FIRST_DRAW_SLEEP_INTERVAL,
     STATIONARY_SLEEP_INTERVAL,
 )
-from ...attr.states import RenderState
-from ...render.helpers import get_image_file_path, process_image
+from ..attr.states import RenderState
+from ..render.helpers import get_image_file_path, process_image
 from ._base import MenuPageBase
 
 
