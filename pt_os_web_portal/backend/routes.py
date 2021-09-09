@@ -1,6 +1,7 @@
 from enum import Enum
 from json import dumps as jdumps
 from os import path
+from threading import Thread
 
 from flask import abort
 from flask import current_app as app
@@ -39,8 +40,6 @@ from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.os_updater import (
     check_relevant_os_updates,  # TODO: move into separate file
 )
-
-# from .helpers.os_updater import os_upgrade_size, prepare_os_upgrade, start_os_upgrade
 from .helpers.registration import set_registration_email
 from .helpers.system import enable_ap_mode, restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
@@ -279,27 +278,23 @@ def os_upgrade(ws):
     while not ws.closed:
         message = ws.receive()
         if message == "prepare":
-            get_os_updater().prepare_os_upgrade(ws)
-            # t = Thread(
-            #     target=prepare_os_upgrade,
-            #     args=(create_emit_os_prepare_upgrade_message(ws),),
-            #     daemon=True,
-            # )
-            # t.start()
-            # thread_arr.append(t)
-            pass
+            t = Thread(
+                target=get_os_updater().prepare_os_upgrade,
+                args=(ws,),
+                daemon=True,
+            )
+            t.start()
+            thread_arr.append(t)
         elif message == "start":
-            # t = Thread(
-            #     target=start_os_upgrade,
-            #     args=(create_emit_os_upgrade_message(ws),),
-            #     daemon=True,
-            # )
-            # t.start()
-            # thread_arr.append(t)
-            pass
+            t = Thread(
+                target=get_os_updater().start_os_upgrade,
+                args=(ws,),
+                daemon=True,
+            )
+            t.start()
+            thread_arr.append(t)
         elif message == "size":
-            # os_upgrade_size(create_emit_os_size_message(ws))
-            pass
+            get_os_updater().os_upgrade_size(ws)
 
     for t in thread_arr:
         if t.is_alive():
