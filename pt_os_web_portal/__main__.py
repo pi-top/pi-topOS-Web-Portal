@@ -12,7 +12,6 @@ def is_root() -> bool:
 
 
 @click.command()
-@click.option("--journal/--no-journal", default=True)
 @click.option(
     "--log-level",
     type=int,
@@ -22,7 +21,7 @@ def is_root() -> bool:
 )
 @click.option("--test-mode")
 @click.version_option()
-def main(journal, test_mode, log_level):
+def main(test_mode, log_level):
     if not is_root():
         print("This script must be run as root!")
         exit(1)
@@ -30,7 +29,7 @@ def main(journal, test_mode, log_level):
     PTLogger.setup_logging(
         logger_name="pt-os-web-portal",
         logging_level=log_level,
-        log_to_journal=journal,
+        log_to_journal=False,
     )
 
     app = App(test_mode)
