@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw
 from pitop import Pitop
 from pitop.common.logger import PTLogger
 
+from ..event import subscribe
 from .menu_pages import (
     ApMenuPage,
     CarryOnMenuPage,
@@ -41,6 +42,11 @@ class OnboardingApp:
         self.__auto_play_thread = None
         self.__stop_thread = False
         atexit.register(self.stop)
+
+        def handle_ready_to_be_a_maker_event(ready):
+            self.pages.get(Menus.CARRY_ON).skip = False
+
+        subscribe("ready_to_be_a_maker", handle_ready_to_be_a_maker_event)
 
     def get_previous_page(self, page):
         curr_idx = self.page_order.index(page.type)

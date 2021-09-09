@@ -1,8 +1,3 @@
-from pathlib import Path
-from threading import Thread
-from time import sleep
-
-from ....backend.helpers.extras import started_onboarding_breadcrumb
 from ...menus import Menus
 from ..attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
 from ..base._title_base import TitleMenuPage
@@ -18,20 +13,12 @@ class CarryOnMenuPage(TitleMenuPage):
             title_image_filename="carryon.png",
         )
         self.already_displayed = False
-        self.thread = Thread(target=self.__monitor_breadcrumb, args=(), daemon=True)
-        self.thread.start()
 
     def should_display(self):
         should = not self.skip and self.already_displayed is False
         if should:
             self.already_displayed = True
         return should
-
-    def __monitor_breadcrumb(self):
-        file = Path(started_onboarding_breadcrumb)
-        while True:
-            self.skip = not file.exists()
-            sleep(0.3)
 
     def info(self, draw, redraw=False):
         draw_text(

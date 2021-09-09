@@ -9,10 +9,13 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
+from ..event import post_event
+from ..os_updater.manager import (
+    check_relevant_os_updates,  # TODO: move into separate file
+)
 from . import sockets
 from .helpers.about import device_data
 from .helpers.build import os_build_info
-from .helpers.extras import leave_started_onboarding_breadcrumb
 from .helpers.finalise import (
     available_space,
     configure_tour,
@@ -32,9 +35,6 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
-from .helpers.os_update_manager import (
-    check_relevant_os_updates,  # TODO: move into separate file
-)
 from .helpers.registration import set_registration_email
 from .helpers.system import enable_ap_mode, restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
@@ -471,5 +471,5 @@ def get_os_check_update():
 @app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
 def post_onboarding_miniscreen_app_breadcrumb():
     PTLogger.debug("Route '/onboarding-miniscreen-app-breadcrumb'")
-    leave_started_onboarding_breadcrumb()
+    post_event("ready_to_be_a_maker", True)
     return "OK"
