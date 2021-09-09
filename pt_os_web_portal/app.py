@@ -29,12 +29,18 @@ class App:
 
     def start(self):
         self.os_updater.start()
-        self.device_registration_mgr.start()
+
+        if onboarding_completed() and not self.device_registration_mgr.is_registered():
+            PTLogger.info(
+                "Onboarding completed and device not yet registered - starting registration service"
+            )
+            self.device_registration_mgr.start()
 
         if not onboarding_completed() and device_type() == DeviceName.pi_top_4.value:
-            PTLogger.info("Onboarding not completed, starting miniscreen app")
+            PTLogger.info(
+                "Onboarding not completed - starting miniscreen onboarding application"
+            )
             self.miniscreen_onboarding.start()
 
         self.listener_mgr.start()
-
         self.wsgi_server.serve_forever()
