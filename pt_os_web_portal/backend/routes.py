@@ -9,12 +9,6 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 
 from . import sockets
-
-# from .events import (
-#     create_emit_os_prepare_upgrade_message,
-#     create_emit_os_size_message,
-#     create_emit_os_upgrade_message,
-# )
 from .helpers.about import device_data
 from .helpers.build import os_build_info
 from .helpers.extras import leave_started_onboarding_breadcrumb
@@ -277,24 +271,26 @@ def os_upgrade(ws):
 
     while not ws.closed:
         message = ws.receive()
-        if message == "prepare":
-            t = Thread(
-                target=get_os_updater().prepare_os_upgrade,
-                args=(ws,),
-                daemon=True,
+
+        funcs = {
+            "prepare": get_os_updater().prepare_os_upgrade,
+            "start": get_os_updater().start_os_upgrade,
+            "size": get_os_updater().os_upgrade_size,
+        }
+
+        if not funcs.get(message):
+            PTLogger.warning(
+                f"Invalid message from websocket '{message}' - doing nothing"
             )
-            t.start()
-            thread_arr.append(t)
-        elif message == "start":
-            t = Thread(
-                target=get_os_updater().start_os_upgrade,
-                args=(ws,),
-                daemon=True,
-            )
-            t.start()
-            thread_arr.append(t)
-        elif message == "size":
-            get_os_updater().os_upgrade_size(ws)
+            return
+
+        t = Thread(
+            target=funcs.get(message),
+            args=(ws,),
+            daemon=True,
+        )
+        t.start()
+        thread_arr.append(t)
 
     for t in thread_arr:
         if t.is_alive():
