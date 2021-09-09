@@ -26,11 +26,7 @@ def main(test_mode, log_level):
         print("This script must be run as root!")
         exit(1)
 
-    PTLogger.setup_logging(
-        logger_name="pt-os-web-portal",
-        logging_level=log_level,
-        log_to_journal=False,
-    )
+    PTLogger.setup_logging(logger_name="pt-os-web-portal", logging_level=log_level)
 
     app = App(test_mode)
     app.start()
