@@ -37,8 +37,13 @@ class OSUpdater:
             callback(MessageType.ERROR, f"{e}", 0.0)
 
     def prepare_os_upgrade(self, ws=None, packages=[]):
+<<<<<<< HEAD
         
         post_event(AppEvents.OS_UPDATER_PREPARE, "started")
+=======
+
+        post_event("os_updater_prepare", "started")
+>>>>>>> 080e970 (Fix rebase)
         callback = self.message_handler.create_emit_os_prepare_upgrade_message(ws)
         try:
             callback(MessageType.START, "Preparing OS upgrade", 0.0)
