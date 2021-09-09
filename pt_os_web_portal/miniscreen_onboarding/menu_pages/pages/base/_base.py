@@ -1,4 +1,4 @@
-from ..attr.speeds import DEFAULT_INTERVAL
+from ...attr.speeds import DEFAULT_INTERVAL
 
 
 class MenuPageBase:
