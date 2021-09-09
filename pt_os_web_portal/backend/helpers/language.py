@@ -1,9 +1,9 @@
 from re import search
 from typing import List
 
+from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger
 
-from .command_runner import run_command
 from .paths import default_locale, locales_gen, supported_locales
 
 

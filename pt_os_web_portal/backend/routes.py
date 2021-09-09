@@ -7,6 +7,7 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
+from pitop.common.sys_info import is_connected_to_internet
 
 from . import sockets
 from .helpers.about import device_data
@@ -53,12 +54,7 @@ from .helpers.wifi_country import (
     list_wifi_countries,
     set_wifi_country,
 )
-from .helpers.wifi_manager import (
-    attempt_connection,
-    current_wifi_ssid,
-    get_ssids,
-    is_connected_to_internet,
-)
+from .helpers.wifi_manager import attempt_connection, current_wifi_ssid, get_ssids
 
 
 def get_os_updater():

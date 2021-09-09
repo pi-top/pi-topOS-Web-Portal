@@ -1,6 +1,6 @@
+from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger
 
-from .command_runner import run_command
 from .paths import iso_countries
 
 

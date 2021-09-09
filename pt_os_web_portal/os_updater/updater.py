@@ -1,22 +1,15 @@
 from datetime import date
+from threading import Thread
 
 from pitop.common.logger import PTLogger
+from pitop.common.sys_info import is_connected_to_internet
 
-from ..backend.helpers.extras import FWUpdaterBreadcrumbManager
 from ..backend.helpers.finalise import onboarding_completed
-from ..backend.helpers.system_clock import (
-    is_system_clock_synchronized,
-    synchronize_system_clock,
-)
-from ..backend.helpers.wifi_manager import is_connected_to_internet
-from ..event import post_event, subscribe
+from ..event import post_event
 from .manager import OSUpdateManager
 from .message_handler import OSUpdaterFrontendMessageHandler
+from .system_clock import is_system_clock_synchronized, synchronize_system_clock
 from .types import MessageType
-
-
-def setup_os_update_event_handlers():
-    subscribe("os_updater_prepare_started", OSUpdateManager().update)
 
 
 class OSUpdater:
@@ -25,7 +18,8 @@ class OSUpdater:
         self.message_handler = OSUpdaterFrontendMessageHandler()
 
     def start(self):
-        self.prepare_os_upgrade()
+        t = Thread(target=self.prepare_os_upgrade, args=(), daemon=True)
+        t.start()
 
     def prepare_os_upgrade(self, ws=None):
         if not is_system_clock_synchronized():
@@ -107,6 +101,4 @@ class OSUpdater:
             post_event("os_has_updates", self.updates_available())
 
         else:
-            FWUpdaterBreadcrumbManager().set_ready(
-                "pt-os-web-portal: Already checked for updates today."
-            )
+            post_event("os_has_checked_updates", True)

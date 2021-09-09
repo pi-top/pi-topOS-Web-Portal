@@ -4,7 +4,6 @@ from typing import Dict, List
 
 from pitop.common.logger import PTLogger
 
-from .command_runner import run_command
 from .modules import get_pywifi
 
 pywifi = get_pywifi()
@@ -204,14 +203,3 @@ def current_wifi_ssid() -> str:
     PTLogger.info("Attempting to determine to which SSID we're connected to")
     wm = get_wifi_manager_instance()
     return wm.ssid_connected()
-
-
-def is_connected_to_internet(timeout=10) -> bool:
-    try:
-        PTLogger.info("Checking internet connection")
-        run_command("ping -c1 8.8.8.8", timeout=timeout, check=True)
-        PTLogger.info("Connected to internet")
-        return True
-    except Exception:
-        PTLogger.info("Not connected to internet")
-        return False

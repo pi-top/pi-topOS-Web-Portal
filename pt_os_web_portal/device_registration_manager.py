@@ -11,9 +11,6 @@ from .backend.helpers.finalise import onboarding_completed
 
 
 class DeviceRegistrationManager:
-    def __init__(self):
-        pass
-
     def start(self):
         t = Thread(target=self._register_device, args=(), daemon=True)
         t.start()

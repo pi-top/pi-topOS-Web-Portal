@@ -1,9 +1,8 @@
 from time import sleep
 
+from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger
-
-from .command_runner import run_command
-from .wifi_manager import is_connected_to_internet
+from pitop.common.sys_info import is_connected_to_internet
 
 
 def sync_clock() -> None:
