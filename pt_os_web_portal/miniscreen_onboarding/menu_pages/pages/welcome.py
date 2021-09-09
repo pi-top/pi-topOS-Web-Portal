@@ -29,6 +29,3 @@ class WelcomeMenuPage(TitleMenuPage):
             xy=(15, THIRD_LINE_Y),
             font_size=14,
         )
-
-    def render(self, draw, redraw=False):
-        super(WelcomeMenuPage, self).render(draw, redraw)

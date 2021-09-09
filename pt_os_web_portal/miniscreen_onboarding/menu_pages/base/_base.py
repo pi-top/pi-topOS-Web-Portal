@@ -7,10 +7,7 @@ class MenuPageBase:
         self.size = size
         self.mode = mode
         self.interval = DEFAULT_INTERVAL
-        self.skip = False
+        self.visible = True
 
     def render(self, draw, redraw=False):
         raise NotImplementedError
-
-    def should_display(self):
-        return not self.skip

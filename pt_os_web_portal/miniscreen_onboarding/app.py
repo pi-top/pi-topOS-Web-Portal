@@ -44,31 +44,31 @@ class OnboardingApp:
         atexit.register(self.stop)
 
         def handle_ready_to_be_a_maker_event(ready):
-            self.pages.get(Menus.CARRY_ON).skip = False
+            PTLogger.info("READY TO BE A MAKER, BABY")
+            # Enable carry on page
+            self.pages.get(Menus.CARRY_ON).visible = True
 
         subscribe("ready_to_be_a_maker", handle_ready_to_be_a_maker_event)
 
     def get_previous_page(self, page):
         curr_idx = self.page_order.index(page.type)
-        # Return current page if at end
-        if curr_idx - 1 <= 0:
-            return self.pages.get(self.page_order[curr_idx])
+        # Return current page if at top
+        current_page = self.pages.get(self.page_order[curr_idx])
+        if curr_idx - 1 < 0:
+            return current_page
 
         candidate = self.pages.get(self.page_order[curr_idx - 1])
-        if candidate.skip:
-            return self.get_next_page(candidate)
-        return candidate
+        return candidate if candidate.visible else current_page
 
     def get_next_page(self, page):
         curr_idx = self.page_order.index(page.type)
         # Return current page if at end
+        current_page = self.pages.get(self.page_order[curr_idx])
         if curr_idx + 1 >= len(self.page_order):
-            return self.pages.get(self.page_order[curr_idx])
+            return current_page
 
         candidate = self.pages.get(self.page_order[curr_idx + 1])
-        if candidate.skip:
-            return self.get_next_page(candidate)
-        return candidate
+        return candidate if candidate.visible else current_page
 
     def start(self):
         PTLogger.info("Miniscreen onboarding: Starting...")
@@ -112,7 +112,8 @@ class OnboardingApp:
 
                 return (
                     showing_info_on_current_page(self.current_page)
-                    and self.get_next_page(self.current_page).should_display()
+                    and not self.get_next_page(self.current_page).visible
+                    and self.get_next_page(self.current_page).first_draw is False
                 )
 
             PTLogger.debug(

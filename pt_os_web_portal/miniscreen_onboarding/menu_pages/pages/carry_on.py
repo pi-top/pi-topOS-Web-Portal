@@ -12,13 +12,7 @@ class CarryOnMenuPage(TitleMenuPage):
             mode=mode,
             title_image_filename="carryon.png",
         )
-        self.already_displayed = False
-
-    def should_display(self):
-        should = not self.skip and self.already_displayed is False
-        if should:
-            self.already_displayed = True
-        return should
+        self.visible = False
 
     def info(self, draw, redraw=False):
         draw_text(

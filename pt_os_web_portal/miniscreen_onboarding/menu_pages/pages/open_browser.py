@@ -21,22 +21,15 @@ class OpenBrowserMenuPage(TitleMenuPage):
             mode=mode,
             title_image_filename="connected.png",
         )
-        self.skip = True
+        self.visible = False
         self.connected_ip = ""
-        self.already_displayed = False
         self.thread = Thread(target=self.__monitor_connections, args=(), daemon=True)
         self.thread.start()
-
-    def should_display(self):
-        should = not self.skip and self.already_displayed is False
-        if should:
-            self.already_displayed = True
-        return should
 
     def __monitor_connections(self):
         while True:
             self.connected_ip = get_address_for_connected_device()
-            self.skip = self.connected_ip == "" and not is_connected_to_internet()
+            self.visible = self.connected_ip != "" or is_connected_to_internet()
             sleep(0.3)
 
     def get_ip_to_connect(self):
