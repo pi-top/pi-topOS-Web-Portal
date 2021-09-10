@@ -31,7 +31,7 @@ class OSUpdater:
             onboarding_completed()
             and is_connected_to_internet()
             and self.manager.last_checked_date != date.today()
-        ):
+        )
         post_event(AppEvents.OS_ALREADY_CHECKED_UPDATES, should_check_for_updates)
 
         if should_check_for_updates:
@@ -67,6 +67,9 @@ class OSUpdater:
             post_event(AppEvents.OS_UPDATER_PREPARE, "failed")
             callback(MessageType.ERROR, f"{e}", 0.0)
 
+    def stage_web_portal(self, ws=None):
+        self.stage_packages(ws, packages=["pt-os-web-portal"])
+
     def upgrade_size(self, ws=None):
         callback = self.message_handler.create_emit_os_size_message(ws)
         try:
@@ -92,4 +95,3 @@ class OSUpdater:
         except Exception as e:
             callback(MessageType.ERROR, f"{e}", 0.0)
             post_event(AppEvents.OS_UPDATER_UPGRADE, "failed")
-

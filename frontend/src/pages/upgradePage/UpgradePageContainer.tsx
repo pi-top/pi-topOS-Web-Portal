@@ -10,7 +10,7 @@ import serverStatus from "../../services/serverStatus"
 import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
-  UpdateSources = "OS_UPDATE_SOURCES",
+  UpdateSources = "UPDATE_SOURCES",
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
   Upgrade = "OS_UPGRADE",
   Size = "SIZE",

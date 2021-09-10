@@ -265,13 +265,13 @@ def os_upgrade(ws):
 
     while not ws.closed:
         message = ws.receive()
+        if not message:
+            continue
 
         funcs = {
             "update_sources": get_os_updater().update_sources,
             "prepare": get_os_updater().stage_packages,
-            "prepare_web_portal": lambda: get_os_updater().stage_packages(
-                ["pt-os-web-portal"]
-            ),
+            "prepare_web_portal": get_os_updater().stage_web_portal,
             "start": get_os_updater().start_os_upgrade,
             "size": get_os_updater().upgrade_size,
         }

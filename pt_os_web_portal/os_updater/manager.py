@@ -88,18 +88,18 @@ class OSUpdateManager:
                 for package_name in packages:
                     if package_name not in self.cache:
                         PTLogger.info(
-                            f"OS Updater: invalid package {package_name}, skipping..."
+                            f"OS Updater: invalid package '{package_name}' - skipping"
                         )
                         continue
                     package = self.cache[package_name]
                     if package.is_upgradable:
                         PTLogger.info(
-                            f"OS Updater: package {package_name} was staged to be updated"
+                            f"OS Updater: package '{package_name}' was staged to be updated"
                         )
                         package.mark_upgrade()
                     else:
                         PTLogger.info(
-                            f"OS Updater: package {package_name} has no updates, skipping..."
+                            f"OS Updater: package '{package_name}' has no updates - skipping"
                         )
 
             PTLogger.info(
