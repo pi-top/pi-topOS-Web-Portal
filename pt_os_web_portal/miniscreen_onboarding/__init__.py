@@ -1,1 +1,1 @@
-from .app import OnboardingApp
+from .onboarding_app import OnboardingApp

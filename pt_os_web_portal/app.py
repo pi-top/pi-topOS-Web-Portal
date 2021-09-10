@@ -8,7 +8,7 @@ from .backend import create_app
 from .backend.helpers.finalise import onboarding_completed
 from .device_registration.manager import DeviceRegistrationManager
 from .listener_manager import ListenerManager
-from .miniscreen_onboarding.app import OnboardingApp
+from .miniscreen_onboarding.onboarding_app import OnboardingApp
 from .os_updater import OSUpdater
 
 
