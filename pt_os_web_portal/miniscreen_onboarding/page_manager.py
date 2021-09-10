@@ -30,6 +30,7 @@ class PageManager:
             width=width,
             height=height * len(self.PAGE_ORDER),
         )
+        self.viewport.set_position((0, self.current_page_index * height))
 
         welcome = WelcomePage(size, mode)
         ap = ApPage(size, mode)
@@ -72,20 +73,16 @@ class PageManager:
 
         def scroll_up(pos):
             x, y = pos
-            while y >= 0:
+            while y >= self.current_page.height * self.current_page_index:
                 self.viewport.set_position((x, y))
                 y -= 1
-            y = 0
             return (x, y)
 
         def scroll_down(pos):
             x, y = pos
-            if self.viewport.height > self._miniscreen.size[1]:
-                while y < self.viewport.height - self._miniscreen.size[1]:
-                    print(f"{x}, {y}")
-                    self.viewport.set_position((x, y))
-                    y += 1
-                y -= 1
+            while y <= self.current_page.height * self.current_page_index:
+                self.viewport.set_position((x, y))
+                y += 1
             return (x, y)
 
         scroll_func = (
@@ -98,7 +95,7 @@ class PageManager:
             f"Miniscreen onboarding: Set page to {self.PAGE_ORDER[self.current_page_index].name}"
         )
 
-        scroll_func((0, self.current_page_index * self.viewport.height))
+        scroll_func((0, self.current_page_index * self.current_page.height))
 
     def go_to_previous_page(self):
         self.go_to(self.get_previous_page())

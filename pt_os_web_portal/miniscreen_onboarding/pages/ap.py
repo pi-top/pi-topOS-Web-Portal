@@ -40,5 +40,4 @@ class ApPage(PageBase):
             xy=(INFO_PAGE_MARGIN_X, THIRD_LINE_Y),
         )
 
-        self.set_interval()
         self.first_draw = False
