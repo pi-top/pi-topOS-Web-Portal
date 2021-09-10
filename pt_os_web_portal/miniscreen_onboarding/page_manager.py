@@ -73,14 +73,20 @@ class PageManager:
             )
             return
 
+        pixels_to_jump_per_frame = 2
+
         def scroll_up(y_pos):
             while self.viewport._position[1] > y_pos:
-                self.viewport.set_position((0, self.viewport._position[1] - 1))
+                self.viewport.set_position(
+                    (0, self.viewport._position[1] - pixels_to_jump_per_frame)
+                )
                 sleep(ANIMATION_SLEEP_INTERVAL)
 
         def scroll_down(y_pos):
             while self.viewport._position[1] < y_pos:
-                self.viewport.set_position((0, self.viewport._position[1] + 1))
+                self.viewport.set_position(
+                    (0, self.viewport._position[1] + pixels_to_jump_per_frame)
+                )
                 sleep(ANIMATION_SLEEP_INTERVAL)
 
         scroll_func = (
@@ -92,7 +98,9 @@ class PageManager:
             f"Miniscreen onboarding: Set page to {self.PAGE_ORDER[self.current_page_index].name}"
         )
 
+        self.is_moving = True
         scroll_func(self.current_page_index * self.current_page.height)
+        self.is_moving = False
 
     def go_to_previous_page(self):
         self.go_to(self.get_previous_page())
