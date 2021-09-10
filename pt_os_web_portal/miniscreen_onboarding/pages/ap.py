@@ -19,7 +19,6 @@ class ApPage(PageBase):
         self.info_image = process_image(
             Image.open(get_image_file_path("ap_info.png")), size, mode
         )
-        self.first_draw = True
         self.is_connected = False
 
     def render(self, draw):
@@ -39,5 +38,3 @@ class ApPage(PageBase):
             text=self.connection_state.metadata.get("passphrase", ""),
             xy=(INFO_PAGE_MARGIN_X, THIRD_LINE_Y),
         )
-
-        self.first_draw = False

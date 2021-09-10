@@ -16,7 +16,6 @@ class PageBase:
         self.interval = DEFAULT_INTERVAL
         self.last_updated = -self.interval
         self.visible = True
-        self.first_draw = True
 
     def should_redraw(self):
         """
@@ -34,5 +33,4 @@ class PageBase:
         self.last_updated = perf_counter()
 
     def render(self, draw):
-        # Needs to set 'self.first_draw = False'?
         raise NotImplementedError

@@ -90,7 +90,6 @@ class PageManager:
         )
 
         self.current_page_index = new_page_index
-        self.current_page.first_draw = True
         PTLogger.info(
             f"Miniscreen onboarding: Set page to {self.PAGE_ORDER[self.current_page_index].name}"
         )
@@ -123,11 +122,7 @@ class PageManager:
         if self.current_page not in [Pages.AP, Pages.BROWSER]:
             return
 
-        if (
-            not self.get_next_page(self.current_page).visible
-            and self.get_next_page(self.current_page).first_draw is False
-        ):
-
+        if not self.get_next_page(self.current_page).visible:
             PTLogger.debug(
                 "Miniscreen onboarding: Main loop - Handling automatic page change..."
             )
