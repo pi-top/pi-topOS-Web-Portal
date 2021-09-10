@@ -27,7 +27,7 @@ class App:
         self.listener_mgr = ListenerManager()
 
     def start(self):
-        # self.os_updater.start()
+        self.os_updater.start()
 
         if onboarding_completed() and not self.device_registration_mgr.is_registered():
             PTLogger.info(
