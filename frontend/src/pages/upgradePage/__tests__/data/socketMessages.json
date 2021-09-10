@@ -1,6 +1,6 @@
 {
     "UpdateSourcesStart": {
-        "type": "OS_UPDATE_SOURCES",
+        "type": "UPDATE_SOURCES",
         "payload": {
             "status": "START",
             "percent": 0,
@@ -8,7 +8,7 @@
         }
     },
     "UpdateSourcesStatus": {
-        "type": "OS_UPDATE_SOURCES",
+        "type": "UPDATE_SOURCES",
         "payload": {
             "status": "STATUS",
             "percent": 50.0,
@@ -16,7 +16,7 @@
         }
     },
     "UpdateSourcesFinish": {
-        "type": "OS_UPDATE_SOURCES",
+        "type": "UPDATE_SOURCES",
         "payload": {
             "status": "FINISH",
             "percent": 100.0,
@@ -24,7 +24,7 @@
         }
     },
     "UpdateSourcesError": {
-        "type": "OS_UPDATE_SOURCES",
+        "type": "UPDATE_SOURCES",
         "payload": {
             "status": "ERROR",
             "percent": 0.0,

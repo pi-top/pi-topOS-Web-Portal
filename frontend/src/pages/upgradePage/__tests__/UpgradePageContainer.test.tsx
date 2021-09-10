@@ -49,6 +49,13 @@ const createServer = () => {
   return new Server(`${wsBaseUrl}/os-upgrade`);
 };
 
+
+Object.defineProperty(window, "location", {
+  writable: true,
+  value: { replace: jest.fn() }
+} );
+
+
 describe("UpgradePageContainer", () => {
   let defaultProps: Props;
   let mount: (props?: Props) => ExtendedRenderResult;
@@ -499,8 +506,6 @@ describe("UpgradePageContainer", () => {
 
   describe("when updating web-portal succeeds", () => {
     beforeEach(async () => {
-      jest.useRealTimers();
-
       restartWebPortalServiceMock.mockResolvedValue("OK");
       serverStatusMock.mockResolvedValue("OK");
 
@@ -627,7 +632,7 @@ describe("UpgradePageContainer", () => {
       expect(queryByTestId("textarea")).not.toBeInTheDocument();
     });
 
-    it("calls onWebPortalUpgrade", async () => {
+    it("refreshes window when server is restarted", async () => {
       jest.useFakeTimers();
       const { getByText } = mount();
       jest.runAllTimers();
@@ -635,7 +640,7 @@ describe("UpgradePageContainer", () => {
       jest.runOnlyPendingTimers();
       jest.runOnlyPendingTimers();
 
-      expect(defaultProps.onWebPortalUpgrade).toHaveBeenCalled();
+      expect(window.location.replace).toHaveBeenCalled();
     });
   });
 
