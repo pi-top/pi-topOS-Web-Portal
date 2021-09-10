@@ -52,11 +52,10 @@ export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
 export type Props = {
   goToNextPage?: () => void;
   goToPreviousPage?: () => void;
-  onWebPortalUpgrade?: () => void;
   isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -70,16 +69,14 @@ export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isComplete
   };
   socket.onopen = () => {
     setIsOpen(true);
-    socket.send("update_sources");
-    setIsUpdatingSources(true);
   }
 
-  const [checkingWebPortal, setCheckingWebPortal] = useState(true);
-  const [updatingSources, setIsUpdatingSources] = useState(false);
+  const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
   const [, setPreparingWebPortalUpgrade] = useState(true);
   const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
   const [, setFinishedInstallingWebPortalUpgrade] = useState(false);
 
+  const [updatingSources, setIsUpdatingSources] = useState(false);
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
@@ -96,6 +93,19 @@ export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isComplete
       .then((setAvailableSpace))
       .catch(() => null);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    if (checkingWebPortal) {
+      socket.send("update_sources");
+      setIsUpdatingSources(true);
+    } else {
+      // the page was reloaded after installing web-portal - prepare to update all packages
+      socket.send("prepare");
+    }
+  }, [socket, isOpen, checkingWebPortal]);
 
   useEffect(() => {
     !checkingWebPortal && getMajorOsUpdates()
@@ -215,19 +225,18 @@ export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isComplete
       }
 
       try {
-        const noUpdatesAvailable = !(message.payload.size.downloadSize && message.payload.size.requiredSpace);
+        const noUpdatesAvailable = !(message.payload.size.downloadSize || message.payload.size.requiredSpace);
         if (noUpdatesAvailable && checkingWebPortal) {
           // no web-portal updates, prepare to update all packages now
           setPreparingWebPortalUpgrade(false);
           setCheckingWebPortal(false);
-          socket.send("prepare");
         } else if (noUpdatesAvailable && !checkingWebPortal) {
           // no packages to upgrade, page is now complete
           setUpgradeIsRunning(false);
           setUpgradeIsRequired(false);
           setUpgradeFinished(true);
         } else if (checkingWebPortal) {
-          // there's an update to web-portal, install it
+          // there's an update to pt-os-web-portal, install it
           socket.send("start");
         }
       } catch (_) {
@@ -238,14 +247,14 @@ export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isComplete
         setError(true);
       }
     }
-  }, [message, socket]);
+  }, [message, socket]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const serviceRestartTimoutMs = 30000;
   const timeoutServerStatusRequestMs = 300;
   const serverStatusRequestIntervalMs = 700;
   let elapsedWaitingTimeMs = 0;
 
-  function waitUntilServerIsOnline() {
+  let waitUntilServerIsOnline = () => {
     const interval = setInterval(async () => {
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
@@ -253,7 +262,7 @@ export default ({ goToNextPage, goToPreviousPage, onWebPortalUpgrade, isComplete
         serverStatus({ timeout: timeoutServerStatusRequestMs })
           .then(() => clearInterval(interval))
           .catch(() => {})
-        onWebPortalUpgrade && onWebPortalUpgrade();
+        window.location.replace("/onboarding/upgrade?all")
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }

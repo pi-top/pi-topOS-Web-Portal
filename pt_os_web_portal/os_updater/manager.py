@@ -54,6 +54,7 @@ class OSUpdateManager:
 
     def __init__(self) -> None:
         self.cache = apt.Cache()
+        self.lock = False
 
     def update(self, callback) -> None:
         PTLogger.info("OS Updater: Updating APT sources")

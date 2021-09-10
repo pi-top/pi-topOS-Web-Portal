@@ -17,15 +17,15 @@ export enum ErrorMessage {
 }
 
 export enum UpgradePageExplanation {
-  Preparing = "Checking the size of update...",
   UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
   UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
   WaitingForServer = "Please wait...",
-  UpdatingSources = "Please wait while we update the sources",
-  PreparingWebPortal = "We're preparing your system to be updated...",
-  UpdatingWebPortal = "We're updating pt-os-web-portal...",
+  UpdatingSources = "We're checking to see if there are updates available",
+  Preparing = "Preparing all packages to be updated...",
+  PreparingWebPortal = "Preparing to update myself...",
+  UpdatingWebPortal = "I'm updating myself, please wait",
 }
 
 
