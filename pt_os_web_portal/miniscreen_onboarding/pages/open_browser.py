@@ -8,18 +8,17 @@ from pitop.common.sys_info import (
 )
 
 from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from .base._title_base import TitlePage
+from .base._base import PageBase
 from .pages import Pages
 from .render.helpers import draw_text
 
 
-class OpenBrowserPage(TitlePage):
+class OpenBrowserPage(PageBase):
     def __init__(self, size, mode):
         super(OpenBrowserPage, self).__init__(
             type=Pages.BROWSER,
             size=size,
             mode=mode,
-            title_image_filename="connected.png",
         )
         self.visible = False
         self.connected_ip = ""
@@ -32,6 +31,7 @@ class OpenBrowserPage(TitlePage):
             self.visible = self.connected_ip != "" or is_connected_to_internet()
             sleep(0.3)
 
+    # TODO: Move to common
     def get_ip_to_connect(self):
         if not self.connected_ip:
             return
@@ -42,7 +42,7 @@ class OpenBrowserPage(TitlePage):
             if ip_arr[:3] == iface_ip_arr[:3]:
                 return iface_ip
 
-    def info(self, draw, redraw=False):
+    def render(self, draw):
         draw_text(draw, text="Open a browser to", font_size=11, xy=(5, FIRST_LINE_Y))
         draw_text(
             draw,

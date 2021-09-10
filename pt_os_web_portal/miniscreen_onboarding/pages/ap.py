@@ -1,22 +1,33 @@
+from PIL import Image
+
 from .attr.margins import INFO_PAGE_MARGIN_X, SECOND_LINE_Y, THIRD_LINE_Y
-from .base._connection_base import ConnectionPage
+from .base._base import PageBase
 from .connection.methods import ApConnection
 from .pages import Pages
-from .render.helpers import draw_text
+from .render.helpers import draw_text, get_image_file_path, process_image
 
 
-class ApPage(ConnectionPage):
+class ApPage(PageBase):
     def __init__(self, size, mode):
         super(ApPage, self).__init__(
             type=Pages.AP,
-            connection_state=ApConnection(),
-            title_image_filename="ap_title.png",
-            info_image_filename="ap_info.png",
             size=size,
             mode=mode,
         )
 
-    def draw_connection_data(self, draw):
+        self.connection_state = ApConnection()
+        self.info_image = process_image(
+            Image.open(get_image_file_path("ap_info.png")), size, mode
+        )
+        self.first_draw = True
+        self.is_connected = False
+
+    def render(self, draw):
+        draw.bitmap(
+            xy=(0, 0),
+            bitmap=self.info_image,
+            fill="white",
+        )
         draw_text(draw, text="Wi-Fi network:", xy=(10, 6))
         draw_text(
             draw,
@@ -28,3 +39,6 @@ class ApPage(ConnectionPage):
             text=self.connection_state.metadata.get("passphrase", ""),
             xy=(INFO_PAGE_MARGIN_X, THIRD_LINE_Y),
         )
+
+        self.set_interval()
+        self.first_draw = False
