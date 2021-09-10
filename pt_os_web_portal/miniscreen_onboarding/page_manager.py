@@ -1,8 +1,11 @@
+from time import sleep
+
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
 from ..event import subscribe
 from .pages import ApPage, CarryOnPage, OpenBrowserPage, Pages, WelcomePage
+from .pages.attr.speeds import ANIMATION_SLEEP_INTERVAL
 
 
 class PageManager:
@@ -45,7 +48,6 @@ class PageManager:
                 carryon,
             ]
         ):
-            print(f"Adding page {Pages(page.type)}...")
             self.viewport.add_hotspot(page, (0, i * height))
 
         def handle_ready_to_be_a_maker_event(ready):
@@ -71,19 +73,15 @@ class PageManager:
             )
             return
 
-        def scroll_up(pos):
-            x, y = pos
-            while y >= self.current_page.height * self.current_page_index:
-                self.viewport.set_position((x, y))
-                y -= 1
-            return (x, y)
+        def scroll_up(y_pos):
+            while self.viewport._position[1] > y_pos:
+                self.viewport.set_position((0, self.viewport._position[1] - 1))
+                sleep(ANIMATION_SLEEP_INTERVAL)
 
-        def scroll_down(pos):
-            x, y = pos
-            while y <= self.current_page.height * self.current_page_index:
-                self.viewport.set_position((x, y))
-                y += 1
-            return (x, y)
+        def scroll_down(y_pos):
+            while self.viewport._position[1] < y_pos:
+                self.viewport.set_position((0, self.viewport._position[1] + 1))
+                sleep(ANIMATION_SLEEP_INTERVAL)
 
         scroll_func = (
             scroll_down if new_page_index > self.current_page_index else scroll_up
@@ -94,7 +92,7 @@ class PageManager:
             f"Miniscreen onboarding: Set page to {self.PAGE_ORDER[self.current_page_index].name}"
         )
 
-        scroll_func((0, self.current_page_index * self.current_page.height))
+        scroll_func(self.current_page_index * self.current_page.height)
 
     def go_to_previous_page(self):
         self.go_to(self.get_previous_page())
