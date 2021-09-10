@@ -5,7 +5,7 @@ from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
 from ..backend.helpers.finalise import onboarding_completed
-from ..event import post_event
+from ..event import AppEvents, post_event
 from .manager import OSUpdateManager
 from .message_handler import OSUpdaterFrontendMessageHandler
 from .system_clock import is_system_clock_synchronized, synchronize_system_clock
@@ -25,7 +25,7 @@ class OSUpdater:
         if not is_system_clock_synchronized():
             synchronize_system_clock()
 
-        post_event("os_updater_prepare", "started")
+        post_event(AppEvents.OS_UPDATER_PREPARE, "started")
 
         callback = self.message_handler.create_emit_os_prepare_upgrade_message(ws)
 
@@ -42,9 +42,9 @@ class OSUpdater:
             if callable(callback):
                 callback(MessageType.FINISH, "Finished preparing", 100.0)
 
-            post_event("os_updater_prepare", "success")
+            post_event(AppEvents.OS_UPDATER_PREPARE, "success")
         except Exception as e:
-            post_event("os_updater_prepare", "failed")
+            post_event(AppEvents.OS_UPDATER_PREPARE, "failed")
 
             if callable(callback):
                 callback(MessageType.ERROR, f"{e}", 0.0)
@@ -66,17 +66,17 @@ class OSUpdater:
                 callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
 
     def start_os_upgrade(self, ws=None):
-        post_event("os_updater_upgrade", "started")
+        post_event(AppEvents.OS_UPDATER_UPGRADE, "started")
 
         callback = self.message_handler.create_emit_os_upgrade_message(ws)
         try:
             self.manager.upgrade(callback)
             self.manager.update_last_check_config()
-            post_event("os_updater_upgrade", "success")
+            post_event(AppEvents.OS_UPDATER_UPGRADE, "success")
         except Exception as e:
             if callable(callback):
                 callback(MessageType.ERROR, f"{e}", 0.0)
-            post_event("os_updater_upgrade", "failed")
+            post_event(AppEvents.OS_UPDATER_UPGRADE, "failed")
 
     def should_check_for_updates(self, ws=None):
         if not onboarding_completed():
@@ -94,10 +94,10 @@ class OSUpdater:
         return self.manager.cache.install_count > 0
 
     def do_update_check(self, ws=None):
-        if self.should_check_for_updates():
+        do_action = self.should_check_for_updates()
+        post_event(AppEvents.OS_ALREADY_CHECKED_UPDATES, do_action)
+
+        if do_action:
             PTLogger.info("Checking for updates...")
 
-            post_event("os_has_updates", self.updates_available())
-
-        else:
-            post_event("os_has_checked_updates", True)
+            post_event(AppEvents.OS_HAS_UPDATES, self.updates_available())

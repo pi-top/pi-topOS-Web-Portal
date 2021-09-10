@@ -3,7 +3,7 @@ from threading import Event
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
-from ..event import subscribe
+from ..event import AppEvents, subscribe
 from .pages import ApPage, CarryOnPage, OpenBrowserPage, Pages, WelcomePage
 
 
@@ -55,7 +55,7 @@ class PageManager:
             # Enable 'carry on' page
             self.get_page(self.PAGE_ORDER.index(Pages.CARRY_ON)).visible = True
 
-        subscribe("ready_to_be_a_maker", handle_ready_to_be_a_maker_event)
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, handle_ready_to_be_a_maker_event)
 
     def get_page(self, index):
         page, pos = self.viewport._hotspots[index]

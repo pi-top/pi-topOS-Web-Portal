@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pitop.common.logger import PTLogger
 
-from .event import subscribe
+from .event import AppEvents, subscribe
 
 
 class FWUpdaterBreadcrumbManager:
@@ -40,10 +40,11 @@ def handle_os_has_updates_event(os_has_updates):
         )
 
 
-def handle_os_has_checked_updates_event(os_has_already_checked):
-    FWUpdaterBreadcrumbManager().set_ready(
-        "pt-os-web-portal: Already checked for updates today."
-    )
+def handle_os_already_checked_updates_event(os_has_already_checked):
+    if os_has_already_checked:
+        FWUpdaterBreadcrumbManager().set_ready(
+            "pt-os-web-portal: Already checked for updates today."
+        )
 
 
 def handle_os_updater_upgrade_event(status):
@@ -66,6 +67,8 @@ def handle_os_updater_upgrade_event(status):
 
 
 def setup_fw_updater_event_handlers():
-    subscribe("os_has_checked_updates", handle_os_has_checked_updates_event)
-    subscribe("os_has_updates", handle_os_has_updates_event)
-    subscribe("os_updater_upgrade", handle_os_updater_upgrade_event)
+    subscribe(
+        AppEvents.OS_ALREADY_CHECKED_UPDATES, handle_os_already_checked_updates_event
+    )
+    subscribe(AppEvents.OS_HAS_UPDATES, handle_os_has_updates_event)
+    subscribe(AppEvents.OS_UPDATER_UPGRADE, handle_os_updater_upgrade_event)

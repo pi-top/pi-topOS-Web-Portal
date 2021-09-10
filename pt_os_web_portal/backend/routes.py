@@ -9,7 +9,7 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
-from ..event import post_event
+from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
 from .helpers.about import device_data
@@ -469,5 +469,5 @@ def get_os_check_update():
 @app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
 def post_onboarding_miniscreen_app_breadcrumb():
     PTLogger.debug("Route '/onboarding-miniscreen-app-breadcrumb'")
-    post_event("ready_to_be_a_maker", True)
+    post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"
