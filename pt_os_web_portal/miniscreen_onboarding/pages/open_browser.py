@@ -3,7 +3,6 @@ from time import sleep
 
 from pitop.common.sys_info import (
     get_address_for_connected_device,
-    get_internal_ip,
     is_connected_to_internet,
 )
 
@@ -31,17 +30,6 @@ class OpenBrowserPage(PageBase):
             self.visible = self.connected_ip != "" or is_connected_to_internet()
             sleep(0.3)
 
-    # TODO: Move to common
-    def get_ip_to_connect(self):
-        if not self.connected_ip:
-            return
-        ip_arr = self.connected_ip.split(".")
-        for interface in ("ptusb0", "wlan_ap0"):
-            iface_ip = get_internal_ip(interface)
-            iface_ip_arr = iface_ip.split(".")
-            if ip_arr[:3] == iface_ip_arr[:3]:
-                return iface_ip
-
     def render(self, draw):
         draw_text(draw, text="Open a browser to", font_size=11, xy=(5, FIRST_LINE_Y))
         draw_text(
@@ -50,11 +38,10 @@ class OpenBrowserPage(PageBase):
             font_size=11,
             xy=(5, SECOND_LINE_Y),
         )
-        ip_to_connect = self.get_ip_to_connect()
-        if ip_to_connect:
+        if self.connected_ip:
             draw_text(
                 draw,
-                text=f"or http://{ip_to_connect}",
+                text="or http://192.168.64.1",
                 font_size=11,
                 xy=(5, THIRD_LINE_Y),
             )
