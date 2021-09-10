@@ -72,10 +72,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }
 
   const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
-  const [, setPreparingWebPortalUpgrade] = useState(true);
   const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
-  const [, setFinishedInstallingWebPortalUpgrade] = useState(false);
-
   const [updatingSources, setIsUpdatingSources] = useState(false);
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
@@ -194,7 +191,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     ) {
       if (checkingWebPortal) {
         setInstallingWebPortalUpgrade(false);
-        setFinishedInstallingWebPortalUpgrade(true);
 
         setWaitingForServer(true);
         restartWebPortalService()
@@ -228,7 +224,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         const noUpdatesAvailable = !(message.payload.size.downloadSize || message.payload.size.requiredSpace);
         if (noUpdatesAvailable && checkingWebPortal) {
           // no web-portal updates, prepare to update all packages now
-          setPreparingWebPortalUpgrade(false);
           setCheckingWebPortal(false);
         } else if (noUpdatesAvailable && !checkingWebPortal) {
           // no packages to upgrade, page is now complete
