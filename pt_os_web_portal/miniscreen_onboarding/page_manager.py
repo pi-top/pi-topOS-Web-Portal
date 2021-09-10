@@ -1,11 +1,10 @@
-from time import sleep
+from threading import Event
 
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
 from ..event import subscribe
 from .pages import ApPage, CarryOnPage, OpenBrowserPage, Pages, WelcomePage
-from .pages.attr.speeds import ANIMATION_SLEEP_INTERVAL
 
 
 class PageManager:
@@ -18,7 +17,6 @@ class PageManager:
 
     def __init__(self, miniscreen):
         self.current_page_index = 0
-        self.is_moving = False
 
         self._miniscreen = miniscreen
 
@@ -34,6 +32,8 @@ class PageManager:
             height=height * len(self.PAGE_ORDER),
         )
         self.viewport.set_position((0, self.current_page_index * height))
+
+        self.page_has_changed = Event()
 
         welcome = WelcomePage(size, mode)
         ap = ApPage(size, mode)
@@ -65,7 +65,13 @@ class PageManager:
     def current_page(self):
         return self.get_page(self.current_page_index)
 
-    def go_to(self, page):
+    def viewport_position_is_correct(self):
+        return (
+            self.viewport._position[1]
+            == self.current_page_index * self.current_page.height
+        )
+
+    def set_current_page_to(self, page):
         new_page_index = self.PAGE_ORDER.index(page.type)
         if self.current_page_index == new_page_index:
             PTLogger.debug(
@@ -73,40 +79,14 @@ class PageManager:
             )
             return
 
-        pixels_to_jump_per_frame = 2
-
-        def scroll_up(y_pos):
-            while self.viewport._position[1] > y_pos:
-                self.viewport.set_position(
-                    (0, self.viewport._position[1] - pixels_to_jump_per_frame)
-                )
-                sleep(ANIMATION_SLEEP_INTERVAL)
-
-        def scroll_down(y_pos):
-            while self.viewport._position[1] < y_pos:
-                self.viewport.set_position(
-                    (0, self.viewport._position[1] + pixels_to_jump_per_frame)
-                )
-                sleep(ANIMATION_SLEEP_INTERVAL)
-
-        scroll_func = (
-            scroll_down if new_page_index > self.current_page_index else scroll_up
-        )
-
         self.current_page_index = new_page_index
-        PTLogger.info(
-            f"Miniscreen onboarding: Set page to {self.PAGE_ORDER[self.current_page_index].name}"
-        )
+        self.page_has_changed.set()
 
-        self.is_moving = True
-        scroll_func(self.current_page_index * self.current_page.height)
-        self.is_moving = False
+    def set_current_page_to_previous_page(self):
+        self.set_current_page_to(self.get_previous_page())
 
-    def go_to_previous_page(self):
-        self.go_to(self.get_previous_page())
-
-    def go_to_next_page(self):
-        self.go_to(self.get_next_page())
+    def set_current_page_to_next_page(self):
+        self.set_current_page_to(self.get_next_page())
 
     def get_previous_page(self):
         # Return current page if at top
@@ -132,8 +112,12 @@ class PageManager:
             PTLogger.debug(
                 "Miniscreen onboarding: Main loop - Handling automatic page change..."
             )
-            self.go_to_next_page()
+            self.set_current_page_to_next_page()
 
     def refresh(self):
-        if not self.is_moving:
-            self.viewport.refresh()
+        self.viewport.refresh()
+
+    def wait_until_timeout_or_page_has_changed(self):
+        self.page_has_changed.wait(self.current_page.interval)
+        if self.page_has_changed.is_set():
+            self.page_has_changed.clear()
