@@ -4,7 +4,7 @@ from typing import Dict, List
 
 class AppEvents(Enum):
     READY_TO_BE_A_MAKER = auto()  # bool
-    OS_UPDATE_SOURCES = auto()   # 'started'/'success'/'failed'
+    OS_UPDATE_SOURCES = auto()  # 'started'/'success'/'failed'
     OS_UPDATER_PREPARE = auto()  # 'started'/'success'/'failed'
     OS_UPDATER_UPGRADE = auto()  # 'started'/'success'/'failed'
     OS_HAS_UPDATES = auto()  # bool
