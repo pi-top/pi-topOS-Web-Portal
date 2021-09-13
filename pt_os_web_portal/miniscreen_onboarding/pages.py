@@ -43,6 +43,7 @@ class PageBase:
         self.interval = interval
         self.last_updated = -self.interval
         self._visible = True
+        self.font_size = 12
 
     @property
     def visible(self):
@@ -70,7 +71,7 @@ class PageBase:
             fill=1,
             font=ImageFont.truetype(
                 "Roboto-Regular.ttf",
-                size=12,
+                size=self.font_size,
             ),
             anchor="mm",
             spacing=0,
@@ -88,6 +89,7 @@ class WelcomePage(PageBase):
             interval=interval,
         )
         self.text = "Press the blue\ndown key\nto page!"
+        self.font_size = 16
 
 
 class ApPage(PageBase):
@@ -98,6 +100,7 @@ class ApPage(PageBase):
             mode=mode,
             interval=interval,
         )
+        self.font_size = 12
 
         self.ssid = ""
 
@@ -128,6 +131,7 @@ class OpenBrowserPage(PageBase):
         )
 
         self.text = "Open a browser\nto http://pi-top.local\nor http://192.168.64.1"
+        self.font_size = 12
 
         self.has_connected_device = False
 
@@ -158,7 +162,7 @@ class CarryOnPage(PageBase):
         )
 
         self.text = "Now, continue\nonboarding in\nthe browser"
-
+        self.font_size = 16
         self._visible = False
 
         def update_ready(ready):
