@@ -200,7 +200,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.Cleanup &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
-    
+
       if (checkingWebPortal) {
         setInstallingWebPortalUpgrade(false);
 
