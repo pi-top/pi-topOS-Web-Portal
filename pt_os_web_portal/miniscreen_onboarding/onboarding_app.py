@@ -6,7 +6,7 @@ from pitop import Pitop
 from pitop.common.logger import PTLogger
 
 from .page_manager import PageManager
-from .pages.attr.speeds import ANIMATION_SLEEP_INTERVAL
+from .pages.attr import ANIMATION_SLEEP_INTERVAL
 
 
 class OnboardingApp:
