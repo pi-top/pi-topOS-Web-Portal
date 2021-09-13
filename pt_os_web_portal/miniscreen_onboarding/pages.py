@@ -115,7 +115,7 @@ class ApPage(PageBase):
 
     @property
     def text(self):
-        return f"Wi-Fi network:\n{self.ssid}\n{self.passphrase}"
+        return f"Wi-Fi network:\nSSID: {self.ssid}\nPassword: {self.passphrase}"
 
 
 class OpenBrowserPage(PageBase):
@@ -127,7 +127,7 @@ class OpenBrowserPage(PageBase):
             interval=interval,
         )
 
-        self.text = "Open a browser to http://pi-top.local or http://192.168.64.1"
+        self.text = "Open a browser\nto http://pi-top.local\nor http://192.168.64.1"
 
         self.has_connected_device = False
 
