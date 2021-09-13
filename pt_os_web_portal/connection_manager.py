@@ -24,6 +24,7 @@ class ApConnection:
     def passphrase(self):
         return self.metadata.get("passphrase", "")
 
+    @property
     def has_changes(self):
         return self._has_changes
 
@@ -54,7 +55,7 @@ class ConnectionManager:
     def _main(self):
         while True:
             self.ap_connection.update()
-            if self.ap_connection.has_changes():
+            if self.ap_connection.has_changes:
                 post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
                 post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connection.passphrase)
 
