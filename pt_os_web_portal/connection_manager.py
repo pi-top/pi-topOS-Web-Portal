@@ -1,11 +1,9 @@
-from ipaddress import ip_address
 from threading import Thread
 from time import sleep
 
 from pitop.common.sys_info import (
     get_address_for_connected_device,
     get_ap_mode_status,
-    get_internal_ip,
     is_connected_to_internet,
 )
 
@@ -14,8 +12,6 @@ from .event import AppEvents, post_event
 
 class ApConnection:
     def __init__(self):
-        self.ip = ""
-        self.interface_name = "wlan_ap0"
         self.metadata = get_ap_mode_status()
         self._previous_metadata = None
         self._has_changes = True
@@ -33,13 +29,8 @@ class ApConnection:
 
     def update(self):
         self.metadata = get_ap_mode_status()
-        try:
-            self.ip = ip_address(get_internal_ip(iface=self.interface_name))
-        except Exception:
-            self.ip = ""
-        finally:
-            self._has_changes = self.metadata != self._previous_metadata
-            self._previous_metadata = self.metadata
+        self._has_changes = self.metadata != self._previous_metadata
+        self._previous_metadata = self.metadata
 
 
 class ConnectionManager:
