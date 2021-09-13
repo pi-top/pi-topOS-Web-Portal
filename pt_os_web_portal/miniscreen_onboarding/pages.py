@@ -141,7 +141,7 @@ class OpenBrowserPage(PageBase):
         def update_is_connected(is_connected):
             self.is_connected_to_internet = is_connected
 
-        subscribe(AppEvents.OS_IS_ONLINE, update_is_connected)
+        subscribe(AppEvents.IS_CONNECTED_TO_INTERNET, update_is_connected)
 
     @property
     def visible(self):

@@ -67,7 +67,7 @@ class ConnectionManager:
 
             is_connected = is_connected_to_internet()
             if is_connected != self._previous_connection_state:
-                post_event(AppEvents.OS_IS_ONLINE, is_connected)
+                post_event(AppEvents.IS_CONNECTED_TO_INTERNET, is_connected)
             self._previous_connection_state = is_connected
 
             sleep(0.5)
