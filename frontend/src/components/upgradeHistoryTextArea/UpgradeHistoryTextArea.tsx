@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import cx from 'classnames';
 
-import TextArea from "../../../components/atoms/textarea/TextArea";
+import TextArea from "../atoms/textarea/TextArea";
 
 import styles from "./UpgradeHistoryTextArea.module.css";
 

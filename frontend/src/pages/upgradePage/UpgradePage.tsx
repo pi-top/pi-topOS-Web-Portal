@@ -10,19 +10,22 @@ import styles from "./UpgradePage.module.css";
 
 import { OSUpdaterMessage, OSUpdaterMessageType } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
-import UpgradeHistoryTextArea from "./upgradeHistoryTextArea/UpgradeHistoryTextArea";
+import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
 }
 
 export enum UpgradePageExplanation {
-  Preparing = "Checking the size of update...",
   UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
   UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
   WaitingForServer = "Please wait...",
+  UpdatingSources = "We're checking to see if there are updates available",
+  Preparing = "Preparing all packages to be updated...",
+  PreparingWebPortal = "Preparing to update myself...",
+  UpdatingWebPortal = "I'm updating myself, please wait",
 }
 
 
@@ -33,6 +36,7 @@ export type Props = {
   onStartUpgradeClick: () => void;
   isCompleted?: boolean;
   message?: OSUpdaterMessage,
+  updatingSources: boolean,
   upgradeIsPrepared: boolean,
   upgradeIsRequired: boolean,
   upgradeIsRunning: boolean,
@@ -42,6 +46,8 @@ export type Props = {
   error: boolean,
   requireBurn: boolean,
   shouldBurn: boolean,
+  checkingWebPortal: boolean,
+  installingWebPortalUpgrade: boolean,
 };
 
 export default ({
@@ -51,6 +57,7 @@ export default ({
   onStartUpgradeClick,
   isCompleted,
   message,
+  updatingSources,
   upgradeIsPrepared,
   upgradeIsRequired,
   upgradeIsRunning,
@@ -59,6 +66,8 @@ export default ({
   waitingForServer,
   requireBurn,
   shouldBurn,
+  checkingWebPortal,
+  installingWebPortalUpgrade,
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
@@ -70,7 +79,7 @@ export default ({
   const errorMessage = error && ErrorMessage.GenericError;
 
   const parseMessage = (message: OSUpdaterMessage) => {
-    if (message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) {
+    if (message?.type === OSUpdaterMessageType.UpdateSources || message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.PrepareUpgrade) {
       return JSON.stringify(message.payload?.message).trim().replace(/^"(.*)"$/, '$1');
     }
     return ""
@@ -105,6 +114,15 @@ export default ({
           .replace("{time}", "a few");
       }
       return UpgradePageExplanation.UpgradePreparedWithoutDownload
+    }
+    if (updatingSources) {
+      return UpgradePageExplanation.UpdatingSources;
+    }
+    if (checkingWebPortal && !installingWebPortalUpgrade) {
+      return UpgradePageExplanation.PreparingWebPortal;
+    }
+    if (checkingWebPortal && installingWebPortalUpgrade) {
+      return UpgradePageExplanation.UpdatingWebPortal;
     }
     return UpgradePageExplanation.Preparing;
   };
@@ -150,17 +168,17 @@ export default ({
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { !waitingForServer && message && message?.type === OSUpdaterMessageType.PrepareUpgrade &&
+        { !waitingForServer && message && message?.type === OSUpdaterMessageType.UpdateSources &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { (waitingForServer && !error ) && (
+        { !error && waitingForServer && (
           <>
             <Spinner size={40} />{" "}
           </>
         )}
 
-        {(message?.type === OSUpdaterMessageType.PrepareUpgrade || message?.type === OSUpdaterMessageType.Upgrade) && !waitingForServer && !error && (
+        {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.UpdateSources) && !waitingForServer && !error && (
           <div data-testid="progress" className={styles.progress}>
             <ProgressBar
               percent={message.payload.percent}

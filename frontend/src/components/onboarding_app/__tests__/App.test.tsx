@@ -149,6 +149,7 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForTermsPage: () => waitForAltText("terms-screen-banner"),
     waitForWifiPage: () => waitForAltText("wifi-page-banner"),
     waitForUpgradePage: () => waitForText(upgradePageText),
+    waitForUpgradePageBanner: () => waitForAltText("upgrade-page-banner"),
     waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
     waitForRestartPage: () => waitForAltText("reboot-screen"),
     // Actions
@@ -159,9 +160,8 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
         UpgradePageExplanation.Finish
             .replace("{continueButtonLabel}", "Next")
             .replace("{continueButtonAction}", "continue")
-            .split("\n")
-            .map(async (text, _) => {
-        text && await waitForText(text);
+        .split("\n").map(async (text, _): Promise<any> => {
+        text && await waitForElement(() => result.getByText(text))
       }))
     },
     registerEmail: (email: string) => {
@@ -179,7 +179,7 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
 describe("App", () => {
   let server: Server;
 
-  beforeAll(() => {
+  beforeEach(() => {
     // app services
     getBuildInfoMock.mockResolvedValue(buildInfo);
 
@@ -225,17 +225,27 @@ describe("App", () => {
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
 
+    let nextSizeMessage = Messages.NoSize;
     server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
       socket.on("message", (data) => {
-        if (data === "prepare") {
+        if (data === "update_sources") {
+          socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+          socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+          socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+        }
+
+        if (data === "prepare" || data === "prepare_web_portal") {
+          nextSizeMessage = data === "prepare_web_portal" ? Messages.NoSize : Messages.Size;
           socket.send(JSON.stringify(Messages.PrepareStart));
           socket.send(JSON.stringify(Messages.PrepareFinish));
         }
-        else if (data === "size") {
-          socket.send(JSON.stringify(Messages.Size));
+
+        if (data === "size") {
+          socket.send(JSON.stringify(nextSizeMessage));
         }
-        else if (data === "start") {
+
+        if (data === "start") {
           socket.send(JSON.stringify(Messages.UpgradeStart));
           socket.send(JSON.stringify(Messages.UpgradeStatus));
           socket.send(JSON.stringify(Messages.UpgradeFinish));
@@ -243,9 +253,9 @@ describe("App", () => {
       });
     });
   });
-  afterEach(() => cleanup());
-  afterAll(() => {
+  afterEach(() => {
     act(() => server.close());
+    cleanup();
   });
 
   it("does not render build information on mount", async () => {
@@ -572,9 +582,9 @@ describe("App", () => {
         waitForUpgradePage,
         upgrade,
         waitForRegistrationPage,
+        waitForUpgradePageBanner,
       } = mount(PageRoute.Upgrade);
       await waitForUpgradePage();
-
       await upgrade();
 
       // go to RegistrationPage
@@ -583,12 +593,12 @@ describe("App", () => {
       await wait();
       jest.runOnlyPendingTimers();
       jest.runOnlyPendingTimers();
-      jest.useRealTimers();
+      await wait();
       await waitForRegistrationPage();
 
       // go back to UpgradePage
       fireEvent.click(getByText("Back"));
-      await waitForUpgradePage();
+      await waitForUpgradePageBanner();
 
       // Skip to RegistrationPage
       fireEvent.click(getByText("Skip"));
@@ -620,13 +630,13 @@ describe("App", () => {
     });
 
     it("navigates to UpgradePage on back button click when connected", async () => {
-      const { getByText, waitForRegistrationPage, waitForUpgradePage } = mount(
+      const { getByText, waitForRegistrationPage, waitForUpgradePageBanner } = mount(
         PageRoute.Registration
       );
       await waitForRegistrationPage();
 
       fireEvent.click(getByText("Back"));
-      await waitForUpgradePage();
+      await waitForUpgradePageBanner();
     });
 
     it("navigates to WifiPage on back button click when not connected", async () => {
