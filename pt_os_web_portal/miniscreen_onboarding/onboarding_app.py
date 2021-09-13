@@ -45,7 +45,7 @@ class OnboardingApp:
     def _main(self):
         def scroll_to_current_page():
             PTLogger.info(
-                f"Miniscreen onboarding: Scrolling to page {self.page_mgr.PAGE_ORDER[self.page_mgr.current_page_index].name}"
+                f"Miniscreen onboarding: Scrolling to page {self.page_mgr.current_page.type}"
             )
 
             y_pos = self.page_mgr.current_page_index * self.miniscreen.size[1]

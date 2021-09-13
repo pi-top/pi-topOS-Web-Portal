@@ -28,7 +28,7 @@ class PageManager:
         self.page_has_changed = Event()
 
         def get_page(page):
-            return (PageGenerator.get_page(page)(size, mode, default_page_interval),)
+            return PageGenerator.get_page(page)(size, mode, default_page_interval)
 
         self.pages = [get_page(page) for page in Page]
 
@@ -86,7 +86,7 @@ class PageManager:
         if self.current_page.type not in [Page.AP, Page.BROWSER]:
             return
 
-        if not self.get_next_page(self.current_page).visible:
+        if not self.get_next_page().visible:
             PTLogger.debug(
                 "Miniscreen onboarding: Main loop - Handling automatic page change..."
             )

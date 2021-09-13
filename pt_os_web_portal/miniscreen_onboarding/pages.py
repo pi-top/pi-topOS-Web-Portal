@@ -16,20 +16,20 @@ class Page(Enum):
 class PageGenerator:
     @staticmethod
     def get_page(page_type: Page):
-        if page_type == Page.WELCOME.value:
+        if page_type == Page.WELCOME:
             return WelcomePage
 
-        elif page_type == Page.AP.value:
+        elif page_type == Page.AP:
             return ApPage
 
-        elif page_type == Page.BROWSER.value:
+        elif page_type == Page.BROWSER:
             return OpenBrowserPage
 
-        elif page_type == Page.CARRY_ON.value:
+        elif page_type == Page.CARRY_ON:
             return CarryOnPage
 
         else:
-            raise Exception("Invalid page number")
+            raise Exception("Invalid page type")
 
 
 # Based on luma.core hotspots/snapshots
