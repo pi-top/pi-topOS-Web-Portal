@@ -2,10 +2,6 @@ from enum import Enum, auto
 from time import perf_counter
 
 from PIL import Image, ImageDraw, ImageFont
-from pitop.common.sys_info import (
-    get_address_for_connected_device,
-    is_connected_to_internet,
-)
 
 from .event import AppEvents, subscribe
 
@@ -108,10 +104,22 @@ class OpenBrowserPage(PageBase):
         )
 
         self.text = "Open a browser to http://pi-top.local or http://192.168.64.1"
+        self.has_connected_device = False
+        self.is_connected_to_internet = False
+
+        def update_connected_device(is_connected):
+            self.has_connected_device = is_connected
+
+        subscribe(AppEvents.HAS_CONNECTED_DEVICE, update_connected_device)
+
+        def update_connected_to_internet(is_connected):
+            self.is_connected_to_internet = is_connected
+
+        subscribe(AppEvents.OS_IS_ONLINE, update_connected_to_internet)
 
     @property
     def visible(self):
-        return get_address_for_connected_device() != "" or is_connected_to_internet()
+        return self.has_connected_device or self.is_connected_to_internet
 
 
 class CarryOnPage(PageBase):
