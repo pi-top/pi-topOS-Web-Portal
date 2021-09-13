@@ -64,7 +64,7 @@ class PageBase:
         self.last_updated = perf_counter()
 
     def render(self, draw):
-        draw.multiline_text(
+        draw.text(
             text=self.text,
             xy=(0, 0),
             fill=1,
