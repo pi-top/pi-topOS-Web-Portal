@@ -3,17 +3,10 @@ from threading import Event
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
-from .pages import ApPage, CarryOnPage, OpenBrowserPage, Pages, WelcomePage
+from .pages import Page, PageGenerator
 
 
 class PageManager:
-    PAGE_ORDER = [
-        Pages.WELCOME,
-        Pages.AP,
-        Pages.BROWSER,
-        Pages.CARRY_ON,
-    ]
-
     def __init__(self, miniscreen, default_page_interval=1):
         self._miniscreen = miniscreen
 
@@ -28,30 +21,22 @@ class PageManager:
         self.viewport = viewport(
             miniscreen.device,
             width=width,
-            height=height * len(self.PAGE_ORDER),
+            height=height * len(Page),
         )
         self.viewport.set_position((0, self.current_page_index * height))
 
         self.page_has_changed = Event()
 
-        welcome = WelcomePage(size, mode, default_page_interval)
-        ap = ApPage(size, mode, default_page_interval)
-        openbrowser = OpenBrowserPage(size, mode, default_page_interval)
-        carryon = CarryOnPage(size, mode, default_page_interval)
+        def get_page(page):
+            return (PageGenerator.get_page(page)(size, mode, default_page_interval),)
 
-        for i, page in enumerate(
-            [
-                welcome,
-                ap,
-                openbrowser,
-                carryon,
-            ]
-        ):
+        self.pages = [get_page(page) for page in Page]
+
+        for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * height))
 
     def get_page(self, index):
-        page, pos = self.viewport._hotspots[index]
-        return page
+        return self.pages[index]
 
     @property
     def current_page(self):
@@ -64,10 +49,11 @@ class PageManager:
         )
 
     def set_current_page_to(self, page):
-        new_page_index = self.PAGE_ORDER.index(page.type)
+        new_page = page.type
+        new_page_index = new_page.value
         if self.current_page_index == new_page_index:
             PTLogger.debug(
-                f"Miniscreen onboarding: Already on page '{self.PAGE_ORDER[self.current_page_index].name}' - nothing to do"
+                f"Miniscreen onboarding: Already on page '{new_page.name}' - nothing to do"
             )
             return
 
@@ -90,14 +76,14 @@ class PageManager:
 
     def get_next_page(self):
         # Return current page if at end
-        if self.current_page_index + 1 >= len(self.PAGE_ORDER):
+        if self.current_page_index + 1 >= len(Page):
             return self.current_page
 
         candidate = self.get_page(self.current_page_index + 1)
         return candidate if candidate.visible else self.current_page
 
     def handle_automatic_transitions(self):
-        if self.current_page not in [Pages.AP, Pages.BROWSER]:
+        if self.current_page.type not in [Page.AP, Page.BROWSER]:
             return
 
         if not self.get_next_page(self.current_page).visible:
