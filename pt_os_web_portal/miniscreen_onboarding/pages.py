@@ -7,10 +7,10 @@ from ..event import AppEvents, subscribe
 
 
 class Page(Enum):
-    WELCOME = 1
-    AP = 2
-    BROWSER = 3
-    CARRY_ON = 4
+    WELCOME = 0
+    AP = 1
+    BROWSER = 2
+    CARRY_ON = 3
 
 
 class PageGenerator:
