@@ -8,7 +8,7 @@ from pitop.common.sys_info import (
     is_connected_to_internet,
 )
 
-from ..event import AppEvents, post_event
+from .event import AppEvents, post_event
 
 
 class ApConnection:
@@ -16,6 +16,7 @@ class ApConnection:
         self.ip = ""
         self.interface_name = "wlan_ap0"
         self.metadata = get_ap_mode_status()
+        self.previous_metadata = None
         self.update()
 
     @property
@@ -26,12 +27,18 @@ class ApConnection:
     def passphrase(self):
         return self.metadata.get("passphrase", "")
 
+    def has_changes(self):
+        return self._has_changes
+
     def update(self):
         self.metadata = get_ap_mode_status()
+        self._has_changes = self.metadata != self.previous_metadata
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
         except Exception:
             self.ip = ""
+        finally:
+            self.previous_metadata = self.metadata
 
 
 class ConnectionManager:
@@ -39,6 +46,7 @@ class ConnectionManager:
         self.ap_connection = ApConnection()
         self.__thread = Thread(target=self._main, args=())
         self.__stop = False
+        self._previous_connection_state = False
 
     def start(self):
         self.__thread = Thread(target=self._main, args=())
@@ -53,12 +61,14 @@ class ConnectionManager:
     def _main(self):
         while True:
             self.ap_connection.update()
+            if self.ap_connection.has_changes() and self.ap_connection.ssid:
+                post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
+            if self.ap_connection.has_changes() and self.ap_connection.passphrase:
+                post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connection.passphrase)
 
-            if self.ap_connected.ssid:
-                post_event(AppEvents.AP_HAS_SSID, self.ap_connected.ssid)
-            if self.ap_connected.passphrase:
-                post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connected.passphrase)
-            if is_connected_to_internet():
-                post_event(AppEvents.OS_IS_ONLINE, True)
+            is_connected = is_connected_to_internet()
+            if is_connected != self._previous_connection_state:
+                post_event(AppEvents.OS_IS_ONLINE, is_connected)
+            self._previous_connection_state = is_connected
 
             sleep(0.1)

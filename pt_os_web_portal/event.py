@@ -10,6 +10,8 @@ class AppEvents(Enum):
     OS_ALREADY_CHECKED_UPDATES = auto()  # bool
     AP_HAS_SSID = auto()  # string
     AP_HAS_PASSPHRASE = auto()  # string
+    HAS_CONNECTED_DEVICE = auto()  # bool
+    OS_IS_ONLINE = auto()  # bool
 
 
 subscribers: Dict[AppEvents, List] = dict()

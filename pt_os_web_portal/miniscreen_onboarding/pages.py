@@ -3,7 +3,7 @@ from time import perf_counter
 
 from PIL import Image, ImageDraw, ImageFont
 
-from .event import AppEvents, subscribe
+from ..event import AppEvents, subscribe
 
 
 class Pages(Enum):
@@ -60,21 +60,23 @@ class PageBase:
 
 
 class WelcomePage(PageBase):
-    def __init__(self, size, mode):
+    def __init__(self, size, mode, interval):
         super(WelcomePage, self).__init__(
             type=Pages.WELCOME,
             size=size,
             mode=mode,
+            interval=interval,
         )
         self.text = "Press the blue\ndown key\nto page!"
 
 
 class ApPage(PageBase):
-    def __init__(self, size, mode):
+    def __init__(self, size, mode, interval):
         super(ApPage, self).__init__(
             type=Pages.AP,
             size=size,
             mode=mode,
+            interval=interval,
         )
 
         self.ssid = ""
@@ -96,11 +98,12 @@ class ApPage(PageBase):
 
 
 class OpenBrowserPage(PageBase):
-    def __init__(self, size, mode):
+    def __init__(self, size, mode, interval):
         super(OpenBrowserPage, self).__init__(
             type=Pages.BROWSER,
             size=size,
             mode=mode,
+            interval=interval,
         )
 
         self.text = "Open a browser to http://pi-top.local or http://192.168.64.1"
@@ -123,18 +126,23 @@ class OpenBrowserPage(PageBase):
 
 
 class CarryOnPage(PageBase):
-    def __init__(self, size, mode):
+    def __init__(self, size, mode, interval):
         super(CarryOnPage, self).__init__(
             type=Pages.CARRY_ON,
             size=size,
             mode=mode,
+            interval=interval,
         )
 
         def handle_ready_to_be_a_maker_event(ready):
             if self.type == Pages.CARRY_ON:
-                self.visible = ready
+                self._visible = ready
 
         subscribe(AppEvents.READY_TO_BE_A_MAKER, handle_ready_to_be_a_maker_event)
 
         self.text = "Now, continue\nonboarding in\nthe browser"
-        self.visible = False
+        self._visible = False
+
+    @property
+    def visible(self):
+        return self._visible

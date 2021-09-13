@@ -110,6 +110,6 @@ class PageManager:
         self.viewport.refresh()
 
     def wait_until_timeout_or_page_has_changed(self):
-        self.page_has_changed.wait(self.current_page.default_page_interval)
+        self.page_has_changed.wait(self.current_page.interval)
         if self.page_has_changed.is_set():
             self.page_has_changed.clear()
