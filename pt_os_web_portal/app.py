@@ -29,8 +29,7 @@ class App:
         self.connection_manager = ConnectionManager()
 
     def start(self):
-        self.connection_manager.start()
-
+        # "start" objects that subscribe to events first
         self.os_updater.start()
 
         if onboarding_completed() and not self.device_registration_mgr.is_registered():
@@ -46,4 +45,8 @@ class App:
             OnboardingApp().start()
 
         self.listener_mgr.start()
+
+        # Finally, start objects that trigger events
+        self.connection_manager.start()
+
         self.wsgi_server.serve_forever()
