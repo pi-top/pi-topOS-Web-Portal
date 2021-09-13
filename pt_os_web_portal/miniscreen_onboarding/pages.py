@@ -66,15 +66,15 @@ class PageBase:
     def render(self, draw):
         draw.text(
             text=self.text,
-            xy=(0, 0),
+            xy=(self.width / 2, self.height / 2),
             fill=1,
             font=ImageFont.truetype(
                 "Roboto-Regular.ttf",
                 size=12,
             ),
-            anchor=None,
+            anchor="mm",
             spacing=0,
-            align="left",
+            align="center",
             features=None,
         )
 
