@@ -1,5 +1,6 @@
 from ipaddress import ip_address
 from threading import Thread
+from time import sleep
 
 from pitop.common.sys_info import (
     get_ap_mode_status,
@@ -17,18 +18,20 @@ class ApConnection:
         self.metadata = get_ap_mode_status()
         self.update()
 
+    @property
+    def ssid(self):
+        return self.metadata.get("ssid", "")
+
+    @property
+    def passphrase(self):
+        return self.metadata.get("passphrase", "")
+
     def update(self):
         self.metadata = get_ap_mode_status()
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
         except Exception:
             self.ip = ""
-
-    def is_connected(self):
-        try:
-            return get_ap_mode_status().get("state", "") == "active"
-        except Exception:
-            return False
 
 
 class ConnectionManager:
@@ -47,15 +50,15 @@ class ConnectionManager:
         if self.__thread and self.__thread.is_alive():
             self.__thread.join()
 
-    def get_ap_ssid(self):
-        return (self.ap_connection.metadata.get("ssid", ""),)
-
-    def get_ap_passphrase(self):
-        return (self.ap_connection.metadata.get("passphrase", ""),)
-
     def _main(self):
         while True:
-            post_event(AppEvents.AP_HAS_SSID, "AP_SSID")
-            post_event(AppEvents.AP_HAS_PASSPHRASE, "AP_PASSPHRASE")
-            if is_connected_to_internet:
+            self.ap_connection.update()
+
+            if self.ap_connected.ssid:
+                post_event(AppEvents.AP_HAS_SSID, self.ap_connected.ssid)
+            if self.ap_connected.passphrase:
+                post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connected.passphrase)
+            if is_connected_to_internet():
                 post_event(AppEvents.OS_IS_ONLINE, True)
+
+            sleep(0.1)
