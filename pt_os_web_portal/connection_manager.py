@@ -3,6 +3,7 @@ from threading import Thread
 from time import sleep
 
 from pitop.common.sys_info import (
+    get_address_for_connected_device,
     get_ap_mode_status,
     get_internal_ip,
     is_connected_to_internet,
@@ -47,6 +48,7 @@ class ConnectionManager:
         self.__thread = Thread(target=self._main, args=())
         self.__stop = False
         self._previous_connection_state = False
+        self._previous_connected_device_ip = ""
 
     def start(self):
         self.__thread = Thread(target=self._main, args=())
@@ -64,6 +66,11 @@ class ConnectionManager:
             if self.ap_connection.has_changes():
                 post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
                 post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connection.passphrase)
+
+            connected_device_ip = get_address_for_connected_device()
+            if connected_device_ip != self._previous_connected_device_ip:
+                post_event(AppEvents.HAS_CONNECTED_DEVICE, True)
+            self._previous_connected_device_ip = connected_device_ip
 
             is_connected = is_connected_to_internet()
             if is_connected != self._previous_connection_state:
