@@ -6,6 +6,7 @@ from pitop.system import device_type
 
 from .backend import create_app
 from .backend.helpers.finalise import onboarding_completed
+from .connection_manager import ConnectionManager
 from .device_registration.manager import DeviceRegistrationManager
 from .listener_manager import ListenerManager
 from .miniscreen_onboarding.onboarding_app import OnboardingApp
@@ -25,8 +26,11 @@ class App:
             handler_class=WebSocketHandler,
         )
         self.listener_mgr = ListenerManager()
+        self.connection_manager = ConnectionManager()
 
     def start(self):
+        self.connection_manager.start()
+
         self.os_updater.start()
 
         if onboarding_completed() and not self.device_registration_mgr.is_registered():

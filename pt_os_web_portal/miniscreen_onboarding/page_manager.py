@@ -3,7 +3,6 @@ from threading import Event
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
-from ..event import AppEvents, subscribe
 from .pages import ApPage, CarryOnPage, OpenBrowserPage, Pages, WelcomePage
 
 
@@ -16,9 +15,9 @@ class PageManager:
     ]
 
     def __init__(self, miniscreen):
-        self.current_page_index = 0
-
         self._miniscreen = miniscreen
+
+        self.current_page_index = 0
 
         size = miniscreen.size
         width = size[0]
@@ -49,13 +48,6 @@ class PageManager:
             ]
         ):
             self.viewport.add_hotspot(page, (0, i * height))
-
-        def handle_ready_to_be_a_maker_event(ready):
-            PTLogger.info("READY TO BE A MAKER, BABY")
-            # Enable 'carry on' page
-            self.get_page(self.PAGE_ORDER.index(Pages.CARRY_ON)).visible = True
-
-        subscribe(AppEvents.READY_TO_BE_A_MAKER, handle_ready_to_be_a_maker_event)
 
     def get_page(self, index):
         page, pos = self.viewport._hotspots[index]

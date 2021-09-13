@@ -1,6 +1,6 @@
 from time import perf_counter
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from ..attr.speeds import DEFAULT_INTERVAL
 
@@ -15,7 +15,10 @@ class PageBase:
         self.mode = mode
         self.interval = DEFAULT_INTERVAL
         self.last_updated = -self.interval
-        self.visible = True
+
+    @property
+    def visible(self):
+        return True
 
     def should_redraw(self):
         """
@@ -33,4 +36,16 @@ class PageBase:
         self.last_updated = perf_counter()
 
     def render(self, draw):
-        raise NotImplementedError
+        draw.multiline_text(
+            text=self.text,
+            xy=(0, 0),
+            fill=1,
+            font=ImageFont.truetype(
+                "Roboto-Regular.ttf",
+                size=12,
+            ),
+            anchor=None,
+            spacing=0,
+            align="left",
+            features=None,
+        )
