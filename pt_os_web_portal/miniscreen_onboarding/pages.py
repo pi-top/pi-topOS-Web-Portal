@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, auto
 from time import perf_counter
 
 from PIL import Image, ImageDraw, ImageFont
@@ -7,26 +7,25 @@ from pitop.common.sys_info import (
     is_connected_to_internet,
 )
 
-from .attr import DEFAULT_INTERVAL
 from .event import AppEvents, subscribe
 
 
-class Pages(IntEnum):
-    WELCOME = 0
-    AP = 1
-    BROWSER = 2
-    CARRY_ON = 3
+class Pages(Enum):
+    WELCOME = auto()
+    AP = auto()
+    BROWSER = auto()
+    CARRY_ON = auto()
 
 
 # Based on luma.core hotspots/snapshots
 class PageBase:
-    def __init__(self, type, size=(0, 0), mode=0):
+    def __init__(self, type, size=(0, 0), mode=0, interval=1):
         self.type = type
         self.size = size
         self.width = size[0]
         self.height = size[1]
         self.mode = mode
-        self.interval = DEFAULT_INTERVAL
+        self.interval = interval
         self.last_updated = -self.interval
 
     @property

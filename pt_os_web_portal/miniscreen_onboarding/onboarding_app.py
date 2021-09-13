@@ -6,14 +6,16 @@ from pitop import Pitop
 from pitop.common.logger import PTLogger
 
 from .page_manager import PageManager
-from .pages.attr import ANIMATION_SLEEP_INTERVAL
+
+ANIMATION_SLEEP_INTERVAL = 0.02
+DEFAULT_INTERVAL = 1
 
 
 class OnboardingApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
 
-        self.page_mgr = PageManager(self.miniscreen)
+        self.page_mgr = PageManager(self.miniscreen, DEFAULT_INTERVAL)
 
         self.miniscreen.up_button.when_pressed = (
             self.page_mgr.set_current_page_to_previous_page

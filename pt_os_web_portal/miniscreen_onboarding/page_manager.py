@@ -14,7 +14,7 @@ class PageManager:
         Pages.CARRY_ON,
     ]
 
-    def __init__(self, miniscreen):
+    def __init__(self, miniscreen, default_page_interval=1):
         self._miniscreen = miniscreen
 
         self.current_page_index = 0
@@ -34,10 +34,10 @@ class PageManager:
 
         self.page_has_changed = Event()
 
-        welcome = WelcomePage(size, mode)
-        ap = ApPage(size, mode)
-        openbrowser = OpenBrowserPage(size, mode)
-        carryon = CarryOnPage(size, mode)
+        welcome = WelcomePage(size, mode, default_page_interval)
+        ap = ApPage(size, mode, default_page_interval)
+        openbrowser = OpenBrowserPage(size, mode, default_page_interval)
+        carryon = CarryOnPage(size, mode, default_page_interval)
 
         for i, page in enumerate(
             [
@@ -110,6 +110,6 @@ class PageManager:
         self.viewport.refresh()
 
     def wait_until_timeout_or_page_has_changed(self):
-        self.page_has_changed.wait(self.current_page.interval)
+        self.page_has_changed.wait(self.current_page.default_page_interval)
         if self.page_has_changed.is_set():
             self.page_has_changed.clear()
