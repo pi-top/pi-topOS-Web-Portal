@@ -1,20 +1,19 @@
-from ...menus import Menus
-from ..attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
-from ..base._title_base import TitleMenuPage
-from ..render.helpers import draw_text
+from .attr.margins import FIRST_LINE_Y, SECOND_LINE_Y, THIRD_LINE_Y
+from .base._base import PageBase
+from .pages import Pages
+from .render.helpers import draw_text
 
 
-class CarryOnMenuPage(TitleMenuPage):
+class CarryOnPage(PageBase):
     def __init__(self, size, mode):
-        super(CarryOnMenuPage, self).__init__(
-            type=Menus.CARRY_ON,
+        super(CarryOnPage, self).__init__(
+            type=Pages.CARRY_ON,
             size=size,
             mode=mode,
-            title_image_filename="carryon.png",
         )
         self.visible = False
 
-    def info(self, draw, redraw=False):
+    def render(self, draw):
         draw_text(
             draw,
             text="Now, continue",

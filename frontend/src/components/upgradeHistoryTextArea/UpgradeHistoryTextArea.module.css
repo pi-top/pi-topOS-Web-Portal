@@ -1,5 +1,5 @@
 .textarea {
-  composes: text from '../../../globalStyles/Typography.module.css';
+  composes: text from '../../globalStyles/Typography.module.css';
   background: none;
   box-sizing: border-box;
   min-height: 1rem;

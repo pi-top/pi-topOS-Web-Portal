@@ -11,6 +11,7 @@ import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
   Cleanup = "OS_UPGRADE_CLEANUP",
+  UpdateSources = "UPDATE_SOURCES",
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
   Upgrade = "OS_UPGRADE",
   Size = "SIZE",
@@ -38,7 +39,7 @@ export type SizeMessagePayload = {
 };
 
 export type UpgradeMessage = {
-  type: OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade | OSUpdaterMessageType.Cleanup;
+  type: OSUpdaterMessageType.UpdateSources | OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade | OSUpdaterMessageType.Cleanup;
   payload: UpgradeMessagePayload;
 };
 
@@ -69,8 +70,11 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   };
   socket.onopen = () => {
     setIsOpen(true);
-    socket.send("prepare");
   }
+
+  const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
+  const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
+  const [updatingSources, setIsUpdatingSources] = useState(false);
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
@@ -90,7 +94,20 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, []);
 
   useEffect(() => {
-    getMajorOsUpdates()
+    if (!isOpen) {
+      return;
+    }
+    if (checkingWebPortal) {
+      socket.send("update_sources");
+      setIsUpdatingSources(true);
+    } else {
+      // the page was reloaded after installing web-portal - prepare to update all packages
+      socket.send("prepare");
+    }
+  }, [socket, isOpen, checkingWebPortal]);
+
+  useEffect(() => {
+    !checkingWebPortal && getMajorOsUpdates()
       .then((response) => {
         setShouldBurn(response.shouldBurn);
         setRequireBurn(response.requireBurn);
@@ -99,7 +116,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         setShouldBurn(false);
         setRequireBurn(false);
       })
-    }, []);
+    }, [checkingWebPortal]);
 
   useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
@@ -143,6 +160,26 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (
+      message.type === OSUpdaterMessageType.UpdateSources &&
+      message.payload.status === UpdateMessageStatus.Error
+    ) {
+      setIsUpdatingSources(false);
+      setError(true);
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.UpdateSources &&
+      message.payload.status === UpdateMessageStatus.Finish
+    ) {
+      setIsUpdatingSources(false);
+      if (checkingWebPortal) {
+        socket.send("prepare_web_portal");
+      } else {
+        socket.send("prepare");
+      }
+    }
+
+    if (
       message.type === OSUpdaterMessageType.PrepareUpgrade &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
@@ -163,21 +200,52 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.Cleanup &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
-      setUpgradeIsRunning(false);
-      setUpgradeIsRequired(false);
-      setCleanupIsRunning(false);
-      setUpgradeFinished(true);
+    
+      if (checkingWebPortal) {
+        setInstallingWebPortalUpgrade(false);
+
+        setWaitingForServer(true);
+        restartWebPortalService()
+          .catch(() => setError(false)) // ignored, request will fail since backend server is restarted
+          .finally(() => setTimeout(waitUntilServerIsOnline, 300))
+      } else {
+        setUpgradeIsRunning(false);
+        setUpgradeIsRequired(false);
+        setUpgradeFinished(true);
+        setCleanupIsRunning(false);
+      }
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.Upgrade &&
+      message.payload.status === UpdateMessageStatus.Start
+    ) {
+      if (checkingWebPortal) {
+        setInstallingWebPortalUpgrade(true);
+      } else {
+        setUpgradeIsRunning(true);
+      }
     }
 
     if (message.type === OSUpdaterMessageType.Size) {
-      setUpgradeIsPrepared(true);
+      if (!checkingWebPortal){
+        setUpgradeIsPrepared(true);
+        setUpdateSize(message.payload.size);
+      }
 
       try {
-        setUpdateSize(message.payload.size);
-        if (!message.payload.size.downloadSize && !message.payload.size.requiredSpace) {
+        const noUpdatesAvailable = !(message.payload.size.downloadSize || message.payload.size.requiredSpace);
+        if (noUpdatesAvailable && checkingWebPortal) {
+          // no web-portal updates, prepare to update all packages now
+          setCheckingWebPortal(false);
+        } else if (noUpdatesAvailable && !checkingWebPortal) {
+          // no packages to upgrade, page is now complete
           setUpgradeIsRunning(false);
           setUpgradeIsRequired(false);
           setUpgradeFinished(true);
+        } else if (checkingWebPortal) {
+          // there's an update to pt-os-web-portal, install it
+          socket.send("start");
         }
       } catch (_) {
         setError(true);
@@ -187,33 +255,29 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         setError(true);
       }
     }
-  }, [message, socket]);
+  }, [message, socket]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const serviceRestartTimoutMs = 30000;
   const timeoutServerStatusRequestMs = 300;
   const serverStatusRequestIntervalMs = 700;
   let elapsedWaitingTimeMs = 0;
 
-  function waitUntilServerIsOnline() {
+  let waitUntilServerIsOnline = () => {
     const interval = setInterval(async () => {
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
-        await serverStatus({ timeout: timeoutServerStatusRequestMs });
-        clearInterval(interval);
-        goToNextPage && goToNextPage();
+        serverStatus({ timeout: timeoutServerStatusRequestMs })
+          .then(() => clearInterval(interval))
+          .catch(() => {})
+        window.location.replace("/onboarding/upgrade?all")
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }
 
   return (
     <UpgradePage
-      onNextClick={() => {
-        setWaitingForServer(true);
-        restartWebPortalService()
-          .catch(() => null) // ignored, request will fail since backend server is restarted
-          .finally(() => setTimeout(waitUntilServerIsOnline, 300))
-      }}
+      onNextClick={goToNextPage}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
       onStartUpgradeClick={() => {
@@ -234,7 +298,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       requireBurn={requireBurn}
       shouldBurn={shouldBurn}
       cleanupIsRunning={cleanupIsRunning}
+      checkingWebPortal={checkingWebPortal}
       error={error}
+      updatingSources={updatingSources}
+      installingWebPortalUpgrade={installingWebPortalUpgrade}
     />
   );
 };

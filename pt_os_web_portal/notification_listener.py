@@ -1,6 +1,6 @@
 from pitop.common.notifications import send_notification
 
-from .event import subscribe
+from .event import AppEvents, subscribe
 
 
 def handle_os_has_updates_event(os_has_updates):
@@ -14,4 +14,4 @@ def handle_os_has_updates_event(os_has_updates):
 
 
 def setup_notification_event_handlers():
-    subscribe("os_has_updates", handle_os_has_updates_event)
+    subscribe(AppEvents.OS_HAS_UPDATES, handle_os_has_updates_event)
