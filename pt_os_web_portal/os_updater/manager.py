@@ -53,36 +53,55 @@ class OSUpdateManager:
     lock = False
 
     def __init__(self) -> None:
-        self.cache: apt.Cache  # type: ignore
+        self.cache = apt.Cache()
+        self.lock = False
 
     def update(self, callback) -> None:
-        PTLogger.info("OSUpdater: Updating APT sources")
+        PTLogger.info("OS Updater: Updating APT sources")
         if self.lock:
-            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
+            callback(MessageType.ERROR, "OS Updater is locked", 0.0)
             return
         self.lock = True
         fetch_sources_progress = FetchProgress(callback)
 
         try:
-            self.cache = apt.Cache()
             self.cache.update(fetch_sources_progress)
             self.cache.open(None)
         except Exception as e:
-            PTLogger.error(f"OSUpdater Error: {e}")
+            PTLogger.error(f"OS Updater Error: {e}")
             raise
         finally:
             self.lock = False
 
-    def stage_upgrade(self, callback) -> None:
+    def stage_upgrade(self, callback, packages=[]) -> None:
         PTLogger.info("OS Updater: Staging packages for upgrade")
         if self.lock:
-            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
+            callback(MessageType.ERROR, "OS Updater is locked", 0.0)
             return
         self.lock = True
 
         try:
-            self.cache.upgrade()
-            self.cache.upgrade(True)
+            if len(packages) == 0:
+                PTLogger.info("OS Updater: Staging all packages to be upgraded")
+                self.cache.upgrade()
+                self.cache.upgrade(True)
+            else:
+                for package_name in packages:
+                    if package_name not in self.cache:
+                        PTLogger.info(
+                            f"OS Updater: invalid package '{package_name}' - skipping"
+                        )
+                        continue
+                    package = self.cache[package_name]
+                    if package.is_upgradable:
+                        PTLogger.info(
+                            f"OS Updater: package '{package_name}' was staged to be updated"
+                        )
+                        package.mark_upgrade()
+                    else:
+                        PTLogger.info(
+                            f"OS Updater: package '{package_name}' has no updates - skipping"
+                        )
 
             PTLogger.info(
                 f"OS Update: Will upgrade/install {self.cache.install_count} packages"
@@ -94,7 +113,7 @@ class OSUpdateManager:
                 f"OS Update: After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
             )
         except Exception as e:
-            PTLogger.error(f"OSUpdater Error: {e}")
+            PTLogger.error(f"OS Updater Error: {e}")
             raise
         finally:
             self.lock = False
@@ -114,9 +133,9 @@ class OSUpdateManager:
         return size
 
     def upgrade(self, callback):
-        PTLogger.info("OSUpdater: starting upgrade")
+        PTLogger.info("OS Updater: starting upgrade")
         if self.lock:
-            callback(MessageType.ERROR, "OSUpdater is locked", 0.0)
+            callback(MessageType.ERROR, "OS Updater is locked", 0.0)
             return
         self.lock = True
 
@@ -127,12 +146,12 @@ class OSUpdateManager:
             self.cache.commit(fetch_packages_progress, install_progress)
             callback(MessageType.FINISH, "Finished upgrade", 100.0)
         except Exception as e:
-            PTLogger.error(f"OSUpdater Error: {e}")
+            PTLogger.error(f"OS Updater Error: {e}")
             raise
         finally:
             self.lock = False
 
-        PTLogger.info("OSUpdater: finished upgrade")
+        PTLogger.info("OS Updater: finished upgrade")
 
     def select_packages_to_upgrade(self, packages: list) -> None:
         pass

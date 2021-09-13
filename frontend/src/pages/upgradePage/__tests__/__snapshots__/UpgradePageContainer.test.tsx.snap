@@ -23,17 +23,62 @@ exports[`UpgradePageContainer renders the correct banner image 1`] = `
 />
 `;
 
-exports[`UpgradePageContainer when preparation fails messages are displayed in the textarea component 1`] = `
+exports[`UpgradePageContainer when sources are updated and there are updates to the web-portal package textarea component displays web-portal upgrade messages 1`] = `
 <textarea
   class="textarea"
   data-testid="textarea"
   disabled=""
 >
-  There was a problem during OS upgrade. Please continue, you'll be able to upgrade once the system reboots.
+  Starting install & upgrade process
+dpkg-exec: Running dpkg
 </textarea>
 `;
 
-exports[`UpgradePageContainer when the upgrade fails messages are displayed in the textarea component 1`] = `
+exports[`UpgradePageContainer when the system is being updated messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Starting install & upgrade process
+dpkg-exec: Running dpkg
+</textarea>
+`;
+
+exports[`UpgradePageContainer when the system is being updated renders progress bar correctly 1`] = `
+<div
+  class="progress"
+  data-testid="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 2"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1,1
+           L 99,1"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="2"
+      style="stroke-dasharray: 50px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
+    />
+  </svg>
+</div>
+`;
+
+exports[`UpgradePageContainer when the system upgrade fails messages are displayed in the textarea component 1`] = `
 <textarea
   class="textarea"
   data-testid="textarea"
@@ -85,50 +130,6 @@ exports[`UpgradePageContainer when the upgrade finishes renders progress bar cor
       stroke-linecap="round"
       stroke-width="2"
       style="stroke-dasharray: 0px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: 0s, 0s;"
-    />
-  </svg>
-</div>
-`;
-
-exports[`UpgradePageContainer when the upgrade is being installed messages are displayed in the textarea component 1`] = `
-<textarea
-  class="textarea"
-  data-testid="textarea"
-  disabled=""
->
-  Starting install & upgrade process
-dpkg-exec: Running dpkg
-</textarea>
-`;
-
-exports[`UpgradePageContainer when the upgrade is being installed renders progress bar correctly 1`] = `
-<div
-  class="progress"
-  data-testid="progress"
->
-  <svg
-    class="rc-progress-line "
-    preserveAspectRatio="none"
-    viewBox="0 0 100 2"
-  >
-    <path
-      class="rc-progress-line-trail"
-      d="M 1,1
-           L 99,1"
-      fill-opacity="0"
-      stroke="#D9D9D9"
-      stroke-linecap="round"
-      stroke-width="1"
-    />
-    <path
-      class="rc-progress-line-path"
-      d="M 1,1
-           L 99,1"
-      fill-opacity="0"
-      stroke="#71c0b4"
-      stroke-linecap="round"
-      stroke-width="2"
-      style="stroke-dasharray: 50px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
     />
   </svg>
 </div>
@@ -272,17 +273,30 @@ exports[`UpgradePageContainer when there are major OS updates available and user
 </div>
 `;
 
-exports[`UpgradePageContainer while preparing updates messages are displayed in the textarea component 1`] = `
+exports[`UpgradePageContainer when updating sources fails messages are displayed in the textarea component 1`] = `
 <textarea
   class="textarea"
   data-testid="textarea"
   disabled=""
 >
-  Preparing OS upgrade
+  Starting to update sources
+Updating blah
+There was a problem updating sources
 </textarea>
 `;
 
-exports[`UpgradePageContainer while preparing updates renders progress bar correctly 1`] = `
+exports[`UpgradePageContainer while updating sources messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Starting to update sources
+Updating blah
+</textarea>
+`;
+
+exports[`UpgradePageContainer while updating sources renders progress bar correctly 1`] = `
 <div
   class="progress"
   data-testid="progress"
@@ -309,8 +323,19 @@ exports[`UpgradePageContainer while preparing updates renders progress bar corre
       stroke="#71c0b4"
       stroke-linecap="round"
       stroke-width="2"
-      style="stroke-dasharray: 0px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear;"
+      style="stroke-dasharray: 50px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
     />
   </svg>
 </div>
+`;
+
+exports[`UpgradePageContainer while updating web-portal textarea component displays web-portal upgrade messages 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Starting install & upgrade process
+dpkg-exec: Running dpkg
+</textarea>
 `;
