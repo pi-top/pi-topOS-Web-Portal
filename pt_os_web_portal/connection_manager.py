@@ -16,8 +16,8 @@ class ApConnection:
         self.ip = ""
         self.interface_name = "wlan_ap0"
         self.metadata = get_ap_mode_status()
-        self.previous_metadata = None
-        self.update()
+        self._previous_metadata = None
+        self._has_changes = True
 
     @property
     def ssid(self):
@@ -32,13 +32,13 @@ class ApConnection:
 
     def update(self):
         self.metadata = get_ap_mode_status()
-        self._has_changes = self.metadata != self.previous_metadata
         try:
             self.ip = ip_address(get_internal_ip(iface=self.interface_name))
         except Exception:
             self.ip = ""
         finally:
-            self.previous_metadata = self.metadata
+            self._has_changes = self.metadata != self._previous_metadata
+            self._previous_metadata = self.metadata
 
 
 class ConnectionManager:
@@ -61,9 +61,8 @@ class ConnectionManager:
     def _main(self):
         while True:
             self.ap_connection.update()
-            if self.ap_connection.has_changes() and self.ap_connection.ssid:
+            if self.ap_connection.has_changes():
                 post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
-            if self.ap_connection.has_changes() and self.ap_connection.passphrase:
                 post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connection.passphrase)
 
             is_connected = is_connected_to_internet()
