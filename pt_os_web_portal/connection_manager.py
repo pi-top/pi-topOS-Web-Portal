@@ -70,4 +70,4 @@ class ConnectionManager:
                 post_event(AppEvents.OS_IS_ONLINE, is_connected)
             self._previous_connection_state = is_connected
 
-            sleep(0.1)
+            sleep(0.5)
