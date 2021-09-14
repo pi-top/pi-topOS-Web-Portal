@@ -1,5 +1,4 @@
 from os import remove
-from pathlib import Path
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
@@ -29,14 +28,6 @@ def close_pt_browser():
 def python_sdk_docs_url():
     PTLogger.info("Function: python_sdk_docs_url()")
     return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
-
-
-def onboarding_completed():
-    PTLogger.info("Function: onboarding_completed()")
-    try:
-        return not Path("/etc/xdg/autostart/pt-os-setup.desktop").exists()
-    except Exception:
-        return False
 
 
 def further_url():

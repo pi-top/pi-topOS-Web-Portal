@@ -4,17 +4,24 @@ from pathlib import Path
 from pitop.common.singleton import Singleton
 
 
-class ConfigManager(metaclass=Singleton):
-    PATH_TO_CONFIG = "/etc/pi-top/pt-os-web-portal.config"
+class StateManager(metaclass=Singleton):
+    STATE_FILE_DIRECTORY = "/var/lib/pt-os-web-portal/"
+    STATE_FILE_NAME = "state.cfg"
 
     def __init__(self):
-        path = Path(self.PATH_TO_CONFIG)
+        Path(self.STATE_FILE_DIRECTORY).mkdir(parents=True, exist_ok=True)
+
+        path = Path(self.STATE_FILE_DIRECTORY)
         if not path.exists():
             path.touch()
 
         self._config = ConfigParser()
-        if len(self._config.read(self.PATH_TO_CONFIG)) != 1:
+        if len(self._config.read(self.path_to_file)) != 1:
             raise Exception("Failed to open configuration file")
+
+    @property
+    def path_to_file(self):
+        return self.STATE_FILE_DIRECTORY + self.STATE_FILE_NAME
 
     def get(self, section: str, key: str, fallback=None):
         val = fallback
@@ -36,5 +43,5 @@ class ConfigManager(metaclass=Singleton):
             raise
 
     def save(self):
-        with open(self.PATH_TO_CONFIG, "w") as configfile:
+        with open(self.path_to_file, "w") as configfile:
             self._config.write(configfile)

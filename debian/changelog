@@ -1,3 +1,14 @@
+pi-top-os-web-portal (0.4.0-1) bullseye; urgency=medium
+
+  * Refactor across codebase (#204) (#230) (#235) (#239) (#243)
+  * Redesign miniscreen onboarding (#242) (#246) (#250)
+  * Updater: Update Web Portal before anything else (#238)
+  * Updater: Add description to errors on upgrade (#251)
+  * Updater: Display upgrade message history (#223)
+  * Add OS version warning dialog (#214)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 14 Sep 2021 17:28:09 +0000
+
 pi-top-os-web-portal (0.3.0-1) bullseye; urgency=medium
 
   * Fix truetype-font-prohibits-installable-embedding (#226)
