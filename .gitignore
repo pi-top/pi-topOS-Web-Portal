@@ -1,7 +1,7 @@
 *.DS_Store*
 # Explicitly defined for pre-commit to ignore it
-frontend/**/build
-frontend/node_modules
+pt_os_web_portal/frontend/**/build
+pt_os_web_portal/frontend/node_modules
 pt_os_web_portal/backend/build
 pt_os_web_portal/**/build
 .idea
@@ -58,6 +58,6 @@ CMakeLists.txt.user*
 
 # Test coverage files
 pt_os_web_portal/*.xml
-frontend/coverage/
+pt_os_web_portal/frontend/coverage/
 
 .mypy_cache

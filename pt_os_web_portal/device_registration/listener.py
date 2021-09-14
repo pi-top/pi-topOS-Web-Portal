@@ -5,7 +5,7 @@ from pitop.common.logger import PTLogger
 
 from ..backend.helpers.finalise import onboarding_completed
 from ..event import AppEvents, subscribe
-from .functions import device_is_registered, send_register_device_request
+from .api import device_is_registered, send_register_device_request
 
 
 def register_device(self):

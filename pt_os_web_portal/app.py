@@ -4,8 +4,7 @@ from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
 from pitop.system import device_type
 
-from .backend import create_app
-from .backend.helpers.finalise import onboarding_completed
+from .backend import create_app, onboarding_completed
 from .connection_manager import ConnectionManager
 from .listener_manager import ListenerManager
 from .miniscreen_onboarding.onboarding_app import OnboardingApp

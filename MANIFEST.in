@@ -1,3 +1,9 @@
+
+
+# Only include frontend build files
+recursive-exclude pt_os_web_portal/frontend *
+recursive-include pt_os_web_portal/frontend/build *
+
 recursive-include pt_os_web_portal *
 
 recursive-exclude * __pycache__
