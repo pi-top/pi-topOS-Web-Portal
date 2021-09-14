@@ -1,8 +1,10 @@
 from threading import Event
+from time import sleep
 
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
+from ..event import AppEvents, subscribe
 from .pages import Page, PageGenerator
 
 
@@ -10,7 +12,26 @@ class PageManager:
     def __init__(self, miniscreen, default_page_interval=1):
         self._miniscreen = miniscreen
 
+        self._miniscreen.up_button.when_released = (
+            self.set_current_page_to_previous_page
+        )
+        self._miniscreen.down_button.when_released = self.set_current_page_to_next_page
+        self._miniscreen.cancel_button.when_released = (
+            self.set_current_page_to_previous_page
+        )
+        self._miniscreen.select_button.when_released = (
+            self.set_current_page_to_next_page
+        )
+
         self.current_page_index = 0
+
+        def automatic_transition_to_last_page(_):
+            last_page_index = len(self.pages) - 1
+            # Only do automatic update if on previous page
+            if self.current_page_index == last_page_index - 1:
+                self.current_page_index = last_page_index
+
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
 
         size = miniscreen.size
         width = size[0]
@@ -27,10 +48,10 @@ class PageManager:
 
         self.page_has_changed = Event()
 
-        def get_page(page):
-            return PageGenerator.get_page(page)(size, mode, default_page_interval)
+        def page_instance(page_type):
+            return PageGenerator.get_page(page_type)(size, mode, default_page_interval)
 
-        self.pages = [get_page(page) for page in Page]
+        self.pages = [page_instance(page_type) for page_type in Page]
 
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * height))
@@ -49,14 +70,18 @@ class PageManager:
         )
 
     def set_current_page_to(self, page):
+        if not self.viewport_position_is_correct():
+            return
+
         new_page = page.type
-        new_page_index = new_page.value
+        new_page_index = new_page.value - 1
         if self.current_page_index == new_page_index:
             PTLogger.debug(
                 f"Miniscreen onboarding: Already on page '{new_page.name}' - nothing to do"
             )
             return
 
+        PTLogger.info(f"Page index: {self.current_page_index} -> {new_page_index}")
         self.current_page_index = new_page_index
         self.page_has_changed.set()
 
@@ -67,9 +92,9 @@ class PageManager:
         self.set_current_page_to(self.get_next_page())
 
     def get_previous_page(self):
-        # Return current page if at top
-        if self.current_page_index <= 0:
-            return self.current_page
+        # Return next page if at top
+        if self.current_page_index == 0:
+            return self.get_next_page()
 
         candidate = self.get_page(self.current_page_index - 1)
         return candidate if candidate.visible else self.current_page
@@ -82,16 +107,6 @@ class PageManager:
         candidate = self.get_page(self.current_page_index + 1)
         return candidate if candidate.visible else self.current_page
 
-    def handle_automatic_transitions(self):
-        if self.current_page.type not in [Page.AP, Page.BROWSER]:
-            return
-
-        if not self.get_next_page().visible:
-            PTLogger.debug(
-                "Miniscreen onboarding: Main loop - Handling automatic page change..."
-            )
-            self.set_current_page_to_next_page()
-
     def refresh(self):
         self.viewport.refresh()
 
@@ -99,3 +114,25 @@ class PageManager:
         self.page_has_changed.wait(self.current_page.interval)
         if self.page_has_changed.is_set():
             self.page_has_changed.clear()
+
+    def scroll_to_current_page(self, interval):
+        PTLogger.info(
+            f"Miniscreen onboarding: Scrolling to page {self.current_page.type}"
+        )
+
+        y_pos = self.current_page_index * self._miniscreen.size[1]
+
+        if y_pos == self.viewport._position[1]:
+            return
+
+        direction_scalar = 1 if y_pos - self.viewport._position[1] > 0 else -1
+        pixels_to_jump_per_frame = 2
+        while y_pos != self.viewport._position[1]:
+            self.viewport.set_position(
+                (
+                    0,
+                    self.viewport._position[1]
+                    + (direction_scalar * pixels_to_jump_per_frame),
+                )
+            )
+            sleep(interval)
