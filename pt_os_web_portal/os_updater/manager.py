@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import List
 
 from pitop.common.logger import PTLogger
 
@@ -10,7 +11,7 @@ from .types import MessageType
 
 
 class APTUpgradeException(Exception):
-    def __init__(self, packages_arr):
+    def __init__(self, packages_arr: List):
         super().__init__(
             f"Errors were encountered while processing: {''.join(packages_arr)}"
         )
