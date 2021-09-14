@@ -7,8 +7,9 @@ from pitop.common.logger import PTLogger
 
 from .page_manager import PageManager
 
-ANIMATION_SLEEP_INTERVAL = 0.02
+ANIMATION_SLEEP_INTERVAL = 0.013
 DEFAULT_INTERVAL = 1
+FPS = 10
 
 
 class OnboardingApp:
@@ -36,34 +37,13 @@ class OnboardingApp:
             self.__thread.join()
 
     def _main(self):
-        def scroll_to_current_page():
-            PTLogger.info(
-                f"Miniscreen onboarding: Scrolling to page {self.page_mgr.current_page.type}"
-            )
-
-            y_pos = self.page_mgr.current_page_index * self.miniscreen.size[1]
-
-            viewport = self.page_mgr.viewport
-            if y_pos == viewport._position[1]:
-                return
-
-            direction_scalar = 1 if y_pos - viewport._position[1] > 0 else -1
-            pixels_to_jump_per_frame = 2
-            while y_pos != viewport._position[1]:
-                viewport.set_position(
-                    (
-                        0,
-                        viewport._position[1]
-                        + (direction_scalar * pixels_to_jump_per_frame),
-                    )
-                )
-                sleep(ANIMATION_SLEEP_INTERVAL)
-
         while not self.__stop:
             self.page_mgr.handle_automatic_transitions()
+
             if not self.page_mgr.viewport_position_is_correct():
-                scroll_to_current_page()
+                self.page_mgr.scroll_to_current_page(ANIMATION_SLEEP_INTERVAL)
+
             self.page_mgr.refresh()
-            sleep(0.1)
+            sleep(1 / FPS)
 
             self.page_mgr.wait_until_timeout_or_page_has_changed()

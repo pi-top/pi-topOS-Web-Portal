@@ -1,4 +1,5 @@
 from threading import Event
+from time import sleep
 
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
@@ -71,6 +72,7 @@ class PageManager:
             )
             return
 
+        PTLogger.info(f"Page index: {self.current_page_index} -> {new_page_index}")
         self.current_page_index = new_page_index
         self.page_has_changed.set()
 
@@ -100,10 +102,8 @@ class PageManager:
         if self.current_page.type != Page.OPEN_BROWSER:
             return
 
-        if not self.get_next_page().visible:
-            PTLogger.debug(
-                "Miniscreen onboarding: Main loop - Handling automatic page change..."
-            )
+        if self.get_page(self.current_page_index + 1).visible:
+            PTLogger.info("Miniscreen onboarding: Automatically updating page...")
             self.set_current_page_to_next_page()
 
     def refresh(self):
@@ -113,3 +113,25 @@ class PageManager:
         self.page_has_changed.wait(self.current_page.interval)
         if self.page_has_changed.is_set():
             self.page_has_changed.clear()
+
+    def scroll_to_current_page(self, interval):
+        PTLogger.info(
+            f"Miniscreen onboarding: Scrolling to page {self.current_page.type}"
+        )
+
+        y_pos = self.current_page_index * self._miniscreen.size[1]
+
+        if y_pos == self.viewport._position[1]:
+            return
+
+        direction_scalar = 1 if y_pos - self.viewport._position[1] > 0 else -1
+        pixels_to_jump_per_frame = 2
+        while y_pos != self.viewport._position[1]:
+            self.viewport.set_position(
+                (
+                    0,
+                    self.viewport._position[1]
+                    + (direction_scalar * pixels_to_jump_per_frame),
+                )
+            )
+            sleep(interval)
