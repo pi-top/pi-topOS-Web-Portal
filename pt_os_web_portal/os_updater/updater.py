@@ -35,6 +35,11 @@ class OSUpdater:
             "%Y-%m-%d",
         ).date()
 
+    def update_last_check_config(self) -> None:
+        self.state_manager.set(
+            "os_updater", "last_checked_date", f"{date.today().strftime('%Y-%m-%d')}"
+        )
+
     def do_update_check(self, ws=None):
         should_check_for_updates = (
             self.state_manager.get("app", "state") != "onboarding"
@@ -103,7 +108,7 @@ class OSUpdater:
         callback = self.message_handler.create_emit_os_upgrade_message(ws)
         try:
             self.manager.upgrade(callback)
-            self.manager.update_last_check_config()
+            self.update_last_check_config()
             post_event(AppEvents.OS_UPDATER_UPGRADE, "success")
         except Exception as e:
             callback(MessageType.ERROR, f"{e}", 0.0)
