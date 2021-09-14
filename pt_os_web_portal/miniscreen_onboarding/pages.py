@@ -9,13 +9,10 @@ from ..event import AppEvents, subscribe
 class Page(Enum):
     WELCOME = auto()
     START_WIRELESS_CONNECTION = auto()
-    SCREEN_KEYBOARD_NOTICE_PAGE = auto()
+    # SCREEN_KEYBOARD_NOTICE_PAGE = auto()
     HELP_URL = auto()
     GET_DEVICE = auto()
-    OPEN_DEVICE_WIFI_SETTINGS = auto()
-    SELECT_PITOP_WIFI_NETWORK = auto()
-    ENTER_PITOP_WIFI_NETWORK_PASWORD = auto()
-    WAITING_FOR_AP_CONNECTION = auto()
+    CONNECT_PITOP_WIFI_NETWORK = auto()
     OPEN_BROWSER = auto()
     CARRY_ON = auto()
 
@@ -26,13 +23,10 @@ class PageGenerator:
         pages = {
             Page.WELCOME: WelcomePage,
             Page.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
-            Page.SCREEN_KEYBOARD_NOTICE_PAGE: ScreenKeyboardNoticePage,
+            # Page.SCREEN_KEYBOARD_NOTICE_PAGE: ScreenKeyboardNoticePage,
             Page.HELP_URL: HelpURLPage,
             Page.GET_DEVICE: GetDevicePage,
-            Page.OPEN_DEVICE_WIFI_SETTINGS: OpenDeviceWiFiSettingsPage,
-            Page.SELECT_PITOP_WIFI_NETWORK: SelectPitopWifiNetworkPage,
-            Page.ENTER_PITOP_WIFI_NETWORK_PASWORD: EnterPitopWifiNetworkPaswordPage,
-            Page.WAITING_FOR_AP_CONNECTION: WaitingForAPConnectionPage,
+            Page.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
             Page.OPEN_BROWSER: OpenBrowserPage,
             Page.CARRY_ON: CarryOnPage,
         }
@@ -50,13 +44,9 @@ class PageBase:
         self.mode = mode
         self.interval = interval
         self.last_updated = -self.interval
-        self._visible = True
+        self.visible = True
         self.font_size = 14
         self.wrap = True
-
-    @property
-    def visible(self):
-        return self._visible
 
     def should_redraw(self):
         """
@@ -160,26 +150,25 @@ class StartWirelessConnectionPage(PageBase):
         self.text = "Press SELECT (O) to start wireless connection..."
 
 
-class ScreenKeyboardNoticePage(PageBase):
-    """
-    NOTE: not required if you are using a screen and keyboard!
-    """
+# class ScreenKeyboardNoticePage(PageBase):
+#     """
+#     NOTE: not required if you are using a screen and keyboard!
+#     """
 
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=Page.SCREEN_KEYBOARD_NOTICE_PAGE,
-            size=size,
-            mode=mode,
-            interval=interval,
-        )
-        self.text = "NOTE: this is not required if you are using a screen and keyboard!"
-        self.font_size = 13
+#     def __init__(self, size, mode, interval):
+#         super().__init__(
+#             type=Page.SCREEN_KEYBOARD_NOTICE_PAGE,
+#             size=size,
+#             mode=mode,
+#             interval=interval,
+#         )
+#         self.text = "NOTE: this is not required if you are using a screen and keyboard!"
+#         self.font_size = 13
 
 
 class HelpURLPage(PageBase):
     """
-    If you get stuck, visit
-    pi-top.com/start-4
+    Detailed instructions are available at pi-top.com/start-4
 
     Press SELECT to continue
     """
@@ -191,34 +180,25 @@ class HelpURLPage(PageBase):
 
 class GetDevicePage(PageBase):
     """
-    You will need a phone, tablet or laptop...
+    You will need a laptop/desktop computer to connect with...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.GET_DEVICE, size=size, mode=mode, interval=interval)
-        self.text = "You will need a phone, tablet or laptop to connect..."
+        self.text = "You will need a laptop/desktop computer to connect with..."
 
 
-class OpenDeviceWiFiSettingsPage(PageBase):
+class ConnectPitopWifiNetworkPage(PageBase):
     """
-    Now find the device's list of available Wi-Fi networks...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=Page.OPEN_DEVICE_WIFI_SETTINGS, size=size, mode=mode, interval=interval
-        )
-        self.text = "Now find the device's list of available Wi-Fi networks..."
-
-
-class SelectPitopWifiNetworkPage(PageBase):
-    """
-    Find the 'pi-top' Wi-Fi network in the list and select...
+    Connect to Wi-Fi network '{ssid}' using password '{passphrase}'
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(
-            type=Page.SELECT_PITOP_WIFI_NETWORK, size=size, mode=mode, interval=interval
+            type=Page.CONNECT_PITOP_WIFI_NETWORK,
+            size=size,
+            mode=mode,
+            interval=interval,
         )
 
         self.ssid = ""
@@ -227,26 +207,6 @@ class SelectPitopWifiNetworkPage(PageBase):
             self.ssid = ssid
 
         subscribe(AppEvents.AP_HAS_SSID, update_ssid)
-
-    @property
-    def text(self):
-        return f"Find the '{self.ssid}' Wi-Fi network in the list and select..."
-
-
-class EnterPitopWifiNetworkPaswordPage(PageBase):
-    """
-    Enter the password
-    '{password}'
-    and connect...!
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=Page.ENTER_PITOP_WIFI_NETWORK_PASWORD,
-            size=size,
-            mode=mode,
-            interval=interval,
-        )
 
         self.passphrase = ""
 
@@ -257,27 +217,18 @@ class EnterPitopWifiNetworkPaswordPage(PageBase):
 
     @property
     def text(self):
-        return f"Enter password:\n'{self.passphrase}'\nand connect..."
-
-
-class WaitingForAPConnectionPage(PageBase):
-    """
-    Waiting for connection...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=Page.WAITING_FOR_AP_CONNECTION, size=size, mode=mode, interval=interval
+        return (
+            f"Connect to Wi-Fi network '{self.ssid}' using password '{self.passphrase}'"
         )
-        self.text = "Waiting for\nconnection..."
 
 
 class OpenBrowserPage(PageBase):
     # TODO: integrate "waiting for AP connection..." into this page
     # Instead of automatic transition, just update the page's contents
+    # self.
 
     """
-    Visit in browser:
+    Open browser to
     http://pi-top.local
     or
     http://192.168.64.1
@@ -287,8 +238,6 @@ class OpenBrowserPage(PageBase):
         super().__init__(
             type=Page.OPEN_BROWSER, size=size, mode=mode, interval=interval
         )
-
-        self.text = "Go to\nhttp://pi-top.local\nor\nhttp://192.168.64.1"
         self.wrap = False
 
         self.has_connected_device = False
@@ -306,16 +255,27 @@ class OpenBrowserPage(PageBase):
         subscribe(AppEvents.IS_CONNECTED_TO_INTERNET, update_is_connected)
 
     @property
-    def visible(self):
-        return self.has_connected_device or self.is_connected_to_internet
+    def text(self):
+        txt = "Waiting for\nconnection..."
+
+        if self.has_connected_device or self.is_connected_to_internet:
+            txt = "Open browser to\nhttp://pi-top.local\nor\nhttp://192.168.64.1"
+
+        return txt
 
 
 class CarryOnPage(PageBase):
     """
-    pi-top Connection Assistant:
-    Completed
+    You've started the onboarding!
+    Continue in your browser...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.CARRY_ON, size=size, mode=mode, interval=interval)
-        self.text = "That's it!\nContinue in the browser..."
+        self.text = "You've started the onboarding!\nContinue in your browser..."
+        self.visible = False
+
+        def update_visible(visible):
+            self.visible = visible
+
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, update_visible)

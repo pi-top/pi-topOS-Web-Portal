@@ -97,10 +97,7 @@ class PageManager:
         return candidate if candidate.visible else self.current_page
 
     def handle_automatic_transitions(self):
-        if self.current_page.type not in [
-            Page.WAITING_FOR_AP_CONNECTION,
-            Page.OPEN_BROWSER,
-        ]:
+        if self.current_page.type != Page.OPEN_BROWSER:
             return
 
         if not self.get_next_page().visible:
