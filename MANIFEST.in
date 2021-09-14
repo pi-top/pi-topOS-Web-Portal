@@ -1,10 +1,7 @@
+graft pt_os_web_portal
 
-
-# Only include frontend build files
-recursive-exclude pt_os_web_portal/frontend *
-recursive-include pt_os_web_portal/frontend/build *
-
-recursive-include pt_os_web_portal *
+prune pt_os_web_portal/frontend
+graft pt_os_web_portal/frontend/build
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
