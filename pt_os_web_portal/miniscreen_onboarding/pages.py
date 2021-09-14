@@ -223,10 +223,7 @@ class ConnectPitopWifiNetworkPage(PageBase):
 
 
 class OpenBrowserPage(PageBase):
-    # TODO: integrate "waiting for AP connection..." into this page
-    # Instead of automatic transition, just update the page's contents
-    # self.
-
+    # Default: "Waiting for connection...", then:
     """
     Open browser to
     http://pi-top.local
