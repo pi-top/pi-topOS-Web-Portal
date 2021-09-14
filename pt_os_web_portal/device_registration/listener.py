@@ -3,8 +3,8 @@ from time import sleep
 
 from pitop.common.logger import PTLogger
 
-from ..backend.helpers.finalise import onboarding_completed
 from ..event import AppEvents, subscribe
+from ..state import StateManager
 from .functions import device_is_registered, send_register_device_request
 
 
@@ -18,7 +18,11 @@ def register_device(self):
 
 
 def handle_is_connected_to_internet_event(is_connected):
-    if is_connected and onboarding_completed() and not device_is_registered():
+    if (
+        is_connected
+        and StateManager().get("app", "state") != "onboarding"
+        and not device_is_registered()
+    ):
         PTLogger.info(
             "Onboarding completed and device not yet registered - starting registration service"
         )
