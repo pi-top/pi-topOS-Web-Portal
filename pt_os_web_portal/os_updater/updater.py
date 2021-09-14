@@ -4,7 +4,6 @@ from threading import Thread
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
-from ..backend.helpers.finalise import onboarding_completed
 from ..event import AppEvents, post_event
 from .manager import OSUpdateManager
 from .message_handler import OSUpdaterFrontendMessageHandler
@@ -30,12 +29,15 @@ class OSUpdater:
     @property
     def last_checked_date(self):
         return datetime.strptime(
-            self.state_manager.get("os_updater", "last_checked_date"), "%Y-%m-%d"
+            self.state_manager.get(
+                "os_updater", "last_checked_date", fallback="2000-01-01"
+            ),
+            "%Y-%m-%d",
         ).date()
 
     def do_update_check(self, ws=None):
         should_check_for_updates = (
-            onboarding_completed()
+            self.state_manager.get("app", "state") != "onboarding"
             and is_connected_to_internet()
             and self.last_checked_date != date.today()
         )

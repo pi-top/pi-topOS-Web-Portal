@@ -59,10 +59,6 @@ def get_os_updater():
     return app.config["OS_UPDATER"]
 
 
-def get_state_manager():
-    return app.config["STATE_MANAGER"]
-
-
 class FrontendAppRoutes(Enum):
     TOUR = "/tour"
     ONBOARDING = "/onboarding"

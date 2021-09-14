@@ -1,11 +1,16 @@
 from os import path, remove
 
+from flask import current_app
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
-from ..routes import get_state_manager
 from .paths import use_test_path
+
+
+def get_state_manager():
+    with current_app.app_context():
+        return current_app.config["STATE_MANAGER"]
 
 
 def available_space() -> str:
