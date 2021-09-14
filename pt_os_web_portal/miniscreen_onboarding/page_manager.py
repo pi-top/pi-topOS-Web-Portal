@@ -27,10 +27,10 @@ class PageManager:
 
         self.page_has_changed = Event()
 
-        def get_page(page):
-            return PageGenerator.get_page(page)(size, mode, default_page_interval)
+        def page_instance(page_type):
+            return PageGenerator.get_page(page_type)(size, mode, default_page_interval)
 
-        self.pages = [get_page(page) for page in Page]
+        self.pages = [page_instance(page_type) for page_type in Page]
 
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * height))
@@ -49,8 +49,11 @@ class PageManager:
         )
 
     def set_current_page_to(self, page):
+        if not self.viewport_position_is_correct():
+            return
+
         new_page = page.type
-        new_page_index = new_page.value
+        new_page_index = new_page.value - 1
         if self.current_page_index == new_page_index:
             PTLogger.debug(
                 f"Miniscreen onboarding: Already on page '{new_page.name}' - nothing to do"
@@ -83,7 +86,10 @@ class PageManager:
         return candidate if candidate.visible else self.current_page
 
     def handle_automatic_transitions(self):
-        if self.current_page.type not in [Page.AP, Page.BROWSER]:
+        if self.current_page.type not in [
+            Page.WAITING_FOR_AP_CONNECTION,
+            Page.OPEN_BROWSER,
+        ]:
             return
 
         if not self.get_next_page().visible:

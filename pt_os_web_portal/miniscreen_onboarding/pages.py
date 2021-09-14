@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 from time import perf_counter
 
 from PIL import Image, ImageDraw, ImageFont
@@ -7,29 +7,37 @@ from ..event import AppEvents, subscribe
 
 
 class Page(Enum):
-    WELCOME = 0
-    AP = 1
-    BROWSER = 2
-    CARRY_ON = 3
+    WELCOME = auto()
+    START_WIRELESS_CONNECTION = auto()
+    SCREEN_KEYBOARD_NOTICE_PAGE = auto()
+    HELP_URL = auto()
+    GET_DEVICE = auto()
+    OPEN_DEVICE_WIFI_SETTINGS = auto()
+    SELECT_PITOP_WIFI_NETWORK = auto()
+    ENTER_PITOP_WIFI_NETWORK_PASWORD = auto()
+    WAITING_FOR_AP_CONNECTION = auto()
+    OPEN_BROWSER = auto()
+    CARRY_ON = auto()
 
 
 class PageGenerator:
     @staticmethod
     def get_page(page_type: Page):
-        if page_type == Page.WELCOME:
-            return WelcomePage
+        pages = {
+            Page.WELCOME: WelcomePage,
+            Page.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
+            Page.SCREEN_KEYBOARD_NOTICE_PAGE: ScreenKeyboardNoticePage,
+            Page.HELP_URL: HelpURLPage,
+            Page.GET_DEVICE: GetDevicePage,
+            Page.OPEN_DEVICE_WIFI_SETTINGS: OpenDeviceWiFiSettingsPage,
+            Page.SELECT_PITOP_WIFI_NETWORK: SelectPitopWifiNetworkPage,
+            Page.ENTER_PITOP_WIFI_NETWORK_PASWORD: EnterPitopWifiNetworkPaswordPage,
+            Page.WAITING_FOR_AP_CONNECTION: WaitingForAPConnectionPage,
+            Page.OPEN_BROWSER: OpenBrowserPage,
+            Page.CARRY_ON: CarryOnPage,
+        }
 
-        elif page_type == Page.AP:
-            return ApPage
-
-        elif page_type == Page.BROWSER:
-            return OpenBrowserPage
-
-        elif page_type == Page.CARRY_ON:
-            return CarryOnPage
-
-        else:
-            raise Exception("Invalid page type")
+        return pages[page_type]
 
 
 # Based on luma.core hotspots/snapshots
@@ -43,7 +51,8 @@ class PageBase:
         self.interval = interval
         self.last_updated = -self.interval
         self._visible = True
-        self.font_size = 12
+        self.font_size = 14
+        self.wrap = True
 
     @property
     def visible(self):
@@ -65,14 +74,60 @@ class PageBase:
         self.last_updated = perf_counter()
 
     def render(self, draw):
+        def text_wrap(text, font, max_width):
+            """Wrap text base on specified width.
+            This is to enable text of width more than the image width to be display
+            nicely.
+            @params:
+                text: str
+                    text to wrap
+                font: obj
+                    font of the text
+                max_width: int
+                    width to split the text with
+            @return
+                lines: list[str]
+                    list of sub-strings
+            """
+            lines = []
+
+            # If the text width is smaller than the image width, then no need to split
+            # just add it to the line list and return
+            if font.getsize(text)[0] <= max_width:
+                lines.append(text)
+            else:
+                # split the line by spaces to get words
+                words = text.split(" ")
+                i = 0
+                # append every word to a line while its width is shorter than the image width
+                while i < len(words):
+                    line = ""
+                    while (
+                        i < len(words) and font.getsize(line + words[i])[0] <= max_width
+                    ):
+                        line = line + words[i] + " "
+                        i += 1
+                    if not line:
+                        line = words[i]
+                        i += 1
+                    lines.append(line)
+            return lines
+
+        font = ImageFont.truetype(
+            "Roboto-Regular.ttf",
+            size=self.font_size,
+        )
+
+        if self.wrap:
+            text = "\n".join(text_wrap(self.text, font, self.size[0]))
+        else:
+            text = self.text
+
         draw.text(
-            text=self.text,
+            text=text,
             xy=(self.width / 2, self.height / 2),
             fill=1,
-            font=ImageFont.truetype(
-                "Roboto-Regular.ttf",
-                size=self.font_size,
-            ),
+            font=font,
             anchor="mm",
             spacing=0,
             align="center",
@@ -81,26 +136,90 @@ class PageBase:
 
 
 class WelcomePage(PageBase):
+    """
+    Hi!
+    Press any button
+    to get started!
+    """
+
     def __init__(self, size, mode, interval):
-        super(WelcomePage, self).__init__(
-            type=Page.WELCOME,
+        super().__init__(type=Page.WELCOME, size=size, mode=mode, interval=interval)
+        self.text = "Hi!\nPress any button\nto get started!"
+        self.wrap = False
+
+
+class StartWirelessConnectionPage(PageBase):
+    """
+    Press SELECT (O) to start wireless connection...
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=Page.START_WIRELESS_CONNECTION, size=size, mode=mode, interval=interval
+        )
+        self.text = "Press SELECT (O) to start wireless connection..."
+
+
+class ScreenKeyboardNoticePage(PageBase):
+    """
+    NOTE: not required if you are using a screen and keyboard!
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=Page.SCREEN_KEYBOARD_NOTICE_PAGE,
             size=size,
             mode=mode,
             interval=interval,
         )
-        self.text = "Press the blue\ndown key\nto page!"
-        self.font_size = 16
+        self.text = "NOTE: this is not required if you are using a screen and keyboard!"
+        self.font_size = 13
 
 
-class ApPage(PageBase):
+class HelpURLPage(PageBase):
+    """
+    If you get stuck, visit
+    pi-top.com/start-4
+
+    Press SELECT to continue
+    """
+
     def __init__(self, size, mode, interval):
-        super(ApPage, self).__init__(
-            type=Page.AP,
-            size=size,
-            mode=mode,
-            interval=interval,
+        super().__init__(type=Page.HELP_URL, size=size, mode=mode, interval=interval)
+        self.text = "Detailed instructions are available at pi-top.com/start-4"
+
+
+class GetDevicePage(PageBase):
+    """
+    You will need a phone, tablet or laptop...
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(type=Page.GET_DEVICE, size=size, mode=mode, interval=interval)
+        self.text = "You will need a phone, tablet or laptop to connect..."
+
+
+class OpenDeviceWiFiSettingsPage(PageBase):
+    """
+    Now find the device's list of available Wi-Fi networks...
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=Page.OPEN_DEVICE_WIFI_SETTINGS, size=size, mode=mode, interval=interval
         )
-        self.font_size = 12
+        self.text = "Now find the device's list of available Wi-Fi networks..."
+
+
+class SelectPitopWifiNetworkPage(PageBase):
+    """
+    Find the 'pi-top' Wi-Fi network in the list and select...
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=Page.SELECT_PITOP_WIFI_NETWORK, size=size, mode=mode, interval=interval
+        )
 
         self.ssid = ""
 
@@ -108,6 +227,26 @@ class ApPage(PageBase):
             self.ssid = ssid
 
         subscribe(AppEvents.AP_HAS_SSID, update_ssid)
+
+    @property
+    def text(self):
+        return f"Find the '{self.ssid}' Wi-Fi network in the list and select..."
+
+
+class EnterPitopWifiNetworkPaswordPage(PageBase):
+    """
+    Enter the password
+    '{password}'
+    and connect...!
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=Page.ENTER_PITOP_WIFI_NETWORK_PASWORD,
+            size=size,
+            mode=mode,
+            interval=interval,
+        )
 
         self.passphrase = ""
 
@@ -118,20 +257,39 @@ class ApPage(PageBase):
 
     @property
     def text(self):
-        return f"Wi-Fi network:\nSSID: {self.ssid}\nPassword: {self.passphrase}"
+        return f"Enter password:\n'{self.passphrase}'\nand connect..."
+
+
+class WaitingForAPConnectionPage(PageBase):
+    """
+    Waiting for connection...
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=Page.WAITING_FOR_AP_CONNECTION, size=size, mode=mode, interval=interval
+        )
+        self.text = "Waiting for\nconnection..."
 
 
 class OpenBrowserPage(PageBase):
+    # TODO: integrate "waiting for AP connection..." into this page
+    # Instead of automatic transition, just update the page's contents
+
+    """
+    Visit in browser:
+    http://pi-top.local
+    or
+    http://192.168.64.1
+    """
+
     def __init__(self, size, mode, interval):
-        super(OpenBrowserPage, self).__init__(
-            type=Page.BROWSER,
-            size=size,
-            mode=mode,
-            interval=interval,
+        super().__init__(
+            type=Page.OPEN_BROWSER, size=size, mode=mode, interval=interval
         )
 
-        self.text = "Open a browser\nto http://pi-top.local\nor http://192.168.64.1"
-        self.font_size = 12
+        self.text = "Go to\nhttp://pi-top.local\nor\nhttp://192.168.64.1"
+        self.wrap = False
 
         self.has_connected_device = False
 
@@ -153,19 +311,11 @@ class OpenBrowserPage(PageBase):
 
 
 class CarryOnPage(PageBase):
+    """
+    pi-top Connection Assistant:
+    Completed
+    """
+
     def __init__(self, size, mode, interval):
-        super(CarryOnPage, self).__init__(
-            type=Page.CARRY_ON,
-            size=size,
-            mode=mode,
-            interval=interval,
-        )
-
-        self.text = "Now, continue\nonboarding in\nthe browser"
-        self.font_size = 16
-        self._visible = False
-
-        def update_ready(ready):
-            self._visible = ready
-
-        subscribe(AppEvents.READY_TO_BE_A_MAKER, update_ready)
+        super().__init__(type=Page.CARRY_ON, size=size, mode=mode, interval=interval)
+        self.text = "That's it!\nContinue in the browser..."

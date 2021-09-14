@@ -17,10 +17,10 @@ class OnboardingApp:
 
         self.page_mgr = PageManager(self.miniscreen, DEFAULT_INTERVAL)
 
-        self.miniscreen.up_button.when_pressed = (
+        self.miniscreen.up_button.when_released = (
             self.page_mgr.set_current_page_to_previous_page
         )
-        self.miniscreen.down_button.when_pressed = (
+        self.miniscreen.down_button.when_released = (
             self.page_mgr.set_current_page_to_next_page
         )
 
