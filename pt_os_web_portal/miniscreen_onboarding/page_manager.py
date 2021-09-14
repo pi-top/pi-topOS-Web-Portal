@@ -25,10 +25,13 @@ class PageManager:
 
         self.current_page_index = 0
 
-        def set_page_to_last():
-            self.current_page_index = len(self.pages) - 1
+        def automatic_transition_to_last_page(_):
+            last_page_index = len(self.pages) - 1
+            # Only do automatic update if on previous page
+            if self.current_page_index == last_page_index - 1:
+                self.current_page_index = last_page_index
 
-        subscribe(AppEvents.READY_TO_BE_A_MAKER, set_page_to_last)
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
 
         size = miniscreen.size
         width = size[0]
