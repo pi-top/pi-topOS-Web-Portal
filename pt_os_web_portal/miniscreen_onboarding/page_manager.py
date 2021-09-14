@@ -81,9 +81,9 @@ class PageManager:
         self.set_current_page_to(self.get_next_page())
 
     def get_previous_page(self):
-        # Return current page if at top
-        if self.current_page_index <= 0:
-            return self.current_page
+        # Return next page if at top
+        if self.current_page_index == 0:
+            return self.get_next_page()
 
         candidate = self.get_page(self.current_page_index - 1)
         return candidate if candidate.visible else self.current_page
