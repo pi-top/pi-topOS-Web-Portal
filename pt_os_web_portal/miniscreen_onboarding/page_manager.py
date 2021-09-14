@@ -10,6 +10,17 @@ class PageManager:
     def __init__(self, miniscreen, default_page_interval=1):
         self._miniscreen = miniscreen
 
+        self._miniscreen.up_button.when_released = (
+            self.set_current_page_to_previous_page
+        )
+        self._miniscreen.down_button.when_released = self.set_current_page_to_next_page
+        self._miniscreen.cancel_button.when_released = (
+            self.set_current_page_to_previous_page
+        )
+        self._miniscreen.select_button.when_released = (
+            self.set_current_page_to_next_page
+        )
+
         self.current_page_index = 0
 
         size = miniscreen.size
