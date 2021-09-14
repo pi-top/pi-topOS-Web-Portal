@@ -10,16 +10,19 @@ from .connection_manager import ConnectionManager
 from .listener_manager import ListenerManager
 from .miniscreen_onboarding.onboarding_app import OnboardingApp
 from .os_updater import OSUpdater
+from .state import StateManager
 
 
 class App:
     def __init__(self, test_mode):
-        self.os_updater = OSUpdater()
+        self.state_manager = StateManager()
+        self.os_updater = OSUpdater(self.state_manager)
         self.wsgi_server = WSGIServer(
             ("", 80),
             create_app(
                 test_mode=test_mode,
                 os_updater=self.os_updater,
+                state_manager=self.state_manager,
             ),
             handler_class=WebSocketHandler,
         )

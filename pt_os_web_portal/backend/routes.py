@@ -21,6 +21,7 @@ from .helpers.finalise import (
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_pt_miniscreen,
+    onboarding_completed,
     reboot,
     restore_files,
     stop_onboarding_autostart,
@@ -40,7 +41,6 @@ from .helpers.tour import (
     close_pt_browser,
     disable_tour,
     further_url,
-    onboarding_completed,
     open_forum,
     open_further,
     open_knowledge_base,
@@ -57,6 +57,10 @@ from .helpers.wifi_manager import attempt_connection, current_wifi_ssid, get_ssi
 
 def get_os_updater():
     return app.config["OS_UPDATER"]
+
+
+def get_state_manager():
+    return app.config["STATE_MANAGER"]
 
 
 class FrontendAppRoutes(Enum):

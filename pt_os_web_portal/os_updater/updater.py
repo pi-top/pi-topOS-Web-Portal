@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from threading import Thread
 
 from pitop.common.logger import PTLogger
@@ -13,8 +13,9 @@ from .types import MessageType
 
 
 class OSUpdater:
-    def __init__(self):
+    def __init__(self, state_manager=None):
         self.manager = OSUpdateManager()
+        self.state_manager = state_manager
         self.message_handler = OSUpdaterFrontendMessageHandler()
 
     def start(self):
@@ -26,11 +27,17 @@ class OSUpdater:
         self.stage_packages()
         return self.manager.cache.install_count > 0
 
+    @property
+    def last_checked_date(self):
+        return datetime.strptime(
+            self.state_manager.get("os_updater", "last_checked_date"), "%Y-%m-%d"
+        ).date()
+
     def do_update_check(self, ws=None):
         should_check_for_updates = (
             onboarding_completed()
             and is_connected_to_internet()
-            and self.manager.last_checked_date != date.today()
+            and self.last_checked_date != date.today()
         )
         post_event(AppEvents.OS_ALREADY_CHECKED_UPDATES, should_check_for_updates)
 
@@ -59,7 +66,11 @@ class OSUpdater:
         try:
             callback(MessageType.START, "Preparing OS upgrade", 0.0)
             self.manager.stage_upgrade(callback, packages)
-            self.manager.update_last_check_config()
+            self.state_manager.set(
+                "os_updater",
+                "last_checked_date",
+                date.today().strftime("%Y-%m-%d"),
+            )
 
             callback(MessageType.FINISH, "Finished preparing", 100.0)
             post_event(AppEvents.OS_UPDATER_PREPARE, "success")

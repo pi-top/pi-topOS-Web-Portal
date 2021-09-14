@@ -1,15 +1,14 @@
 from configparser import ConfigParser
 from pathlib import Path
 
-from pitop.common.singleton import Singleton
 
-
-class ConfigManager(metaclass=Singleton):
-    PATH_TO_CONFIG = "/etc/pi-top/pt-os-web-portal.config"
+class StateManager:
+    PATH_TO_CONFIG = "/var/lib/pt-os-web-portal/state.cfg"
 
     def __init__(self):
         path = Path(self.PATH_TO_CONFIG)
         if not path.exists():
+            path.mkdir(parents=True, exist_ok=True)
             path.touch()
 
         self._config = ConfigParser()
