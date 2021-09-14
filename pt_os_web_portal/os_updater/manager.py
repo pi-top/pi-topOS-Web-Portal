@@ -12,8 +12,9 @@ from .types import MessageType
 
 class APTUpgradeException(Exception):
     def __init__(self, packages_arr: List):
+        formatted_packages = "\\n  - ".join(packages_arr)
         super().__init__(
-            f"Errors were encountered while processing: {''.join(packages_arr)}"
+            f"Errors were encountered while processing:\\n  - {formatted_packages}"
         )
 
 
