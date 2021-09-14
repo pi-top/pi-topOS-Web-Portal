@@ -4,6 +4,7 @@ from time import sleep
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
+from ..event import AppEvents, subscribe
 from .pages import Page, PageGenerator
 
 
@@ -23,6 +24,11 @@ class PageManager:
         )
 
         self.current_page_index = 0
+
+        def set_page_to_last():
+            self.current_page_index = len(self.pages) - 1
+
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, set_page_to_last)
 
         size = miniscreen.size
         width = size[0]
@@ -97,14 +103,6 @@ class PageManager:
 
         candidate = self.get_page(self.current_page_index + 1)
         return candidate if candidate.visible else self.current_page
-
-    def handle_automatic_transitions(self):
-        if self.current_page.type != Page.OPEN_BROWSER:
-            return
-
-        if self.get_page(self.current_page_index + 1).visible:
-            PTLogger.info("Miniscreen onboarding: Automatically updating page...")
-            self.set_current_page_to_next_page()
 
     def refresh(self):
         self.viewport.refresh()

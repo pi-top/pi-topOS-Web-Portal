@@ -38,8 +38,6 @@ class OnboardingApp:
 
     def _main(self):
         while not self.__stop:
-            self.page_mgr.handle_automatic_transitions()
-
             if not self.page_mgr.viewport_position_is_correct():
                 self.page_mgr.scroll_to_current_page(ANIMATION_SLEEP_INTERVAL)
 
