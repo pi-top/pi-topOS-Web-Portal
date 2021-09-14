@@ -32,7 +32,7 @@ def available_space() -> str:
 def configure_tour() -> None:
     PTLogger.debug("Function: configure_tour()")
     run_command(
-        f"ln -s {path.dirname(path.realpath(__file__))}../../resources/pt-os-tour.desktop /etc/xdg/autostart",
+        f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-tour.desktop /etc/xdg/autostart",
         timeout=60,
         lower_priority=True,
     )
