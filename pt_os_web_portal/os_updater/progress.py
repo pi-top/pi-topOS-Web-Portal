@@ -37,6 +37,7 @@ class InstallProgress(apt.progress.base.InstallProgress):  # type: ignore
     def __init__(self, callback):
         apt.progress.base.InstallProgress.__init__(self)
         self.callback = callback
+        self.packages_with_errors = list()
 
     def status_change(self, pkg, percent, status):
         PTLogger.debug(f"Progress: {percent}% - {pkg}: {status}")
@@ -44,3 +45,11 @@ class InstallProgress(apt.progress.base.InstallProgress):  # type: ignore
 
     def update_interface(self):
         apt.progress.base.InstallProgress.update_interface(self)
+
+    def error(self, pkg, errormsg):
+        PTLogger.error(f"InstallProgress {pkg}: {errormsg}")
+        self.packages_with_errors.append(pkg)
+        # sent as MessageType.STATUS instead of MessageType.ERROR to avoid confusions,
+        # since several other messages are sent after this one
+        self.callback(MessageType.STATUS, f"ERROR - {pkg}: {errormsg}", 0)
+        super().error(pkg, errormsg)
