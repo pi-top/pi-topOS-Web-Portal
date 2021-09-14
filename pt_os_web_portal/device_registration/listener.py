@@ -8,7 +8,7 @@ from ..state import StateManager
 from .functions import device_is_registered, send_register_device_request
 
 
-def register_device(self):
+def register_device():
     try:
         PTLogger.error("Waiting a minute before attempting device registration...")
         sleep(60)
