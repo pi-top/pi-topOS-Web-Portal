@@ -8,7 +8,7 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import upgradePage from "../../assets/images/upgrade-page.png";
 import styles from "./UpgradePage.module.css";
 
-import { OSUpdaterMessage, OSUpdaterMessageType } from "./UpgradePageContainer"
+import { OSUpdaterMessage, OSUpdaterMessageType, UpdateMessageStatus } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
 import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
@@ -80,7 +80,14 @@ export default ({
 
   const parseMessage = (message: OSUpdaterMessage) => {
     if (message?.type === OSUpdaterMessageType.UpdateSources || message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.PrepareUpgrade) {
-      return JSON.stringify(message.payload?.message).trim().replace(/^"(.*)"$/, '$1');
+      let msg = JSON.stringify(message.payload?.message).trim().replace(/^"(.*)"$/, '$1')
+        .replace(/\\\\n/g, String.fromCharCode(10));
+      if (message.payload.status === UpdateMessageStatus.Error) {
+        // Add a newline before an ERROR message
+        msg = String.fromCharCode(13, 10) + msg;
+      }
+
+      return msg
     }
     return ""
   }

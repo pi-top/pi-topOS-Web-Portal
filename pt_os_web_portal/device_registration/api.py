@@ -1,35 +1,22 @@
 import json
 import os
-from pathlib import Path
 from time import sleep
 
 import requests
 from pitop.common.logger import PTLogger
 
+from ..state import StateManager
+
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
-REGISTRATION_EMAIL_ADDRESS_FILE = "/etc/pi-top/registration.txt"
 DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
 OS_INFO_FILE = "/etc/pt-issue"
 API_ENDPOINT = "https://backend.pi-top.com/utils/v1/device/register"
-DEVICE_IS_REGISTERED_BREADCRUMB = Path("/etc/pi-top/.deviceRegistered")
 
 
 def field_is_in_json(json, fieldToFind):
     keyExists = fieldToFind in json
     valueExists = json.get(fieldToFind) is not None
     return keyExists and valueExists
-
-
-def get_email_address():
-
-    if os.path.exists(REGISTRATION_EMAIL_ADDRESS_FILE):
-        with open(REGISTRATION_EMAIL_ADDRESS_FILE, "r") as f:
-            email_address = f.readline()
-            email_address = email_address.strip()
-            PTLogger.debug("Successfully read email address")
-            return email_address
-
-    return ""
 
 
 def get_serial_number():
@@ -100,7 +87,7 @@ def get_os_version():
 
 def get_registration_data():
 
-    email_address = get_email_address()
+    email_address = StateManager().get("registration", "email")
     serial_number = get_serial_number()
     device_type = get_device_type()
     os_name, os_build_number, update_repo = get_os_version()
@@ -127,11 +114,11 @@ def send_data_and_get_resp(data):
 
 
 def device_is_registered():
-    return DEVICE_IS_REGISTERED_BREADCRUMB.is_file()
+    return StateManager().get("registration", "is_registered") == "true"
 
 
 def create_device_registered_breadcrumb():
-    return DEVICE_IS_REGISTERED_BREADCRUMB.touch()
+    StateManager().set("registration", "is_registered", "true")
 
 
 def send_register_device_request():
