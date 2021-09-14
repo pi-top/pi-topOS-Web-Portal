@@ -1,3 +1,34 @@
+pi-top-os-web-portal (0.3.0-2) bullseye; urgency=medium
+
+  * Updated master workflow files
+  * Bump react-dom from 16.13.0 to 17.0.2 in /src/frontend (#225)
+  * [pre-commit.ci] pre-commit autoupdate (#222)
+  * Fix truetype-font-prohibits-installable-embedding (#226)
+  * Display new OS version warning in a dialog (#214)
+  * Rework onboarding miniscreen flow (#204)
+  * Build Debian package with `pybuild` (#230)
+  * Add entrypoint for miniscreen onboarding
+  * New changelog entry: v0.3.0-1 (#224)
+  * Fix imports
+  * Bump dns-packet from 1.3.1 to 1.3.4 in /frontend (#231)
+  * Bump ws from 5.2.2 to 5.2.3 in /frontend (#232)
+  * Display upgrade message history while updating packages (#223)
+  * Source from version.txt (#235)
+  * Readme rst (#236)
+  * Updated master workflow files
+  * Internal refactor: event-driven observer pattern (#239)
+  * Fix path in package.json
+  * Bump axios from 0.21.1 to 0.21.2 in /frontend (#240)
+  * Miniscreen rework (#242)
+  * Improve event handling (e.g. enums) (#243)
+  * Update Web Portal  before anything else (#238)
+  * Bump codecov/codecov-action from 2.0.2 to 2.1.0 (#245)
+  * Rework page ordering & connection tracking (#246)
+  * Rework miniscreen pages (#250)
+  * Add description to errors on upgrade (#251)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 14 Sep 2021 17:28:09 +0000
+
 pi-top-os-web-portal (0.3.0-1) bullseye; urgency=medium
 
   * Fix truetype-font-prohibits-installable-embedding (#226)
