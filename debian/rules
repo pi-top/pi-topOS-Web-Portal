@@ -18,8 +18,7 @@ override_dh_auto_build:
 		npm config set prefix ~/.local && \
 		npm install -g yarn && \
 		~/.local/bin/yarn install && \
-		node_modules/react-scripts/bin/react-scripts.js build && \
-		mv build ../pt_os_web_portal/frontend
+		node_modules/react-scripts/bin/react-scripts.js build
 
 	dh_auto_build
 
