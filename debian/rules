@@ -24,7 +24,10 @@ override_dh_auto_build:
 	dh_auto_build
 
 override_dh_clean:
-	rm -rf frontend/node_modules pt_os_web_portal/frontend
+	rm -rf \
+		pt_os_web_portal/frontend/node_modules \
+		pt_os_web_portal/frontend/build
+
 	dh_clean
 
 override_dh_installsystemd:
