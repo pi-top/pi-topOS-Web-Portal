@@ -1,3 +1,12 @@
+pi-top-os-web-portal (0.5.0-1) bullseye; urgency=medium
+
+  * Fix typo path bug
+  * Use state file for application persistence (#249)
+  * Update references to update_last_check_config in OS Updater
+  * Reload page using pathname from window object
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 14 Sep 2021 21:59:47 +0000
+
 pi-top-os-web-portal (0.4.0-1) bullseye; urgency=medium
 
   * Refactor across codebase (#204) (#230) (#235) (#239) (#243)
