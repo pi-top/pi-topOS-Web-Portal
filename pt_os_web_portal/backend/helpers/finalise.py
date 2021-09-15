@@ -51,7 +51,7 @@ def deprioritise_openbox_session() -> None:
 def stop_onboarding_autostart() -> None:
     PTLogger.debug("Function: stop_onboarding_autostart()")
     remove("/etc/xdg/autostart/pt-os-setup.desktop")
-    get_state_manager().set("app", "state", "onboarding")
+    get_state_manager().set("app", "state", "desktop")
 
 
 def enable_firmware_updater_service():
@@ -114,7 +114,9 @@ def python_sdk_docs_url():
 
 
 def onboarding_completed():
-    return get_state_manager().get("app", "state") != "onboarding"
+    return (
+        get_state_manager().get("app", "state", fallback="onboarding") != "onboarding"
+    )
 
 
 def open_further():

@@ -33,7 +33,8 @@ class App:
         self.os_updater.start()
 
         if (
-            self.state_manager.get("app", "state") == "onboarding"
+            self.state_manager.get("app", "state", fallback="onboarding")
+            == "onboarding"
             and device_type() == DeviceName.pi_top_4.value
         ):
             PTLogger.info(
