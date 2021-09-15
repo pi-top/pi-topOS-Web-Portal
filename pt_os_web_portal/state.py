@@ -11,7 +11,7 @@ class StateManager(metaclass=Singleton):
     def __init__(self):
         Path(self.STATE_FILE_DIRECTORY).mkdir(parents=True, exist_ok=True)
 
-        path = Path(self.STATE_FILE_DIRECTORY)
+        path = Path(self.path_to_file)
         if not path.exists():
             path.touch()
 
