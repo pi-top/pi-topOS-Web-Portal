@@ -164,12 +164,12 @@ export default ({
       >
         {errorMessage && <span className={styles.error}>{errorMessage}</span>}
 
-      <NewOsVersionDialogContainer
-        active={isNewOsDialogActive}
-        requireBurn={requireBurn}
-        shouldBurn={shouldBurn}
-        onClose={() => setIsNewOsDialogActive(false)}
-      />
+        <NewOsVersionDialogContainer
+          active={isNewOsDialogActive}
+          requireBurn={requireBurn}
+          shouldBurn={shouldBurn}
+          onClose={() => setIsNewOsDialogActive(false)}
+        />
 
         { !waitingForServer && message && message?.type === OSUpdaterMessageType.Upgrade &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
