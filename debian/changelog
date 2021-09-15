@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.8.0-1) bullseye; urgency=medium
+
+  * Read state file on initialization
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 15 Sep 2021 03:08:08 +0000
+
 pi-top-os-web-portal (0.7.0-1) bullseye; urgency=medium
 
   * Fix path to state file
