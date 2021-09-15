@@ -16,8 +16,6 @@ class StateManager(metaclass=Singleton):
             path.touch()
 
         self._config = ConfigParser()
-        if len(self._config.read(self.path_to_file)) != 1:
-            raise Exception("Failed to open configuration file")
 
     @property
     def path_to_file(self):

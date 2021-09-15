@@ -42,7 +42,8 @@ class OSUpdater:
 
     def do_update_check(self, ws=None):
         should_check_for_updates = (
-            self.state_manager.get("app", "state") != "onboarding"
+            self.state_manager.get("app", "state", fallback="onboarding")
+            != "onboarding"
             and is_connected_to_internet()
             and self.last_checked_date != date.today()
         )
