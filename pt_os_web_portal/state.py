@@ -16,6 +16,7 @@ class StateManager(metaclass=Singleton):
             path.touch()
 
         self._config = ConfigParser()
+        self._config.read(self.path_to_file)
 
     @property
     def path_to_file(self):
