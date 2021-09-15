@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.6.0-1) bullseye; urgency=medium
+
+  * Provide fallbacks for app state in state manager (#254)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 15 Sep 2021 02:44:10 +0000
+
 pi-top-os-web-portal (0.5.0-1) bullseye; urgency=medium
 
   * Fix typo path bug
