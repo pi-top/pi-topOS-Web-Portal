@@ -39,6 +39,26 @@ class OSUpdateManager:
         finally:
             self.lock = False
 
+    def stage_package(self, package_name: str) -> None:
+        package = self.cache.get(package_name)
+        if package is None:
+            PTLogger.info(f"OS Updater: invalid package '{package_name}' - skipping")
+            return
+
+        if not package.is_upgradable:
+            PTLogger.info(
+                f"OS Updater: package '{package_name}' has no updates - skipping"
+            )
+            return
+
+        package.mark_upgrade()
+        PTLogger.info(f"OS Updater: package '{package_name}' was staged to be updated")
+
+        # stage package dependencies to be updated too
+        for dependency_array in package.candidate.dependencies:
+            for dependency in dependency_array:
+                self.stage_package(dependency.name)
+
     def stage_upgrade(self, callback, packages=[]) -> None:
         PTLogger.info("OS Updater: Staging packages for upgrade")
         if self.lock:
@@ -53,21 +73,7 @@ class OSUpdateManager:
                 self.cache.upgrade(True)
             else:
                 for package_name in packages:
-                    if package_name not in self.cache:
-                        PTLogger.info(
-                            f"OS Updater: invalid package '{package_name}' - skipping"
-                        )
-                        continue
-                    package = self.cache[package_name]
-                    if package.is_upgradable:
-                        PTLogger.info(
-                            f"OS Updater: package '{package_name}' was staged to be updated"
-                        )
-                        package.mark_upgrade()
-                    else:
-                        PTLogger.info(
-                            f"OS Updater: package '{package_name}' has no updates - skipping"
-                        )
+                    self.stage_package(package_name)
 
             PTLogger.info(
                 f"OS Update: Will upgrade/install {self.cache.install_count} packages"
