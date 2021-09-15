@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.7.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.8.0-1) bullseye; urgency=medium
 
   * Read state file on initialization
 
