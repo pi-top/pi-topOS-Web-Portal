@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
@@ -55,11 +57,14 @@ class App:
         self.wsgi_server.start()
 
     def stop(self):
-        self.os_updater.stop()
+        stop_funcs = [
+            self.os_updater.stop,
+            lambda: self.miniscreen_onboarding and self.miniscreen_onboarding.stop(),
+            self.connection_manager.stop,
+            self.wsgi_server.stop,
+        ]
 
-        if self.miniscreen_onboarding:
-            self.miniscreen_onboarding.stop()
-
-        self.connection_manager.stop()
-
-        self.wsgi_server.stop()
+        with ThreadPoolExecutor() as executor:
+            results = []
+            for stop_func in stop_funcs:
+                results.append(executor.submit(stop_func))
