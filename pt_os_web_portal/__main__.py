@@ -42,7 +42,6 @@ def main(test_mode, log_level):
     app = App(test_mode)
     configure_interrupt_signals(app)
     app.start()
-    PTLogger.info("Pausing...")
     pause()
 
 
