@@ -7,6 +7,7 @@ from ..event import AppEvents, subscribe
 
 
 class Page(Enum):
+    START = auto()
     WELCOME = auto()
     START_WIRELESS_CONNECTION = auto()
     # SCREEN_KEYBOARD_NOTICE_PAGE = auto()
@@ -21,6 +22,7 @@ class PageGenerator:
     @staticmethod
     def get_page(page_type: Page):
         pages = {
+            Page.START: StartPage,
             Page.WELCOME: WelcomePage,
             Page.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
             # Page.SCREEN_KEYBOARD_NOTICE_PAGE: ScreenKeyboardNoticePage,
@@ -125,29 +127,36 @@ class PageBase:
         )
 
 
+class StartPage(PageBase):
+    """
+    Welcome! Let's get you set up, press any button to get started!
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(type=Page.START, size=size, mode=mode, interval=interval)
+        self.text = "Welcome! Let's get you set up - press any button to get started!"
+
+
 class WelcomePage(PageBase):
     """
-    Hi!
-    Press any button
-    to get started!
+    Great! Press SELECT (O) to continue...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.WELCOME, size=size, mode=mode, interval=interval)
-        self.text = "Hi!\nPress any button\nto get started!"
-        self.wrap = False
+        self.text = "Great! Press SELECT (O) to continue..."
 
 
 class StartWirelessConnectionPage(PageBase):
     """
-    Press SELECT (O) to start wireless connection...
+    Awesome! Continue to begin wireless connection setup...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(
             type=Page.START_WIRELESS_CONNECTION, size=size, mode=mode, interval=interval
         )
-        self.text = "Press SELECT (O) to start wireless connection..."
+        self.text = "Awesome! Continue to begin wireless connection setup..."
 
 
 # class ScreenKeyboardNoticePage(PageBase):
