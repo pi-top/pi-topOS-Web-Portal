@@ -1,4 +1,5 @@
 from os import geteuid
+from signal import SIGINT, SIGTERM, pause, signal
 from sys import exit
 
 import click
@@ -9,6 +10,16 @@ from .app import App
 
 def is_root() -> bool:
     return geteuid() == 0
+
+
+def configure_interrupt_signals(app):
+    def signal_handler(signal, frame):
+        PTLogger.info("Stopping...")
+        app.stop()
+        PTLogger.debug("Stopped!")
+
+    signal(SIGINT, signal_handler)
+    signal(SIGTERM, signal_handler)
 
 
 @click.command()
@@ -29,7 +40,10 @@ def main(test_mode, log_level):
     PTLogger.setup_logging(logger_name="pt-os-web-portal", logging_level=log_level)
 
     app = App(test_mode)
+    configure_interrupt_signals(app)
     app.start()
+    PTLogger.info("Pausing...")
+    pause()
 
 
 if __name__ == "__main__":

@@ -16,10 +16,16 @@ class OSUpdater:
         self.manager = OSUpdateManager()
         self.state_manager = state_manager
         self.message_handler = OSUpdaterFrontendMessageHandler()
+        self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
 
     def start(self):
-        t = Thread(target=self.do_update_check, args=(), daemon=True)
-        t.start()
+        self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
+        self.thread.start()
+
+    def stop(self):
+        if self.thread.is_alive():
+            self.thread.kill()
+            self.thread.join()
 
     def updates_available(self, ws=None):
         self.update_sources()

@@ -25,7 +25,9 @@ class App:
             ),
             handler_class=WebSocketHandler,
         )
+
         self.listener_mgr = ListenerManager()
+        self.miniscreen_onboarding = None
         self.connection_manager = ConnectionManager()
 
     def start(self):
@@ -40,11 +42,22 @@ class App:
             PTLogger.info(
                 "Onboarding not completed - starting miniscreen onboarding application"
             )
-            OnboardingApp().start()
+            self.miniscreen_onboarding = OnboardingApp()
+            self.miniscreen_onboarding.start()
 
         self.listener_mgr.start()
 
         # Finally, start objects that trigger events
         self.connection_manager.start()
 
-        self.wsgi_server.serve_forever()
+        self.wsgi_server.start()
+
+    def stop(self):
+        self.os_updater.stop()
+
+        if self.miniscreen_onboarding:
+            self.miniscreen_onboarding.stop()
+
+        self.connection_manager.stop()
+
+        self.wsgi_server.stop()
