@@ -1,8 +1,9 @@
 from os import geteuid
-from signal import SIGINT, SIGTERM, pause, signal
+from signal import SIGINT, SIGTERM
 from sys import exit
 
 import click
+from gevent import signal_handler, wait
 from pitop.common.logger import PTLogger
 
 from .app import App
@@ -13,13 +14,13 @@ def is_root() -> bool:
 
 
 def configure_interrupt_signals(app):
-    def signal_handler(signal, frame):
+    def handler(signal, frame):
         PTLogger.info("Stopping...")
         app.stop()
         PTLogger.debug("Stopped!")
 
-    signal(SIGINT, signal_handler)
-    signal(SIGTERM, signal_handler)
+    signal_handler(SIGINT, handler)
+    signal_handler(SIGTERM, handler)
 
 
 @click.command()
@@ -42,7 +43,7 @@ def main(test_mode, log_level):
     app = App(test_mode)
     configure_interrupt_signals(app)
     app.start()
-    pause()
+    wait()
 
 
 if __name__ == "__main__":
