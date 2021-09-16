@@ -12,7 +12,7 @@ DEFAULT_INTERVAL = 1
 FPS = 10
 
 
-class OnboardingApp:
+class OnboardingAssistantApp:
     def __init__(self):
         self.miniscreen = Pitop().miniscreen
 
