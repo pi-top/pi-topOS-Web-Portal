@@ -2,12 +2,12 @@ from signal import pause
 
 import click
 
-from . import OnboardingApp
+from . import OnboardingAssistantApp
 
 
 @click.command()
 def main() -> None:
-    onboarding_app = OnboardingApp()
+    onboarding_app = OnboardingAssistantApp()
     onboarding_app.start()
     pause()
 
