@@ -44,7 +44,8 @@ class App:
             PTLogger.info(
                 "Onboarding not completed - starting miniscreen onboarding application"
             )
-            OnboardingAssistantApp().start()
+            self.miniscreen_onboarding = OnboardingAssistantApp()
+            self.miniscreen_onboarding.start()
 
         self.listener_mgr.start()
 
