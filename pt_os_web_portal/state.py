@@ -11,13 +11,12 @@ class StateManager(metaclass=Singleton):
     def __init__(self):
         Path(self.STATE_FILE_DIRECTORY).mkdir(parents=True, exist_ok=True)
 
-        path = Path(self.STATE_FILE_DIRECTORY)
+        path = Path(self.path_to_file)
         if not path.exists():
             path.touch()
 
         self._config = ConfigParser()
-        if len(self._config.read(self.path_to_file)) != 1:
-            raise Exception("Failed to open configuration file")
+        self._config.read(self.path_to_file)
 
     @property
     def path_to_file(self):

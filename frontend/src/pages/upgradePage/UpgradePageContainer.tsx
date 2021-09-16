@@ -270,7 +270,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         serverStatus({ timeout: timeoutServerStatusRequestMs })
           .then(() => clearInterval(interval))
           .catch(() => {})
-        window.location.replace("/onboarding/upgrade?all")
+        window.location.replace(window.location.pathname + "?all")
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }

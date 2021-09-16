@@ -1,3 +1,30 @@
+pi-top-os-web-portal (0.8.0-1) bullseye; urgency=medium
+
+  * Read state file on initialization
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 15 Sep 2021 03:08:08 +0000
+
+pi-top-os-web-portal (0.7.0-1) bullseye; urgency=medium
+
+  * Fix path to state file
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 15 Sep 2021 02:56:52 +0000
+
+pi-top-os-web-portal (0.6.0-1) bullseye; urgency=medium
+
+  * Provide fallbacks for app state in state manager (#254)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 15 Sep 2021 02:44:10 +0000
+
+pi-top-os-web-portal (0.5.0-1) bullseye; urgency=medium
+
+  * Fix typo path bug
+  * Use state file for application persistence (#249)
+  * Update references to update_last_check_config in OS Updater
+  * Reload page using pathname from window object
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 14 Sep 2021 21:59:47 +0000
+
 pi-top-os-web-portal (0.4.0-1) bullseye; urgency=medium
 
   * Refactor across codebase (#204) (#230) (#235) (#239) (#243)
