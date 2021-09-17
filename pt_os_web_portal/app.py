@@ -35,7 +35,6 @@ class App:
         self.connection_manager = ConnectionManager()
 
     def start(self):
-        # "start" objects that subscribe to events first
         self.os_updater.start()
 
         if (
@@ -51,20 +50,17 @@ class App:
 
         self.listener_mgr.start()
 
-        # Finally, start objects that trigger events
         self.connection_manager.start()
 
         self.wsgi_server.start()
 
     def stop(self):
-        stop_funcs = [
-            self.os_updater.stop,
-            lambda: self.miniscreen_onboarding and self.miniscreen_onboarding.stop(),
-            self.connection_manager.stop,
-            self.wsgi_server.stop,
-        ]
-
         with ThreadPoolExecutor() as executor:
-            results = []
-            for stop_func in stop_funcs:
-                results.append(executor.submit(stop_func))
+            for stop_func in [
+                self.os_updater.stop,
+                lambda: self.miniscreen_onboarding
+                and self.miniscreen_onboarding.stop(),
+                self.connection_manager.stop,
+                self.wsgi_server.stop,
+            ]:
+                executor.submit(stop_func)

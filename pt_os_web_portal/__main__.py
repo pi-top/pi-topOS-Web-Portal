@@ -35,7 +35,7 @@ def configure_interrupt_signals(app):
 @click.version_option()
 def main(test_mode, log_level):
     if not is_root():
-        print("This script must be run as root!")
+        print("pi-topOS Web Portal must be run as root!")
         exit(1)
 
     PTLogger.setup_logging(logger_name="pt-os-web-portal", logging_level=log_level)
