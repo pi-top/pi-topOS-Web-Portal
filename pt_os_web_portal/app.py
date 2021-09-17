@@ -55,6 +55,8 @@ class App:
         self.wsgi_server.start()
 
     def stop(self):
+        # Using thread pool with context will cause it to behave
+        # as if Executor.shutdown() were called with `wait=True`
         with ThreadPoolExecutor() as executor:
             for stop_func in [
                 self.os_updater.stop,
