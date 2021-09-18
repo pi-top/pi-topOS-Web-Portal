@@ -10,7 +10,6 @@ class Page(Enum):
     START = auto()
     WELCOME = auto()
     START_WIRELESS_CONNECTION = auto()
-    # SCREEN_KEYBOARD_NOTICE_PAGE = auto()
     HELP_URL = auto()
     GET_DEVICE = auto()
     CONNECT_PITOP_WIFI_NETWORK = auto()
@@ -18,14 +17,14 @@ class Page(Enum):
     CARRY_ON = auto()
 
 
-class PageGenerator:
+# TODO: replace with factory
+class ScrollPageGenerator:
     @staticmethod
     def get_page(page_type: Page):
         pages = {
             Page.START: StartPage,
             Page.WELCOME: WelcomePage,
             Page.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
-            # Page.SCREEN_KEYBOARD_NOTICE_PAGE: ScreenKeyboardNoticePage,
             Page.HELP_URL: HelpURLPage,
             Page.GET_DEVICE: GetDevicePage,
             Page.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
@@ -127,6 +126,16 @@ class PageBase:
         )
 
 
+# Special pages - not used in scrolling
+class SkipToEndPage(PageBase):
+    """
+    Press CANCEL (X) at any time to skip...
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(type=None, size=size, mode=mode, interval=interval)
+
+
 class StartPage(PageBase):
     """
     Welcome! Let's get you set up, press any button to get started!
@@ -134,67 +143,55 @@ class StartPage(PageBase):
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.START, size=size, mode=mode, interval=interval)
-        self.text = "Welcome! Let's get you set up - press any button to get started!"
+        self.text = "Welcome to your pi-top! Press any button to get started..."
 
 
 class WelcomePage(PageBase):
     """
-    Great! Press SELECT (O) to continue...
+    That's it!
+    Now press DOWN to scroll...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.WELCOME, size=size, mode=mode, interval=interval)
-        self.text = "Great! Press SELECT (O) to continue..."
+        self.text = "That's it!\nNow press DOWN to scroll..."
 
 
 class StartWirelessConnectionPage(PageBase):
     """
-    Awesome! Continue to begin wireless connection setup...
+    Awesome! Press DOWN to continue through pi-top connection setup...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(
             type=Page.START_WIRELESS_CONNECTION, size=size, mode=mode, interval=interval
         )
-        self.text = "Awesome! Continue to begin wireless connection setup..."
-
-
-# class ScreenKeyboardNoticePage(PageBase):
-#     """
-#     NOTE: not required if you are using a screen and keyboard!
-#     """
-
-#     def __init__(self, size, mode, interval):
-#         super().__init__(
-#             type=Page.SCREEN_KEYBOARD_NOTICE_PAGE,
-#             size=size,
-#             mode=mode,
-#             interval=interval,
-#         )
-#         self.text = "NOTE: this is not required if you are using a screen and keyboard!"
-#         self.font_size = 13
+        self.text = "Awesome! Press DOWN to continue through pi-top connection setup..."
 
 
 class HelpURLPage(PageBase):
     """
-    Detailed instructions are available at pi-top.com/start-4
+    Detailed setup instructions: pi-top.com/start-4
 
     Press SELECT to continue
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.HELP_URL, size=size, mode=mode, interval=interval)
-        self.text = "Detailed instructions are available at pi-top.com/start-4"
+        self.text = "Detailed setup instructions: pi-top.com/start-4"
 
 
 class GetDevicePage(PageBase):
     """
-    You will need a laptop/desktop computer to connect with...
+    Let's get started! You will need a laptop/computer to connect with...
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.GET_DEVICE, size=size, mode=mode, interval=interval)
-        self.text = "You will need a laptop/desktop computer to connect with..."
+        self.text = (
+            "Let's get started!\nYou will need a\nlaptop/computer\nto connect with..."
+        )
+        self.wrap = False
 
 
 class ConnectPitopWifiNetworkPage(PageBase):
@@ -209,6 +206,8 @@ class ConnectPitopWifiNetworkPage(PageBase):
             mode=mode,
             interval=interval,
         )
+        self.font_size = 13
+        self.wrap = False
 
         self.ssid = ""
 
@@ -226,9 +225,7 @@ class ConnectPitopWifiNetworkPage(PageBase):
 
     @property
     def text(self):
-        return (
-            f"Connect to Wi-Fi network '{self.ssid}' using password '{self.passphrase}'"
-        )
+        return f"Connect to\nWi-Fi network:\n'{self.ssid}'\n'{self.passphrase}'"
 
 
 class OpenBrowserPage(PageBase):
@@ -259,6 +256,18 @@ class OpenBrowserPage(PageBase):
             self.is_connected_to_internet = is_connected
 
         subscribe(AppEvents.IS_CONNECTED_TO_INTERNET, update_is_connected)
+
+    # TODO: cycle through alternative IP addresses (e.g. Ethernet)
+    # ip -4 addr [show eth0] | grep --only-matching --perl-regexp '(?<=inet\s)\d+(\.\d+){3}' | grep --invert-match 127.0.0.1
+
+    # ip -4 addr  | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+
+    # Refresh before each pass of IP addresses?
+    # Refresh before showing an IP address in the list?
+
+    # Try and get IP from eth0, use that
+    # Try and get IP from wlan0, use that
+    # Else AP/display cable IP
 
     @property
     def text(self):

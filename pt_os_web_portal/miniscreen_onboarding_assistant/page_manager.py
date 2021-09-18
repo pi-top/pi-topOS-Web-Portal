@@ -5,7 +5,7 @@ from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
 from ..event import AppEvents, subscribe
-from .pages import Page, PageGenerator
+from .pages import Page, ScrollPageGenerator, SkipToEndPage
 
 
 class PageManager:
@@ -15,18 +15,19 @@ class PageManager:
         self._miniscreen.up_button.when_released = (
             self.set_current_page_to_previous_page
         )
+
         self._miniscreen.down_button.when_released = self.set_current_page_to_next_page
-        self._miniscreen.cancel_button.when_released = (
-            self.set_current_page_to_previous_page
-        )
         self._miniscreen.select_button.when_released = (
             self.set_current_page_to_next_page
         )
 
+        self._miniscreen.cancel_button.when_released = self.show_skip_page
+
         self.current_page_index = 0
+        self.showing_skip_page = False
 
         def automatic_transition_to_last_page(_):
-            last_page_index = len(self.pages) - 1
+            last_page_index = len(self.scroll_pages) - 1
             # Only do automatic update if on previous page
             if self.current_page_index == last_page_index - 1:
                 self.current_page_index = last_page_index
@@ -44,24 +45,38 @@ class PageManager:
             width=width,
             height=height * len(Page),
         )
-        self.viewport.set_position((0, self.current_page_index * height))
 
         self.page_has_changed = Event()
 
         def page_instance(page_type):
-            return PageGenerator.get_page(page_type)(size, mode, default_page_interval)
+            return ScrollPageGenerator.get_page(page_type)(
+                size, mode, default_page_interval
+            )
 
-        self.pages = [page_instance(page_type) for page_type in Page]
+        self.scroll_pages = [page_instance(page_type) for page_type in Page]
 
-        for i, page in enumerate(self.pages):
+        self.skip_page = SkipToEndPage(size, mode, default_page_interval)
+
+        for i, page in enumerate(self.scroll_pages):
             self.viewport.add_hotspot(page, (0, i * height))
 
+        self.viewport.set_position((0, self.current_page_index * height))
+
+    def show_skip_page(self):
+        PTLogger.info("Showing skip page...")
+        self.showing_skip_page = True
+        self.page_has_changed.set()
+
     def get_page(self, index):
-        return self.pages[index]
+        return self.scroll_pages[index]
 
     @property
     def current_page(self):
-        return self.get_page(self.current_page_index)
+        return (
+            self.skip_page
+            if self.showing_skip_page
+            else self.get_page(self.current_page_index)
+        )
 
     def viewport_position_is_correct(self):
         return (
@@ -81,7 +96,7 @@ class PageManager:
             )
             return
 
-        PTLogger.info(f"Page index: {self.current_page_index} -> {new_page_index}")
+        PTLogger.debug(f"Page index: {self.current_page_index} -> {new_page_index}")
         self.current_page_index = new_page_index
         self.page_has_changed.set()
 
@@ -108,7 +123,12 @@ class PageManager:
         return candidate if candidate.visible else self.current_page
 
     def refresh(self):
-        self.viewport.refresh()
+        if self.showing_skip_page:
+            self._miniscreen.display_text(
+                "Skip connection guide?\n(Press UP to access again)", font_size=12
+            )
+        else:
+            self.viewport.refresh()
 
     def wait_until_timeout_or_page_has_changed(self):
         self.page_has_changed.wait(self.current_page.interval)
