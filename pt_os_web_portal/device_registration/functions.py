@@ -5,7 +5,7 @@ from time import sleep
 import requests
 from pitop.common.logger import PTLogger
 
-from ..state import StateManager
+from .. import state
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
 DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
@@ -87,7 +87,7 @@ def get_os_version():
 
 def get_registration_data():
 
-    email_address = StateManager().get("registration", "email")
+    email_address = state.get("registration", "email")
     serial_number = get_serial_number()
     device_type = get_device_type()
     os_name, os_build_number, update_repo = get_os_version()
@@ -114,11 +114,11 @@ def send_data_and_get_resp(data):
 
 
 def device_is_registered():
-    return StateManager().get("registration", "is_registered") == "true"
+    return state.get("registration", "is_registered") == "true"
 
 
 def create_device_registered_breadcrumb():
-    StateManager().set("registration", "is_registered", "true")
+    state.set("registration", "is_registered", "true")
 
 
 def send_register_device_request():
