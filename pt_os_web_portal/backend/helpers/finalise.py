@@ -1,16 +1,11 @@
 from os import path, remove
 
-from flask import current_app
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
+from ... import state
 from .paths import use_test_path
-
-
-def get_state_manager():
-    with current_app.app_context():
-        return current_app.config["STATE_MANAGER"]
 
 
 def available_space() -> str:
@@ -51,7 +46,7 @@ def deprioritise_openbox_session() -> None:
 def stop_onboarding_autostart() -> None:
     PTLogger.debug("Function: stop_onboarding_autostart()")
     remove("/etc/xdg/autostart/pt-os-setup.desktop")
-    get_state_manager().set("app", "state", "desktop")
+    state.set("app", "state", "desktop")
 
 
 def enable_firmware_updater_service():
@@ -114,9 +109,7 @@ def python_sdk_docs_url():
 
 
 def onboarding_completed():
-    return (
-        get_state_manager().get("app", "state", fallback="onboarding") != "onboarding"
-    )
+    return state.get("app", "state", fallback="onboarding") != "onboarding"
 
 
 def open_further():
