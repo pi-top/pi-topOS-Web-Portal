@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from subprocess import run
 from time import perf_counter
 
 from PIL import Image, ImageDraw, ImageFont
@@ -265,7 +266,8 @@ class OpenBrowserPage(PageBase):
         txt = "Waiting for\nconnection..."
 
         if self.has_connected_device or self.is_connected_to_internet:
-            txt = "Open browser to\nhttp://pi-top.local\nor\nhttp://192.168.64.1"
+            hostname = run("hostname").stdout
+            txt = f"Open browser to\nhttp://{hostname}.local\nor\nhttp://192.168.64.1"
 
         return txt
 
