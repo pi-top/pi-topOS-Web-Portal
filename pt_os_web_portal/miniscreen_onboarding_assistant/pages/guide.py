@@ -1,13 +1,11 @@
 from enum import Enum, auto
 from subprocess import run
-from time import perf_counter
 
-from PIL import Image, ImageDraw, ImageFont
-
-from ..event import AppEvents, subscribe
+from ...event import AppEvents, subscribe
+from .base import PageBase
 
 
-class Page(Enum):
+class GuidePage(Enum):
     START = auto()
     WELCOME = auto()
     START_WIRELESS_CONNECTION = auto()
@@ -19,122 +17,21 @@ class Page(Enum):
 
 
 # TODO: replace with factory
-class ScrollPageGenerator:
+class GuidePageGenerator:
     @staticmethod
-    def get_page(page_type: Page):
+    def get_page(page_type: GuidePage):
         pages = {
-            Page.START: StartPage,
-            Page.WELCOME: WelcomePage,
-            Page.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
-            Page.HELP_URL: HelpURLPage,
-            Page.GET_DEVICE: GetDevicePage,
-            Page.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
-            Page.OPEN_BROWSER: OpenBrowserPage,
-            Page.CARRY_ON: CarryOnPage,
+            GuidePage.START: StartPage,
+            GuidePage.WELCOME: WelcomePage,
+            GuidePage.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
+            GuidePage.HELP_URL: HelpURLPage,
+            GuidePage.GET_DEVICE: GetDevicePage,
+            GuidePage.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
+            GuidePage.OPEN_BROWSER: OpenBrowserPage,
+            GuidePage.CARRY_ON: CarryOnPage,
         }
 
         return pages[page_type]
-
-
-# Based on luma.core hotspots/snapshots
-class PageBase:
-    def __init__(self, type, size=(0, 0), mode=0, interval=1):
-        self.type = type
-        self.size = size
-        self.width = size[0]
-        self.height = size[1]
-        self.mode = mode
-        self.interval = interval
-        self.last_updated = -self.interval
-        self.visible = True
-        self.font_size = 14
-        self.wrap = True
-
-    def should_redraw(self):
-        """
-        Only requests a redraw after ``interval`` seconds have elapsed.
-        """
-        return perf_counter() - self.last_updated > self.interval
-
-    def paste_into(self, image, xy):
-        im = Image.new(image.mode, self.size)
-        draw = ImageDraw.Draw(im)
-        self.render(draw)
-        image.paste(im, xy)
-        del draw
-        del im
-        self.last_updated = perf_counter()
-
-    def render(self, draw):
-        def text_wrap(text, font, max_width):
-            """Wrap text base on specified width.
-            This is to enable text of width more than the image width to be display
-            nicely.
-            @params:
-                text: str
-                    text to wrap
-                font: obj
-                    font of the text
-                max_width: int
-                    width to split the text with
-            @return
-                lines: list[str]
-                    list of sub-strings
-            """
-            lines = []
-
-            # If the text width is smaller than the image width, then no need to split
-            # just add it to the line list and return
-            if font.getsize(text)[0] <= max_width:
-                lines.append(text)
-            else:
-                # split the line by spaces to get words
-                words = text.split(" ")
-                i = 0
-                # append every word to a line while its width is shorter than the image width
-                while i < len(words):
-                    line = ""
-                    while (
-                        i < len(words) and font.getsize(line + words[i])[0] <= max_width
-                    ):
-                        line = line + words[i] + " "
-                        i += 1
-                    if not line:
-                        line = words[i]
-                        i += 1
-                    lines.append(line)
-            return lines
-
-        font = ImageFont.truetype(
-            "Roboto-Regular.ttf",
-            size=self.font_size,
-        )
-
-        if self.wrap:
-            text = "\n".join(text_wrap(self.text, font, self.size[0]))
-        else:
-            text = self.text
-
-        draw.text(
-            text=text,
-            xy=(self.width / 2, self.height / 2),
-            fill=1,
-            font=font,
-            anchor="mm",
-            spacing=0,
-            align="center",
-            features=None,
-        )
-
-
-# Special pages - not used in scrolling
-class SkipToEndPage(PageBase):
-    """
-    Press CANCEL (X) at any time to skip...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(type=None, size=size, mode=mode, interval=interval)
 
 
 class StartPage(PageBase):
@@ -143,7 +40,7 @@ class StartPage(PageBase):
     """
 
     def __init__(self, size, mode, interval):
-        super().__init__(type=Page.START, size=size, mode=mode, interval=interval)
+        super().__init__(type=GuidePage.START, size=size, mode=mode, interval=interval)
         self.text = "Welcome to your pi-top! Press any button to get started..."
 
 
@@ -154,7 +51,9 @@ class WelcomePage(PageBase):
     """
 
     def __init__(self, size, mode, interval):
-        super().__init__(type=Page.WELCOME, size=size, mode=mode, interval=interval)
+        super().__init__(
+            type=GuidePage.WELCOME, size=size, mode=mode, interval=interval
+        )
         self.text = "That's it!\nNow press DOWN to scroll..."
 
 
@@ -165,7 +64,10 @@ class StartWirelessConnectionPage(PageBase):
 
     def __init__(self, size, mode, interval):
         super().__init__(
-            type=Page.START_WIRELESS_CONNECTION, size=size, mode=mode, interval=interval
+            type=GuidePage.START_WIRELESS_CONNECTION,
+            size=size,
+            mode=mode,
+            interval=interval,
         )
         self.text = "Awesome! Press DOWN to continue through pi-top connection setup..."
 
@@ -178,7 +80,9 @@ class HelpURLPage(PageBase):
     """
 
     def __init__(self, size, mode, interval):
-        super().__init__(type=Page.HELP_URL, size=size, mode=mode, interval=interval)
+        super().__init__(
+            type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
+        )
         self.text = "Detailed setup instructions: pi-top.com/start-4"
 
 
@@ -188,7 +92,9 @@ class GetDevicePage(PageBase):
     """
 
     def __init__(self, size, mode, interval):
-        super().__init__(type=Page.GET_DEVICE, size=size, mode=mode, interval=interval)
+        super().__init__(
+            type=GuidePage.GET_DEVICE, size=size, mode=mode, interval=interval
+        )
         self.text = (
             "Let's get started!\nYou will need a\nlaptop/computer\nto connect with..."
         )
@@ -202,7 +108,7 @@ class ConnectPitopWifiNetworkPage(PageBase):
 
     def __init__(self, size, mode, interval):
         super().__init__(
-            type=Page.CONNECT_PITOP_WIFI_NETWORK,
+            type=GuidePage.CONNECT_PITOP_WIFI_NETWORK,
             size=size,
             mode=mode,
             interval=interval,
@@ -240,7 +146,7 @@ class OpenBrowserPage(PageBase):
 
     def __init__(self, size, mode, interval):
         super().__init__(
-            type=Page.OPEN_BROWSER, size=size, mode=mode, interval=interval
+            type=GuidePage.OPEN_BROWSER, size=size, mode=mode, interval=interval
         )
         self.wrap = False
 
@@ -288,7 +194,9 @@ class CarryOnPage(PageBase):
     """
 
     def __init__(self, size, mode, interval):
-        super().__init__(type=Page.CARRY_ON, size=size, mode=mode, interval=interval)
+        super().__init__(
+            type=GuidePage.CARRY_ON, size=size, mode=mode, interval=interval
+        )
         self.text = "You've started the onboarding!\nContinue in your browser..."
         self.visible = False
 
