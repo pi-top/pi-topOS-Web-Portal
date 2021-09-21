@@ -2,7 +2,8 @@ from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
 
 class Viewport:
-    def __init__(self, miniscreen, pages):
+    def __init__(self, name, miniscreen, pages):
+        self.name = name
         self.viewport = viewport(
             miniscreen.device,
             width=miniscreen.size[0],
