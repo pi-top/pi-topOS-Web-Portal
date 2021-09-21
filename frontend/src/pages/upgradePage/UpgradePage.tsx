@@ -8,19 +8,21 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import upgradePage from "../../assets/images/upgrade-page.png";
 import styles from "./UpgradePage.module.css";
 
-import { OSUpdaterMessage, OSUpdaterMessageType, UpdateMessageStatus } from "./UpgradePageContainer"
+import { ErrorType, OSUpdaterMessage, OSUpdaterMessageType, UpdateMessageStatus } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
 import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
+  NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
+  AptError = "There was a problem during system update.",
 }
 
 export enum UpgradePageExplanation {
   UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
   UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
-  Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
+  Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to {continueButtonAction}.",
   WaitingForServer = "Please wait...",
   UpdatingSources = "We're checking to see if there are updates available",
   Preparing = "Preparing all packages to be updated...",
@@ -43,7 +45,7 @@ export type Props = {
   upgradeFinished: boolean,
   waitingForServer: boolean,
   downloadSize: number,
-  error: boolean,
+  error: ErrorType,
   requireBurn: boolean,
   shouldBurn: boolean,
   checkingWebPortal: boolean,
@@ -76,7 +78,27 @@ export default ({
     setIsNewOsDialogActive(requireBurn || shouldBurn);
   }, [requireBurn, shouldBurn]);
 
-  const errorMessage = error && ErrorMessage.GenericError;
+  const hasError = () => {
+    return error !== ErrorType.None
+  }
+
+  const getErrorMessage = () =>{
+    switch (error) {
+      case ErrorType.NoSpaceAvailable:
+        return ErrorMessage.NoSpaceAvailable;
+      case ErrorType.AptError:
+        return ErrorMessage.AptError;
+      default:
+        return ErrorMessage.GenericError
+    }
+  }
+
+  const getPromptMessage = () => {
+    if (upgradeFinished) {
+      return <>Your system is <span className="green">up to date</span>!</>
+    }
+    return <>OK, I need to be <span className="green">updated</span></>
+  }
 
   const parseMessage = (message: OSUpdaterMessage) => {
     if (message?.type === OSUpdaterMessageType.UpdateSources || message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.PrepareUpgrade) {
@@ -143,33 +165,29 @@ export default ({
           src: upgradePage,
           alt: "upgrade-page-banner",
         }}
-        prompt={
-          <>
-            OK, I need to be <span className="green">updated</span>
-          </>
-        }
+        prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
           onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
           label: continueButtonLabel,
-          disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || error
+          disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || hasError()
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={onSkipClick !== undefined && (isCompleted || error)}
+        showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
         showBack={onBackClick !== undefined && !upgradeIsRunning}
         backButton={{
           onClick: onBackClick,
           disabled: upgradeIsRunning
         }}
       >
-        {errorMessage && <span className={styles.error}>{errorMessage}</span>}
+        {hasError() && <span className={styles.error}>{getErrorMessage()}</span>}
 
-      <NewOsVersionDialogContainer
-        active={isNewOsDialogActive}
-        requireBurn={requireBurn}
-        shouldBurn={shouldBurn}
-        onClose={() => setIsNewOsDialogActive(false)}
-      />
+        <NewOsVersionDialogContainer
+          active={isNewOsDialogActive}
+          requireBurn={requireBurn}
+          shouldBurn={shouldBurn}
+          onClose={() => setIsNewOsDialogActive(false)}
+        />
 
         { !waitingForServer && message && message?.type === OSUpdaterMessageType.Upgrade &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
@@ -179,7 +197,7 @@ export default ({
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { !error && waitingForServer && (
+        { !hasError() && waitingForServer && (
           <>
             <Spinner size={40} />{" "}
           </>
