@@ -57,7 +57,6 @@ class PageManager:
                 PTLogger.error(
                     "Couldn't restore page from state - starting from scratch"
                 )
-                pass
 
         self.viewport = viewport(
             miniscreen.device,
