@@ -93,6 +93,13 @@ export default ({
     }
   }
 
+  const getPromptMessage = () => {
+    if (upgradeFinished) {
+      return <>Your system is <span className="green">up to date</span>!</>
+    }
+    return <>OK, I need to be <span className="green">updated</span></>
+  }
+
   const parseMessage = (message: OSUpdaterMessage) => {
     if (message?.type === OSUpdaterMessageType.UpdateSources || message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.PrepareUpgrade) {
       let msg = JSON.stringify(message.payload?.message).trim().replace(/^"(.*)"$/, '$1')
@@ -158,11 +165,7 @@ export default ({
           src: upgradePage,
           alt: "upgrade-page-banner",
         }}
-        prompt={
-          <>
-            OK, I need to be <span className="green">updated</span>
-          </>
-        }
+        prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
           onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,

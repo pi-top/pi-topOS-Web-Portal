@@ -193,6 +193,14 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the 'updating sources' message", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
@@ -278,6 +286,15 @@ describe("UpgradePageContainer", () => {
           });
         });
       });
+
+      it("renders prompt correctly", async () => {
+        const { getByText, container: upgradePage } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+        const prompt = upgradePage.querySelector(".prompt");
+        expect(prompt).toMatchSnapshot();
+      });
+
       it("renders the 'preparing your system to be updated' message", async () => {
         const { getByText } = mount();
         await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
@@ -374,6 +391,14 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the error message", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.AptError));
@@ -458,6 +483,14 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the updating web-portal message", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
@@ -540,6 +573,14 @@ describe("UpgradePageContainer", () => {
       restartWebPortalServiceMock.mockRestore();
       serverStatusMock.mockRestore();
     })
+
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
 
     it("renders the 'please wait' message while restarting web-portal service", async () => {
       const { getByText } = mount();
@@ -672,6 +713,14 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the error message", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.AptError));
@@ -753,6 +802,15 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
+    });
+
+    it("renders prompt correctly", async () => {
+      const { getByText, waitForPreparation, container: upgradePage } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the 'upgrade is in progress' message", async () => {
@@ -852,6 +910,17 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
+    });
+
+    it("renders prompt correctly", async () => {
+      const { container: upgradePage, getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the error message", async () => {
@@ -973,6 +1042,16 @@ describe("UpgradePageContainer", () => {
       restartWebPortalServiceMock.mockRestore();
       serverStatusMock.mockRestore();
       act(() => server.close());
+    });
+
+    it("renders prompt correctly", async () => {
+      const { container: upgradePage, getByText, waitForPreparation, waitForUpgradeFinish } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForUpgradeFinish();
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the upgrade finished message", async () => {
@@ -1104,6 +1183,14 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
+    });
+
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(ErrorMessage.NoSpaceAvailable));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the error message", async () => {
