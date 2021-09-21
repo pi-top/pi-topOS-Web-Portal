@@ -67,7 +67,6 @@ class PageManager:
 
         if self.active_viewport == self.guide_viewport:
             self.active_viewport = self.menu_viewport
-            self.active_viewport = self.menu_viewport
             self.active_viewport.move_to_page(0)
         else:
             self.active_viewport = self.guide_viewport
