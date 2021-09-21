@@ -10,9 +10,9 @@ import {
 } from "@testing-library/react";
 
 
-import leaveMiniscreenAppBreadcrumb from "../../../services/leaveMiniscreenAppBreadcrumb";
-jest.mock("../../../services/leaveMiniscreenAppBreadcrumb");
-const leaveMiniscreenAppBreadcrumbMock = leaveMiniscreenAppBreadcrumb as jest.Mock;
+import triggerReadyToBeAMakerEvent from "../../../services/triggerReadyToBeAMakerEvent";
+jest.mock("../../../services/triggerReadyToBeAMakerEvent");
+const triggerReadyToBeAMakerEventMock = triggerReadyToBeAMakerEvent as jest.Mock;
 
 import SplashPage, { Props } from "../SplashPage";
 
@@ -23,7 +23,7 @@ describe("SplashPage", () => {
   let queryByText: BoundFunction<QueryByText>;
   let getByText: BoundFunction<GetByText>;
   beforeEach(() => {
-    leaveMiniscreenAppBreadcrumbMock.mockResolvedValue("OK");
+    triggerReadyToBeAMakerEventMock.mockResolvedValue("OK");
 
     defaultProps = {
       goToNextPage: jest.fn(),
@@ -50,10 +50,10 @@ describe("SplashPage", () => {
     expect(queryByText("Yes")).toBeInTheDocument();
   });
 
-  it("calls leaveMiniscreenAppBreadcrumb on yes button click", () => {
+  it("calls triggerReadyToBeAMakerEvent on yes button click", () => {
     fireEvent.click(getByText("Yes"));
 
-    expect(leaveMiniscreenAppBreadcrumbMock).toHaveBeenCalled();
+    expect(triggerReadyToBeAMakerEventMock).toHaveBeenCalled();
   });
 
   it("calls goToNextPage on yes button click", async () => {
@@ -64,9 +64,9 @@ describe("SplashPage", () => {
     expect(defaultProps.goToNextPage).toHaveBeenCalled();
   });
 
-  describe('if leaveMiniscreenAppBreadcrumb service fails', () => {
+  describe('if triggerReadyToBeAMakerEvent service fails', () => {
     beforeEach(() => {
-      leaveMiniscreenAppBreadcrumbMock.mockRejectedValue(new Error("Oh oh, something happened"))
+      triggerReadyToBeAMakerEventMock.mockRejectedValue(new Error("Oh oh, something happened"))
     });
 
     it("still calls goToNextPage", async () => {

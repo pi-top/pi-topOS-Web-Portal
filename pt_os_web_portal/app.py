@@ -1,10 +1,10 @@
-import state
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
 from pitop.common.logger import PTLogger
 from pitop.system import device_type
 
+from . import state
 from .backend import create_app
 from .connection_manager import ConnectionManager
 from .listener_manager import ListenerManager
