@@ -23,6 +23,13 @@ export enum UpdateMessageStatus {
   Status = "STATUS",
 }
 
+export enum ErrorType {
+  None,
+  GenericError,
+  NoSpaceAvailable,
+  AptError,
+}
+
 export type UpgradeMessagePayload = {
   status: UpdateMessageStatus;
   percent: number;
@@ -79,7 +86,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
   const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [waitingForServer, setWaitingForServer] = useState(false);
   const [requireBurn, setRequireBurn] = useState(false);
@@ -88,7 +95,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   useEffect(() => {
     getAvailableSpace()
       .then((setAvailableSpace))
-      .catch(() => null);
+      .catch(() => setError(ErrorType.GenericError));
   }, []);
 
   useEffect(() => {
@@ -118,13 +125,13 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
   useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
-      setError(true);
+      setError(ErrorType.NoSpaceAvailable);
     }
   }, [updateSize, availableSpace, setError]);
 
   useEffect(() => {
     socket.onclose = () => {
-      !upgradeFinished && setError(true);
+      !upgradeFinished && setError(ErrorType.GenericError);
       setIsOpen(false);
     };
   }, [socket, upgradeFinished]);
@@ -145,7 +152,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.PrepareUpgrade &&
       message.payload.status === UpdateMessageStatus.Error
     ) {
-      setError(true);
+      setError(ErrorType.AptError);
       setUpgradeIsPrepared(false);
     }
 
@@ -153,7 +160,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.Upgrade &&
       message.payload.status === UpdateMessageStatus.Error
     ) {
-      setError(true);
+      setError(ErrorType.AptError);
       setUpgradeIsRunning(false);
     }
 
@@ -162,7 +169,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.payload.status === UpdateMessageStatus.Error
     ) {
       setIsUpdatingSources(false);
-      setError(true);
+      setError(ErrorType.AptError);
     }
 
     if (
@@ -194,7 +201,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
         setWaitingForServer(true);
         restartWebPortalService()
-          .catch(() => setError(false)) // ignored, request will fail since backend server is restarted
+          .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
           .finally(() => setTimeout(waitUntilServerIsOnline, 300))
       } else {
         setUpgradeIsRunning(false);
@@ -235,11 +242,11 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
           socket.send("start");
         }
       } catch (_) {
-        setError(true);
+        setError(ErrorType.GenericError);
       }
 
       if (message.payload.status === UpdateMessageStatus.Error) {
-        setError(true);
+        setError(ErrorType.GenericError);
       }
     }
   }, [message, socket]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -253,7 +260,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     const interval = setInterval(async () => {
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
-        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
+        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
         serverStatus({ timeout: timeoutServerStatusRequestMs })
           .then(() => clearInterval(interval))
           .catch(() => {})
@@ -272,7 +279,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
           socket.send("start");
           return;
         }
-        setError(true);
+        setError(ErrorType.GenericError);
       }}
       isCompleted={isCompleted}
       message={message}
