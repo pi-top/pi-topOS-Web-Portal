@@ -4,6 +4,7 @@ from time import sleep
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
+from .. import state
 from ..event import AppEvents, subscribe
 from .pages import Page, PageGenerator
 
@@ -23,13 +24,15 @@ class PageManager:
             self.set_current_page_to_next_page
         )
 
-        self.current_page_index = 0
+        self.current_page_index = int(
+            state.get("miniscreen_onboarding", "state", fallback=0)
+        )
 
         def automatic_transition_to_last_page(_):
             last_page_index = len(self.pages) - 1
             # Only do automatic update if on previous page
             if self.current_page_index == last_page_index - 1:
-                self.current_page_index = last_page_index
+                self.set_current_page_to(self.get_page(last_page_index))
 
         subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
 
@@ -83,6 +86,7 @@ class PageManager:
 
         PTLogger.info(f"Page index: {self.current_page_index} -> {new_page_index}")
         self.current_page_index = new_page_index
+        state.set("miniscreen_onboarding", "state", str(self.current_page_index))
         self.page_has_changed.set()
 
     def set_current_page_to_previous_page(self):
