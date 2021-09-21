@@ -49,11 +49,15 @@ class PageManager:
         state_page_name = state.get("miniscreen_onboarding", "page_name")
         if state_page_name:
             try:
-                self.current_page_index = self.get_page_index(Page[state_page_name])
+                index = self.get_page_index(Page[state_page_name])
+                PTLogger.info(f"Setting initial page index to {index}")
+                self.current_page_index = index
                 state.remove("miniscreen_onboarding", "page_name")
-            except Exception as e:
-                print("-------", e)
-                raise
+            except Exception:
+                PTLogger.error(
+                    "Couldn't restore page from state - starting from scratch"
+                )
+                pass
 
         self.viewport = viewport(
             miniscreen.device,
