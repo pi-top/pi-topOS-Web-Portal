@@ -4,7 +4,6 @@ from time import perf_counter
 
 from PIL import Image, ImageDraw, ImageFont
 
-from .. import state
 from ..event import AppEvents, subscribe
 
 
@@ -283,10 +282,7 @@ class CarryOnPage(PageBase):
     def __init__(self, size, mode, interval):
         super().__init__(type=Page.CARRY_ON, size=size, mode=mode, interval=interval)
         self.text = "You've started the onboarding!\nContinue in your browser..."
-        self.visible = (
-            state.get("miniscreen_onboarding", "ready_to_be_a_maker", fallback="false")
-            == "true"
-        )
+        self.visible = False
 
         def update_visible(visible):
             self.visible = visible

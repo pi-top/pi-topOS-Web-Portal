@@ -59,13 +59,20 @@ class PageManager:
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * height))
 
-        def save_miniscreen_onboarding_app_event(restarting_web_portal):
+        def save_miniscreen_onboarding_app_state(restarting_web_portal):
             if restarting_web_portal:
                 state.set(
                     "miniscreen_onboarding", "state", str(self.current_page_index)
                 )
 
-        subscribe(AppEvents.RESTARTING_WEB_PORTAL, save_miniscreen_onboarding_app_event)
+        subscribe(AppEvents.RESTARTING_WEB_PORTAL, save_miniscreen_onboarding_app_state)
+
+        if (
+            state.get("miniscreen_onboarding", "ready_to_be_a_maker", fallback="false")
+            == "true"
+        ):
+            self.get_page(len(self.pages) - 1).visible = True
+            state.remove("miniscreen_onboarding", "ready_to_be_a_maker")
 
     def get_page(self, index):
         return self.pages[index]
