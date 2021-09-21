@@ -52,6 +52,13 @@ class LegacyOSUpdateManager:
             return
         self.lock = True
 
+        self._download_size = 0
+        self.download_size_str = ""
+        self._required_space = 0
+        self.required_space_str = ""
+        self.install_count = 0
+        self.packages = packages
+
         try:
             cmd = ["apt-get", "dist-upgrade", "--assume-no"]
             if len(packages) > 0:
@@ -94,7 +101,8 @@ class LegacyOSUpdateManager:
             callback(MessageType.ERROR, "OS Legacy Updater is locked", 0.0)
             return
         self.lock = True
-        upgrade_cmd = [
+
+        cmd = [
             "apt-get",
             '-o Dpkg::Options::="--force-confdef"',
             '-o Dpkg::Options::="--force-confold"',
@@ -103,9 +111,20 @@ class LegacyOSUpdateManager:
             "--quiet",
             "--yes",
         ]
+        if len(self.packages) > 0:
+            cmd = [
+                "apt-get",
+                '-o Dpkg::Options::="--force-confdef"',
+                '-o Dpkg::Options::="--force-confold"',
+                "-o APT::Get::Upgrade-Allow-New=true",
+                "install",
+                *self.packages,
+                "--quiet",
+                "--yes",
+            ]
         try:
             callback(MessageType.START, "Starting install & upgrade process", 0.0)
-            self.__run(upgrade_cmd, callback)
+            self.__run(cmd, callback)
             callback(MessageType.FINISH, "Finished upgrade", 100.0)
         except Exception as e:
             raise e

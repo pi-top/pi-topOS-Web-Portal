@@ -24,7 +24,7 @@ class OSUpdater:
     def updates_available(self, ws=None):
         self.update_sources()
         self.stage_packages()
-        return self.manager.cache.install_count > 0
+        return self.manager.install_count > 0
 
     @property
     def last_checked_date(self):

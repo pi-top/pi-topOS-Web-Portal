@@ -22,6 +22,10 @@ class OSUpdateManager:
         self.cache = apt.Cache()
         self.lock = False
 
+    @property
+    def install_count(self):
+        return self.cache.install_count
+
     def update(self, callback) -> None:
         PTLogger.info("OS Updater: Updating APT sources")
         if self.lock:
