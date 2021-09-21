@@ -79,7 +79,7 @@ export default ({
   }, [requireBurn, shouldBurn]);
 
   const hasError = () => {
-    return error != ErrorType.None
+    return error !== ErrorType.None
   }
 
   const getErrorMessage = () =>{
