@@ -89,7 +89,6 @@ describe("UpgradePageContainer", () => {
     defaultProps = {
       goToNextPage: jest.fn(),
       goToPreviousPage: jest.fn(),
-      onWebPortalUpgrade: jest.fn(),
       isCompleted: false,
     };
 
@@ -194,6 +193,14 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the 'updating sources' message", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
@@ -279,6 +286,15 @@ describe("UpgradePageContainer", () => {
           });
         });
       });
+
+      it("renders prompt correctly", async () => {
+        const { getByText, container: upgradePage } = mount();
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+        const prompt = upgradePage.querySelector(".prompt");
+        expect(prompt).toMatchSnapshot();
+      });
+
       it("renders the 'preparing your system to be updated' message", async () => {
         const { getByText } = mount();
         await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
@@ -375,14 +391,22 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the error message", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
     });
 
     it("renders the textarea component", async () => {
       const { getByText, findByTestId, queryByTestId } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
@@ -390,7 +414,7 @@ describe("UpgradePageContainer", () => {
 
     it("messages are displayed in the textarea component", async () => {
       const { getByText, findByTestId, queryByTestId } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await findByTestId("textarea");
       const textAreaElement = queryByTestId("textarea");
@@ -399,7 +423,7 @@ describe("UpgradePageContainer", () => {
 
     it("doesn't render the 'preparing updates' message", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(
         queryByText(UpgradePageExplanation.Preparing)
@@ -457,6 +481,14 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
+    });
+
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the updating web-portal message", async () => {
@@ -541,6 +573,14 @@ describe("UpgradePageContainer", () => {
       restartWebPortalServiceMock.mockRestore();
       serverStatusMock.mockRestore();
     })
+
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
 
     it("renders the 'please wait' message while restarting web-portal service", async () => {
       const { getByText } = mount();
@@ -673,21 +713,29 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the error message", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
     });
 
     it("Skip button is present", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(queryByText("Skip")).toBeInTheDocument();
     });
 
     it("calls goToNextPage when Skip button clicked", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Skip"));
       fireEvent.click(getByText("Skip"));
@@ -697,14 +745,14 @@ describe("UpgradePageContainer", () => {
 
     it("Update button is present", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(queryByText("Update")).toBeInTheDocument();
     });
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Update"));
       expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -712,7 +760,7 @@ describe("UpgradePageContainer", () => {
 
     it("renders the textarea component", async () => {
       const { getByText, queryByTestId } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
@@ -754,6 +802,15 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
+    });
+
+    it("renders prompt correctly", async () => {
+      const { getByText, waitForPreparation, container: upgradePage } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the 'upgrade is in progress' message", async () => {
@@ -855,12 +912,23 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { container: upgradePage, getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the error message", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
     });
 
     it("doesn't render the 'is upgrading' message", async () => {
@@ -897,7 +965,7 @@ describe("UpgradePageContainer", () => {
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
       expect(getByText("Back")).toHaveProperty("disabled", false);
     });
 
@@ -905,7 +973,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Skip"));
       expect(getByText("Skip")).toHaveProperty("disabled", false);
@@ -915,7 +983,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Skip"));
       fireEvent.click(getByText("Skip"));
@@ -927,7 +995,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Update"));
       expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -974,6 +1042,16 @@ describe("UpgradePageContainer", () => {
       restartWebPortalServiceMock.mockRestore();
       serverStatusMock.mockRestore();
       act(() => server.close());
+    });
+
+    it("renders prompt correctly", async () => {
+      const { container: upgradePage, getByText, waitForPreparation, waitForUpgradeFinish } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForUpgradeFinish();
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
     });
 
     it("renders the upgrade finished message", async () => {
@@ -1107,10 +1185,18 @@ describe("UpgradePageContainer", () => {
       });
     });
 
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() => getByText(ErrorMessage.NoSpaceAvailable));
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
     it("renders the error message", async () => {
       const { getByText } = mount();
 
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.NoSpaceAvailable));
     });
 
     it("Skip button exists", async () => {
