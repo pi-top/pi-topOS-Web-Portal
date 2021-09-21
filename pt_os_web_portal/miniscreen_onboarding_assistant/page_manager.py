@@ -59,6 +59,14 @@ class PageManager:
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * height))
 
+        def save_miniscreen_onboarding_app_event(restarting_web_portal):
+            if restarting_web_portal:
+                state.set(
+                    "miniscreen_onboarding", "state", str(self.current_page_index)
+                )
+
+        subscribe(AppEvents.RESTARTING_WEB_PORTAL, save_miniscreen_onboarding_app_event)
+
     def get_page(self, index):
         return self.pages[index]
 
@@ -86,7 +94,6 @@ class PageManager:
 
         PTLogger.info(f"Page index: {self.current_page_index} -> {new_page_index}")
         self.current_page_index = new_page_index
-        state.set("miniscreen_onboarding", "state", str(self.current_page_index))
         self.page_has_changed.set()
 
     def set_current_page_to_previous_page(self):

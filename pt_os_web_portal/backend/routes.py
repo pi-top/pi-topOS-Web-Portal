@@ -447,6 +447,7 @@ def post_update_eeprom():
 @app.route("/restart-web-portal-service", methods=["POST"])
 def post_restart_web_portal_service():
     PTLogger.debug("Route '/restart-web-portal-service'")
+    post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
     return "OK"
 
