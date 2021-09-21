@@ -16,8 +16,6 @@ class Viewport:
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * miniscreen.size[1]))
 
-        self.viewport.set_position((0, self.page_index * miniscreen.size[1]))
-
     @property
     def y_pos(self):
         return self.viewport._position[1]
@@ -25,5 +23,9 @@ class Viewport:
     def refresh(self):
         return self.viewport.refresh()
 
-    def set_position(self, pos):
-        return self.viewport.set_position(pos)
+    def set_y_position(self, pos):
+        return self.viewport.set_position((0, pos))
+
+    def move_to_page(self, index):
+        self.page_index = index
+        self.set_y_position(index * self.viewport.height)

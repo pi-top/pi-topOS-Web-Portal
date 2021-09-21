@@ -13,25 +13,25 @@ scroll_px_resolution = 2
 
 class PageManager:
     def __init__(self, miniscreen, page_redraw_speed, scroll_speed):
-        self._miniscreen = miniscreen
+        self._ms = miniscreen
+
         self.page_redraw_speed = page_redraw_speed
         self.scroll_speed = scroll_speed
 
-        self._miniscreen.up_button.when_released = self.handle_up_btn
-        self._miniscreen.down_button.when_released = self.handle_down_btn
-        self._miniscreen.select_button.when_released = self.handle_select_btn
-        self._miniscreen.cancel_button.when_released = self.handle_cancel_btn
+        self._ms.up_button.when_released = self.set_page_to_previous_page
+        self._ms.down_button.when_released = self.set_page_to_next_page
+        self._ms.select_button.when_released = self.set_page_to_next_page
+        self._ms.cancel_button.when_released = self.handle_cancel_btn
 
-        self.guide_pages = [
-            GuidePageGenerator.get_page(guide_page_type)(
-                miniscreen.size, miniscreen.mode, page_redraw_speed
-            )
-            for guide_page_type in GuidePage
-        ]
         self.guide_viewport = Viewport(
             "guide",
             miniscreen,
-            self.guide_pages,
+            [
+                GuidePageGenerator.get_page(guide_page_type)(
+                    miniscreen.size, miniscreen.mode, page_redraw_speed
+                )
+                for guide_page_type in GuidePage
+            ],
         )
 
         self.menu_viewport = Viewport(
@@ -55,30 +55,20 @@ class PageManager:
             if self.active_viewport != self.guide_viewport:
                 return
 
-            last_page_index = len(self.guide_pages) - 1
+            last_page_index = len(self.active_viewport.pages) - 1
             # Only do automatic update if on previous page
             if self.guide_viewport.page_index == last_page_index - 1:
                 self.guide_viewport.page_index = last_page_index
 
         subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
 
-    def handle_up_btn(self):
-        print("up btn pressed")
-        self.set_page_to_previous_page()
-
-    def handle_down_btn(self):
-        print("down btn pressed")
-        self.set_page_to_next_page()
-
-    def handle_select_btn(self):
-        print("select btn pressed")
-        self.set_page_to_next_page()
-
     def handle_cancel_btn(self):
         print("cancel btn pressed")
 
         if self.active_viewport == self.guide_viewport:
             self.active_viewport = self.menu_viewport
+            self.active_viewport = self.menu_viewport
+            self.active_viewport.move_to_page(0)
         else:
             self.active_viewport = self.guide_viewport
 
@@ -87,7 +77,7 @@ class PageManager:
         self.page_has_changed.set()
 
     def get_page(self, index):
-        return self.guide_pages[index]
+        return self.active_viewport.pages[index]
 
     @property
     def page(self):
@@ -104,6 +94,7 @@ class PageManager:
             return
 
         new_page = page.type
+
         new_page_index = new_page.value - 1
         if self.active_viewport.page_index == new_page_index:
             PTLogger.debug(
@@ -133,7 +124,7 @@ class PageManager:
 
     def get_next_page(self):
         # Return current page if at end
-        if self.active_viewport.page_index + 1 >= len(GuidePage):
+        if self.active_viewport.page_index + 1 >= len(self.active_viewport.pages):
             return self.page
 
         candidate = self.get_page(self.active_viewport.page_index + 1)
@@ -157,17 +148,13 @@ class PageManager:
         if not self.needs_to_scroll:
             return
 
-        correct_y_pos = self.active_viewport.page_index * self._miniscreen.size[1]
+        correct_y_pos = self.active_viewport.page_index * self._ms.size[1]
 
         move_down = correct_y_pos > self.active_viewport.y_pos
 
         direction_scalar = 1 if move_down else -1
         while correct_y_pos != self.active_viewport.y_pos:
-            self.active_viewport.set_position(
-                (
-                    0,
-                    self.active_viewport.y_pos
-                    + (direction_scalar * scroll_px_resolution),
-                )
+            self.active_viewport.set_y_position(
+                self.active_viewport.y_pos + (direction_scalar * scroll_px_resolution),
             )
             sleep(self.scroll_speed)
