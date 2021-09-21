@@ -9,7 +9,6 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
-from .. import state
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -476,5 +475,4 @@ def get_os_check_update():
 def post_onboarding_ready_to_be_a_maker():
     PTLogger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
-    state.set("miniscreen_onboarding", "ready_to_be_a_maker", "true")
     return "OK"

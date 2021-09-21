@@ -64,15 +64,22 @@ class PageManager:
                 state.set(
                     "miniscreen_onboarding", "state", str(self.current_page_index)
                 )
+                state.set(
+                    "miniscreen_onboarding",
+                    "carry_on_page_is_visible",
+                    str(self.get_page(len(self.pages) - 1).visible).lower(),
+                )
 
         subscribe(AppEvents.RESTARTING_WEB_PORTAL, save_miniscreen_onboarding_app_state)
 
         if (
-            state.get("miniscreen_onboarding", "ready_to_be_a_maker", fallback="false")
+            state.get(
+                "miniscreen_onboarding", "carry_on_page_is_visible", fallback="false"
+            )
             == "true"
         ):
             self.get_page(len(self.pages) - 1).visible = True
-            state.remove("miniscreen_onboarding", "ready_to_be_a_maker")
+            state.remove("miniscreen_onboarding", "carry_on_page_is_visible")
 
     def get_page(self, index):
         return self.pages[index]
