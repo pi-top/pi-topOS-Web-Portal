@@ -377,12 +377,12 @@ describe("UpgradePageContainer", () => {
 
     it("renders the error message", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
     });
 
     it("renders the textarea component", async () => {
       const { getByText, findByTestId, queryByTestId } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
@@ -390,7 +390,7 @@ describe("UpgradePageContainer", () => {
 
     it("messages are displayed in the textarea component", async () => {
       const { getByText, findByTestId, queryByTestId } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await findByTestId("textarea");
       const textAreaElement = queryByTestId("textarea");
@@ -399,7 +399,7 @@ describe("UpgradePageContainer", () => {
 
     it("doesn't render the 'preparing updates' message", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(
         queryByText(UpgradePageExplanation.Preparing)
@@ -675,19 +675,19 @@ describe("UpgradePageContainer", () => {
 
     it("renders the error message", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
     });
 
     it("Skip button is present", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(queryByText("Skip")).toBeInTheDocument();
     });
 
     it("calls goToNextPage when Skip button clicked", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Skip"));
       fireEvent.click(getByText("Skip"));
@@ -697,14 +697,14 @@ describe("UpgradePageContainer", () => {
 
     it("Update button is present", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(queryByText("Update")).toBeInTheDocument();
     });
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Update"));
       expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -712,7 +712,7 @@ describe("UpgradePageContainer", () => {
 
     it("renders the textarea component", async () => {
       const { getByText, queryByTestId } = mount();
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
@@ -860,7 +860,7 @@ describe("UpgradePageContainer", () => {
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
     });
 
     it("doesn't render the 'is upgrading' message", async () => {
@@ -897,7 +897,7 @@ describe("UpgradePageContainer", () => {
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
       expect(getByText("Back")).toHaveProperty("disabled", false);
     });
 
@@ -905,7 +905,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Skip"));
       expect(getByText("Skip")).toHaveProperty("disabled", false);
@@ -915,7 +915,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Skip"));
       fireEvent.click(getByText("Skip"));
@@ -927,7 +927,7 @@ describe("UpgradePageContainer", () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
 
       await waitForElement(() => getByText("Update"));
       expect(getByText("Update")).toHaveProperty("disabled", true);
@@ -1110,7 +1110,7 @@ describe("UpgradePageContainer", () => {
     it("renders the error message", async () => {
       const { getByText } = mount();
 
-      await waitForElement(() => getByText(ErrorMessage.GenericError));
+      await waitForElement(() => getByText(ErrorMessage.NoSpaceAvailable));
     });
 
     it("Skip button exists", async () => {
