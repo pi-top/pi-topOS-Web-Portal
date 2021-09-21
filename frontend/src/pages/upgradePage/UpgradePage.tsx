@@ -22,7 +22,7 @@ export enum UpgradePageExplanation {
   UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
   UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
   InProgress = "Please sit back and relax - this may take some time...",
-  Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to restart the application and {continueButtonAction}.",
+  Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to {continueButtonAction}.",
   WaitingForServer = "Please wait...",
   UpdatingSources = "We're checking to see if there are updates available",
   Preparing = "Preparing all packages to be updated...",

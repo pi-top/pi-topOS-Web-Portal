@@ -89,7 +89,6 @@ describe("UpgradePageContainer", () => {
     defaultProps = {
       goToNextPage: jest.fn(),
       goToPreviousPage: jest.fn(),
-      onWebPortalUpgrade: jest.fn(),
       isCompleted: false,
     };
 
