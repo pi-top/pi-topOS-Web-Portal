@@ -132,6 +132,10 @@ class OSUpdater:
             callback(MessageType.ERROR, f"{e}", 0.0)
             post_event(AppEvents.OS_UPDATER_UPGRADE, "failed")
 
-    def use_legacy_updater(self, ws=None):
-        PTLogger.info("OSUpdater: Using legacy updater...")
+    def use_legacy_backend(self, ws=None):
+        PTLogger.info("OSUpdater: Using legacy backend...")
         self.active_backend = self.backends[UpdaterBackend.LEGACY]
+
+    def use_default_backend(self, ws=None):
+        PTLogger.info("OSUpdater: Using default backend...")
+        self.active_backend = self.backends[UpdaterBackend.PY_APT]

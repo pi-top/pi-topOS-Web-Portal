@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
 
@@ -27,7 +27,6 @@ export enum ErrorType {
   None,
   GenericError,
   NoSpaceAvailable,
-  AptError,
 }
 
 export type UpgradeMessagePayload = {
@@ -59,11 +58,10 @@ export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
 export type Props = {
   goToNextPage?: () => void;
   goToPreviousPage?: () => void;
-  onUpgradeError?: () => void;
   isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -81,6 +79,8 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
 
   const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
   const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
+  const [preparingAll, setIsPreparingAll] = useState(false);
+  const [preparingWebPortal, setIsPreparingWebPortal] = useState(false);
   const [updatingSources, setIsUpdatingSources] = useState(false);
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
@@ -92,7 +92,6 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
   const [waitingForServer, setWaitingForServer] = useState(false);
   const [requireBurn, setRequireBurn] = useState(false);
   const [shouldBurn, setShouldBurn] = useState(false);
-  const [usingLegacyUpdater, setUsingLegacyUpdater] = useState(false);
 
   useEffect(() => {
     getAvailableSpace()
@@ -101,41 +100,63 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
   }, []);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-    if (usingLegacyUpdater) {
-      socket.send("legacy")
-      // reset all state to defaults to start again
+    isOpen && socket.send("default-updater-backend")
+  }, [isOpen, socket]);
+
+  useEffect(() => {
+    isOpen && updatingSources && socket.send("update_sources");
+  }, [isOpen, socket, updatingSources]);
+
+  useEffect(() => {
+    isOpen && preparingAll && socket.send("prepare");
+  }, [isOpen, socket, preparingAll]);
+
+  useEffect(() => {
+    isOpen && preparingWebPortal && socket.send("prepare_web_portal");
+  }, [isOpen, socket, preparingWebPortal]);
+
+  const doRetry = useCallback(
+    (defaultBackend: boolean) => {
+      socket.send(defaultBackend ? "default-updater-backend" : "legacy-updater-backend");
+
+      // reset all state to defaults and start again
       setError(ErrorType.None);
+      // setMessage(undefined);
       setInstallingWebPortalUpgrade(false);
+      setIsPreparingAll(false);
+      setIsPreparingWebPortal(false);
       setIsUpdatingSources(false);
       setUpgradeIsPrepared(false);
       setUpgradeIsRequired(true);
       setUpgradeIsRunning(false);
       setUpgradeFinished(false);
       setUpdateSize({downloadSize: 0, requiredSpace: 0});
-    }
-    if (checkingWebPortal) {
-      socket.send("update_sources");
-      setIsUpdatingSources(true);
-    } else {
-      // the page was reloaded after installing web-portal - prepare to update all packages
-      socket.send("prepare");
-    }
-  }, [socket, isOpen, checkingWebPortal, usingLegacyUpdater]);
+      if (checkingWebPortal) {
+        setIsUpdatingSources(true);
+      } else {
+        setCheckingWebPortal(true);
+      }
+    },
+    [checkingWebPortal],
+  )
 
   useEffect(() => {
-    !checkingWebPortal && getMajorOsUpdates()
-      .then((response) => {
-        setShouldBurn(response.shouldBurn);
-        setRequireBurn(response.requireBurn);
-      })
-      .catch(() => {
-        setShouldBurn(false);
-        setRequireBurn(false);
-      })
-    }, [checkingWebPortal]);
+    if (checkingWebPortal) {
+      setIsUpdatingSources(true);
+    } else {
+      setIsPreparingAll(true);
+
+      getMajorOsUpdates()
+        .then((response) => {
+          setShouldBurn(response.shouldBurn);
+          setRequireBurn(response.requireBurn);
+        })
+        .catch(() => {
+          setShouldBurn(false);
+          setRequireBurn(false);
+        })
+    }
+  }, [checkingWebPortal]);
 
   useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
@@ -166,7 +187,7 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
       message.type === OSUpdaterMessageType.PrepareUpgrade &&
       message.payload.status === UpdateMessageStatus.Error
     ) {
-      setError(ErrorType.AptError);
+      setError(ErrorType.GenericError);
       setUpgradeIsPrepared(false);
     }
 
@@ -174,7 +195,7 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
       message.type === OSUpdaterMessageType.Upgrade &&
       message.payload.status === UpdateMessageStatus.Error
     ) {
-      setError(ErrorType.AptError);
+      setError(ErrorType.GenericError);
       setUpgradeIsRunning(false);
     }
 
@@ -183,7 +204,7 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
       message.payload.status === UpdateMessageStatus.Error
     ) {
       setIsUpdatingSources(false);
-      setError(ErrorType.AptError);
+      setError(ErrorType.GenericError);
     }
 
     if (
@@ -192,9 +213,10 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
     ) {
       setIsUpdatingSources(false);
       if (checkingWebPortal) {
-        socket.send("prepare_web_portal");
+        setIsPreparingAll(false);
+        setIsPreparingWebPortal(true);
       } else {
-        socket.send("prepare");
+        setIsPreparingAll(true);
       }
     }
 
@@ -295,11 +317,9 @@ export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }:
         }
         setError(ErrorType.GenericError);
       }}
-      onUpgradeError={() => {
-        onUpgradeError && onUpgradeError()
-        setUsingLegacyUpdater(true)
+      onRetry={(useDefaultBackend: boolean) => {
+        doRetry(useDefaultBackend)
       }}
-      usingLegacyUpdater={usingLegacyUpdater}
       isCompleted={isCompleted}
       message={message}
       upgradeIsPrepared={upgradeIsPrepared}

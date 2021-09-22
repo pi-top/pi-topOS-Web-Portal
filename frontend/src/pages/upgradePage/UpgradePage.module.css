@@ -27,3 +27,13 @@
   overflow: hidden;
   max-height: 10vh;
 }
+
+.checkbox {
+  --checkboxFontSize: 14px;
+  --checkboxHeight: 24px;
+}
+
+.checkbox > label {
+  color: var(--textColour, var(--font));
+  font-style: normal;
+}
