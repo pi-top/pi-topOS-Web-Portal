@@ -15,7 +15,7 @@ import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/Upgr
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
   NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
-  AptError = "There was a problem during system update. You can press the 'Retry' button to try again or skip and try again later.",
+  AptError = "There was a problem during system update.\nIf this is the first time, please try again using the recommended method.\nIf you're experiencing repeated issues, try another method. ",
 }
 
 export enum UpgradePageExplanation {
@@ -86,7 +86,7 @@ export default ({
     return error !== ErrorType.None
   }
 
-  const getErrorMessage = () =>{
+  const getErrorMessage = () => {
     switch (error) {
       case ErrorType.NoSpaceAvailable:
         return ErrorMessage.NoSpaceAvailable;
@@ -186,7 +186,15 @@ export default ({
           disabled: upgradeIsRunning
         }}
       >
-        {hasError() && <span className={styles.error}>{getErrorMessage()}</span>}
+        { hasError() && (
+          <span className={styles.error}>
+            {
+              getErrorMessage().split('\n').map(function(item, key) {
+                return (<span key={key}>{item}<br/></span>)
+              })
+            }
+          </span>
+        )}
 
         <NewOsVersionDialogContainer
           active={isNewOsDialogActive}

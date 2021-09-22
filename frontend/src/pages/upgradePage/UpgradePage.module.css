@@ -4,6 +4,7 @@
 
 .error {
   composes: fontError from '../../globalStyles/Typography.module.css';
+  font-size: 16px;
 }
 
 .progress {
@@ -25,9 +26,4 @@
   color: var(--green);
   overflow: hidden;
   max-height: 10vh;
-}
-
-.error {
-  composes: fontError from '../../globalStyles/Typography.module.css';
-  font-size: 18px;
 }
