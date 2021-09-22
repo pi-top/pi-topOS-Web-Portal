@@ -86,7 +86,6 @@ class LegacyOSUpdateManager:
                         self.required_space_str = (
                             f"{self._required_space} {line_arr[4].split('/')[0]}"
                         )
-                        raise Exception
                     except Exception:
                         self._required_space = 1
                         self.required_space_str = f"{self._required_space} M"
@@ -96,14 +95,12 @@ class LegacyOSUpdateManager:
                         self.download_size_str = (
                             f"{self._download_size} {line_arr[4].split('/')[0]}"
                         )
-                        raise Exception
                     except Exception:
                         self._download_size = 1
                         self.download_size_str = f"{self._download_size} M"
                 elif "newly installed" in line:
                     try:
                         self.install_count = int(line_arr[0]) + int(line_arr[2])
-                        raise Exception
                     except Exception:
                         self.install_count = 1
 
