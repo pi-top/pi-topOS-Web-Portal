@@ -68,10 +68,14 @@ class LegacyOSUpdateManager:
                 line_arr = line.split()
                 if "disk space" in line:
                     self._required_space = float(line_arr[3])
-                    self.required_space_str = f"{self._required_space} {line_arr[4]}"
+                    self.required_space_str = (
+                        f"{self._required_space} {line_arr[4].split('/')[0]}"
+                    )
                 elif "Need to get" in line:
                     self._download_size = float(line_arr[3])
-                    self.download_size_str = f"{self._download_size} {line_arr[4]}"
+                    self.download_size_str = (
+                        f"{self._download_size} {line_arr[4].split('/')[0]}"
+                    )
                 elif "newly installed" in line:
                     self.install_count = int(line_arr[0]) + int(line_arr[2])
 
