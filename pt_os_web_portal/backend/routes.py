@@ -35,7 +35,7 @@ from .helpers.keyboard import (
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.registration import set_registration_email
-from .helpers.system import enable_ap_mode, restart_web_portal_service
+from .helpers.system import restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.tour import (
     close_pt_browser,
@@ -448,13 +448,6 @@ def post_restart_web_portal_service():
     PTLogger.debug("Route '/restart-web-portal-service'")
     post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
-    return "OK"
-
-
-@app.route("/enable-ap-mode", methods=["POST"])
-def post_enable_ap_mode():
-    PTLogger.debug("Route '/enable-ap-mode'")
-    enable_ap_mode()
     return "OK"
 
 
