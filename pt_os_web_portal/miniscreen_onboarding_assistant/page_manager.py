@@ -120,7 +120,7 @@ class PageManager:
             )
             return
 
-        PTLogger.info(f"Page index: {self.current_page_index} -> {new_page_index}")
+        PTLogger.debug(f"Page index: {self.current_page_index} -> {new_page_index}")
         self.current_page_index = new_page_index
         self.page_has_changed.set()
 

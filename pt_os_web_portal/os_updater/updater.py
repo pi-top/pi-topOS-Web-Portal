@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from threading import Thread
+from time import sleep
 
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
@@ -16,10 +17,18 @@ class OSUpdater:
     def __init__(self):
         self.manager = OSUpdateManager()
         self.message_handler = OSUpdaterFrontendMessageHandler()
+        self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
 
     def start(self):
-        t = Thread(target=self.do_update_check, args=(), daemon=True)
-        t.start()
+        self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
+        self.thread.start()
+
+    def stop(self):
+        while self.manager.lock:
+            sleep(0.2)
+
+        if self.thread.is_alive():
+            self.thread.join()
 
     def updates_available(self, ws=None):
         self.update_sources()
