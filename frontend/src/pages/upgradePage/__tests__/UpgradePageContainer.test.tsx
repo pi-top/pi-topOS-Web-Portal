@@ -89,6 +89,7 @@ describe("UpgradePageContainer", () => {
     defaultProps = {
       goToNextPage: jest.fn(),
       goToPreviousPage: jest.fn(),
+      onUpgradeError: jest.fn(),
       isCompleted: false,
     };
 
@@ -453,6 +454,138 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
+    it("Update button isn't present", async () => {
+      const { queryByText, getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      expect(queryByText("Update")).not.toBeInTheDocument();
+    });
+
+    it("Retry button is present", async () => {
+      const { queryByText, getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      expect(queryByText("Retry")).toBeInTheDocument();
+      expect(getByText("Retry")).toHaveProperty("disabled", false);
+    });
+
+    it("calls setLegacyUpdater on Retry button click", async () => {
+      const { getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      await waitForElement(() => getByText("Retry"));
+      fireEvent.click(getByText("Retry"));
+
+      expect(defaultProps.onUpgradeError).toHaveBeenCalled();
+    });
+
+    describe("and the Retry button is pressed", () => {
+      beforeEach(async () => {
+        server = createServer();
+        let times = 0;
+        server.on("connection", (socket) => {
+          socket.on("message", (data) => {
+            if (data === "update_sources") {
+              socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+              socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+              if (times == 0) {
+                socket.send(JSON.stringify(Messages.UpdateSourcesError));
+                times = times + 1;
+              }
+            }
+          });
+        });
+    });
+
+      it("renders prompt correctly", async () => {
+        const { getByText, container: upgradePage } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        const prompt = upgradePage.querySelector(".prompt");
+        expect(prompt).toMatchSnapshot();
+      });
+
+      it("doesn't render the error message", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText(ErrorMessage.AptError)).not.toBeInTheDocument();
+      });
+
+      it("renders the textarea component", async () => {
+        const { getByText, findByTestId, queryByTestId } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        await findByTestId("textarea");
+        expect(queryByTestId("textarea")).toBeInTheDocument();
+      });
+
+      it("messages are displayed in the textarea component", async () => {
+        const { getByText, findByTestId, queryByTestId } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+        await wait();
+
+        await findByTestId("textarea");
+        const textAreaElement = queryByTestId("textarea");
+        expect(textAreaElement).toMatchSnapshot();
+      });
+
+      it("doesn't render the 'preparing updates' message", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(
+          queryByText(UpgradePageExplanation.Preparing)
+        ).not.toBeInTheDocument();
+      });
+
+      it("Skip button isn't rendered", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText("Skip")).not.toBeInTheDocument();
+      });
+
+      it("Back button is rendered", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText("Back")).toBeInTheDocument();
+      });
+
+      it("Update button is present", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText("Update")).toBeInTheDocument();
+      });
+
+      it("Update button is disabled", async () => {
+        const { getByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        await waitForElement(() => getByText("Update"));
+        expect(getByText("Update")).toHaveProperty("disabled", true);
+      });
+    })
   });
 
   describe("while updating web-portal", () => {
@@ -743,19 +876,29 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
-    it("Update button is present", async () => {
-      const { getByText, queryByText } = mount();
+    it("Update button isn't present", async () => {
+      const { queryByText, getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.AptError));
 
-      expect(queryByText("Update")).toBeInTheDocument();
+      expect(queryByText("Update")).not.toBeInTheDocument();
     });
 
-    it("Update button is disabled", async () => {
+    it("Retry button is present", async () => {
+      const { queryByText, getByText } = mount();
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      expect(queryByText("Retry")).toBeInTheDocument();
+      expect(getByText("Retry")).toHaveProperty("disabled", false);
+    });
+
+    it("calls setLegacyUpdater on Retry button click", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.AptError));
 
-      await waitForElement(() => getByText("Update"));
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      await waitForElement(() => getByText("Retry"));
+      fireEvent.click(getByText("Retry"));
+
+      expect(defaultProps.onUpgradeError).toHaveBeenCalled();
     });
 
     it("renders the textarea component", async () => {
@@ -764,6 +907,121 @@ describe("UpgradePageContainer", () => {
 
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
+
+    describe("and the Retry button is pressed", () => {
+      beforeEach(async () => {
+        server = createServer();
+        let times = 0;
+        server = createServer();
+        server.on("connection", (socket) => {
+          socket.on("message", (data) => {
+            if (data === "update_sources") {
+              socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+              socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+              socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+            }
+
+            if (data === "prepare_web_portal") {
+              socket.send(JSON.stringify(Messages.PrepareStart));
+              socket.send(JSON.stringify(Messages.PrepareFinish));
+            }
+
+            if (data === "size") {
+              socket.send(JSON.stringify(Messages.Size));
+            }
+
+            if (data === "start") {
+              socket.send(JSON.stringify(Messages.UpgradeStart));
+              socket.send(JSON.stringify(Messages.UpgradeStatus));
+              if (times == 0) {
+                socket.send(JSON.stringify(Messages.UpgradeError));
+                times = times + 1;
+              }
+            }
+          });
+        });
+    });
+
+      it("renders prompt correctly", async () => {
+        const { getByText, container: upgradePage } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        const prompt = upgradePage.querySelector(".prompt");
+        expect(prompt).toMatchSnapshot();
+      });
+
+      it("doesn't render the error message", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText(ErrorMessage.AptError)).not.toBeInTheDocument();
+      });
+
+      it("renders the textarea component", async () => {
+        const { getByText, findByTestId, queryByTestId } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal));
+
+        await findByTestId("textarea");
+        expect(queryByTestId("textarea")).toBeInTheDocument();
+      });
+
+      it("messages are displayed in the textarea component", async () => {
+        const { getByText, findByTestId, queryByTestId } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal));
+
+        await findByTestId("textarea");
+        const textAreaElement = queryByTestId("textarea");
+        expect(textAreaElement).toMatchSnapshot();
+      });
+
+      it("Skip button isn't rendered", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText("Skip")).not.toBeInTheDocument();
+      });
+
+      it("Back button is rendered", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText("Back")).toBeInTheDocument();
+      });
+
+      it("Update button is present", async () => {
+        const { getByText, queryByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        expect(queryByText("Update")).toBeInTheDocument();
+      });
+
+      it("Update button is disabled", async () => {
+        const { getByText } = mount();
+        await waitForElement(() => getByText(ErrorMessage.AptError));
+        await waitForElement(() => getByText("Retry"));
+        fireEvent.click(getByText("Retry"));
+
+        await waitForElement(() => getByText("Update"));
+        expect(getByText("Update")).toHaveProperty("disabled", true);
+      });
+    })
+
   });
 
   // describe("when updating web-portal succeeds and there are system updates", () => {
@@ -991,14 +1249,35 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
-    it("Update button is disabled", async () => {
+    it("Update button isn't present", async () => {
+      const { queryByText, getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      expect(queryByText("Update")).not.toBeInTheDocument();
+    });
+
+    it("Retry button is present", async () => {
+      const { queryByText, getByText, waitForPreparation } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForElement(() => getByText(ErrorMessage.AptError));
+
+      expect(queryByText("Retry")).toBeInTheDocument();
+      expect(getByText("Retry")).toHaveProperty("disabled", false);
+    });
+
+    it("calls setLegacyUpdater on Retry button click", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForElement(() => getByText(ErrorMessage.AptError));
 
-      await waitForElement(() => getByText("Update"));
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      await waitForElement(() => getByText("Retry"));
+      fireEvent.click(getByText("Retry"));
+
+      expect(defaultProps.onUpgradeError).toHaveBeenCalled();
     });
   });
 
