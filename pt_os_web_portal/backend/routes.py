@@ -446,6 +446,7 @@ def post_update_eeprom():
 @app.route("/restart-web-portal-service", methods=["POST"])
 def post_restart_web_portal_service():
     PTLogger.debug("Route '/restart-web-portal-service'")
+    post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
     return "OK"
 
@@ -470,8 +471,8 @@ def get_os_check_update():
     return jdumps(check_relevant_pi_top_os_version_updates())
 
 
-@app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
-def post_onboarding_miniscreen_app_breadcrumb():
-    PTLogger.debug("Route '/onboarding-miniscreen-app-breadcrumb'")
+@app.route("/onboarding-miniscreen-ready-to-be-a-maker", methods=["POST"])
+def post_onboarding_ready_to_be_a_maker():
+    PTLogger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"

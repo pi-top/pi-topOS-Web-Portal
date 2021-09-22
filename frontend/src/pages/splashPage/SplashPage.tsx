@@ -4,7 +4,7 @@ import introScreen from "../../assets/images/intro-screen.png";
 import styles from "./SplashPage.module.css";
 import Layout from "../../components/layout/Layout";
 
-import leaveMiniscreenAppBreadcrumb from "../../services/leaveMiniscreenAppBreadcrumb";
+import triggerReadyToBeAMakerEvent from "../../services/triggerReadyToBeAMakerEvent";
 
 export type Props = {
   goToNextPage: () => void;
@@ -24,7 +24,7 @@ export default ({ goToNextPage }: Props) => {
       }
       nextButton={{
         onClick: () => {
-          leaveMiniscreenAppBreadcrumb()
+          triggerReadyToBeAMakerEvent()
             .catch(() => null)
             .then(goToNextPage)
         },

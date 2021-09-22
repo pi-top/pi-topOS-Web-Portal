@@ -38,6 +38,18 @@ def set(section: str, key: str, value):
         __save()
 
 
+def remove(section: str, key: str = ""):
+    with lock:
+        try:
+            if key and config_parser.has_option(section, key):
+                config_parser.remove_option(section, key)
+            elif len(key) == 0 and config_parser.has_section(section):
+                config_parser.remove_section(section)
+        except Exception:
+            raise
+        __save()
+
+
 def __save():
     with open(STATE_FILE_PATH, "w") as f:
         config_parser.write(f)

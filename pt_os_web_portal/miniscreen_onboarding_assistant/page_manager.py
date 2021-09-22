@@ -4,6 +4,7 @@ from time import sleep
 from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
 
+from .. import state
 from ..event import AppEvents, subscribe
 from .pages import Page, PageGenerator
 
@@ -23,13 +24,11 @@ class PageManager:
             self.set_current_page_to_next_page
         )
 
-        self.current_page_index = 0
-
         def automatic_transition_to_last_page(_):
             last_page_index = len(self.pages) - 1
             # Only do automatic update if on previous page
             if self.current_page_index == last_page_index - 1:
-                self.current_page_index = last_page_index
+                self.set_current_page_to(self.get_page(last_page_index))
 
         subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
 
@@ -39,13 +38,6 @@ class PageManager:
 
         mode = miniscreen.mode
 
-        self.viewport = viewport(
-            miniscreen.device,
-            width=width,
-            height=height * len(Page),
-        )
-        self.viewport.set_position((0, self.current_page_index * height))
-
         self.page_has_changed = Event()
 
         def page_instance(page_type):
@@ -53,8 +45,55 @@ class PageManager:
 
         self.pages = [page_instance(page_type) for page_type in Page]
 
+        self.current_page_index = 0
+        state_page_name = state.get("miniscreen_onboarding", "page_name")
+        if state_page_name:
+            try:
+                index = self.get_page_index(Page[state_page_name])
+                PTLogger.info(f"Setting initial page index to {index}")
+                self.current_page_index = index
+                state.remove("miniscreen_onboarding", "page_name")
+            except Exception:
+                PTLogger.error(
+                    "Couldn't restore page from state - starting from scratch"
+                )
+
+        self.viewport = viewport(
+            miniscreen.device,
+            width=width,
+            height=height * len(Page),
+        )
+
+        self.viewport.set_position((0, self.current_page_index * height))
+
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * height))
+
+        def save_miniscreen_onboarding_app_state(restarting_web_portal):
+            if restarting_web_portal:
+                state.set(
+                    "miniscreen_onboarding", "page_name", self.current_page.type.name
+                )
+                state.set(
+                    "miniscreen_onboarding",
+                    "carry_on_page_is_visible",
+                    str(
+                        self.get_page(self.get_page_index(Page.CARRY_ON)).visible
+                    ).lower(),
+                )
+
+        subscribe(AppEvents.RESTARTING_WEB_PORTAL, save_miniscreen_onboarding_app_state)
+
+        if state.get("miniscreen_onboarding", "carry_on_page_is_visible") == "true":
+            self.get_page(self.get_page_index(Page.CARRY_ON)).visible = True
+            state.remove("miniscreen_onboarding", "carry_on_page_is_visible")
+
+        state.remove("miniscreen_onboarding")
+
+    def get_page_index(self, page_enum):
+        for index, page in enumerate(self.pages):
+            if page.type == page_enum:
+                return index
 
     def get_page(self, index):
         return self.pages[index]
