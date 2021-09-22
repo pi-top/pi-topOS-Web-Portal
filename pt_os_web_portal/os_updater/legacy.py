@@ -64,15 +64,25 @@ class LegacyOSUpdateManager:
             if len(packages) > 0:
                 cmd = ["apt-get", "install", *packages, "--assume-no"]
 
+            def str_to_float(text):
+                dot_pos = text.rfind(".")
+                comma_pos = text.rfind(",")
+                if comma_pos > dot_pos:
+                    text = text.replace(".", "")
+                    text = text.replace(",", ".")
+                else:
+                    text = text.replace(",", "")
+                return float(text)
+
             def get_update_info(line):
                 line_arr = line.split()
                 if "disk space" in line:
-                    self._required_space = float(line_arr[3])
+                    self._required_space = str_to_float(line_arr[3])
                     self.required_space_str = (
                         f"{self._required_space} {line_arr[4].split('/')[0]}"
                     )
                 elif "Need to get" in line:
-                    self._download_size = float(line_arr[3])
+                    self._download_size = str_to_float(line_arr[3])
                     self.download_size_str = (
                         f"{self._download_size} {line_arr[4].split('/')[0]}"
                     )
