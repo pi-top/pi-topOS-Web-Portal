@@ -469,7 +469,7 @@ describe("UpgradePageContainer", () => {
       expect(getByText("Retry")).toHaveProperty("disabled", false);
     });
 
-    it("calls setLegacyUpdater on Retry button click", async () => {
+    it("calls onUpgradeError on Retry button click", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.AptError));
 
@@ -891,7 +891,7 @@ describe("UpgradePageContainer", () => {
       expect(getByText("Retry")).toHaveProperty("disabled", false);
     });
 
-    it("calls setLegacyUpdater on Retry button click", async () => {
+    it("calls onUpgradeError on Retry button click", async () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(ErrorMessage.AptError));
 
@@ -1268,7 +1268,7 @@ describe("UpgradePageContainer", () => {
       expect(getByText("Retry")).toHaveProperty("disabled", false);
     });
 
-    it("calls setLegacyUpdater on Retry button click", async () => {
+    it("calls onUpgradeError on Retry button click", async () => {
       const { getByText, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
