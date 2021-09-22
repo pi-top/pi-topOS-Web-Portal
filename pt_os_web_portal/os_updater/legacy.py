@@ -75,27 +75,45 @@ class LegacyOSUpdateManager:
                 return float(text)
 
             def get_update_info(line):
+                # parse lines from 'apt' command.
+                # on error, assume there's something to install
                 line_arr = line.split()
                 if "disk space" in line:
-                    self._required_space = str_to_float(line_arr[3])
-                    self.required_space_str = (
-                        f"{self._required_space} {line_arr[4].split('/')[0]}"
-                    )
+                    try:
+                        self._required_space = str_to_float(line_arr[3])
+                        self.required_space_str = (
+                            f"{self._required_space} {line_arr[4].split('/')[0]}"
+                        )
+                        raise Exception
+                    except Exception:
+                        self._required_space = 1
+                        self.required_space_str = f"{self._required_space} M"
                 elif "Need to get" in line:
-                    self._download_size = str_to_float(line_arr[3])
-                    self.download_size_str = (
-                        f"{self._download_size} {line_arr[4].split('/')[0]}"
-                    )
+                    try:
+                        self._download_size = str_to_float(line_arr[3])
+                        self.download_size_str = (
+                            f"{self._download_size} {line_arr[4].split('/')[0]}"
+                        )
+                        raise Exception
+                    except Exception:
+                        self._download_size = 1
+                        self.download_size_str = f"{self._download_size} M"
                 elif "newly installed" in line:
-                    self.install_count = int(line_arr[0]) + int(line_arr[2])
+                    try:
+                        self.install_count = int(line_arr[0]) + int(line_arr[2])
+                        raise Exception
+                    except Exception:
+                        self.install_count = 1
 
             self.__run(cmd, get_update_info, check=False)
             PTLogger.info(
-                f"OS Update: Will upgrade/install {self.install_count} packages"
+                f"LegacyOSUpdateManager: Will upgrade/install {self.install_count} packages"
             )
-            PTLogger.info(f"OS Update: Need to download {self.download_size_str}")
             PTLogger.info(
-                f"OS Update: After this operation, {self.required_space_str} of additional disk space will be used."
+                f"LegacyOSUpdateManager: Need to download {self.download_size_str}"
+            )
+            PTLogger.info(
+                f"LegacyOSUpdateManager: After this operation, {self.required_space_str} of additional disk space will be used."
             )
         except Exception as e:
             PTLogger.error(f"{e}")
