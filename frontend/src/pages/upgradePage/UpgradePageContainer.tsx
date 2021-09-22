@@ -59,10 +59,11 @@ export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
 export type Props = {
   goToNextPage?: () => void;
   goToPreviousPage?: () => void;
+  onUpgradeError?: () => void;
   isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, onUpgradeError, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -100,11 +101,13 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, []);
 
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
     if (usingLegacyUpdater) {
       socket.send("legacy")
       // reset all state to defaults to start again
       setError(ErrorType.None);
-      setCheckingWebPortal(window.location.search !== "?all");
       setInstallingWebPortalUpgrade(false);
       setIsUpdatingSources(false);
       setUpgradeIsPrepared(false);
@@ -113,12 +116,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       setUpgradeFinished(false);
       setUpdateSize({downloadSize: 0, requiredSpace: 0});
     }
-  }, [usingLegacyUpdater]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
     if (checkingWebPortal) {
       socket.send("update_sources");
       setIsUpdatingSources(true);
@@ -126,7 +123,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       // the page was reloaded after installing web-portal - prepare to update all packages
       socket.send("prepare");
     }
-  }, [socket, isOpen, checkingWebPortal]);
+  }, [socket, isOpen, checkingWebPortal, usingLegacyUpdater]);
 
   useEffect(() => {
     !checkingWebPortal && getMajorOsUpdates()
@@ -298,7 +295,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         }
         setError(ErrorType.GenericError);
       }}
-      setLegacyUpdater={() => setUsingLegacyUpdater(true)}
+      onUpgradeError={() => {
+        onUpgradeError && onUpgradeError()
+        setUsingLegacyUpdater(true)
+      }}
       usingLegacyUpdater={usingLegacyUpdater}
       isCompleted={isCompleted}
       message={message}

@@ -36,7 +36,7 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onStartUpgradeClick: () => void;
-  setLegacyUpdater: () => void;
+  onUpgradeError: () => void;
   usingLegacyUpdater: boolean,
   isCompleted?: boolean;
   message?: OSUpdaterMessage,
@@ -59,7 +59,7 @@ export default ({
   onBackClick,
   onNextClick,
   onStartUpgradeClick,
-  setLegacyUpdater,
+  onUpgradeError,
   usingLegacyUpdater,
   isCompleted,
   message,
@@ -174,7 +174,7 @@ export default ({
         prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
-          onClick: hasError() ? setLegacyUpdater : upgradeIsRequired ? onStartUpgradeClick : onNextClick,
+          onClick: hasError() ? onUpgradeError : upgradeIsRequired ? onStartUpgradeClick : onNextClick,
           label: continueButtonLabel,
           disabled: (!upgradeIsPrepared || upgradeIsRunning || waitingForServer) && !(hasError() && error === ErrorType.AptError)
         }}
