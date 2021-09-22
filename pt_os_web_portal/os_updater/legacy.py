@@ -24,7 +24,9 @@ class LegacyOSUpdateManager:
                     if len(callback_signature.parameters) == 1:
                         callback(line)
                     elif len(callback_signature.parameters) == 3:
-                        callback(MessageType.STATUS, line, 0.0)
+                        callback(
+                            MessageType.STATUS, line, 0.0
+                        )  # lgtm [py/call/wrong-arguments]
                 PTLogger.info(line)
 
         if check and p.returncode != 0:
