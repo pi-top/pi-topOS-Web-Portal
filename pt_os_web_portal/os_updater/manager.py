@@ -27,9 +27,9 @@ class OSUpdateManager:
         return self.cache.install_count
 
     def update(self, callback) -> None:
-        PTLogger.info("OS Updater: Updating APT sources")
+        PTLogger.info("OsUpdateManager: Updating APT sources")
         if self.lock:
-            callback(MessageType.ERROR, "OS Updater is locked", 0.0)
+            callback(MessageType.ERROR, "OsUpdateManager is locked", 0.0)
             return
         self.lock = True
         fetch_sources_progress = FetchProgress(callback)
@@ -38,52 +38,52 @@ class OSUpdateManager:
             self.cache.update(fetch_sources_progress)
             self.cache.open(None)
         except Exception as e:
-            PTLogger.error(f"OS Updater Error: {e}")
+            PTLogger.error(f"OsUpdateManager Error: {e}")
             raise
         finally:
             self.lock = False
 
     def stage_upgrade(self, callback, packages=[]) -> None:
-        PTLogger.info("OS Updater: Staging packages for upgrade")
+        PTLogger.info("OsUpdateManager: Staging packages for upgrade")
         if self.lock:
-            callback(MessageType.ERROR, "OS Updater is locked", 0.0)
+            callback(MessageType.ERROR, "OsUpdateManager is locked", 0.0)
             return
         self.lock = True
 
         try:
             if len(packages) == 0:
-                PTLogger.info("OS Updater: Staging all packages to be upgraded")
+                PTLogger.info("OsUpdateManager: Staging all packages to be upgraded")
                 self.cache.upgrade()
                 self.cache.upgrade(True)
             else:
                 for package_name in packages:
                     if package_name not in self.cache:
                         PTLogger.info(
-                            f"OS Updater: invalid package '{package_name}' - skipping"
+                            f"OsUpdateManager: invalid package '{package_name}' - skipping"
                         )
                         continue
                     package = self.cache[package_name]
                     if package.is_upgradable:
                         PTLogger.info(
-                            f"OS Updater: package '{package_name}' was staged to be updated"
+                            f"OsUpdateManager: package '{package_name}' was staged to be updated"
                         )
                         package.mark_upgrade()
                     else:
                         PTLogger.info(
-                            f"OS Updater: package '{package_name}' has no updates - skipping"
+                            f"OsUpdateManager: package '{package_name}' has no updates - skipping"
                         )
 
             PTLogger.info(
-                f"OS Update: Will upgrade/install {self.cache.install_count} packages"
+                f"OsUpdateManager: Will upgrade/install {self.cache.install_count} packages"
             )
             PTLogger.info(
-                f"OS Update: Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
+                f"OsUpdateManager: Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
             )
             PTLogger.info(
-                f"OS Update: After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
+                f"OsUpdateManager: After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
             )
         except Exception as e:
-            PTLogger.error(f"OS Updater Error: {e}")
+            PTLogger.error(f"OsUpdateManager Error: {e}")
             raise
         finally:
             self.lock = False
@@ -91,21 +91,21 @@ class OSUpdateManager:
     def download_size(self):
         size = self.cache.required_download if self.cache else 0
         PTLogger.info(
-            f"download_size: Need to download {apt_pkg.size_to_str(size)} - ({size} B)"
+            f"OsUpdateManager download_size: Need to download {apt_pkg.size_to_str(size)} - ({size} B)"
         )
         return size
 
     def required_space(self):
         size = self.cache.required_space if self.cache else 0
         PTLogger.info(
-            f"required_space: {apt_pkg.size_to_str(size)} - ({size} B) needed for upgrade"
+            f"OsUpdateManager required_space: {apt_pkg.size_to_str(size)} - ({size} B) needed for upgrade"
         )
         return size
 
     def upgrade(self, callback):
-        PTLogger.info("OS Updater: starting upgrade")
+        PTLogger.info("OsUpdateManager: starting upgrade")
         if self.lock:
-            callback(MessageType.ERROR, "OS Updater is locked", 0.0)
+            callback(MessageType.ERROR, "OsUpdateManager is locked", 0.0)
             return
         self.lock = True
 
@@ -122,7 +122,4 @@ class OSUpdateManager:
         finally:
             self.lock = False
 
-        PTLogger.info("OS Updater: finished upgrade")
-
-    def select_packages_to_upgrade(self, packages: list) -> None:
-        pass
+        PTLogger.info("OsUpdateManager: finished upgrade")

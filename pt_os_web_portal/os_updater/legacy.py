@@ -31,24 +31,24 @@ class LegacyOSUpdateManager:
             raise CalledProcessError(p.returncode, p.args)
 
     def update(self, callback) -> None:
-        PTLogger.info("OS Legacy Updater: Updating APT sources")
+        PTLogger.info("LegacyOSUpdaterManager: Updating APT sources")
         if self.lock:
-            callback(MessageType.ERROR, "OS Legacy Updater is locked", 0.0)
+            callback(MessageType.ERROR, "LegacyOSUpdaterManager is locked", 0.0)
             return
         self.lock = True
 
         try:
             self.__run(["apt-get", "update"], callback)
         except Exception as e:
-            PTLogger.error(f"OS Legacy Updater Error: {e}")
+            PTLogger.error(f"LegacyOSUpdaterManager Error: {e}")
             raise
         finally:
             self.lock = False
 
     def stage_upgrade(self, callback, packages=[]) -> None:
-        PTLogger.info("OS Legacy Updater: Staging packages for upgrade")
+        PTLogger.info("LegacyOSUpdaterManager: Staging packages for upgrade")
         if self.lock:
-            callback(MessageType.ERROR, "OS Legacy Updater is locked", 0.0)
+            callback(MessageType.ERROR, "LegacyOSUpdaterManager is locked", 0.0)
             return
         self.lock = True
 
@@ -100,9 +100,9 @@ class LegacyOSUpdateManager:
         return self._required_space
 
     def upgrade(self, callback):
-        PTLogger.info("OS Legacy Updater: starting upgrade")
+        PTLogger.info("LegacyOSUpdaterManager: starting upgrade")
         if self.lock:
-            callback(MessageType.ERROR, "OS Legacy Updater is locked", 0.0)
+            callback(MessageType.ERROR, "LegacyOSUpdaterManager is locked", 0.0)
             return
         self.lock = True
 
@@ -135,4 +135,4 @@ class LegacyOSUpdateManager:
         finally:
             self.lock = False
 
-        PTLogger.info("OS Legacy Updater: finished upgrade")
+        PTLogger.info("LegacyOSUpdaterManager: finished upgrade")
