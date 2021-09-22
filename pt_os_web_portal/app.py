@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
@@ -25,11 +27,12 @@ class App:
             ),
             handler_class=WebSocketHandler,
         )
+
         self.listener_mgr = ListenerManager()
+        self.miniscreen_onboarding = None
         self.connection_manager = ConnectionManager()
 
     def start(self):
-        # "start" objects that subscribe to events first
         self.os_updater.start()
 
         if (
@@ -39,11 +42,24 @@ class App:
             PTLogger.info(
                 "Onboarding not completed - starting miniscreen onboarding application"
             )
-            OnboardingAssistantApp().start()
+            self.miniscreen_onboarding = OnboardingAssistantApp()
+            self.miniscreen_onboarding.start()
 
         self.listener_mgr.start()
 
-        # Finally, start objects that trigger events
         self.connection_manager.start()
 
-        self.wsgi_server.serve_forever()
+        self.wsgi_server.start()
+
+    def stop(self):
+        # Using thread pool with context will cause it to behave
+        # as if Executor.shutdown() were called with `wait=True`
+        with ThreadPoolExecutor() as executor:
+            for stop_func in [
+                self.os_updater.stop,
+                lambda: self.miniscreen_onboarding
+                and self.miniscreen_onboarding.stop(),
+                self.connection_manager.stop,
+                self.wsgi_server.stop,
+            ]:
+                executor.submit(stop_func)
