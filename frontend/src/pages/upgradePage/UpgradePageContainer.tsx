@@ -91,12 +91,29 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [waitingForServer, setWaitingForServer] = useState(false);
   const [requireBurn, setRequireBurn] = useState(false);
   const [shouldBurn, setShouldBurn] = useState(false);
+  const [usingLegacyUpdater, setUsingLegacyUpdater] = useState(false);
 
   useEffect(() => {
     getAvailableSpace()
       .then((setAvailableSpace))
       .catch(() => setError(ErrorType.GenericError));
   }, []);
+
+  useEffect(() => {
+    if (usingLegacyUpdater) {
+      socket.send("legacy")
+      // reset all state to defaults to start again
+      setError(ErrorType.None);
+      setCheckingWebPortal(window.location.search !== "?all");
+      setInstallingWebPortalUpgrade(false);
+      setIsUpdatingSources(false);
+      setUpgradeIsPrepared(false);
+      setUpgradeIsRequired(true);
+      setUpgradeIsRunning(false);
+      setUpgradeFinished(false);
+      setUpdateSize({downloadSize: 0, requiredSpace: 0});
+    }
+  }, [usingLegacyUpdater]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -281,6 +298,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         }
         setError(ErrorType.GenericError);
       }}
+      setLegacyUpdater={() => setUsingLegacyUpdater(true)}
+      usingLegacyUpdater={usingLegacyUpdater}
       isCompleted={isCompleted}
       message={message}
       upgradeIsPrepared={upgradeIsPrepared}

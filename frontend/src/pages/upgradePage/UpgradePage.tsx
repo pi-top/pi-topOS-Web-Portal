@@ -15,7 +15,7 @@ import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/Upgr
 export enum ErrorMessage {
   GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
   NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
-  AptError = "There was a problem during system update.",
+  AptError = "There was a problem during system update. You can press the 'Retry' button to try again or skip and try again later.",
 }
 
 export enum UpgradePageExplanation {
@@ -36,6 +36,8 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onStartUpgradeClick: () => void;
+  setLegacyUpdater: () => void;
+  usingLegacyUpdater: boolean,
   isCompleted?: boolean;
   message?: OSUpdaterMessage,
   updatingSources: boolean,
@@ -57,6 +59,8 @@ export default ({
   onBackClick,
   onNextClick,
   onStartUpgradeClick,
+  setLegacyUpdater,
+  usingLegacyUpdater,
   isCompleted,
   message,
   updatingSources,
@@ -96,6 +100,8 @@ export default ({
   const getPromptMessage = () => {
     if (upgradeFinished) {
       return <>Your system is <span className="green">up to date</span>!</>
+    } else if (usingLegacyUpdater) {
+      return <>OK, let's try <span className="green">updating</span> again!</>
     }
     return <>OK, I need to be <span className="green">updated</span></>
   }
@@ -156,7 +162,7 @@ export default ({
     return UpgradePageExplanation.Preparing;
   };
 
-  const continueButtonLabel = upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
+  const continueButtonLabel = hasError() && error === ErrorType.AptError ? "Retry" : upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
 
   return (
     <>
@@ -168,9 +174,9 @@ export default ({
         prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
-          onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
+          onClick: hasError() ? setLegacyUpdater : upgradeIsRequired ? onStartUpgradeClick : onNextClick,
           label: continueButtonLabel,
-          disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || hasError()
+          disabled: (!upgradeIsPrepared || upgradeIsRunning || waitingForServer) && !(hasError() && error === ErrorType.AptError)
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
@@ -203,15 +209,20 @@ export default ({
           </>
         )}
 
-        {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.UpdateSources) && !waitingForServer && !error && (
-          <div data-testid="progress" className={styles.progress}>
-            <ProgressBar
-              percent={message.payload.percent}
-              strokeWidth={2}
-              strokeColor="#71c0b4"
-            />
-          </div>
-        )}
+        {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.UpdateSources)
+          && !waitingForServer
+          && !hasError()
+          && !usingLegacyUpdater
+          && (
+            <div data-testid="progress" className={styles.progress}>
+              <ProgressBar
+                percent={message.payload.percent}
+                strokeWidth={2}
+                strokeColor="#71c0b4"
+              />
+            </div>
+          )
+        }
       </Layout>
     </>
   );
