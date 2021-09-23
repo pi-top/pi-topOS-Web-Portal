@@ -401,8 +401,8 @@ exports[`UpgradePageContainer when updating web-portal fails and the Retry butto
   data-testid="textarea"
   disabled=""
 >
-  Starting install & upgrade process
-dpkg-exec: Running dpkg
+  Starting to update sources
+Updating blah
 </textarea>
 `;
 
