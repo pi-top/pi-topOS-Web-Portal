@@ -340,6 +340,35 @@ exports[`UpgradePageContainer when there's not enough space left on device rende
 </h1>
 `;
 
+exports[`UpgradePageContainer when updating sources fails and the Retry button is pressed messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Starting to update sources
+Updating blah
+
+There was a problem updating sources
+Starting to update sources
+Updating blah
+</textarea>
+`;
+
+exports[`UpgradePageContainer when updating sources fails and the Retry button is pressed renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  OK, let's try 
+  <span
+    class="green"
+  >
+    updating
+  </span>
+   again!
+</h1>
+`;
+
 exports[`UpgradePageContainer when updating sources fails messages are displayed in the textarea component 1`] = `
 <textarea
   class="textarea"
@@ -363,6 +392,31 @@ exports[`UpgradePageContainer when updating sources fails renders prompt correct
   >
     updated
   </span>
+</h1>
+`;
+
+exports[`UpgradePageContainer when updating web-portal fails and the Retry button is pressed messages are displayed in the textarea component 1`] = `
+<textarea
+  class="textarea"
+  data-testid="textarea"
+  disabled=""
+>
+  Starting to update sources
+Updating blah
+</textarea>
+`;
+
+exports[`UpgradePageContainer when updating web-portal fails and the Retry button is pressed renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  OK, let's try 
+  <span
+    class="green"
+  >
+    updating
+  </span>
+   again!
 </h1>
 `;
 

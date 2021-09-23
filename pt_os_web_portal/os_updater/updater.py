@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from enum import Enum, auto
 from threading import Thread
 from time import sleep
 
@@ -7,15 +8,25 @@ from pitop.common.sys_info import is_connected_to_internet
 
 from .. import state
 from ..event import AppEvents, post_event
+from .legacy import LegacyOSUpdateManager
 from .manager import OSUpdateManager
 from .message_handler import OSUpdaterFrontendMessageHandler
 from .system_clock import is_system_clock_synchronized, synchronize_system_clock
 from .types import MessageType
 
 
+class UpdaterBackend(Enum):
+    PY_APT = auto()
+    LEGACY = auto()
+
+
 class OSUpdater:
     def __init__(self):
-        self.manager = OSUpdateManager()
+        self.backends = {
+            UpdaterBackend.PY_APT: OSUpdateManager(),
+            UpdaterBackend.LEGACY: LegacyOSUpdateManager(),
+        }
+        self.active_backend = self.backends[UpdaterBackend.PY_APT]
         self.message_handler = OSUpdaterFrontendMessageHandler()
         self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
 
@@ -30,10 +41,10 @@ class OSUpdater:
         if self.thread.is_alive():
             self.thread.join()
 
-    def updates_available(self, ws=None):
+    def updates_available(self):
         self.update_sources()
         self.stage_packages()
-        return self.manager.cache.install_count > 0
+        return self.active_backend.install_count > 0
 
     @property
     def last_checked_date(self):
@@ -56,7 +67,7 @@ class OSUpdater:
         post_event(AppEvents.OS_ALREADY_CHECKED_UPDATES, should_check_for_updates)
 
         if should_check_for_updates:
-            PTLogger.info("Checking for updates...")
+            PTLogger.info("OSUpdater: Checking for updates...")
             post_event(AppEvents.OS_HAS_UPDATES, self.updates_available())
 
     def update_sources(self, ws=None):
@@ -67,7 +78,7 @@ class OSUpdater:
         callback = self.message_handler.create_emit_update_sources_message(ws)
         try:
             callback(MessageType.START, "Updating sources", 0.0)
-            self.manager.update(callback)
+            self.active_backend.update(callback)
             callback(MessageType.FINISH, "Finished updating sources", 100.0)
             post_event(AppEvents.OS_UPDATE_SOURCES, "success")
         except Exception as e:
@@ -79,7 +90,7 @@ class OSUpdater:
         callback = self.message_handler.create_emit_os_prepare_upgrade_message(ws)
         try:
             callback(MessageType.START, "Preparing OS upgrade", 0.0)
-            self.manager.stage_upgrade(callback, packages)
+            self.active_backend.stage_upgrade(callback, packages)
             state.set(
                 "os_updater",
                 "last_checked_date",
@@ -101,12 +112,12 @@ class OSUpdater:
             callback(
                 MessageType.STATUS,
                 {
-                    "downloadSize": self.manager.download_size(),
-                    "requiredSpace": self.manager.required_space(),
+                    "downloadSize": self.active_backend.download_size(),
+                    "requiredSpace": self.active_backend.required_space(),
                 },
             )
         except Exception as e:
-            PTLogger.info(f"upgrade_size: {e}")
+            PTLogger.error(f"OSUpdater upgrade_size: {e}")
             callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
 
     def start_os_upgrade(self, ws=None):
@@ -114,9 +125,17 @@ class OSUpdater:
 
         callback = self.message_handler.create_emit_os_upgrade_message(ws)
         try:
-            self.manager.upgrade(callback)
+            self.active_backend.upgrade(callback)
             self.update_last_check_config()
             post_event(AppEvents.OS_UPDATER_UPGRADE, "success")
         except Exception as e:
             callback(MessageType.ERROR, f"{e}", 0.0)
             post_event(AppEvents.OS_UPDATER_UPGRADE, "failed")
+
+    def use_legacy_backend(self, ws=None):
+        PTLogger.info("OSUpdater: Using legacy backend...")
+        self.active_backend = self.backends[UpdaterBackend.LEGACY]
+
+    def use_default_backend(self, ws=None):
+        PTLogger.info("OSUpdater: Using default backend...")
+        self.active_backend = self.backends[UpdaterBackend.PY_APT]
