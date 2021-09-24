@@ -24,8 +24,10 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"APT Source: {percent}% '{message}'")
 
-            if ws:
-                ws.send(jdumps(data))
+            if not ws:
+                return
+            for ws_client in ws.handler.server.clients.values():
+                ws_client.ws.send(jdumps(data))
 
         return emit_update_sources_message
 
@@ -44,8 +46,10 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"Upgrade Prepare: {percent}% '{message}'")
 
-            if ws:
-                ws.send(jdumps(data))
+            if not ws:
+                return
+            for ws_client in ws.handler.server.clients.values():
+                ws_client.ws.send(jdumps(data))
 
         return emit_os_prepare_upgrade_message
 
@@ -63,8 +67,11 @@ class OSUpdaterFrontendMessageHandler:
                 },
             }
             PTLogger.info(f"OS Upgrade: {percent}% '{message}'")
-            if ws:
-                ws.send(jdumps(data))
+
+            if not ws:
+                return
+            for ws_client in ws.handler.server.clients.values():
+                ws_client.ws.send(jdumps(data))
 
         return emit_os_upgrade_message
 
@@ -75,7 +82,10 @@ class OSUpdaterFrontendMessageHandler:
                 "payload": {"size": size, "status": message_type.name},
             }
             PTLogger.info(f"OS upgrade size: {size}")
-            if ws:
-                ws.send(jdumps(data))
+
+            if not ws:
+                return
+            for ws_client in ws.handler.server.clients.values():
+                ws_client.ws.send(jdumps(data))
 
         return emit_os_size_message
