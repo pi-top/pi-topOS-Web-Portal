@@ -4,8 +4,6 @@ from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
-from .about import device_serial_number
-
 
 def disable_tour():
     PTLogger.info("Function: disable_tour()")
@@ -30,43 +28,9 @@ def python_sdk_docs_url():
     return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
 
 
-def further_url():
-    PTLogger.info("Function: get_further_url()")
-
-    def get_serial_number_string():
-        try:
-            serial_number = device_serial_number()
-            return f"serial_number={serial_number}" if serial_number != "" else ""
-        except Exception:
-            return ""
-
-    def get_device_id_string():
-        try:
-            device_str = str(
-                run_command("cat /etc/pi-top/pt-device-manager/device_version", 1000)
-            ).strip()
-            return f"device={device_str}" if device_str != "" else ""
-        except Exception:
-            return ""
-
-    def further_url_query_string():
-        query_string = ""
-        serial_string = get_serial_number_string()
-        device_string = get_device_id_string()
-        if serial_string != "":
-            query_string += f"?{serial_string}"
-        if device_string != "":
-            separator = "?" if serial_string == "" else "&"
-            query_string += f"{separator}{device_string}"
-        return query_string
-
-    base_further_url = "https://further.pi-top.com/start"
-    return base_further_url + further_url_query_string()
-
-
 def open_further():
     PTLogger.info("Function: open_further()")
-    run_command_background(get_chromium_command(further_url()))
+    run_command_background("start-further")
 
 
 def open_python_sdk_docs():

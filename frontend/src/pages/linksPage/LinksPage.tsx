@@ -13,7 +13,7 @@ import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openForum from "../../services/openForum";
 import stopTourAutostart from "../../services/stopTourAutostart";
 import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
-import getFurtherUrl from "../../services/getFurtherUrl";
+// import getFurtherUrl from "../../services/getFurtherUrl";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -22,7 +22,7 @@ export default () => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const forumUrl = "https://forum.pi-top.com";
   const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com");
-  const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
+  // const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
   const [isOpeningLink, setIsOpeningLink] = useState(false);
 
   const serviceMap = new Map<string, any>();
@@ -56,14 +56,14 @@ export default () => {
       .catch(() => null) // will use default url
   };
 
-  const updateFurtherUrl = () => {
-    getFurtherUrl()
-      .then((url_data) => setFurtherUrl(url_data.url))
-      .catch(() => null) // will use default url
-  };
+  // const updateFurtherUrl = () => {
+    // getFurtherUrl()
+    //   .then((url_data) => setFurtherUrl(url_data.url))
+    //   .catch(() => null) // will use default url
+  // };
 
   useEffect(() => {
-    Promise.all([updateSDKUrl(), updateFurtherUrl()]);
+    Promise.all([updateSDKUrl()/*, updateFurtherUrl()*/]);
   }, []);
 
   return (

@@ -40,7 +40,6 @@ from .helpers.timezone import get_all_timezones, get_current_timezone, set_timez
 from .helpers.tour import (
     close_pt_browser,
     disable_tour,
-    further_url,
     open_forum,
     open_further,
     open_knowledge_base,
@@ -397,12 +396,6 @@ def post_open_further():
     PTLogger.debug("Route '/open-further'")
     open_further()
     return "OK"
-
-
-@app.route("/further-url", methods=["GET"])
-def get_further_url():
-    PTLogger.debug("Route '/further-url'")
-    return jdumps({"url": further_url()})
 
 
 @app.route("/open-python-sdk-docs", methods=["POST"])
