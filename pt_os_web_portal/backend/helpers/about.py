@@ -6,7 +6,7 @@ from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
-DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
+DEVICE_INFO_FILE = "/run/pt_device_type"
 OS_INFO_FILE = "/etc/pt-issue"
 
 
