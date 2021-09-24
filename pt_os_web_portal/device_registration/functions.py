@@ -8,7 +8,7 @@ from pitop.common.logger import PTLogger
 from .. import state
 
 DEVICE_SERIALS_FILE = "/etc/pi-top/device_serial_numbers.json"
-DEVICE_INFO_FILE = "/etc/pi-top/pt-device-manager/device_version"
+DEVICE_INFO_FILE = "/run/pt_device_type"
 OS_INFO_FILE = "/etc/pt-issue"
 API_ENDPOINT = "https://backend.pi-top.com/utils/v1/device/register"
 
