@@ -8,7 +8,7 @@ import Button from "../../components/atoms/button/Button";
 
 import closePtBrowser from "../../services/closePtBrowser";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
-import openFurther from "../../services/openFurther";
+// import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openForum from "../../services/openForum";
 import stopTourAutostart from "../../services/stopTourAutostart";
@@ -28,7 +28,7 @@ export default () => {
   const serviceMap = new Map<string, any>();
   serviceMap.set(kbUrl, {"callback": openKnowledgeBase});
   serviceMap.set(forumUrl, {"callback": openForum});
-  serviceMap.set(furtherUrl, {"callback": openFurther});
+  // serviceMap.set(furtherUrl, {"callback": openFurther});
   serviceMap.set(pythonDocsUrl, {"callback": openPythonSDKDocs});
 
   const openLinkInDevice = (link: string) => {
@@ -85,8 +85,8 @@ export default () => {
       }
       nextButton={{
         onClick: () => {
-          openLink(furtherUrl);
-          runningOnWebRenderer() && stopTourAutostart()
+          // openLink(furtherUrl);
+          stopTourAutostart()
           },
         label: 'Go to Further',
         disabled: isOpeningLink,
