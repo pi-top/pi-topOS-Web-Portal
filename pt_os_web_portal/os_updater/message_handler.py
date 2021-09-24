@@ -1,5 +1,8 @@
 from json import dumps as jdumps
+from typing import List
 
+from geventwebsocket.exceptions import WebSocketError
+from geventwebsocket.websocket import WebSocket
 from pitop.common.logger import PTLogger
 
 from ..backend.helpers.modules import get_apt
@@ -9,6 +12,20 @@ from .types import EventNames, MessageType
 
 
 class OSUpdaterFrontendMessageHandler:
+    ws_clients: List[WebSocket] = []
+
+    def _send(self, ws, message):
+        if ws not in self.ws_clients:
+            PTLogger.info(f"New websocket {ws} - adding to list of clients")
+            self.ws_clients.append(ws)
+
+        try:
+            for ws_client in self.ws_clients:
+                ws_client.send(message)
+        except WebSocketError:
+            PTLogger.info(f"Request failed - removing {ws} from list of clients")
+            self.ws_clients.remove(ws)
+
     def create_emit_update_sources_message(self, ws):
         def emit_update_sources_message(
             message_type: MessageType, status_message: str, percent: float
@@ -24,10 +41,7 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"APT Source: {percent}% '{message}'")
 
-            if not ws:
-                return
-            for ws_client in ws.handler.server.clients.values():
-                ws_client.ws.send(jdumps(data))
+            self._send(ws, jdumps(data))
 
         return emit_update_sources_message
 
@@ -48,8 +62,7 @@ class OSUpdaterFrontendMessageHandler:
 
             if not ws:
                 return
-            for ws_client in ws.handler.server.clients.values():
-                ws_client.ws.send(jdumps(data))
+            self._send(ws, jdumps(data))
 
         return emit_os_prepare_upgrade_message
 
@@ -70,8 +83,7 @@ class OSUpdaterFrontendMessageHandler:
 
             if not ws:
                 return
-            for ws_client in ws.handler.server.clients.values():
-                ws_client.ws.send(jdumps(data))
+            self._send(ws, jdumps(data))
 
         return emit_os_upgrade_message
 
@@ -85,7 +97,6 @@ class OSUpdaterFrontendMessageHandler:
 
             if not ws:
                 return
-            for ws_client in ws.handler.server.clients.values():
-                ws_client.ws.send(jdumps(data))
+            self._send(ws, jdumps(data))
 
         return emit_os_size_message
