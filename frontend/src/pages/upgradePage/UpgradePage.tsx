@@ -196,18 +196,10 @@ export default ({
           </span>
 
           <CheckBox
-            name="default-backend"
-            label="Recommended method"
-            checked={isUsingDefaultBackend}
-            onChange={() => setIsUsingDefaultBackend(true)}
-            className={styles.checkbox}
-          />
-
-          <CheckBox
             name="legacy-backend"
-            label="Legacy method"
+            label="Use alternate update method"
             checked={!isUsingDefaultBackend}
-            onChange={() => setIsUsingDefaultBackend(false)}
+            onChange={() => setIsUsingDefaultBackend(!isUsingDefaultBackend)}
             className={styles.checkbox}
           />
           </>

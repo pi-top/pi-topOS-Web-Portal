@@ -36,4 +36,5 @@
 .checkbox > label {
   color: var(--textColour, var(--font));
   font-style: normal;
+  margin-bottom: 10px
 }
