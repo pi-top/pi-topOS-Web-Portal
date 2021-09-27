@@ -4,7 +4,7 @@ from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
-from .about import serial_number
+from .device import serial_number
 
 
 def disable_tour():
