@@ -238,7 +238,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         setWaitingForServer(true);
         restartWebPortalService()
           .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
-          .finally(() => setTimeout(waitUntilServerIsOnline, 300))
+          .finally(() => setTimeout(waitUntilServerIsOnline, 300));
       } else {
         setUpgradeIsRunning(false);
         setUpgradeIsRequired(false);

@@ -12,7 +12,7 @@ from pitop.common.sys_info import is_connected_to_internet
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
-from .helpers.about import device_data
+from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
@@ -422,7 +422,7 @@ def post_open_forum():
 @app.route("/about-device", methods=["GET"])
 def get_about_device():
     PTLogger.debug("Route '/about-device'")
-    return jdumps(device_data())
+    return jdumps(about_device())
 
 
 @app.route("/status", methods=["GET"])
