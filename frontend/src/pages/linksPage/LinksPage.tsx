@@ -8,12 +8,11 @@ import Button from "../../components/atoms/button/Button";
 
 import closePtBrowser from "../../services/closePtBrowser";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
-// import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openForum from "../../services/openForum";
+import openFurther from "../../services/openFurther";
 import stopTourAutostart from "../../services/stopTourAutostart";
 import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
-// import getFurtherUrl from "../../services/getFurtherUrl";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -21,14 +20,14 @@ import { runningOnWebRenderer } from "../../helpers/utils";
 export default () => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const forumUrl = "https://forum.pi-top.com";
+  const furtherUrl = "https://further.pi-top.com/start";
   const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com");
-  // const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
   const [isOpeningLink, setIsOpeningLink] = useState(false);
 
   const serviceMap = new Map<string, any>();
   serviceMap.set(kbUrl, {"callback": openKnowledgeBase});
   serviceMap.set(forumUrl, {"callback": openForum});
-  // serviceMap.set(furtherUrl, {"callback": openFurther});
+  serviceMap.set(furtherUrl, {"callback": openFurther});
   serviceMap.set(pythonDocsUrl, {"callback": openPythonSDKDocs});
 
   const openLinkInDevice = (link: string) => {
@@ -56,12 +55,6 @@ export default () => {
       .catch(() => null) // will use default url
   };
 
-  // const updateFurtherUrl = () => {
-    // getFurtherUrl()
-    //   .then((url_data) => setFurtherUrl(url_data.url))
-    //   .catch(() => null) // will use default url
-  // };
-
   useEffect(() => {
     Promise.all([updateSDKUrl()/*, updateFurtherUrl()*/]);
   }, []);
@@ -85,9 +78,9 @@ export default () => {
       }
       nextButton={{
         onClick: () => {
-          // openLink(furtherUrl);
+          openLink(furtherUrl);
           stopTourAutostart()
-          },
+        },
         label: 'Go to Further',
         disabled: isOpeningLink,
         className: styles.furtherButton
