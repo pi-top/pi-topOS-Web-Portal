@@ -2,25 +2,13 @@ from time import sleep
 
 import requests
 from pitop.common.logger import PTLogger
+from pitop.common.pt_os import get_pitopOS_info
+from pitop.system import device_type
 
 from .. import state
-from ..backend.helpers.about import device_type, os_version, serial_number
+from ..backend.helpers.device import serial_number
 
 API_ENDPOINT = "https://backend.pi-top.com/utils/v1/device/register"
-
-
-def registration_data():
-    email_address = state.get("registration", "email")
-    os_name, os_build_number, update_repo = os_version()
-
-    return {
-        "serialNumber": serial_number(),
-        "email": email_address,
-        "privacyAgreement": True,
-        "device": device_type(),
-        "osVersion": os_name + "-" + os_build_number,
-        "updateRepo": update_repo,
-    }
 
 
 def send_data_and_get_resp(data):
@@ -45,7 +33,16 @@ def create_device_registered_breadcrumb():
 def send_register_device_request():
 
     PTLogger.debug("Getting device data to send...")
-    data = registration_data()
+    build_info = get_pitopOS_info()
+
+    data = {
+        "serialNumber": serial_number(),
+        "email": state.get("registration", "email"),
+        "privacyAgreement": True,
+        "device": device_type(),
+        "osVersion": build_info.build_run_number + "-" + build_info.build_date,
+        "updateRepo": build_info.build_type,
+    }
 
     PTLogger.info(f"Device information to register: {data}")
 
