@@ -40,7 +40,6 @@ class CacheMock:
         if self.sleep_time:
             print(f"CacheMock.upgrade: Sleeping for {self.sleep_time}s")
             sleep(self.sleep_time)
-        pass
 
     def commit(self, fetch_progress, install_progress):
         if self.sleep_time:
