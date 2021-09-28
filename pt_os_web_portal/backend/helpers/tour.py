@@ -1,10 +1,11 @@
 from os import remove
+from urllib.parse import urlencode
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
-from .device import serial_number
+from .device import serial_number, device_type
 
 
 def disable_tour():
@@ -33,39 +34,16 @@ def python_sdk_docs_url():
 def further_url():
     PTLogger.info("Function: get_further_url()")
 
-    def get_serial_number_string():
-        try:
-            device_serial_number = serial_number()
-            return (
-                f"serial_number={device_serial_number}"
-                if device_serial_number != ""
-                else ""
-            )
-        except Exception:
-            return ""
-
-    def get_device_id_string():
-        try:
-            device_str = str(
-                run_command("cat /etc/pi-top/pt-device-manager/device_version", 1000)
-            ).strip()
-            return f"device={device_str}" if device_str != "" else ""
-        except Exception:
-            return ""
-
-    def further_url_query_string():
-        query_string = ""
-        serial_string = get_serial_number_string()
-        device_string = get_device_id_string()
-        if serial_string != "":
-            query_string += f"?{serial_string}"
-        if device_string != "":
-            separator = "?" if serial_string == "" else "&"
-            query_string += f"{separator}{device_string}"
-        return query_string
+    params = {
+        "serial_number": serial_number(),
+        "device": device_type(),
+        "onboarding": True,
+    }
+    non_none_params = {k: v for k, v in params.items() if v is not None}
+    query_string = urlencode(non_none_params)
 
     base_further_url = "https://further.pi-top.com/start"
-    return base_further_url + further_url_query_string()
+    return base_further_url + '?' + query_string
 
 
 def open_further():
