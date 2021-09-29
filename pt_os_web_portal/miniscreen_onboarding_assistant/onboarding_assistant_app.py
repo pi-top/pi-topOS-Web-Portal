@@ -37,5 +37,6 @@ class OnboardingAssistantApp:
         )
 
         while not self.__stop:
-            manager.update()
+            manager.update_scroll_position()
+            manager.display_current_viewport_image()
             manager.wait_until_timeout_or_page_has_changed()

@@ -1,5 +1,4 @@
 from threading import Event
-from time import sleep
 
 from pitop.common.logger import PTLogger
 
@@ -106,6 +105,7 @@ class PageManager:
     def page(self):
         return self.get_page(self.active_viewport.page_index)
 
+    @property
     def needs_to_scroll(self):
         y_pos = self.active_viewport.y_pos
         correct_y_pos = self.active_viewport.page_index * self.page.height
@@ -113,7 +113,7 @@ class PageManager:
         return y_pos != correct_y_pos
 
     def set_page_to(self, page):
-        if self.needs_to_scroll():
+        if self.needs_to_scroll:
             return
 
         new_page = page.type
@@ -153,31 +153,30 @@ class PageManager:
         candidate = self.get_page(self.active_viewport.page_index + 1)
         return candidate if candidate.visible else self.page
 
-    def update(self):
-        if self.needs_to_scroll():
-            self.scroll_to_page()
-            return
-
+    def display_current_viewport_image(self):
         self._ms.display_image(self.active_viewport.image)
 
     def wait_until_timeout_or_page_has_changed(self):
-        self.page_has_changed.wait(self.page.interval)
+        if self.needs_to_scroll:
+            if self.is_skipping:
+                interval = self.skip_speed
+            else:
+                interval = self.scroll_speed
+        else:
+            interval = self.page_redraw_speed
+
+        self.page_has_changed.wait(interval)
         if self.page_has_changed.is_set():
             self.page_has_changed.clear()
 
-    def scroll_to_page(self):
+    def update_scroll_position(self):
         PTLogger.info(f"Miniscreen onboarding: Scrolling to page {self.page.type}")
 
         if not self.needs_to_scroll:
+            self.is_skipping = False
             return
 
         correct_y_pos = self.active_viewport.page_index * self._ms.size[1]
-
         move_down = correct_y_pos > self.active_viewport.y_pos
 
-        direction_scalar = 1 if move_down else -1
-        while correct_y_pos != self.active_viewport.y_pos:
-            self.active_viewport.y_pos += direction_scalar * scroll_px_resolution
-            sleep(self.skip_speed if self.is_skipping else self.scroll_speed)
-
-        self.is_skipping = False
+        self.active_viewport.y_pos += 1 if move_down else -1 * scroll_px_resolution
