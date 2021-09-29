@@ -158,7 +158,7 @@ class PageManager:
             self.scroll_to_page()
             return
 
-        self.active_viewport.refresh()
+        self._ms.display_image(self.active_viewport.image)
 
     def wait_until_timeout_or_page_has_changed(self):
         self.page_has_changed.wait(self.page.interval)
