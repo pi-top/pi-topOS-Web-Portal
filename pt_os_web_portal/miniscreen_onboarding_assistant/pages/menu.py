@@ -28,6 +28,7 @@ class SkipToEndPage(PageBase):
     def __init__(self, size, mode, interval):
         super().__init__(type=MenuPage.SKIP, size=size, mode=mode, interval=interval)
         self.text = "Do you want to skip?"
+        self.invert = True
 
 
 class BuildInfoPage(PageBase):
@@ -40,3 +41,4 @@ class BuildInfoPage(PageBase):
             type=MenuPage.BUILD_INFO, size=size, mode=mode, interval=interval
         )
         self.text = "Show build info!"
+        self.invert = True
