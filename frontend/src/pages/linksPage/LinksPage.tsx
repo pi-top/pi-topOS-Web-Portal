@@ -86,7 +86,7 @@ export default () => {
       nextButton={{
         onClick: () => {
           openLink(furtherUrl);
-          runningOnWebRenderer() && stopTourAutostart()
+          stopTourAutostart();
           },
         label: 'Go to Further',
         disabled: isOpeningLink,

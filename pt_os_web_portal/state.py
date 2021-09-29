@@ -9,7 +9,7 @@ path = Path(STATE_FILE_PATH)
 lock = Lock()
 
 if not path.exists():
-    path.mkdir(parents=True, exist_ok=True)
+    Path(path.parent).mkdir(parents=True, exist_ok=True)
     path.touch()
 
 config_parser.read(STATE_FILE_PATH)
@@ -33,6 +33,18 @@ def set(section: str, key: str, value):
             if not config_parser.has_section(section):
                 config_parser.add_section(section)
             config_parser.set(section, key, value)
+        except Exception:
+            raise
+        __save()
+
+
+def remove(section: str, key: str = ""):
+    with lock:
+        try:
+            if key and config_parser.has_option(section, key):
+                config_parser.remove_option(section, key)
+            elif len(key) == 0 and config_parser.has_section(section):
+                config_parser.remove_section(section)
         except Exception:
             raise
         __save()

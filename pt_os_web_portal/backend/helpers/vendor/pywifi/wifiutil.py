@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # vim: set fileencoding=utf-8
 
 """Implementations of wifi functions of Linux."""

@@ -35,7 +35,7 @@ export default ({
   globalError = false,
   goToPreviousPage,
 }: Props) => {
-  const history = useHistory()
+  const history = useHistory();
   const [isSettingUpDevice, setIsSettingUpDevice] = useState(false);
   const [rebootError, setRebootError] = useState(false);
   const [progressMessage, setProgressMessage] = useState("Alright let's get started!");

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Line as ProgressBar } from "rc-progress";
 import prettyBytes from "pretty-bytes";
 
+import CheckBox from "../../components/atoms/checkBox/CheckBox";
 import Layout from "../../components/layout/Layout";
 import Spinner from "../../components/atoms/spinner/Spinner";
 
@@ -13,9 +14,8 @@ import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialog
 import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
 export enum ErrorMessage {
-  GenericError = "There was a problem during system update. Please skip - you should be able to update later.",
   NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
-  AptError = "There was a problem during system update.",
+  GenericError = "There was a problem during system update.\nIf this is the first time, please try again using the recommended method.\nIf you're experiencing repeated issues, try another method.",
 }
 
 export enum UpgradePageExplanation {
@@ -36,6 +36,7 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onStartUpgradeClick: () => void;
+  onRetry: (defaultBackend: boolean) => void;
   isCompleted?: boolean;
   message?: OSUpdaterMessage,
   updatingSources: boolean,
@@ -57,6 +58,7 @@ export default ({
   onBackClick,
   onNextClick,
   onStartUpgradeClick,
+  onRetry,
   isCompleted,
   message,
   updatingSources,
@@ -73,6 +75,9 @@ export default ({
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
+  const [isUsingDefaultBackend, setIsUsingDefaultBackend] = useState(true);
+  const [isRetrying, setIsRetrying] = useState(false);
+
 
   useEffect(() => {
     setIsNewOsDialogActive(requireBurn || shouldBurn);
@@ -82,12 +87,10 @@ export default ({
     return error !== ErrorType.None
   }
 
-  const getErrorMessage = () =>{
+  const getErrorMessage = () => {
     switch (error) {
       case ErrorType.NoSpaceAvailable:
         return ErrorMessage.NoSpaceAvailable;
-      case ErrorType.AptError:
-        return ErrorMessage.AptError;
       default:
         return ErrorMessage.GenericError
     }
@@ -96,6 +99,8 @@ export default ({
   const getPromptMessage = () => {
     if (upgradeFinished) {
       return <>Your system is <span className="green">up to date</span>!</>
+    } else if (isRetrying) {
+      return <>OK, let's try <span className="green">updating</span> again!</>
     }
     return <>OK, I need to be <span className="green">updated</span></>
   }
@@ -156,7 +161,7 @@ export default ({
     return UpgradePageExplanation.Preparing;
   };
 
-  const continueButtonLabel = upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
+  const continueButtonLabel = hasError() ? "Retry" : upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
 
   return (
     <>
@@ -168,9 +173,9 @@ export default ({
         prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
-          onClick: upgradeIsRequired ? onStartUpgradeClick : onNextClick,
+          onClick: hasError() ? () => {setIsRetrying(true); onRetry(isUsingDefaultBackend)} : upgradeIsRequired ? onStartUpgradeClick : onNextClick,
           label: continueButtonLabel,
-          disabled: !upgradeIsPrepared || upgradeIsRunning || waitingForServer || hasError()
+          disabled: (!upgradeIsPrepared || upgradeIsRunning || waitingForServer) && !hasError()
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
@@ -180,7 +185,25 @@ export default ({
           disabled: upgradeIsRunning
         }}
       >
-        {hasError() && <span className={styles.error}>{getErrorMessage()}</span>}
+        { hasError() && (
+          <>
+          <span className={styles.error}>
+            {
+              getErrorMessage().split('\n').map(function(item, key) {
+                return (<span key={key}>{item}<br/></span>)
+              })
+            }
+          </span>
+
+          <CheckBox
+            name="legacy-backend"
+            label="Use alternate update method"
+            checked={!isUsingDefaultBackend}
+            onChange={() => setIsUsingDefaultBackend(!isUsingDefaultBackend)}
+            className={styles.checkbox}
+          />
+          </>
+        )}
 
         <NewOsVersionDialogContainer
           active={isNewOsDialogActive}
@@ -203,15 +226,20 @@ export default ({
           </>
         )}
 
-        {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.UpdateSources) && !waitingForServer && !error && (
-          <div data-testid="progress" className={styles.progress}>
-            <ProgressBar
-              percent={message.payload.percent}
-              strokeWidth={2}
-              strokeColor="#71c0b4"
-            />
-          </div>
-        )}
+        {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.UpdateSources)
+          && !waitingForServer
+          && !hasError()
+          && isUsingDefaultBackend
+          && (
+            <div data-testid="progress" className={styles.progress}>
+              <ProgressBar
+                percent={message.payload.percent}
+                strokeWidth={2}
+                strokeColor="#71c0b4"
+              />
+            </div>
+          )
+        }
       </Layout>
     </>
   );
