@@ -26,7 +26,7 @@ Depends:
  raspi-config,
 # Restore notification support
  rsync,
-# Close desktop windows
+# Close application windows
  wmctrl
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
