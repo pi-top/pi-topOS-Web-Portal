@@ -153,7 +153,5 @@ class PageManager:
 
         direction_scalar = 1 if move_down else -1
         while correct_y_pos != self.active_viewport.y_pos:
-            self.active_viewport.set_y_position(
-                self.active_viewport.y_pos + (direction_scalar * scroll_px_resolution),
-            )
+            self.active_viewport.y_pos += direction_scalar * scroll_px_resolution
             sleep(self.scroll_speed)

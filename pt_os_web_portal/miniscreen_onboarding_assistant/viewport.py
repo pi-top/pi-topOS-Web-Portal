@@ -20,12 +20,13 @@ class Viewport:
     def y_pos(self):
         return self.viewport._position[1]
 
+    @y_pos.setter
+    def y_pos(self, pos):
+        return self.viewport.set_position((0, pos))
+
     def refresh(self):
         return self.viewport.refresh()
 
-    def set_y_position(self, pos):
-        return self.viewport.set_position((0, pos))
-
     def move_to_page(self, index):
         self.page_index = index
-        self.set_y_position(index * self.viewport.height)
+        self.y_pos = self.page_index * self.viewport.height
