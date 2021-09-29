@@ -6,7 +6,7 @@ import styles from "./LinksPage.module.css";
 import TourLayout  from "../../components/tourLayout/TourLayout";
 import Button from "../../components/atoms/button/Button";
 
-import closePtBrowser from "../../services/closePtBrowser";
+import closePtOsTourWindow from "../../services/closePtOsTourWindow";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
@@ -37,7 +37,7 @@ export default () => {
       serviceMap.get(link).callback();
       window.setTimeout(() => {
         setIsOpeningLink(false);
-        closePtBrowser();
+        closePtOsTourWindow();
       }, 10000);
     }
   }
@@ -68,7 +68,7 @@ export default () => {
 
   return (
     <TourLayout
-      onCloseButton={() => !isOpeningLink && stopTourAutostart().then(() => closePtBrowser())}
+      onCloseButton={() => !isOpeningLink && stopTourAutostart().then(() => closePtOsTourWindow())}
       isLoadingBanner={isOpeningLink}
       banner={{
         src: linkScreenCenter,
