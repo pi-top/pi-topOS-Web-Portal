@@ -73,7 +73,6 @@ class viewport:
     """
     The viewport offers a positionable window into a larger resolution pseudo-display,
     that also supports the concept of hotspots (which act like live displays).
-    :param device: The device to project the enlarged pseudo-display viewport onto.
     :param width: The number of horizontal pixels.
     :type width: int
     :param height: The number of vertical pixels.
@@ -89,20 +88,19 @@ class viewport:
     :type dither: bool
     """
 
-    def __init__(self, width, height, mode, dither=False):
-        self.rotate = 0
+    def __init__(self, display_size, window_size, mode, dither=False):
         self.mode = mode
-        self._w = width
-        self._h = height
-        self.width = width if self.rotate % 2 == 0 else height
-        self.height = height if self.rotate % 2 == 0 else width
+        self.width = display_size[0]
+        self.height = display_size[1]
+        self.window_width = window_size[0]
+        self.window_height = window_size[1]
         self.size = (self.width, self.height)
         self.bounding_box = (0, 0, self.width - 1, self.height - 1)
         self.persist = False
 
         self._backing_image = Image.new(self.mode, self.size)
         self._position = (0, 0)
-        self._hotspots = []
+        self.heightotspots = []
         self._dither = dither
 
     def clear(self):
@@ -110,22 +108,6 @@ class viewport:
         Initializes the device memory with an empty (blank) image.
         """
         self._backing_image = Image.new(self.mode, self.size)
-
-    def preprocess(self, image):
-        """
-        Provides a preprocessing facility (which may be overridden) whereby the supplied image is
-        rotated according to the device's rotate capability. If this method is
-        overridden, it is important to call the ``super`` method.
-        :param image: An image to pre-process.
-        :type image: PIL.Image.Image
-        :returns: A new processed image.
-        :rtype: PIL.Image.Image
-        """
-        if self.rotate == 0:
-            return image
-
-        angle = self.rotate * -90
-        return image.rotate(angle, expand=True).crop((0, 0, self._w, self._h))
 
     def set_position(self, xy):
         self._position = xy
@@ -142,7 +124,7 @@ class viewport:
 
         # TODO: should it check to see whether hotspots overlap each other?
         # Is sensible to _allow_ them to overlap?
-        self._hotspots.append((hotspot, xy))
+        self.heightotspots.append((hotspot, xy))
 
     def remove_hotspot(self, hotspot, xy):
         """
@@ -152,7 +134,7 @@ class viewport:
         specified hotspot is not found for ``(x, y)``, a ``ValueError`` is
         raised.
         """
-        self._hotspots.remove((hotspot, xy))
+        self.heightotspots.remove((hotspot, xy))
         eraser = Image.new(self.mode, hotspot.size)
         self._backing_image.paste(eraser, xy)
 
@@ -163,13 +145,15 @@ class viewport:
         position of the viewport.
         """
         l1, t1, r1, b1 = calc_bounds(xy, hotspot.width, hotspot.height)
-        l2, t2, r2, b2 = calc_bounds(self._position, self._w, self._h)
+        l2, t2, r2, b2 = calc_bounds(
+            self._position, self.window_width, self.window_height
+        )
         return range_overlap(l1, r1, l2, r2) and range_overlap(t1, b1, t2, b2)
 
     @property
     def image(self):
         should_wait = False
-        for hotspot, xy in self._hotspots:
+        for hotspot, xy in self.heightotspots:
             if hotspot.should_redraw() and self.is_overlapping_viewport(hotspot, xy):
                 pool.add_task(hotspot.paste_into, self._backing_image, xy)
                 should_wait = True
@@ -184,8 +168,8 @@ class viewport:
 
     def _crop_box(self):
         (left, top) = self._position
-        right = left + self._w
-        bottom = top + self._h
+        right = left + self.window_width
+        bottom = top + self.window_height
 
         assert 0 <= left <= right <= self.width
         assert 0 <= top <= bottom <= self.height
@@ -193,12 +177,12 @@ class viewport:
         return (left, top, right, bottom)
 
 
-class Viewport:
+class ViewportManager:
     def __init__(self, name, miniscreen, pages):
         self.name = name
         self.viewport = viewport(
-            width=miniscreen.size[0],
-            height=miniscreen.size[1] * len(pages),
+            display_size=(miniscreen.size[0], miniscreen.size[1] * len(pages)),
+            window_size=miniscreen.size,
             mode=miniscreen.mode,
         )
 

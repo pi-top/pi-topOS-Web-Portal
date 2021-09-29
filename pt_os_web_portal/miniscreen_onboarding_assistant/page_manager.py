@@ -5,7 +5,7 @@ from pitop.common.logger import PTLogger
 from ..event import AppEvents, subscribe
 from .pages.guide import GuidePage, GuidePageGenerator
 from .pages.menu import MenuPage, MenuPageGenerator
-from .viewport import Viewport
+from .viewport import ViewportManager
 
 scroll_px_resolution = 2
 
@@ -25,7 +25,7 @@ class PageManager:
         self._ms.select_button.when_released = self.handle_select_btn
         self._ms.cancel_button.when_released = self.handle_cancel_btn
 
-        self.guide_viewport = Viewport(
+        self.guide_viewport = ViewportManager(
             "guide",
             miniscreen,
             [
@@ -36,7 +36,7 @@ class PageManager:
             ],
         )
 
-        self.menu_viewport = Viewport(
+        self.menu_viewport = ViewportManager(
             "menu",
             miniscreen,
             [
