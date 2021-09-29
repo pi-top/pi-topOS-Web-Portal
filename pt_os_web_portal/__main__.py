@@ -14,7 +14,7 @@ def is_root() -> bool:
 
 
 def configure_interrupt_signals(app):
-    def handler(signal, frame):
+    def handler(*_):
         PTLogger.info("Stopping...")
         app.stop()
         PTLogger.debug("Stopped!")
