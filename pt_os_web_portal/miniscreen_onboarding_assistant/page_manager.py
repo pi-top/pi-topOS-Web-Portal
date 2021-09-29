@@ -154,7 +154,7 @@ class PageManager:
         return candidate if candidate.visible else self.page
 
     def display_current_viewport_image(self):
-        self._ms.display_image(self.active_viewport.image)
+        self._ms.device.display(self.active_viewport.image)
 
     def wait_until_timeout_or_page_has_changed(self):
         if self.needs_to_scroll:
@@ -170,8 +170,6 @@ class PageManager:
             self.page_has_changed.clear()
 
     def update_scroll_position(self):
-        PTLogger.info(f"Miniscreen onboarding: Scrolling to page {self.page.type}")
-
         if not self.needs_to_scroll:
             self.is_skipping = False
             return
