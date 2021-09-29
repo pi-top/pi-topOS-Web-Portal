@@ -35,10 +35,9 @@ from .helpers.keyboard import (
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.registration import set_registration_email
-from .helpers.system import restart_web_portal_service
+from .helpers.system import close_window_by_title, restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.tour import (
-    close_pt_browser,
     disable_tour,
     further_url,
     open_forum,
@@ -385,10 +384,17 @@ def post_disable_tour():
     return "OK"
 
 
-@app.route("/close-pt-browser", methods=["POST"])
-def post_close_pt_browser():
-    PTLogger.debug("Route '/close-pt-browser'")
-    close_pt_browser()
+@app.route("/close-os-updater-window", methods=["POST"])
+def post_close_os_updater_window():
+    PTLogger.debug("Route '/close-os-updater-window'")
+    close_window_by_title("pi-topOS Tour")
+    return "OK"
+
+
+@app.route("/close-pt-os-tour-window", methods=["POST"])
+def post_close_pt_os_tour_window():
+    PTLogger.debug("Route '/close-pt-os-tour-window'")
+    close_window_by_title("pi-topOS Updater Tool")
     return "OK"
 
 
