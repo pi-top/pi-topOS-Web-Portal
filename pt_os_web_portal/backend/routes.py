@@ -9,6 +9,8 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
+from ..app_window.os_updater_app_window import OsUpdaterAppWindow
+from ..app_window.tour_app_window import TourAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -387,14 +389,14 @@ def post_disable_tour():
 @app.route("/close-os-updater-window", methods=["POST"])
 def post_close_os_updater_window():
     PTLogger.debug("Route '/close-os-updater-window'")
-    close_window_by_title("pi-topOS Tour")
+    close_window_by_title(OsUpdaterAppWindow.title)
     return "OK"
 
 
 @app.route("/close-pt-os-tour-window", methods=["POST"])
 def post_close_pt_os_tour_window():
     PTLogger.debug("Route '/close-pt-os-tour-window'")
-    close_window_by_title("pi-topOS Updater Tool")
+    close_window_by_title(TourAppWindow.title)
     return "OK"
 
 
