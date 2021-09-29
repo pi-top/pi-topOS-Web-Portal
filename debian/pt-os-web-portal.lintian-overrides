@@ -1,2 +1,2 @@
 pt-os-web-portal: no-manual-page usr/bin/pt-os-web-portal
-pt-os-web-portal: no-manual-page usr/bin/open-web-portal-page
+pt-os-web-portal: no-manual-page usr/bin/pt-os-web-portal-frontend

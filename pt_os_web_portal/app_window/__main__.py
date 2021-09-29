@@ -21,4 +21,4 @@ def main(page_name):
 
 
 if __name__ == "__main__":
-    main(prog_name="open-web-portal-page")  # pragma: no cover
+    main(prog_name="pt-os-web-portal-frontend")  # pragma: no cover
