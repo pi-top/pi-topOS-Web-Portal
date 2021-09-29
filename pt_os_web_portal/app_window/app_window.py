@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from subprocess import check_output
 
+from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger
 
 
@@ -15,17 +15,17 @@ class AppWindow:
     kiosk: bool = False
 
     def run(self):
-        cmd_arr = ["/usr/bin/web-renderer"]
+        cmd = "/usr/bin/web-renderer "
         if self.title:
-            cmd_arr.append(f"--window-title='{self.title}'")
+            cmd += f"--window-title='{self.title}' "
         if self.icon:
-            cmd_arr.append(f"--icon='{self.icon}'")
+            cmd += f"--icon='{self.icon}' "
         if self.hide_frame:
-            cmd_arr.append("--hide-frame")
+            cmd += "--hide-frame "
         if self.kiosk:
-            cmd_arr.append("--kiosk")
-        cmd_arr.append(f"--size={self.width_scalar}x{self.height_scalar}")
-        cmd_arr.append(f"{self.url}")
+            cmd += "--kiosk "
+        cmd += f"--size={self.width_scalar}x{self.height_scalar} "
+        cmd += f"{self.url}"
 
-        PTLogger.info(f"AppWindow.run: running {cmd_arr}")
-        check_output(cmd_arr)
+        PTLogger.info(f"AppWindow.run: running {cmd}")
+        run_command(f"{cmd}", check=False, timeout=None)
