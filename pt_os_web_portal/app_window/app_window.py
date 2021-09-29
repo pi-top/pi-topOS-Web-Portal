@@ -29,3 +29,9 @@ class AppWindow:
 
         PTLogger.info(f"AppWindow.run: running {cmd}")
         run_command(f"{cmd}", check=False, timeout=None)
+
+    def close(self):
+        try:
+            run_command(f'wmctrl -c "{self.title}"', timeout=5)
+        except Exception as e:
+            PTLogger.error(f"Error closing '{self.title}' window: {e}")

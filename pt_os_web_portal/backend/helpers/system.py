@@ -10,11 +10,3 @@ def restart_web_portal_service() -> None:
         )
     except Exception as e:
         PTLogger.error(f"restart_web_portal_service(): {e}")
-
-
-def close_window_by_title(window_title: str) -> None:
-    PTLogger.info("Function: close_window_by_title()")
-    try:
-        run_command(f'wmctrl -c "{window_title}"', timeout=5)
-    except Exception as e:
-        PTLogger.error(f"Error closing '{window_title}' window: {e}")

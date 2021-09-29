@@ -37,7 +37,7 @@ from .helpers.keyboard import (
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.registration import set_registration_email
-from .helpers.system import close_window_by_title, restart_web_portal_service
+from .helpers.system import restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.tour import (
     disable_tour,
@@ -389,14 +389,14 @@ def post_disable_tour():
 @app.route("/close-os-updater-window", methods=["POST"])
 def post_close_os_updater_window():
     PTLogger.debug("Route '/close-os-updater-window'")
-    close_window_by_title(OsUpdaterAppWindow.title)
+    OsUpdaterAppWindow().close()
     return "OK"
 
 
 @app.route("/close-pt-os-tour-window", methods=["POST"])
 def post_close_pt_os_tour_window():
     PTLogger.debug("Route '/close-pt-os-tour-window'")
-    close_window_by_title(TourAppWindow.title)
+    TourAppWindow().close()
     return "OK"
 
 
