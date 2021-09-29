@@ -100,3 +100,21 @@ class OSUpdaterFrontendMessageHandler:
             self._send(ws, jdumps(data))
 
         return emit_os_size_message
+
+    def create_emit_state_message(self, ws):
+        def emit_state_message(message_type, is_busy, clients):
+            data = {
+                "type": EventNames.STATE.name,
+                "payload": {
+                    "busy": is_busy,
+                    "clients": clients,
+                    "status": message_type.name,
+                },
+            }
+            PTLogger.info(f"OS Updater busy: {is_busy} - clients: {clients}")
+
+            if not ws:
+                return
+            self._send(ws, jdumps(data))
+
+        return emit_state_message

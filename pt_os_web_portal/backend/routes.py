@@ -276,6 +276,7 @@ def os_upgrade(ws):
             "size": get_os_updater().upgrade_size,
             "legacy-updater-backend": get_os_updater().use_legacy_backend,
             "default-updater-backend": get_os_updater().use_default_backend,
+            "state": get_os_updater().state,
         }
 
         if not funcs.get(message):
