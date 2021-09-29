@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Exec=pt-os-about
+Exec=open-web-portal-page about
 Icon=pt-os-about
 Terminal=false
 Name=About pi-topOS

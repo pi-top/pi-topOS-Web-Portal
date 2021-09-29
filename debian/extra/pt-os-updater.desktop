@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Exec=pt-os-updater
+Exec=open-web-portal-page updater
 Icon=system-software-update
 Terminal=false
 Name=pi-topOS Updater Tool

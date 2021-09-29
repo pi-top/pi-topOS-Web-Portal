@@ -1,5 +1,5 @@
-pt-os-web-portal-desktop: desktop-command-not-in-package usr/share/applications/pt-os-about.desktop pt-os-about
-pt-os-web-portal-desktop: desktop-command-not-in-package usr/share/applications/pt-os-updater.desktop pt-os-updater
+pt-os-web-portal-desktop: desktop-command-not-in-package usr/share/applications/pt-os-about.desktop open-web-portal-page
+pt-os-web-portal-desktop: desktop-command-not-in-package usr/share/applications/pt-os-updater.desktop open-web-portal-page
 # 'Help' is not considered a valid category but it works
 pt-os-web-portal-desktop: desktop-entry-invalid-category Help usr/share/applications/pt-os-about.desktop
 # 'Help' is not considered a valid category but it works
