@@ -9,6 +9,7 @@ from .page_manager import PageManager
 class Speeds(Enum):
     DYNAMIC_PAGE_REDRAW = 1
     SCROLL = 0.013
+    SKIP = 0.006
 
 
 class OnboardingAssistantApp:
@@ -32,6 +33,7 @@ class OnboardingAssistantApp:
             miniscreen,
             page_redraw_speed=Speeds.DYNAMIC_PAGE_REDRAW.value,
             scroll_speed=Speeds.SCROLL.value,
+            skip_speed=Speeds.SKIP.value,
         )
 
         while not self.__stop:

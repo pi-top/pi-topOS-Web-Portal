@@ -12,15 +12,18 @@ scroll_px_resolution = 2
 
 
 class PageManager:
-    def __init__(self, miniscreen, page_redraw_speed, scroll_speed):
+    def __init__(self, miniscreen, page_redraw_speed, scroll_speed, skip_speed):
         self._ms = miniscreen
 
         self.page_redraw_speed = page_redraw_speed
         self.scroll_speed = scroll_speed
+        self.skip_speed = skip_speed
+
+        self.is_skipping = False
 
         self._ms.up_button.when_released = self.set_page_to_previous_page
         self._ms.down_button.when_released = self.set_page_to_next_page
-        self._ms.select_button.when_released = self.set_page_to_next_page
+        self._ms.select_button.when_released = self.handle_select_btn
         self._ms.cancel_button.when_released = self.handle_cancel_btn
 
         self.guide_viewport = Viewport(
@@ -48,10 +51,10 @@ class PageManager:
         self.active_viewport = self.guide_viewport
         self.page_has_changed = Event()
 
-        self.handle_automatic_transitions()
+        self.setup_event_triggers()
 
-    def handle_automatic_transitions(self):
-        def automatic_transition_to_last_page(_):
+    def setup_event_triggers(self):
+        def soft_transition_to_last_page(_):
             if self.active_viewport != self.guide_viewport:
                 return
 
@@ -60,7 +63,28 @@ class PageManager:
             if self.guide_viewport.page_index == last_page_index - 1:
                 self.guide_viewport.page_index = last_page_index
 
-        subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, soft_transition_to_last_page)
+
+        def hard_transition_to_connect_page(_):
+            self.active_viewport = self.guide_viewport
+            self.active_viewport.page_index = len(self.active_viewport.pages) - 2
+            self.is_skipping = True
+
+        subscribe(
+            AppEvents.USER_SKIPPED_CONNECTION_GUIDE, hard_transition_to_connect_page
+        )
+
+    def handle_select_btn(self):
+        print("select btn pressed")
+
+        if self.active_viewport == self.guide_viewport:
+            self.set_page_to_next_page()
+        else:
+            self.active_viewport.current_page.on_select_press()
+
+        print(f"Current viewport: {self.active_viewport.name}")
+
+        self.page_has_changed.set()
 
     def handle_cancel_btn(self):
         print("cancel btn pressed")
@@ -154,4 +178,6 @@ class PageManager:
         direction_scalar = 1 if move_down else -1
         while correct_y_pos != self.active_viewport.y_pos:
             self.active_viewport.y_pos += direction_scalar * scroll_px_resolution
-            sleep(self.scroll_speed)
+            sleep(self.skip_speed if self.is_skipping else self.scroll_speed)
+
+        self.is_skipping = False

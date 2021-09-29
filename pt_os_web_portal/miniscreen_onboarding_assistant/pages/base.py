@@ -28,17 +28,12 @@ class PageBase:
 
     def paste_into(self, image, xy):
         im = Image.new(image.mode, self.size)
-        self._render(im)
+        self.render(im)
         if self.invert:
             im = MiniscreenAssistant(self.mode, self.size).invert(im)
         image.paste(im, xy)
         del im
         self.last_updated = perf_counter()
 
-    def _render(self, image):
-        MiniscreenAssistant(self.mode, self.size).render_text(
-            image,
-            text=self.text,
-            wrap=self.wrap,
-            font_size=self.font_size,
-        )
+    def render(self, image):
+        raise NotImplementedError

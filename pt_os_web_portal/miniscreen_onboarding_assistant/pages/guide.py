@@ -1,8 +1,23 @@
 from enum import Enum, auto
 from subprocess import run
 
+from pitop.miniscreen.oled.assistant import MiniscreenAssistant
+
 from ...event import AppEvents, subscribe
 from .base import PageBase
+
+
+class GuidePageBase(PageBase):
+    def __init__(self, type, size=(0, 0), mode=0, interval=1):
+        super().__init__(type, size, mode, interval)
+
+    def render(self, image):
+        MiniscreenAssistant(self.mode, self.size).render_text(
+            image,
+            text=self.text,
+            wrap=self.wrap,
+            font_size=self.font_size,
+        )
 
 
 class GuidePage(Enum):
@@ -34,7 +49,7 @@ class GuidePageGenerator:
         return pages[page_type]
 
 
-class StartPage(PageBase):
+class StartPage(GuidePageBase):
     """
     Welcome! Let's get you set up, press any button to get started!
     """
@@ -44,7 +59,7 @@ class StartPage(PageBase):
         self.text = "Welcome to your pi-top! Press any button to get started..."
 
 
-class WelcomePage(PageBase):
+class WelcomePage(GuidePageBase):
     """
     That's it!
     Now press DOWN to scroll...
@@ -57,7 +72,7 @@ class WelcomePage(PageBase):
         self.text = "That's it!\nNow press DOWN to scroll..."
 
 
-class StartWirelessConnectionPage(PageBase):
+class StartWirelessConnectionPage(GuidePageBase):
     """
     Awesome! Press DOWN to continue through pi-top connection setup...
     """
@@ -72,7 +87,7 @@ class StartWirelessConnectionPage(PageBase):
         self.text = "Awesome! Press DOWN to continue through pi-top connection setup..."
 
 
-class HelpURLPage(PageBase):
+class HelpURLPage(GuidePageBase):
     """
     Detailed setup instructions: pi-top.com/start-4
 
@@ -86,7 +101,7 @@ class HelpURLPage(PageBase):
         self.text = "Detailed setup instructions: pi-top.com/start-4"
 
 
-class GetDevicePage(PageBase):
+class GetDevicePage(GuidePageBase):
     """
     Let's get started! You will need a laptop/computer to connect with...
     """
@@ -101,7 +116,7 @@ class GetDevicePage(PageBase):
         self.wrap = False
 
 
-class ConnectPitopWifiNetworkPage(PageBase):
+class ConnectPitopWifiNetworkPage(GuidePageBase):
     """
     Connect to Wi-Fi network '{ssid}' using password '{passphrase}'
     """
@@ -135,7 +150,7 @@ class ConnectPitopWifiNetworkPage(PageBase):
         return f"Connect to\nWi-Fi network:\n'{self.ssid}'\n'{self.passphrase}'"
 
 
-class OpenBrowserPage(PageBase):
+class OpenBrowserPage(GuidePageBase):
     # Default: "Waiting for connection...", then:
     """
     Open browser to
@@ -187,7 +202,7 @@ class OpenBrowserPage(PageBase):
         return txt
 
 
-class CarryOnPage(PageBase):
+class CarryOnPage(GuidePageBase):
     """
     You've started the onboarding!
     Continue in your browser...

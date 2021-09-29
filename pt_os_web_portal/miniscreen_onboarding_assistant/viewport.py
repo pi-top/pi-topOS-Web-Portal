@@ -17,6 +17,10 @@ class Viewport:
             self.viewport.add_hotspot(page, (0, i * miniscreen.size[1]))
 
     @property
+    def current_page(self):
+        return self.pages[self.page_index]
+
+    @property
     def y_pos(self):
         return self.viewport._position[1]
 
