@@ -38,7 +38,7 @@ class AppWindow:
 
 
 @dataclass
-class About(AppWindow):
+class AboutAppWindow(AppWindow):
     url: str = "http://localhost/about"
     width_scalar: float = 0.28
     height_scalar: float = 0.36
@@ -48,13 +48,13 @@ class About(AppWindow):
 
 
 @dataclass
-class Onboarding(AppWindow):
+class OnboardingAppWindow(AppWindow):
     url: str = "http://localhost/onboarding"
     kiosk: bool = True
 
 
 @dataclass
-class OsUpdater(AppWindow):
+class OsUpdaterAppWindow(AppWindow):
     url: str = "http://localhost/updater"
     width_scalar: float = 0.7
     height_scalar: float = 0.7
@@ -64,7 +64,7 @@ class OsUpdater(AppWindow):
 
 
 @dataclass
-class Tour(AppWindow):
+class TourAppWindow(AppWindow):
     url: str = "http://localhost/tour"
     width_scalar: float = 0.65
     height_scalar: float = 0.7

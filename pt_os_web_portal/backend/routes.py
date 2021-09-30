@@ -9,8 +9,7 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
-from ..app_window.os_updater_app_window import OsUpdaterAppWindow
-from ..app_window.tour_app_window import TourAppWindow
+from ..app_window import OsUpdaterAppWindow, TourAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
