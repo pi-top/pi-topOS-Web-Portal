@@ -1,6 +1,8 @@
 from threading import Event
 
+from PIL import ImageDraw
 from pitop.common.logger import PTLogger
+from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ..event import AppEvents, subscribe
 from .pages.guide import GuidePage, GuidePageGenerator
@@ -36,6 +38,18 @@ class PageManager:
             ],
         )
 
+        def menu_overlay(image):
+            asst = MiniscreenAssistant(self._ms.mode, self._ms.size)
+            ImageDraw.Draw(image).rectangle(((0, 0), (self._ms.size[0], 18)), fill=1)
+            asst.render_text(
+                image,
+                xy=(self._ms.size[0] / 2, self._ms.size[1] / 6),
+                text="M E N U",
+                wrap=False,
+                font=asst.get_mono_font_path(bold=True),
+                fill=0,
+            )
+
         self.menu_viewport = ViewportManager(
             "menu",
             miniscreen,
@@ -45,6 +59,7 @@ class PageManager:
                 )
                 for menu_page_type in MenuPage
             ],
+            overlay_render_func=menu_overlay,
         )
 
         self.active_viewport = self.guide_viewport
@@ -74,27 +89,19 @@ class PageManager:
         )
 
     def handle_select_btn(self):
-        print("select btn pressed")
-
         if self.active_viewport == self.guide_viewport:
             self.set_page_to_next_page()
         else:
             self.active_viewport.current_page.on_select_press()
 
-        print(f"Current viewport: {self.active_viewport.name}")
-
         self.page_has_changed.set()
 
     def handle_cancel_btn(self):
-        print("cancel btn pressed")
-
         if self.active_viewport == self.guide_viewport:
             self.active_viewport = self.menu_viewport
             self.active_viewport.move_to_page(0)
         else:
             self.active_viewport = self.guide_viewport
-
-        print(f"Current viewport: {self.active_viewport.name}")
 
         self.page_has_changed.set()
 

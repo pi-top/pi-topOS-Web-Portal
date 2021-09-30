@@ -15,18 +15,7 @@ class MenuPageBase(PageBase):
         pass
 
     def render(self, image):
-        # Top centre
         asst = MiniscreenAssistant(self.mode, self.size)
-        asst.render_text(
-            image,
-            xy=(self.size[0] / 2, self.size[1] / 6),
-            text="M E N U",
-            wrap=False,
-            font=asst.get_mono_font_path(bold=True),
-            font_size=self.font_size,
-        )
-
-        # Centre
         asst.render_text(
             image,
             xy=(self.size[0] / 2, self.size[1] / 2),

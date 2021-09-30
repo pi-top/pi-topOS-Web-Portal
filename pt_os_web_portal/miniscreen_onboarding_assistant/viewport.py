@@ -80,15 +80,9 @@ class viewport:
     :param mode: The supported color model, one of ``"1"``, ``"RGB"`` or
         ``"RGBA"`` only.
     :type mode: str
-    :param dither: By default, any color (other than black) will be `generally`
-        treated as white when displayed on monochrome devices. However, this behaviour
-        can be changed by adding ``dither=True`` and the image will be converted from RGB
-        space into a 1-bit monochrome image where dithering is employed to differentiate
-        colors at the expense of resolution.
-    :type dither: bool
     """
 
-    def __init__(self, display_size, window_size, mode, dither=False):
+    def __init__(self, display_size, window_size, mode):
         self.mode = mode
         self.width = display_size[0]
         self.height = display_size[1]
@@ -101,7 +95,6 @@ class viewport:
         self._backing_image = Image.new(self.mode, self.size)
         self._position = (0, 0)
         self.heightotspots = []
-        self._dither = dither
 
     def clear(self):
         """
@@ -162,8 +155,6 @@ class viewport:
             pool.wait_completion()
 
         im = self._backing_image.crop(box=self._crop_box())
-        if self._dither:
-            im = im.convert(self.mode)
         return im
 
     def _crop_box(self):
@@ -178,7 +169,7 @@ class viewport:
 
 
 class ViewportManager:
-    def __init__(self, name, miniscreen, pages):
+    def __init__(self, name, miniscreen, pages, overlay_render_func=None):
         self.name = name
         self.viewport = viewport(
             display_size=(miniscreen.size[0], miniscreen.size[1] * len(pages)),
@@ -188,6 +179,7 @@ class ViewportManager:
 
         self.pages = pages
         self.page_index = 0
+        self.overlay_render_func = overlay_render_func
 
         for i, page in enumerate(self.pages):
             self.viewport.add_hotspot(page, (0, i * miniscreen.size[1]))
@@ -210,4 +202,9 @@ class ViewportManager:
 
     @property
     def image(self):
-        return self.viewport.image
+        im = self.viewport.image.copy()
+
+        if callable(self.overlay_render_func):
+            self.overlay_render_func(im)
+
+        return im
