@@ -8,7 +8,7 @@ import RestartPageContainer from "./pages/restartPage/RestartPageContainer";
 import ErrorPage from "./pages/errorPage/ErrorPage";
 import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 import UpgradePageContainer from "./pages/upgradePage/UpgradePageContainer";
-import closePtBrowser from "./services/closePtBrowser";
+import closeOsUpdaterWindow from "./services/closeOsUpdaterWindow";
 
 export default () => (
   <ErrorBoundary
@@ -25,7 +25,7 @@ export default () => (
       <Route path="/updater"
         render={()=>{return(
           <UpgradePageContainer
-            goToNextPage={() => {closePtBrowser()}}
+            goToNextPage={() => {closeOsUpdaterWindow()}}
           />
         )}}
       />

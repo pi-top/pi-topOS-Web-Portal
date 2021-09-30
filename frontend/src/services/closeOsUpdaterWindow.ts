@@ -2,9 +2,9 @@ import axios from "axios";
 
 import apiBaseUrl from "./apiBaseUrl";
 
-export default async function closePtBrowser() {
+export default async function closeOsUpdaterWindow() {
   await axios.post(
-    `${apiBaseUrl}/close-pt-browser`,
+    `${apiBaseUrl}/close-os-updater-window`,
     {},
   );
 }
