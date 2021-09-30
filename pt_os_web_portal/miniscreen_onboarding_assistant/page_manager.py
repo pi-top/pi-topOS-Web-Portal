@@ -190,4 +190,4 @@ class PageManager:
         correct_y_pos = self.active_viewport.page_index * self._ms.size[1]
         move_down = correct_y_pos > self.active_viewport.y_pos
 
-        self.active_viewport.y_pos += 1 if move_down else -1 * scroll_px_resolution
+        self.active_viewport.y_pos += scroll_px_resolution * (1 if move_down else -1)

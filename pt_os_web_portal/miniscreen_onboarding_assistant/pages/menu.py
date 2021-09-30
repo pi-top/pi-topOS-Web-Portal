@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+from pitop.battery import Battery
 from pitop.common.pt_os import get_pitopOS_info
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
@@ -35,6 +36,7 @@ class MenuPageBase(PageBase):
 
 class MenuPage(Enum):
     SKIP = auto()
+    BATTERY = auto()
     BUILD_INFO = auto()
     ADDITIONAL_BUILD_INFO = auto()
 
@@ -44,6 +46,7 @@ class MenuPageGenerator:
     def get_page(page_type: MenuPage):
         pages = {
             MenuPage.SKIP: SkipToEndPage,
+            MenuPage.BATTERY: BatteryPage,
             MenuPage.BUILD_INFO: BuildInfoPage,
             MenuPage.ADDITIONAL_BUILD_INFO: AdditionalBuildInfoPage,
         }
@@ -62,6 +65,30 @@ class SkipToEndPage(MenuPageBase):
 
     def on_select_press(self):
         post_event(AppEvents.USER_SKIPPED_CONNECTION_GUIDE, True)
+
+
+class BatteryPage(MenuPageBase):
+    """
+    Battery: ?%
+    Charging? Yes
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(type=MenuPage.BATTERY, size=size, mode=mode, interval=interval)
+        self.battery_instance = Battery()
+
+    @property
+    def text(self):
+        def _power_source_text():
+            if self.battery_instance.is_full or self.battery_instance.is_charging:
+                return "Power Adapter"
+
+            return "Battery"
+
+        return (
+            f"Battery: {self.battery_instance.capacity}%\n"
+            f"Power Source: {_power_source_text()}"
+        )
 
 
 class BuildInfoPage(MenuPageBase):
