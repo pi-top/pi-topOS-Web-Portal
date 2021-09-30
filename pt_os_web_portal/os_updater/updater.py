@@ -60,7 +60,7 @@ class OSUpdater:
 
     def do_update_check(self, ws=None):
         should_check_for_updates = (
-            state.get("app", "state", fallback="onboarding") != "onboarding"
+            state.get("app", "onboarded", fallback="false") == "true"
             and is_connected_to_internet()
             and self.last_checked_date != date.today()
         )
