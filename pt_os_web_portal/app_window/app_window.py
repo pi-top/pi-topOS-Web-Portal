@@ -35,3 +35,39 @@ class AppWindow:
             run_command(f'wmctrl -c "{self.title}"', timeout=5)
         except Exception as e:
             PTLogger.error(f"Error closing '{self.title}' window: {e}")
+
+
+@dataclass
+class About(AppWindow):
+    url: str = "http://localhost/about"
+    width_scalar: float = 0.28
+    height_scalar: float = 0.36
+    title: str = "About pi-topOS"
+    icon: str = "/usr/share/icons/hicolor/scalable/apps/pt-os-about.svg"
+    hide_frame: bool = False
+
+
+@dataclass
+class Onboarding(AppWindow):
+    url: str = "http://localhost/onboarding"
+    kiosk: bool = True
+
+
+@dataclass
+class OsUpdater(AppWindow):
+    url: str = "http://localhost/updater"
+    width_scalar: float = 0.7
+    height_scalar: float = 0.7
+    title: str = "pi-topOS Updater Tool"
+    icon: str = "/usr/share/icons/Papirus/24x24/apps/system-software-update.svg"
+    hide_frame: bool = True
+
+
+@dataclass
+class Tour(AppWindow):
+    url: str = "http://localhost/tour"
+    width_scalar: float = 0.65
+    height_scalar: float = 0.7
+    title: str = "pi-topOS Tour"
+    icon: str = "/usr/share/icons/hicolor/scalable/apps/pt-os-about.svg"
+    hide_frame: bool = True
