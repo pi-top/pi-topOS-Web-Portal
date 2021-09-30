@@ -1,9 +1,12 @@
 from enum import Enum, auto
 
+from pitop.common.pt_os import get_pitopOS_info
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ...event import AppEvents, post_event
 from .base import PageBase
+
+build_info = get_pitopOS_info()
 
 
 class MenuPageBase(PageBase):
@@ -33,6 +36,7 @@ class MenuPageBase(PageBase):
 class MenuPage(Enum):
     SKIP = auto()
     BUILD_INFO = auto()
+    ADDITIONAL_BUILD_INFO = auto()
 
 
 class MenuPageGenerator:
@@ -41,6 +45,7 @@ class MenuPageGenerator:
         pages = {
             MenuPage.SKIP: SkipToEndPage,
             MenuPage.BUILD_INFO: BuildInfoPage,
+            MenuPage.ADDITIONAL_BUILD_INFO: AdditionalBuildInfoPage,
         }
 
         return pages[page_type]
@@ -48,7 +53,7 @@ class MenuPageGenerator:
 
 class SkipToEndPage(MenuPageBase):
     """
-    Do you want to skip?
+    Skip pi-top connection guide?
     """
 
     def __init__(self, size, mode, interval):
@@ -61,11 +66,38 @@ class SkipToEndPage(MenuPageBase):
 
 class BuildInfoPage(MenuPageBase):
     """
-    Show build info
+    pi-topOS v3.0
+    experimental
+    2021-09-29
     """
 
     def __init__(self, size, mode, interval):
         super().__init__(
             type=MenuPage.BUILD_INFO, size=size, mode=mode, interval=interval
         )
-        self.text = "TODO: show build/battery info..."
+        self.wrap = False
+
+        self.text = (
+            f"pi-topOS v{build_info.build_os_version}\n"
+            f"{build_info.build_type}\n" + f"{build_info.build_date}"
+        )
+
+
+class AdditionalBuildInfoPage(MenuPageBase):
+    """
+    Schema: 1
+    Run: 554
+    #: b2da89ff
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=MenuPage.ADDITIONAL_BUILD_INFO, size=size, mode=mode, interval=interval
+        )
+        self.wrap = False
+
+        self.text = (
+            f"Schema: {build_info.schema_version}\n"
+            + f"Run: {build_info.build_run_number}\n"
+            + f"#: {build_info.build_commit}"
+        )
