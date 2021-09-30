@@ -8,8 +8,8 @@ from .page_manager import PageManager
 
 class Speeds(Enum):
     DYNAMIC_PAGE_REDRAW = 1
-    SCROLL = 0.013
-    SKIP = 0.006
+    SCROLL = 0.004
+    SKIP = 0.001
 
 
 class OnboardingAssistantApp:
@@ -37,5 +37,6 @@ class OnboardingAssistantApp:
         )
 
         while not self.__stop:
-            manager.update()
+            manager.update_scroll_position()
+            manager.display_current_viewport_image()
             manager.wait_until_timeout_or_page_has_changed()
