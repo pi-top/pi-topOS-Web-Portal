@@ -15,16 +15,6 @@ def disable_tour():
         PTLogger.debug("Tour already disabled.")
 
 
-def close_pt_browser():
-    PTLogger.info("Function: close_pt_browser()")
-    pids = run_command("pgrep web-renderer", timeout=5, check=False).split()
-    for pid in pids:
-        try:
-            run_command(f"kill -9 {pid}", timeout=5)
-        except Exception as e:
-            PTLogger.error(f"Error killing PID {pid}: {e}")
-
-
 def python_sdk_docs_url():
     PTLogger.info("Function: python_sdk_docs_url()")
     return run_command("pi-top support links docs -p", timeout=10, check=False).strip()

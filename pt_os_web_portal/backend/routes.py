@@ -9,6 +9,8 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
+from ..app_window.os_updater_app_window import OsUpdaterAppWindow
+from ..app_window.tour_app_window import TourAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -38,7 +40,6 @@ from .helpers.registration import set_registration_email
 from .helpers.system import restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.tour import (
-    close_pt_browser,
     disable_tour,
     further_url,
     open_forum,
@@ -385,10 +386,17 @@ def post_disable_tour():
     return "OK"
 
 
-@app.route("/close-pt-browser", methods=["POST"])
-def post_close_pt_browser():
-    PTLogger.debug("Route '/close-pt-browser'")
-    close_pt_browser()
+@app.route("/close-os-updater-window", methods=["POST"])
+def post_close_os_updater_window():
+    PTLogger.debug("Route '/close-os-updater-window'")
+    OsUpdaterAppWindow().close()
+    return "OK"
+
+
+@app.route("/close-pt-os-tour-window", methods=["POST"])
+def post_close_pt_os_tour_window():
+    PTLogger.debug("Route '/close-pt-os-tour-window'")
+    TourAppWindow().close()
     return "OK"
 
 
