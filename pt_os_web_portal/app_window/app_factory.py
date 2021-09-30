@@ -1,12 +1,17 @@
-from .app_window import About, Onboarding, OsUpdater, Tour
+from .app_window import (
+    AboutAppWindow,
+    OnboardingAppWindow,
+    OsUpdaterAppWindow,
+    TourAppWindow,
+)
 
 
 class AppFactory:
     applications = {
-        "about": About(),
-        "os-setup": Onboarding(),
-        "tour": Tour(),
-        "updater": OsUpdater(),
+        "about": AboutAppWindow(),
+        "os-setup": OnboardingAppWindow(),
+        "tour": TourAppWindow(),
+        "updater": OsUpdaterAppWindow(),
     }
 
     @classmethod
