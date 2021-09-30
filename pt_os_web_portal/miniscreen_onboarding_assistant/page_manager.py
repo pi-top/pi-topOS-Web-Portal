@@ -39,8 +39,14 @@ class PageManager:
         )
 
         def menu_overlay(image):
+            title_overlay_h = 19
             asst = MiniscreenAssistant(self._ms.mode, self._ms.size)
-            ImageDraw.Draw(image).rectangle(((0, 0), (self._ms.size[0], 18)), fill=1)
+            ImageDraw.Draw(image).rectangle(
+                ((0, 0), (self._ms.size[0], title_overlay_h)), fill=1
+            )
+            ImageDraw.Draw(image).rectangle(
+                ((0, title_overlay_h), (self._ms.size[0], title_overlay_h)), fill=0
+            )
             asst.render_text(
                 image,
                 xy=(self._ms.size[0] / 2, self._ms.size[1] / 6),

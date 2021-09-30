@@ -15,10 +15,14 @@ class MenuPageBase(PageBase):
         pass
 
     def render(self, image):
+        title_overlay_h = 19
+
+        center_x = self.size[0] / 2
+        offset_center_y = title_overlay_h + (self.size[1] - title_overlay_h) / 2
         asst = MiniscreenAssistant(self.mode, self.size)
         asst.render_text(
             image,
-            xy=(self.size[0] / 2, self.size[1] / 2),
+            xy=(center_x, offset_center_y),
             text=self.text,
             wrap=self.wrap,
             font=asst.get_mono_font_path(),
