@@ -2,6 +2,7 @@ from enum import Enum, auto
 
 from pitop.battery import Battery
 from pitop.common.pt_os import get_pitopOS_info
+from pitop.common.sys_info import get_internal_ip
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ...event import AppEvents, post_event
@@ -39,6 +40,7 @@ class MenuPage(Enum):
     BATTERY = auto()
     BUILD_INFO = auto()
     ADDITIONAL_BUILD_INFO = auto()
+    ADDITIONAL_IP_ADDR = auto()
 
 
 class MenuPageGenerator:
@@ -49,6 +51,7 @@ class MenuPageGenerator:
             MenuPage.BATTERY: BatteryPage,
             MenuPage.BUILD_INFO: BuildInfoPage,
             MenuPage.ADDITIONAL_BUILD_INFO: AdditionalBuildInfoPage,
+            MenuPage.ADDITIONAL_IP_ADDR: AdditionalIPAddressesPage,
         }
 
         return pages[page_type]
@@ -128,3 +131,30 @@ class AdditionalBuildInfoPage(MenuPageBase):
             + f"Run: {build_info.build_run_number}\n"
             + f"#: {build_info.build_commit}"
         )
+
+
+class AdditionalIPAddressesPage(MenuPageBase):
+    """
+    Wi-Fi (Network): 192.168.1.104
+    Wired (Network): 192.168.1.197
+    Wi-Fi (Direct): 192.168.90.1
+    Wired (Direct): 192.168.64.1
+    """
+
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=MenuPage.ADDITIONAL_IP_ADDR, size=size, mode=mode, interval=interval
+        )
+        self.wrap = False
+        self.font_size = 12
+
+    @property
+    def text(self):
+        ips = list()
+
+        for iface in ["wlan0", "eth0", "wlan_ap0", "ptusb0"]:
+            ip = get_internal_ip(iface)
+            if ip.replace("Internet Addresses Not Found", ""):
+                ips.append(ip)
+
+        return "\n".join(ips)
