@@ -47,11 +47,9 @@ class OSUpdateManager:
         self, package: apt.Package, dependency_dict: Dict  # type: ignore
     ) -> Dict:
         """
-        Returns a dictionary with the package dependencies and versions required to upgrade
-        the given package.
-        This is not a straightforward task, since multiple entries of a particular package might appear
-        on the dependency array if the package requires a specific version or range of versions of a
-        particular dependency.
+        Returns a dictionary with the dependencies and the versions required to upgrade the given package.
+        This is not a straightforward task since multiple entries of a dependency might appear in the
+        dependency array if the package requires a specific version or range of versions of a dependency.
         e.g.: if package A depends on package B (>1.0, <1.5), the dependency array of A will be [B(>1.0), B(<1.5)]
         """
         for package_dependencies in package.candidate.dependencies:
