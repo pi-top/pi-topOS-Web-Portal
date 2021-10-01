@@ -1,7 +1,10 @@
 from os import path, remove
 
 from pitop.common.command_runner import run_command, run_command_background
+from pitop.common.common_names import DeviceName
+from pitop.common.firmware_device import FirmwareDevice
 from pitop.common.logger import PTLogger
+from pitop.system import device_type
 from pt_fw_updater.check import main as update_firmware
 
 from ... import state
@@ -112,7 +115,16 @@ def update_eeprom():
 
 
 def do_firmware_update():
-    update_firmware("pt4_hub", force=True)
+    if device_type() != DeviceName.pi_top_4.value:
+        return
+
+    fw_dev_id_str = "pt4_hub"
+    update_firmware(fw_dev_id_str, force=True)
+
+    if not FirmwareDevice(
+        FirmwareDevice.str_name_to_device_id(fw_dev_id_str)
+    ).get_check_fw_okay():
+        return
 
     run_command(
         "touch /tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown",
