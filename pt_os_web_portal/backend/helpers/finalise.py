@@ -119,7 +119,10 @@ def do_firmware_update():
         return
 
     fw_dev_id_str = "pt4_hub"
-    update_firmware(fw_dev_id_str, force=True)
+    try:
+        update_firmware(fw_dev_id_str, force=True)
+    except Exception as e:
+        PTLogger.warning(e)
 
     if not FirmwareDevice(
         FirmwareDevice.str_name_to_device_id(fw_dev_id_str)
