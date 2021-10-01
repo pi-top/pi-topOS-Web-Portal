@@ -1,8 +1,8 @@
 from os import path, remove
 
 from pitop.common.command_runner import run_command, run_command_background
-from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
+from pt_fw_updater.check import main as update_firmware
 
 from ... import state
 from .paths import use_test_path
@@ -65,7 +65,11 @@ def enable_further_link_service():
 
 def reboot() -> None:
     PTLogger.debug("Function: reboot()")
-    run_command_background("reboot")
+    if path.exists("/tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown"):
+        # Do shutdown, let hub start back up
+        run_command_background("shutdown -h now")
+    else:
+        run_command_background("reboot")
 
 
 def enable_pt_miniscreen():
@@ -102,25 +106,15 @@ def onboarding_completed():
     return state.get("app", "onboarded", fallback="false") == "true"
 
 
-def open_further():
-    PTLogger.debug("Function: open_further()")
-    run_command_background(get_chromium_command("https://further.pi-top.com"))
-
-
-def open_python_sdk_docs():
-    PTLogger.debug("Function: open_python_sdk_docs()")
-    run_command_background(get_chromium_command(python_sdk_docs_url()))
-
-
-def open_knowledge_base():
-    PTLogger.debug("Function: open_knowledge_base()")
-    run_command_background(get_chromium_command("https://knowledgebase.pi-top.com"))
-
-
-def get_chromium_command(url):
-    return f"su {get_user_using_display(':0')} -c \"chromium-browser --new-window --start-maximized {url}\""
-
-
 def update_eeprom():
     PTLogger.debug("Function: update_eeprom()")
     run_command("/usr/lib/pt-os-notify-services/pt-eeprom -f", timeout=10, check=False)
+
+
+def do_firmware_update():
+    update_firmware("pt4_hub", force=True)
+
+    run_command(
+        "touch /tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown",
+        timeout=10,
+    )
