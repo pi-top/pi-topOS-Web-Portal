@@ -1,3 +1,15 @@
+pi-top-os-web-portal (0.9.0-1) bullseye; urgency=medium
+
+  * Use `pi-topd` (#273)
+  * Rework onboarding (#261, #264, #268)
+  * Get hostname dynamically
+  * Overhaul upgrader (#267, #270, #274)
+  * Drop shebangs (#269)
+  * Drop unused functions
+  * Reliable, asynchronous cleanup (#260)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 27 Sep 2021 14:25:46 +0000
+
 pi-top-os-web-portal (0.8.0-1) bullseye; urgency=medium
 
   * Read state file on initialization

@@ -3,8 +3,8 @@ from time import sleep
 
 from pitop.common.logger import PTLogger
 
+from .. import state
 from ..event import AppEvents, subscribe
-from ..state import StateManager
 from .functions import device_is_registered, send_register_device_request
 
 
@@ -20,7 +20,7 @@ def register_device():
 def handle_is_connected_to_internet_event(is_connected):
     if (
         is_connected
-        and StateManager().get("app", "state", fallback="onboarding") != "onboarding"
+        and state.get("app", "onboarded", fallback="false") == "true"
         and not device_is_registered()
     ):
         PTLogger.info(

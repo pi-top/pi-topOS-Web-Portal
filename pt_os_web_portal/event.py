@@ -13,6 +13,8 @@ class AppEvents(Enum):
     AP_HAS_PASSPHRASE = auto()  # string
     HAS_CONNECTED_DEVICE = auto()  # bool
     IS_CONNECTED_TO_INTERNET = auto()  # bool
+    RESTARTING_WEB_PORTAL = auto()  # bool
+    USER_SKIPPED_CONNECTION_GUIDE = auto()  # bool
 
 
 subscribers: Dict[AppEvents, List] = dict()

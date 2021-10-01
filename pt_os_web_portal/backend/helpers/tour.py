@@ -4,7 +4,7 @@ from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
-from .about import device_serial_number
+from .device import serial_number
 
 
 def disable_tour():
@@ -13,16 +13,6 @@ def disable_tour():
         remove("/etc/xdg/autostart/pt-os-tour.desktop")
     except FileNotFoundError:
         PTLogger.debug("Tour already disabled.")
-
-
-def close_pt_browser():
-    PTLogger.info("Function: close_pt_browser()")
-    pids = run_command("pgrep web-renderer", timeout=5, check=False).split()
-    for pid in pids:
-        try:
-            run_command(f"kill -9 {pid}", timeout=5)
-        except Exception as e:
-            PTLogger.error(f"Error killing PID {pid}: {e}")
 
 
 def python_sdk_docs_url():
@@ -35,8 +25,12 @@ def further_url():
 
     def get_serial_number_string():
         try:
-            serial_number = device_serial_number()
-            return f"serial_number={serial_number}" if serial_number != "" else ""
+            device_serial_number = serial_number()
+            return (
+                f"serial_number={device_serial_number}"
+                if device_serial_number != ""
+                else ""
+            )
         except Exception:
             return ""
 

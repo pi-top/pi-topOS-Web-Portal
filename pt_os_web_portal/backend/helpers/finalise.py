@@ -1,16 +1,11 @@
 from os import path, remove
 
-from flask import current_app
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
+from ... import state
 from .paths import use_test_path
-
-
-def get_state_manager():
-    with current_app.app_context():
-        return current_app.config["STATE_MANAGER"]
 
 
 def available_space() -> str:
@@ -51,7 +46,7 @@ def deprioritise_openbox_session() -> None:
 def stop_onboarding_autostart() -> None:
     PTLogger.debug("Function: stop_onboarding_autostart()")
     remove("/etc/xdg/autostart/pt-os-setup.desktop")
-    get_state_manager().set("app", "state", "desktop")
+    state.set("app", "onboarded", "true")
 
 
 def enable_firmware_updater_service():
@@ -98,25 +93,13 @@ def disable_tour():
         PTLogger.debug("Tour already disabled.")
 
 
-def close_pt_browser():
-    PTLogger.debug("Function: close_pt_browser()")
-    pids = run_command("pgrep web-renderer", timeout=5, check=False).split()
-    for pid in pids:
-        try:
-            run_command(f"kill -9 {pid}", timeout=5)
-        except Exception as e:
-            PTLogger.error(f"Error killing PID {pid}: {e}")
-
-
 def python_sdk_docs_url():
     PTLogger.debug("Function: python_sdk_docs_url()")
     return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
 
 
 def onboarding_completed():
-    return (
-        get_state_manager().get("app", "state", fallback="onboarding") != "onboarding"
-    )
+    return state.get("app", "onboarded", fallback="false") == "true"
 
 
 def open_further():

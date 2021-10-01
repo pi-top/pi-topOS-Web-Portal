@@ -9,10 +9,11 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
+from ..app_window import OsUpdaterAppWindow, TourAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
-from .helpers.about import device_data
+from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
@@ -35,10 +36,9 @@ from .helpers.keyboard import (
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.registration import set_registration_email
-from .helpers.system import enable_ap_mode, restart_web_portal_service
+from .helpers.system import restart_web_portal_service
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.tour import (
-    close_pt_browser,
     disable_tour,
     further_url,
     open_forum,
@@ -274,6 +274,8 @@ def os_upgrade(ws):
             "prepare_web_portal": get_os_updater().stage_web_portal,
             "start": get_os_updater().start_os_upgrade,
             "size": get_os_updater().upgrade_size,
+            "legacy-updater-backend": get_os_updater().use_legacy_backend,
+            "default-updater-backend": get_os_updater().use_default_backend,
         }
 
         if not funcs.get(message):
@@ -383,10 +385,17 @@ def post_disable_tour():
     return "OK"
 
 
-@app.route("/close-pt-browser", methods=["POST"])
-def post_close_pt_browser():
-    PTLogger.debug("Route '/close-pt-browser'")
-    close_pt_browser()
+@app.route("/close-os-updater-window", methods=["POST"])
+def post_close_os_updater_window():
+    PTLogger.debug("Route '/close-os-updater-window'")
+    OsUpdaterAppWindow().close()
+    return "OK"
+
+
+@app.route("/close-pt-os-tour-window", methods=["POST"])
+def post_close_pt_os_tour_window():
+    PTLogger.debug("Route '/close-pt-os-tour-window'")
+    TourAppWindow().close()
     return "OK"
 
 
@@ -427,7 +436,7 @@ def post_open_forum():
 @app.route("/about-device", methods=["GET"])
 def get_about_device():
     PTLogger.debug("Route '/about-device'")
-    return jdumps(device_data())
+    return jdumps(about_device())
 
 
 @app.route("/status", methods=["GET"])
@@ -446,14 +455,8 @@ def post_update_eeprom():
 @app.route("/restart-web-portal-service", methods=["POST"])
 def post_restart_web_portal_service():
     PTLogger.debug("Route '/restart-web-portal-service'")
+    post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
-    return "OK"
-
-
-@app.route("/enable-ap-mode", methods=["POST"])
-def post_enable_ap_mode():
-    PTLogger.debug("Route '/enable-ap-mode'")
-    enable_ap_mode()
     return "OK"
 
 
@@ -470,8 +473,8 @@ def get_os_check_update():
     return jdumps(check_relevant_pi_top_os_version_updates())
 
 
-@app.route("/onboarding-miniscreen-app-breadcrumb", methods=["POST"])
-def post_onboarding_miniscreen_app_breadcrumb():
-    PTLogger.debug("Route '/onboarding-miniscreen-app-breadcrumb'")
+@app.route("/onboarding-miniscreen-ready-to-be-a-maker", methods=["POST"])
+def post_onboarding_ready_to_be_a_maker():
+    PTLogger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"

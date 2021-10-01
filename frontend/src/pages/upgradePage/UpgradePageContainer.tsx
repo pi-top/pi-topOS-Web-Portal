@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
 
@@ -21,6 +21,12 @@ export enum UpdateMessageStatus {
   Finish = "FINISH",
   Error = "ERROR",
   Status = "STATUS",
+}
+
+export enum ErrorType {
+  None,
+  GenericError,
+  NoSpaceAvailable,
 }
 
 export type UpgradeMessagePayload = {
@@ -73,13 +79,15 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
   const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
   const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
+  const [preparingAll, setIsPreparingAll] = useState(false);
+  const [preparingWebPortal, setIsPreparingWebPortal] = useState(false);
   const [updatingSources, setIsUpdatingSources] = useState(false);
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
   const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [waitingForServer, setWaitingForServer] = useState(false);
   const [requireBurn, setRequireBurn] = useState(false);
@@ -88,43 +96,77 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   useEffect(() => {
     getAvailableSpace()
       .then((setAvailableSpace))
-      .catch(() => null);
+      .catch(() => setError(ErrorType.GenericError));
   }, []);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-    if (checkingWebPortal) {
-      socket.send("update_sources");
-      setIsUpdatingSources(true);
-    } else {
-      // the page was reloaded after installing web-portal - prepare to update all packages
-      socket.send("prepare");
-    }
-  }, [socket, isOpen, checkingWebPortal]);
+    isOpen && socket.send("default-updater-backend")
+  }, [isOpen, socket]);
 
   useEffect(() => {
-    !checkingWebPortal && getMajorOsUpdates()
-      .then((response) => {
-        setShouldBurn(response.shouldBurn);
-        setRequireBurn(response.requireBurn);
-      })
-      .catch(() => {
-        setShouldBurn(false);
-        setRequireBurn(false);
-      })
-    }, [checkingWebPortal]);
+    isOpen && updatingSources && socket.send("update_sources");
+  }, [isOpen, socket, updatingSources]);
+
+  useEffect(() => {
+    isOpen && preparingAll && socket.send("prepare");
+  }, [isOpen, socket, preparingAll]);
+
+  useEffect(() => {
+    isOpen && preparingWebPortal && socket.send("prepare_web_portal");
+  }, [isOpen, socket, preparingWebPortal]);
+
+  const doRetry = useCallback(
+    (defaultBackend: boolean) => {
+      socket.send(defaultBackend ? "default-updater-backend" : "legacy-updater-backend");
+
+      // reset all state to defaults and start again
+      setError(ErrorType.None);
+      // setMessage(undefined);
+      setInstallingWebPortalUpgrade(false);
+      setIsPreparingAll(false);
+      setIsPreparingWebPortal(false);
+      setIsUpdatingSources(false);
+      setUpgradeIsPrepared(false);
+      setUpgradeIsRequired(true);
+      setUpgradeIsRunning(false);
+      setUpgradeFinished(false);
+      setUpdateSize({downloadSize: 0, requiredSpace: 0});
+      if (checkingWebPortal) {
+        setIsUpdatingSources(true);
+      } else {
+        setCheckingWebPortal(true);
+      }
+    },
+    [checkingWebPortal],
+  )
+
+  useEffect(() => {
+    if (checkingWebPortal) {
+      setIsUpdatingSources(true);
+    } else {
+      setIsPreparingAll(true);
+
+      getMajorOsUpdates()
+        .then((response) => {
+          setShouldBurn(response.shouldBurn);
+          setRequireBurn(response.requireBurn);
+        })
+        .catch(() => {
+          setShouldBurn(false);
+          setRequireBurn(false);
+        })
+    }
+  }, [checkingWebPortal]);
 
   useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
-      setError(true);
+      setError(ErrorType.NoSpaceAvailable);
     }
   }, [updateSize, availableSpace, setError]);
 
   useEffect(() => {
     socket.onclose = () => {
-      !upgradeFinished && setError(true);
+      !upgradeFinished && setError(ErrorType.GenericError);
       setIsOpen(false);
     };
   }, [socket, upgradeFinished]);
@@ -145,7 +187,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.PrepareUpgrade &&
       message.payload.status === UpdateMessageStatus.Error
     ) {
-      setError(true);
+      setError(ErrorType.GenericError);
       setUpgradeIsPrepared(false);
     }
 
@@ -153,7 +195,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.Upgrade &&
       message.payload.status === UpdateMessageStatus.Error
     ) {
-      setError(true);
+      setError(ErrorType.GenericError);
       setUpgradeIsRunning(false);
     }
 
@@ -162,7 +204,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.payload.status === UpdateMessageStatus.Error
     ) {
       setIsUpdatingSources(false);
-      setError(true);
+      setError(ErrorType.GenericError);
     }
 
     if (
@@ -171,9 +213,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     ) {
       setIsUpdatingSources(false);
       if (checkingWebPortal) {
-        socket.send("prepare_web_portal");
+        setIsPreparingAll(false);
+        setIsPreparingWebPortal(true);
       } else {
-        socket.send("prepare");
+        setIsPreparingAll(true);
       }
     }
 
@@ -194,8 +237,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
         setWaitingForServer(true);
         restartWebPortalService()
-          .catch(() => setError(false)) // ignored, request will fail since backend server is restarted
-          .finally(() => setTimeout(waitUntilServerIsOnline, 300))
+          .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
+          .finally(() => setTimeout(waitUntilServerIsOnline, 300));
       } else {
         setUpgradeIsRunning(false);
         setUpgradeIsRequired(false);
@@ -235,11 +278,11 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
           socket.send("start");
         }
       } catch (_) {
-        setError(true);
+        setError(ErrorType.GenericError);
       }
 
       if (message.payload.status === UpdateMessageStatus.Error) {
-        setError(true);
+        setError(ErrorType.GenericError);
       }
     }
   }, [message, socket]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -253,7 +296,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     const interval = setInterval(async () => {
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
-        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(true);
+        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
         serverStatus({ timeout: timeoutServerStatusRequestMs })
           .then(() => clearInterval(interval))
           .catch(() => {})
@@ -272,7 +315,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
           socket.send("start");
           return;
         }
-        setError(true);
+        setError(ErrorType.GenericError);
+      }}
+      onRetry={(useDefaultBackend: boolean) => {
+        doRetry(useDefaultBackend)
       }}
       isCompleted={isCompleted}
       message={message}

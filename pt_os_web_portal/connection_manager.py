@@ -53,7 +53,7 @@ class ConnectionManager:
             self.__thread.join()
 
     def _main(self):
-        while True:
+        while not self.__stop:
             self.ap_connection.update()
             if self.ap_connection.has_changes:
                 post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
