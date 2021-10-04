@@ -16,6 +16,13 @@ class OnboardingAssistantApp:
     def __init__(self):
         self.__thread = Thread(target=self._main, args=())
         self.__stop = False
+        self.miniscreen = Pitop().miniscreen
+        self.manager = PageManager(
+            self.miniscreen,
+            page_redraw_speed=Speeds.DYNAMIC_PAGE_REDRAW.value,
+            scroll_speed=Speeds.SCROLL.value,
+            skip_speed=Speeds.SKIP.value,
+        )
 
     def start(self):
         self.__thread = Thread(target=self._main, args=())
@@ -28,15 +35,7 @@ class OnboardingAssistantApp:
             self.__thread.join()
 
     def _main(self):
-        miniscreen = Pitop().miniscreen
-        manager = PageManager(
-            miniscreen,
-            page_redraw_speed=Speeds.DYNAMIC_PAGE_REDRAW.value,
-            scroll_speed=Speeds.SCROLL.value,
-            skip_speed=Speeds.SKIP.value,
-        )
-
         while not self.__stop:
-            manager.update_scroll_position()
-            manager.display_current_viewport_image()
-            manager.wait_until_timeout_or_page_has_changed()
+            self.manager.update_scroll_position()
+            self.manager.display_current_viewport_image()
+            self.manager.wait_until_timeout_or_page_has_changed()
