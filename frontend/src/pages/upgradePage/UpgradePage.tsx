@@ -179,10 +179,10 @@ export default ({
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
-        showBack={onBackClick !== undefined && !upgradeIsRunning}
+        showBack={onBackClick !== undefined && !upgradeIsRunning && !updatingSources}
         backButton={{
           onClick: onBackClick,
-          disabled: upgradeIsRunning
+          disabled: upgradeIsRunning || updatingSources
         }}
       >
         { hasError() && (
