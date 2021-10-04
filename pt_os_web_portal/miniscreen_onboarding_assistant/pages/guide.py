@@ -196,7 +196,8 @@ class OpenBrowserPage(GuidePageBase):
         txt = "Waiting for\nconnection..."
 
         if self.has_connected_device or self.is_connected_to_internet:
-            hostname = run("hostname").stdout
+            hostname = run("hostname", encoding="utf-8", capture_output=True)
+            hostname = hostname.stdout.strip()
             txt = f"Open browser to\nhttp://{hostname}.local\nor\nhttp://192.168.64.1"
 
         return txt
