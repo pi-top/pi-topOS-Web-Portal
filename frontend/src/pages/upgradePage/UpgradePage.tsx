@@ -182,7 +182,7 @@ export default ({
         showBack={onBackClick !== undefined && !upgradeIsRunning}
         backButton={{
           onClick: onBackClick,
-          disabled: upgradeIsRunning
+          disabled: upgradeIsRunning || updatingSources
         }}
       >
         { hasError() && (
