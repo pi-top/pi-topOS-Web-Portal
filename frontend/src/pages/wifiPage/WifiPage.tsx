@@ -138,7 +138,12 @@ export default ({
           setIsConnectDialogActive(false);
           setSelectedNetwork(undefined);
         }}
-        onDone={() => setIsConnectDialogActive(false)}
+        onDone={() => {
+          setIsConnectDialogActive(false)
+          if (isConnected) {
+            onNextClick();
+          }
+        }}
       />
     </>
   );
