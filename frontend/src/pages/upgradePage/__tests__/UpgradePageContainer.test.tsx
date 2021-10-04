@@ -566,7 +566,7 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => queryByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
         expect(queryByText("Back")).not.toBeInTheDocument();
       });
