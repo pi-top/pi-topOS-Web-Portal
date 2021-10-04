@@ -20,7 +20,7 @@ def register_device():
 def handle_is_connected_to_internet_event(is_connected):
     if (
         is_connected
-        and state.get("app", "state", fallback="onboarding") != "onboarding"
+        and state.get("app", "onboarded", fallback="false") == "true"
         and not device_is_registered()
     ):
         PTLogger.info(

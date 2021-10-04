@@ -13,6 +13,7 @@ import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
+import updateHubFirmware from "../../services/updateHubFirmware";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -124,6 +125,12 @@ export default ({
             safelyRunService(
               stopOnboardingAutostart,
               "Made sure not to make you go through this again..."
+            )
+          )
+          .finally(() =>
+            safelyRunService(
+              updateHubFirmware,
+              "Made things easier for me to go to sleep when you ask..."
             )
           )
           .finally(() =>
