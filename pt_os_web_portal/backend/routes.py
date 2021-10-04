@@ -19,6 +19,7 @@ from .helpers.finalise import (
     available_space,
     configure_tour,
     deprioritise_openbox_session,
+    do_firmware_update,
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_pt_miniscreen,
@@ -369,6 +370,13 @@ def post_enable_pt_miniscreen():
 def post_restore_files():
     PTLogger.debug("Route '/restore-files'")
     restore_files()
+    return "OK"
+
+
+@app.route("/update-hub-firmware", methods=["POST"])
+def post_update_hub_firmware():
+    PTLogger.debug("Route '/update-hub-firmware'")
+    do_firmware_update()
     return "OK"
 
 
