@@ -5,6 +5,7 @@ from pitop.common.pt_os import get_pitopOS_info
 from pitop.common.sys_info import get_internal_ip
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
+from ...backend.helpers.device import firmware_version
 from ...event import AppEvents, post_event
 from .base import PageBase
 
@@ -125,9 +126,11 @@ class AdditionalBuildInfoPage(MenuPageBase):
             type=MenuPage.ADDITIONAL_BUILD_INFO, size=size, mode=mode, interval=interval
         )
         self.wrap = False
+        self.font_size = 12
 
         self.text = (
-            f"Schema: {build_info.schema_version}\n"
+            f"pi-top Firmware: {firmware_version()}\n"
+            + f"Schema: {build_info.schema_version}\n"
             + f"Run: {build_info.build_run_number}\n"
             + f"#: {build_info.build_commit}"
         )
