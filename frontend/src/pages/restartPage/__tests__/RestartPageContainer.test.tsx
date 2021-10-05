@@ -15,7 +15,7 @@ import RestartPageContainer, { Props } from "../RestartPageContainer";
 import { ErrorMessage, ExplanationMessages } from "../RestartPage";
 import querySpinner from "../../../../test/helpers/querySpinner";
 
-import configureTour from "../../../services/configureTour";
+import configureLanding from "../../../services/configureLanding";
 import deprioritiseOpenboxSession from "../../../services/deprioritiseOpenboxSession";
 import enableFurtherLinkService from "../../../services/enableFurtherLinkService";
 import enableFirmwareUpdaterService from "../../../services/enableFirmwareUpdaterService";
@@ -29,7 +29,7 @@ import updateHubFirmware from "../../../services/updateHubFirmware";
 
 import { act } from "react-dom/test-utils";
 
-jest.mock("../../../services/configureTour");
+jest.mock("../../../services/configureLanding");
 jest.mock("../../../services/deprioritiseOpenboxSession");
 jest.mock("../../../services/enableFurtherLinkService");
 jest.mock("../../../services/enableFirmwareUpdaterService");
@@ -42,7 +42,7 @@ jest.mock("../../../services/enablePtMiniscreen");
 jest.mock("../../../services/updateHubFirmware");
 
 
-const configureTourMock = configureTour as jest.Mock;
+const configureLandingMock = configureLanding as jest.Mock;
 const deprioritiseOpenboxSessionMock = deprioritiseOpenboxSession as jest.Mock;
 const enableFurtherLinkServiceMock = enableFurtherLinkService as jest.Mock;
 const enableFirmwareUpdaterServiceMock = enableFirmwareUpdaterService as jest.Mock;
@@ -56,7 +56,7 @@ const updateHubFirmwareMock = updateHubFirmware as jest.Mock;
 
 
 const mockServices = [
-  configureTourMock,
+  configureLandingMock,
   deprioritiseOpenboxSessionMock,
   enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
@@ -204,9 +204,9 @@ describe("RestartPageContainer", () => {
       });
     });
 
-    describe('when configure tour fails', () => {
+    describe('when configure landing fails', () => {
       beforeEach(() => {
-        configureTourMock.mockRejectedValue(new Error());
+        configureLandingMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

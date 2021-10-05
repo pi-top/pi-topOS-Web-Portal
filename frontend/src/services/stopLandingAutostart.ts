@@ -2,9 +2,9 @@
 
 import apiBaseUrl from "./apiBaseUrl";
 
-export default async function stopTourAutostart() {
+export default async function stopLandingAutostart() {
   await axios.post(
-    `${apiBaseUrl}/disable-tour`,
+    `${apiBaseUrl}/disable-landing`,
     {}
   );
 }

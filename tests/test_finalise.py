@@ -36,7 +36,7 @@ def test_available_space(app, mocker):
     assert body == str(available_space)
 
 
-def test_configure_tour_success(app, mocker):
+def test_configure_landing_success(app, mocker):
     environ_mock = mocker.patch("backend.helpers.command_runner.environ")
     environ_mock.copy = dict
     run_mock = mocker.patch(
@@ -44,7 +44,7 @@ def test_configure_tour_success(app, mocker):
         return_value=dotdict({"stdout": b"", "stderr": b"", "returncode": 0}),
     )
 
-    response = app.post("/configure-tour")
+    response = app.post("/configure-landing")
 
     run_mock.assert_called_once_with(
         [
@@ -54,7 +54,7 @@ def test_configure_tour_success(app, mocker):
             "ln",
             "-s",
             path.dirname(path.realpath(__file__))
-            + "/../pt_os_web_portal/resources/pt-os-tour.desktop",
+            + "/../pt_os_web_portal/resources/pt-os-landing.desktop",
             "/etc/xdg/autostart",
         ],
         capture_output=True,

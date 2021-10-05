@@ -28,4 +28,4 @@ def test_404_redirect_if_onboarding_is_completed(app, mocker):
     assert len(response.history) == 2
     assert response.history[0].request.path == "/non-existant-route"
     assert response.history[1].request.path == "/"
-    assert response.request.path == "/tour"
+    assert response.request.path == "/landing"
