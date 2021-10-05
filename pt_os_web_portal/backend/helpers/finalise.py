@@ -27,10 +27,10 @@ def available_space() -> str:
     return space
 
 
-def configure_tour() -> None:
-    PTLogger.debug("Function: configure_tour()")
+def configure_landing() -> None:
+    PTLogger.debug("Function: configure_landing()")
     run_command(
-        f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-tour.desktop /etc/xdg/autostart",
+        f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-landing.desktop /etc/xdg/autostart",
         timeout=60,
         lower_priority=True,
     )
@@ -92,12 +92,12 @@ def restore_files():
     run_command("rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True)
 
 
-def disable_tour():
-    PTLogger.debug("Function: disable_tour()")
+def disable_landing():
+    PTLogger.debug("Function: disable_landing()")
     try:
-        remove("/etc/xdg/autostart/pt-os-tour.desktop")
+        remove("/etc/xdg/autostart/pt-os-landing.desktop")
     except FileNotFoundError:
-        PTLogger.debug("Tour already disabled.")
+        PTLogger.debug("Landing already disabled.")
 
 
 def python_sdk_docs_url():

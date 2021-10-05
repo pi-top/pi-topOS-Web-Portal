@@ -6,12 +6,12 @@ from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
 
 
-def disable_tour():
-    PTLogger.info("Function: disable_tour()")
+def disable_landing():
+    PTLogger.info("Function: disable_landing()")
     try:
-        remove("/etc/xdg/autostart/pt-os-tour.desktop")
+        remove("/etc/xdg/autostart/pt-os-landing.desktop")
     except FileNotFoundError:
-        PTLogger.debug("Tour already disabled.")
+        PTLogger.debug("Landing already disabled.")
 
 
 def python_sdk_docs_url():
