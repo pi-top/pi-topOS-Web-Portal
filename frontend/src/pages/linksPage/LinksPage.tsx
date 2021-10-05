@@ -21,7 +21,7 @@ import { runningOnWebRenderer } from "../../helpers/utils";
 export default () => {
   const kbUrl = "https://knowledgebase.pi-top.com";
   const forumUrl = "https://forum.pi-top.com";
-  const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com");
+  const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com/python-sdk/");
   const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
   const [isOpeningLink, setIsOpeningLink] = useState(false);
 
