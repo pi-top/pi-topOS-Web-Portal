@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 
+import semver from 'semver';
 import RestartPage from "./RestartPage";
 
 import configureLanding from "../../services/configureLanding";
@@ -14,6 +15,7 @@ import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../services/updateHubFirmware";
+import getBuildInfo from "../../services/getBuildInfo";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 
@@ -43,7 +45,16 @@ export default ({
   const [progress, setProgress] = useState(0);
   const [isWaitingForServer, setIsWaitingForServer] = useState(false);
   const [serverRebooted, setServerRebooted] = useState(false);
+  const [manualPowerOnRequired, setManualPowerOnRequired] = useState(false);
+  const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
 
+  useEffect(() => {
+    getBuildInfo()
+      .then((buildInfo) => {
+        setManualPowerOnRequired(semver.lt(buildInfo.hubFirmwareVersion, "3.0"));
+      })
+      .catch(() => setManualPowerOnRequired(false))
+  }, [])
 
   function safelyRunService(service: () => Promise<void>, message: string) {
     return service()
@@ -80,8 +91,27 @@ export default ({
     }, serverStatusRequestIntervalMs);
   }
 
+  function rebootPiTop() {
+    reboot()
+      .then(() => {
+        if (!runningOnWebRenderer()) {
+          setIsSettingUpDevice(false);
+          setIsWaitingForServer(true);
+          setServerRebooted(false);
+          window.setTimeout(waitUntilServerIsOnline, 3000);
+        }
+      })
+      .catch(() => {
+        setRebootError(true);
+        setIsSettingUpDevice(false);
+      })
+  }
+
+
   return (
     <RestartPage
+      displayManualPowerOnDialog={displayManualPowerOnDialog}
+      onManualPowerOnDialogClose={rebootPiTop}
       isWaitingForServer={isWaitingForServer}
       serverRebooted={serverRebooted}
       globalError={globalError}
@@ -147,20 +177,12 @@ export default ({
           )
           .catch(console.error)
           .finally(() => {
-            reboot()
-              .then(() => {
-                if (!runningOnWebRenderer()) {
-                  setIsSettingUpDevice(false);
-                  setIsWaitingForServer(true);
-                  setServerRebooted(false);
-                  window.setTimeout(waitUntilServerIsOnline, 3000);
-                }
-              })
-              .catch(() => {
-                setRebootError(true);
-                setIsSettingUpDevice(false);
-              })
-            });
+            if (manualPowerOnRequired) {
+              setDisplayManualPowerOnDialog(true);
+            } else {
+              rebootPiTop();
+            }
+          })
       }}
     />
   );

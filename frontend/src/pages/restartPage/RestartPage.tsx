@@ -8,6 +8,7 @@ import rebootScreen from "../../assets/images/reboot-screen.png";
 import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
+import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
@@ -33,6 +34,8 @@ export type Props = {
   rebootError: boolean;
   progressPercentage: number;
   progressMessage: string;
+  displayManualPowerOnDialog: boolean;
+  onManualPowerOnDialogClose: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
 };
@@ -45,6 +48,8 @@ export default ({
   rebootError,
   progressPercentage,
   progressMessage,
+  displayManualPowerOnDialog,
+  onManualPowerOnDialogClose,
   setupDevice,
   onBackClick,
 }: Props) => {
@@ -88,6 +93,12 @@ export default ({
       }
       className={styles.root}
     >
+
+      <ManualPowerOnDialogContainer
+        active={displayManualPowerOnDialog}
+        onClose={onManualPowerOnDialogClose}
+      />
+
       {isSettingUpDevice && (
         <div className={styles.progress}>
           <ProgressBar
