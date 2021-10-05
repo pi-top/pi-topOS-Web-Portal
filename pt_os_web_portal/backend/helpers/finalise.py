@@ -140,14 +140,13 @@ def do_firmware_update():
     if device_type() != DeviceName.pi_top_4.value:
         return
 
-    fw_dev_id_str = "pt4_hub"
     try:
-        update_firmware(fw_dev_id_str, force=True)
+        update_firmware(force=True)
     except Exception as e:
         PTLogger.warning(f"do_firmware_update: {e}")
 
     if not FirmwareDevice(
-        FirmwareDevice.str_name_to_device_id(fw_dev_id_str)
+        FirmwareDevice.str_name_to_device_id("pt4_hub")
     ).get_check_fw_okay():
         return
 
