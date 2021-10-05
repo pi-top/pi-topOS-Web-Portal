@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=pi-topOS Landing
+Name[en_GB]=pi-topOS Landing
+GenericName=pi-topOS Landing
+GenericName[en_GB]=pi-topOS Landing
+Comment=pi-topOS Landing
+Comment[en_GB]=pi-topOS Landing
+Icon=pt-os-about
+Exec=pt-os-web-portal-frontend landing
+NotShowIn=GNOME;XFCE;
+StartupNotify=true
+Categories=Settings;DesktopSettings;GTK;X-LXDE-Settings;

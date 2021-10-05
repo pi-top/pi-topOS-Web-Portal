@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import RestartPage from "./RestartPage";
 
-import configureTour from "../../services/configureTour";
+import configureLanding from "../../services/configureLanding";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
@@ -117,7 +117,7 @@ export default ({
           )
           .finally(() =>
             safelyRunService(
-              configureTour,
+              configureLanding,
               "Reminded myself to show you around..."
             )
           )

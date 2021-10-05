@@ -7,12 +7,12 @@ from pitop.common.logger import PTLogger
 from .device import serial_number
 
 
-def disable_tour():
-    PTLogger.info("Function: disable_tour()")
+def disable_landing():
+    PTLogger.info("Function: disable_landing()")
     try:
-        remove("/etc/xdg/autostart/pt-os-tour.desktop")
+        remove("/etc/xdg/autostart/pt-os-landing.desktop")
     except FileNotFoundError:
-        PTLogger.debug("Tour already disabled.")
+        PTLogger.debug("Landing already disabled.")
 
 
 def python_sdk_docs_url():

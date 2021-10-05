@@ -1,8 +1,8 @@
 from .app_window import (
     AboutAppWindow,
+    LandingAppWindow,
     OnboardingAppWindow,
     OsUpdaterAppWindow,
-    TourAppWindow,
 )
 
 
@@ -10,7 +10,7 @@ class AppFactory:
     applications = {
         "about": AboutAppWindow(),
         "os-setup": OnboardingAppWindow(),
-        "tour": TourAppWindow(),
+        "landing": LandingAppWindow(),
         "updater": OsUpdaterAppWindow(),
     }
 

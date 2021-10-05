@@ -9,7 +9,7 @@ from flask import redirect, request, send_from_directory
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
-from ..app_window import OsUpdaterAppWindow, TourAppWindow
+from ..app_window import LandingAppWindow, OsUpdaterAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -17,7 +17,7 @@ from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
-    configure_tour,
+    configure_landing,
     deprioritise_openbox_session,
     do_firmware_update,
     enable_firmware_updater_service,
@@ -35,12 +35,8 @@ from .helpers.keyboard import (
     list_keyboard_layout_variants,
     set_keyboard_layout,
 )
-from .helpers.language import current_locale, list_locales_supported, set_locale
-from .helpers.registration import set_registration_email
-from .helpers.system import restart_web_portal_service
-from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
-from .helpers.tour import (
-    disable_tour,
+from .helpers.landing import (
+    disable_landing,
     further_url,
     open_forum,
     open_further,
@@ -48,6 +44,10 @@ from .helpers.tour import (
     open_python_sdk_docs,
     python_sdk_docs_url,
 )
+from .helpers.language import current_locale, list_locales_supported, set_locale
+from .helpers.registration import set_registration_email
+from .helpers.system import restart_web_portal_service
+from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -61,7 +61,7 @@ def get_os_updater():
 
 
 class FrontendAppRoutes(Enum):
-    TOUR = "/tour"
+    LANDING = "/landing"
     ONBOARDING = "/onboarding"
     ABOUT = "/about"
     UPDATER = "/updater"
@@ -91,7 +91,7 @@ def index():
     if not onboarding_completed():
         PTLogger.info("Onboarding not completed yet. Redirecting...")
         return redirect(FrontendAppRoutes.ONBOARDING.value)
-    return redirect(FrontendAppRoutes.TOUR.value)
+    return redirect(FrontendAppRoutes.LANDING.value)
 
 
 @app.errorhandler(404)
@@ -317,10 +317,10 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
-@app.route("/configure-tour", methods=["POST"])
-def post_configure_tour():
-    PTLogger.debug("Route '/configure-tour'")
-    configure_tour()
+@app.route("/configure-landing", methods=["POST"])
+def post_configure_landing():
+    PTLogger.debug("Route '/configure-landing'")
+    configure_landing()
     return "OK"
 
 
@@ -386,10 +386,10 @@ def get_python_sdk_docs_url():
     return jdumps({"url": python_sdk_docs_url()})
 
 
-@app.route("/disable-tour", methods=["POST"])
-def post_disable_tour():
-    PTLogger.debug("Route '/disable-tour'")
-    disable_tour()
+@app.route("/disable-landing", methods=["POST"])
+def post_disable_landing():
+    PTLogger.debug("Route '/disable-landing'")
+    disable_landing()
     return "OK"
 
 
@@ -400,10 +400,10 @@ def post_close_os_updater_window():
     return "OK"
 
 
-@app.route("/close-pt-os-tour-window", methods=["POST"])
-def post_close_pt_os_tour_window():
-    PTLogger.debug("Route '/close-pt-os-tour-window'")
-    TourAppWindow().close()
+@app.route("/close-pt-os-landing-window", methods=["POST"])
+def post_close_pt_os_landing_window():
+    PTLogger.debug("Route '/close-pt-os-landing-window'")
+    LandingAppWindow().close()
     return "OK"
 
 
