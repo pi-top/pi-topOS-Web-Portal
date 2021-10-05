@@ -6,6 +6,7 @@ from threading import Thread
 from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
+from further_link.start_further import get_further_url
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
@@ -37,7 +38,6 @@ from .helpers.keyboard import (
 )
 from .helpers.landing import (
     disable_landing,
-    further_url,
     open_forum,
     open_further,
     open_knowledge_base,
@@ -415,9 +415,9 @@ def post_open_further():
 
 
 @app.route("/further-url", methods=["GET"])
-def get_further_url():
+def further_url():
     PTLogger.debug("Route '/further-url'")
-    return jdumps({"url": further_url()})
+    return jdumps({"url": get_further_url()})
 
 
 @app.route("/open-python-sdk-docs", methods=["POST"])
