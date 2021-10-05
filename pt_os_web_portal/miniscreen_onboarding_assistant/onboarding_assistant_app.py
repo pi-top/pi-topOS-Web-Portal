@@ -2,6 +2,7 @@ from enum import Enum
 from threading import Thread
 
 from pitop import Pitop
+from pitop.common.logger import PTLogger
 
 from .page_manager import PageManager
 
@@ -33,6 +34,7 @@ class OnboardingAssistantApp:
         self.__stop = True
         if self.__thread and self.__thread.is_alive():
             self.__thread.join()
+        PTLogger.info("Stopped: miniscreen onboarding assistant")
 
     def _main(self):
         while not self.__stop:
