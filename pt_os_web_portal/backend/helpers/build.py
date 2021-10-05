@@ -1,7 +1,11 @@
 from json import dumps
 
+from pitop.common.common_ids import FirmwareDeviceID
+from pitop.common.common_names import DeviceName
+from pitop.common.firmware_device import FirmwareDevice
 from pitop.common.logger import PTLogger
 from pitop.common.pt_os import get_pitopOS_info
+from pitop.system import device_type
 
 
 def get_package_information(package_name: str):
@@ -40,6 +44,13 @@ def os_build_info():
         build.update(
             {"ptOsWebPortalVersion": pt_os_web_portal_version.installed.version}
         )
+
+    if device_type() == DeviceName.pi_top_4.value:
+        try:
+            fw_device = FirmwareDevice(FirmwareDeviceID.pt4_hub)
+            build.update({"hubFirmwareVersion": fw_device.get_fw_version()})
+        except Exception as e:
+            PTLogger.error(f"os_build_info: {e}")
 
     PTLogger.info("OS build information: " + dumps(build))
     return build
