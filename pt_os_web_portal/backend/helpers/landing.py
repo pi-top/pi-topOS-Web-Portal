@@ -31,7 +31,9 @@ def open_python_sdk_docs():
 
 def open_knowledge_base():
     PTLogger.info("Function: open_knowledge_base()")
-    run_command_background(get_chromium_command("https://knowledgebase.pi-top.com"))
+    run_command_background(
+        get_chromium_command("https://knowledgebase.pi-top.com/knowledge")
+    )
 
 
 def open_forum():
