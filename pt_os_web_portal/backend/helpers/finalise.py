@@ -122,7 +122,7 @@ def do_firmware_update():
     try:
         update_firmware(fw_dev_id_str, force=True)
     except Exception as e:
-        PTLogger.warning(e)
+        PTLogger.warning(f"{e}")
 
     if not FirmwareDevice(
         FirmwareDevice.str_name_to_device_id(fw_dev_id_str)
