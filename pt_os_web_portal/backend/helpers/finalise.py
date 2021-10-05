@@ -128,7 +128,12 @@ def onboarding_completed():
 
 def update_eeprom():
     PTLogger.debug("Function: update_eeprom()")
-    run_command("/usr/lib/pt-os-notify-services/pt-eeprom -f", timeout=10, check=False)
+    try:
+        run_command(
+            "/usr/lib/pt-os-notify-services/pt-eeprom -f", timeout=10, check=False
+        )
+    except Exception as e:
+        PTLogger.error(f"update_eeprom: {e}")
 
 
 def do_firmware_update():
@@ -139,7 +144,7 @@ def do_firmware_update():
     try:
         update_firmware(fw_dev_id_str, force=True)
     except Exception as e:
-        PTLogger.warning(f"{e}")
+        PTLogger.warning(f"do_firmware_update: {e}")
 
     if not FirmwareDevice(
         FirmwareDevice.str_name_to_device_id(fw_dev_id_str)
