@@ -35,7 +35,7 @@ class OSUpdater:
         self.thread.start()
 
     def stop(self):
-        while self.manager.lock:
+        while self.active_backend.lock:
             sleep(0.2)
 
         if self.thread.is_alive():
