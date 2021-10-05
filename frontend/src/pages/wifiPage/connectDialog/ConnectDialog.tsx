@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
 import Button from "../../../components/atoms/button/Button";
@@ -34,6 +34,10 @@ export default ({
 }: Props) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    setPassword("");
+  }, [network])
 
   const { ssid, passwordRequired } = network || {};
 
