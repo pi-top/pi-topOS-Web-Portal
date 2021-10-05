@@ -29,11 +29,14 @@ def available_space() -> str:
 
 def configure_tour() -> None:
     PTLogger.debug("Function: configure_tour()")
-    run_command(
-        f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-tour.desktop /etc/xdg/autostart",
-        timeout=60,
-        lower_priority=True,
-    )
+    try:
+        run_command(
+            f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-tour.desktop /etc/xdg/autostart",
+            timeout=60,
+            lower_priority=True,
+        )
+    except Exception as e:
+        PTLogger.error(f"configure_tour: {e}")
 
 
 def deprioritise_openbox_session() -> None:
@@ -48,8 +51,13 @@ def deprioritise_openbox_session() -> None:
 
 def stop_onboarding_autostart() -> None:
     PTLogger.debug("Function: stop_onboarding_autostart()")
-    remove("/etc/xdg/autostart/pt-os-setup.desktop")
-    state.set("app", "onboarded", "true")
+    try:
+        remove("/etc/xdg/autostart/pt-os-setup.desktop")
+        state.set("app", "onboarded", "true")
+    except FileNotFoundError:
+        PTLogger.debug("stop_onboarding_autostart: Onboarding already disabled")
+    except Exception as e:
+        PTLogger.error(f"stop_onboarding_autostart: {e}")
 
 
 def enable_firmware_updater_service():
@@ -86,10 +94,19 @@ def enable_pt_miniscreen():
 def restore_files():
     PTLogger.debug("Function: restore_files()")
 
-    run_command(
-        "rsync -av /usr/lib/pt-os-web-portal/bak/ /", timeout=30, lower_priority=True
-    )
-    run_command("rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True)
+    try:
+        run_command(
+            "rsync -av /usr/lib/pt-os-web-portal/bak/ /",
+            timeout=30,
+            lower_priority=True,
+        )
+        run_command(
+            "rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True
+        )
+    except FileNotFoundError:
+        PTLogger.debug("restore_files: Files already restored")
+    except Exception as e:
+        PTLogger.error(f"restore_files: {e}")
 
 
 def disable_tour():
