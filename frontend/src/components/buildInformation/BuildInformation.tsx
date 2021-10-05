@@ -31,6 +31,7 @@ export default ({ info }: Props) => {
       {info.buildRepo && <>Build Apt Repo: {info.buildRepo}<br /></>}
       {info.finalRepo && <>Final Apt Repo: {info.finalRepo}<br /></>}
       {info.ptOsWebPortalVersion && <>Web Portal Version: {info.ptOsWebPortalVersion}</>}
+      {info.hubFirmwareVersion && <>pi-top [4] firmware: {info.hubFirmwareVersion}</>}
     </div>
   );
 };
