@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Line as ProgressBar } from "rc-progress";
 
 import Layout from "../../components/layout/Layout";
@@ -53,6 +53,12 @@ export default ({
   setupDevice,
   onBackClick,
 }: Props) => {
+  const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
+
+  useEffect(() => {
+    setManualPowerOnDialogActive(displayManualPowerOnDialog);
+  }, [displayManualPowerOnDialog])
+
   let errorMessage = "";
   if (globalError) {
     errorMessage = ErrorMessage.GlobalError;
@@ -95,8 +101,11 @@ export default ({
     >
 
       <ManualPowerOnDialogContainer
-        active={displayManualPowerOnDialog}
-        onClose={onManualPowerOnDialogClose}
+        active={manualPowerOnDialogActive}
+        onClose={() => {
+          setManualPowerOnDialogActive(!manualPowerOnDialogActive);
+          onManualPowerOnDialogClose();
+        }}
       />
 
       {isSettingUpDevice && (

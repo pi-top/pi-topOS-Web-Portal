@@ -381,10 +381,10 @@ def post_update_hub_firmware():
     return "OK"
 
 
-@app.route("/hub-firmware-update-is-due", methods=["POST"])
-def post_hub_firmware_is_due():
+@app.route("/hub-firmware-update-is-due", methods=["GET"])
+def get_hub_firmware_is_due():
     PTLogger.debug("Route '/hub-firmware-update-is-due'")
-    return fw_update_is_due()
+    return jdumps(fw_update_is_due())
 
 
 @app.route("/python-sdk-docs-url", methods=["GET"])

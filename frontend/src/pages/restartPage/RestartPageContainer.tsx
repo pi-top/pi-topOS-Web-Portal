@@ -180,7 +180,10 @@ export default ({
           .finally(() => {
             if (legacyHubFirmware) {
               getHubFirmwareUpdateIsDue()
-                .then(setDisplayManualPowerOnDialog)
+                .then((dueUpdate) => {
+                  setDisplayManualPowerOnDialog(dueUpdate);
+                  !dueUpdate && rebootPiTop();
+                })
                 .catch(() => rebootPiTop())
             } else {
               rebootPiTop();
