@@ -1,0 +1,35 @@
+.manualPowerOffDialog {
+  max-width: 450px;
+  min-height: 300px;
+  width: 95vw;
+}
+
+.dialogTitle {
+  margin: -15px 0 0 0;
+  display: block;
+  font-size: 1.17em;
+  font-weight: bold;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin-top: -45px;
+}
+
+.message {
+  composes: text from '../../../globalStyles/Typography.module.css';
+  margin: 0px 70px 30px 70px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.actions {
+  position: relative;
+  width: 450px;
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+}

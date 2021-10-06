@@ -5,7 +5,7 @@ from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
 from pitop.common.logger import PTLogger
 from pitop.system import device_type
-from pt_fw_updater.check import main as update_firmware
+from pt_fw_updater.update import main as update_firmware
 
 from ... import state
 from .paths import use_test_path
@@ -141,6 +141,7 @@ def do_firmware_update():
         return
 
     fw_dev_id_str = "pt4_hub"
+
     try:
         update_firmware(fw_dev_id_str, force=True)
     except Exception as e:
