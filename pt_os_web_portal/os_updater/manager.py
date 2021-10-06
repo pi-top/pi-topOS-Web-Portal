@@ -1,3 +1,4 @@
+from subprocess import run
 from typing import Dict, List
 
 from pitop.common.logger import PTLogger
@@ -47,29 +48,51 @@ class OSUpdateManager:
         self, package: apt.Package, dependency_dict: Dict  # type: ignore
     ) -> Dict:
         """
-        Returns a dictionary with the dependencies and the versions required to upgrade the given package.
-        This is not a straightforward task since multiple entries of a dependency might appear in the
-        dependency array if the package requires a specific version or range of versions of a dependency.
-        e.g.: if package A depends on package B (>1.0, <1.5), the dependency array of A will be [B(>1.0), B(<1.5)]
+        Returns a dictionary with the dependencies and the versions required to
+        upgrade the given package.
+
+        This is not a straightforward task since multiple entries of a
+        dependency might appear in the dependency array if the package requires
+        a specific version or range of versions of a dependency.
+
+        e.g.: if package A depends on package B (>1.0, <1.5), the dependency
+        array of A will be [B(>1.0), B(<1.5)]
         """
+
+        PTLogger.debug("Generating list of pi-top packages...")
+
+        pi_top_packages = str(
+            run(
+                ["aptitude", "search", "?origin (pi-top)", "-F", "\\%p"],
+                capture_output=True,
+            ).stdout,
+            "utf8",
+        )
+
         for package_dependencies in package.candidate.dependencies:
-            for dependency_object in package_dependencies:
-                if len(dependency_object.target_versions) == 0:
+            for dependency in package_dependencies:
+
+                if len(dependency.target_versions) == 0:
                     continue
-                if dependency_object.name not in dependency_dict:
-                    # new dependency found - check its dependencies too
-                    dependency_dict[dependency_object.name] = set(
-                        dependency_object.target_versions
+
+                if dependency.name not in dependency_dict:
+                    dependency_dict[dependency.name] = set(dependency.target_versions)
+
+                    # Only recurse pi-top package dependencies to ensure that the latest are included
+                    if dependency.name not in pi_top_packages:
+                        continue
+
+                    if dependency.name not in self.cache:
+                        continue
+
+                    self.get_upgrade_dependencies(
+                        self.cache[dependency.name], dependency_dict
                     )
-                    if dependency_object.name in self.cache:
-                        self.get_upgrade_dependencies(
-                            self.cache[dependency_object.name], dependency_dict
-                        )
                 else:
                     # store only the versions that comply with previous and new constraints
-                    dependency_dict[dependency_object.name] = set(
-                        dependency_object.target_versions
-                    ) & set(dependency_dict[dependency_object.name])
+                    dependency_dict[dependency.name] = set(
+                        dependency.target_versions
+                    ) & set(dependency_dict[dependency.name])
         return dependency_dict
 
     def stage_package(self, package_name: str) -> None:
@@ -87,8 +110,13 @@ class OSUpdateManager:
         package.mark_upgrade()
         dependency_dict = self.get_upgrade_dependencies(package, {})
         for pkg_name, versions in dependency_dict.items():
+            if len(versions) == 0:
+                # There are no versions of the package available
+                # TODO: This means it will fail to install?
+                continue
+
             pkg = self.cache.get(pkg_name)
-            if pkg and len(versions) > 0:
+            if pkg:
                 pkg.candidate = sorted([*versions], reverse=True)[0]
                 if pkg.is_upgradable:
                     PTLogger.info(
