@@ -74,9 +74,15 @@ def enable_further_link_service():
     return run_command("systemctl enable further-link", timeout=30, lower_priority=True)
 
 
+def fw_update_is_due():
+    PTLogger.debug("Function: fw_update_is_due()")
+
+    return path.exists("/tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown")
+
+
 def reboot() -> None:
     PTLogger.debug("Function: reboot()")
-    if path.exists("/tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown"):
+    if fw_update_is_due():
         # Do shutdown, let hub start back up
         run_command_background("shutdown -h now")
     else:
@@ -143,7 +149,7 @@ def do_firmware_update():
     fw_dev_id_str = "pt4_hub"
 
     try:
-        update_firmware(fw_dev_id_str, force=True)
+        update_firmware(fw_dev_id_str, force=False, notify_user=False)
     except Exception as e:
         PTLogger.warning(f"do_firmware_update: {e}")
 
