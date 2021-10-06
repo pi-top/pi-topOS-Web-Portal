@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 
 import RestartPage from "./RestartPage";
 
-import configureTour from "../../services/configureTour";
+import configureLanding from "../../services/configureLanding";
 import deprioritiseOpenboxSession from "../../services/deprioritiseOpenboxSession";
 import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterService";
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
@@ -13,8 +13,11 @@ import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
+import updateHubFirmware from "../../services/updateHubFirmware";
+import getBuildInfo from "../../services/getBuildInfo";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
+import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
 
 const maxProgress = 11; // this is the number of services for setting up
 
@@ -42,7 +45,17 @@ export default ({
   const [progress, setProgress] = useState(0);
   const [isWaitingForServer, setIsWaitingForServer] = useState(false);
   const [serverRebooted, setServerRebooted] = useState(false);
+  const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
+  const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
 
+  useEffect(() => {
+    getBuildInfo()
+      .then((buildInfo) => {
+        const versionArray = buildInfo.hubFirmwareVersion.split(".");
+        setLegacyHubFirmware(versionArray.length >= 2 && parseInt(versionArray[0]) <= 3 && parseInt(versionArray[1]) === 0);
+      })
+      .catch(() => setLegacyHubFirmware(false))
+  }, [])
 
   function safelyRunService(service: () => Promise<void>, message: string) {
     return service()
@@ -79,8 +92,27 @@ export default ({
     }, serverStatusRequestIntervalMs);
   }
 
+  function rebootPiTop() {
+    reboot()
+      .then(() => {
+        if (!runningOnWebRenderer()) {
+          setIsSettingUpDevice(false);
+          setIsWaitingForServer(true);
+          setServerRebooted(false);
+          window.setTimeout(waitUntilServerIsOnline, 3000);
+        }
+      })
+      .catch(() => {
+        setRebootError(true);
+        setIsSettingUpDevice(false);
+      })
+  }
+
+
   return (
     <RestartPage
+      displayManualPowerOnDialog={displayManualPowerOnDialog}
+      onManualPowerOnDialogClose={rebootPiTop}
       isWaitingForServer={isWaitingForServer}
       serverRebooted={serverRebooted}
       globalError={globalError}
@@ -116,7 +148,7 @@ export default ({
           )
           .finally(() =>
             safelyRunService(
-              configureTour,
+              configureLanding,
               "Reminded myself to show you around..."
             )
           )
@@ -124,6 +156,12 @@ export default ({
             safelyRunService(
               stopOnboardingAutostart,
               "Made sure not to make you go through this again..."
+            )
+          )
+          .finally(() =>
+            safelyRunService(
+              updateHubFirmware,
+              "Made things easier for me to go to sleep when you ask..."
             )
           )
           .finally(() =>
@@ -140,20 +178,17 @@ export default ({
           )
           .catch(console.error)
           .finally(() => {
-            reboot()
-              .then(() => {
-                if (!runningOnWebRenderer()) {
-                  setIsSettingUpDevice(false);
-                  setIsWaitingForServer(true);
-                  setServerRebooted(false);
-                  window.setTimeout(waitUntilServerIsOnline, 3000);
-                }
-              })
-              .catch(() => {
-                setRebootError(true);
-                setIsSettingUpDevice(false);
-              })
-            });
+            if (legacyHubFirmware) {
+              getHubFirmwareUpdateIsDue()
+                .then((dueUpdate) => {
+                  setDisplayManualPowerOnDialog(dueUpdate);
+                  !dueUpdate && rebootPiTop();
+                })
+                .catch(() => rebootPiTop())
+            } else {
+              rebootPiTop();
+            }
+          })
       }}
     />
   );

@@ -5,6 +5,7 @@ import Button, { Props as ButtonProps } from "../atoms/button/Button";
 import Spinner from "../atoms/spinner/Spinner";
 import styles from "./Layout.module.css";
 import Image from "../atoms/image/Image";
+import Header from "../header/Header";
 
 type LayoutButtonProps = Omit<ButtonProps, "children"> & {
   label?: string;
@@ -40,7 +41,10 @@ export default ({
   className,
   isLoading,
 }: Props) => (
+
+
   <div className={cx(styles.layout, className)}>
+    <Header />
     <div className={styles.banner}>
       <Image
         src={src}

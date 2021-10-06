@@ -6,21 +6,25 @@ from threading import Thread
 from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
+from further_link.start_further import get_further_url
 from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
+from ..app_window import LandingAppWindow, OsUpdaterAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
-from .helpers.about import device_data
+from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
-    configure_tour,
+    configure_landing,
     deprioritise_openbox_session,
+    do_firmware_update,
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_pt_miniscreen,
+    fw_update_is_due,
     onboarding_completed,
     reboot,
     restore_files,
@@ -33,20 +37,18 @@ from .helpers.keyboard import (
     list_keyboard_layout_variants,
     set_keyboard_layout,
 )
-from .helpers.language import current_locale, list_locales_supported, set_locale
-from .helpers.registration import set_registration_email
-from .helpers.system import restart_web_portal_service
-from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
-from .helpers.tour import (
-    close_pt_browser,
-    disable_tour,
-    further_url,
+from .helpers.landing import (
+    disable_landing,
     open_forum,
     open_further,
     open_knowledge_base,
     open_python_sdk_docs,
     python_sdk_docs_url,
 )
+from .helpers.language import current_locale, list_locales_supported, set_locale
+from .helpers.registration import set_registration_email
+from .helpers.system import restart_web_portal_service
+from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -60,7 +62,7 @@ def get_os_updater():
 
 
 class FrontendAppRoutes(Enum):
-    TOUR = "/tour"
+    LANDING = "/landing"
     ONBOARDING = "/onboarding"
     ABOUT = "/about"
     UPDATER = "/updater"
@@ -90,7 +92,7 @@ def index():
     if not onboarding_completed():
         PTLogger.info("Onboarding not completed yet. Redirecting...")
         return redirect(FrontendAppRoutes.ONBOARDING.value)
-    return redirect(FrontendAppRoutes.TOUR.value)
+    return redirect(FrontendAppRoutes.LANDING.value)
 
 
 @app.errorhandler(404)
@@ -317,10 +319,10 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
-@app.route("/configure-tour", methods=["POST"])
-def post_configure_tour():
-    PTLogger.debug("Route '/configure-tour'")
-    configure_tour()
+@app.route("/configure-landing", methods=["POST"])
+def post_configure_landing():
+    PTLogger.debug("Route '/configure-landing'")
+    configure_landing()
     return "OK"
 
 
@@ -373,23 +375,43 @@ def post_restore_files():
     return "OK"
 
 
+@app.route("/update-hub-firmware", methods=["POST"])
+def post_update_hub_firmware():
+    PTLogger.debug("Route '/update-hub-firmware'")
+    do_firmware_update()
+    return "OK"
+
+
+@app.route("/hub-firmware-update-is-due", methods=["GET"])
+def get_hub_firmware_is_due():
+    PTLogger.debug("Route '/hub-firmware-update-is-due'")
+    return jdumps(fw_update_is_due())
+
+
 @app.route("/python-sdk-docs-url", methods=["GET"])
 def get_python_sdk_docs_url():
     PTLogger.debug("Route '/python-sdk-docs-url")
     return jdumps({"url": python_sdk_docs_url()})
 
 
-@app.route("/disable-tour", methods=["POST"])
-def post_disable_tour():
-    PTLogger.debug("Route '/disable-tour'")
-    disable_tour()
+@app.route("/disable-landing", methods=["POST"])
+def post_disable_landing():
+    PTLogger.debug("Route '/disable-landing'")
+    disable_landing()
     return "OK"
 
 
-@app.route("/close-pt-browser", methods=["POST"])
-def post_close_pt_browser():
-    PTLogger.debug("Route '/close-pt-browser'")
-    close_pt_browser()
+@app.route("/close-os-updater-window", methods=["POST"])
+def post_close_os_updater_window():
+    PTLogger.debug("Route '/close-os-updater-window'")
+    OsUpdaterAppWindow().close()
+    return "OK"
+
+
+@app.route("/close-pt-os-landing-window", methods=["POST"])
+def post_close_pt_os_landing_window():
+    PTLogger.debug("Route '/close-pt-os-landing-window'")
+    LandingAppWindow().close()
     return "OK"
 
 
@@ -401,9 +423,9 @@ def post_open_further():
 
 
 @app.route("/further-url", methods=["GET"])
-def get_further_url():
+def further_url():
     PTLogger.debug("Route '/further-url'")
-    return jdumps({"url": further_url()})
+    return jdumps({"url": get_further_url()})
 
 
 @app.route("/open-python-sdk-docs", methods=["POST"])
@@ -430,7 +452,7 @@ def post_open_forum():
 @app.route("/about-device", methods=["GET"])
 def get_about_device():
     PTLogger.debug("Route '/about-device'")
-    return jdumps(device_data())
+    return jdumps(about_device())
 
 
 @app.route("/status", methods=["GET"])

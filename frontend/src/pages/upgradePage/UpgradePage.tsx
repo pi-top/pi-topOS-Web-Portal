@@ -21,13 +21,13 @@ export enum ErrorMessage {
 export enum UpgradePageExplanation {
   UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
   UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
-  InProgress = "Please sit back and relax - this may take some time...",
+  InProgress = "Now sit back and relax - this may take some time...\nPlease, DO NOT POWER OFF YOUR DEVICE!",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to {continueButtonAction}.",
   WaitingForServer = "Please wait...",
-  UpdatingSources = "We're checking to see if there are updates available",
+  UpdatingSources = "Checking to see if there are updates available...",
   Preparing = "Preparing all packages to be updated...",
   PreparingWebPortal = "Preparing to update myself...",
-  UpdatingWebPortal = "I'm updating myself, please wait",
+  UpdatingWebPortal = "I'm updating myself, please wait...",
 }
 
 
@@ -179,10 +179,10 @@ export default ({
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
-        showBack={onBackClick !== undefined && !upgradeIsRunning}
+        showBack={onBackClick !== undefined && !upgradeIsRunning && !updatingSources}
         backButton={{
           onClick: onBackClick,
-          disabled: upgradeIsRunning
+          disabled: upgradeIsRunning || updatingSources
         }}
       >
         { hasError() && (

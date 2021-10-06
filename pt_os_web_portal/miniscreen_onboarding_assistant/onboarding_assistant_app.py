@@ -1,23 +1,29 @@
+from enum import Enum
 from threading import Thread
-from time import sleep
 
 from pitop import Pitop
+from pitop.common.logger import PTLogger
 
 from .page_manager import PageManager
 
-ANIMATION_SLEEP_INTERVAL = 0.013
-DEFAULT_INTERVAL = 1
-FPS = 10
+
+class Speeds(Enum):
+    DYNAMIC_PAGE_REDRAW = 1
+    SCROLL = 0.004
+    SKIP = 0.001
 
 
 class OnboardingAssistantApp:
     def __init__(self):
-        self.miniscreen = Pitop().miniscreen
-
-        self.page_mgr = PageManager(self.miniscreen, DEFAULT_INTERVAL)
-
         self.__thread = Thread(target=self._main, args=())
         self.__stop = False
+        self.miniscreen = Pitop().miniscreen
+        self.manager = PageManager(
+            self.miniscreen,
+            page_redraw_speed=Speeds.DYNAMIC_PAGE_REDRAW.value,
+            scroll_speed=Speeds.SCROLL.value,
+            skip_speed=Speeds.SKIP.value,
+        )
 
     def start(self):
         self.__thread = Thread(target=self._main, args=())
@@ -28,13 +34,10 @@ class OnboardingAssistantApp:
         self.__stop = True
         if self.__thread and self.__thread.is_alive():
             self.__thread.join()
+        PTLogger.info("Stopped: miniscreen onboarding assistant")
 
     def _main(self):
         while not self.__stop:
-            if not self.page_mgr.viewport_position_is_correct():
-                self.page_mgr.scroll_to_current_page(ANIMATION_SLEEP_INTERVAL)
-
-            self.page_mgr.refresh()
-            sleep(1 / FPS)
-
-            self.page_mgr.wait_until_timeout_or_page_has_changed()
+            self.manager.update_scroll_position()
+            self.manager.display_current_viewport_image()
+            self.manager.wait_until_timeout_or_page_has_changed()

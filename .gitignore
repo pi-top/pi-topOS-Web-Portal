@@ -1,4 +1,5 @@
 *.DS_Store*
+.pc/
 # Explicitly defined for pre-commit to ignore it
 frontend/**/build
 frontend/node_modules

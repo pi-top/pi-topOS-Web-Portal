@@ -35,11 +35,15 @@ class OSUpdater:
         self.thread.start()
 
     def stop(self):
-        while self.manager.lock:
+        while self.active_backend.lock:
+            # TODO: lower to debug
+            PTLogger.info("Waiting: OS updater backend lock")
             sleep(0.2)
 
         if self.thread.is_alive():
             self.thread.join()
+
+        PTLogger.info("Stopped: OS updater")
 
     def updates_available(self):
         self.update_sources()
@@ -60,7 +64,7 @@ class OSUpdater:
 
     def do_update_check(self, ws=None):
         should_check_for_updates = (
-            state.get("app", "state", fallback="onboarding") != "onboarding"
+            state.get("app", "onboarded", fallback="false") == "true"
             and is_connected_to_internet()
             and self.last_checked_date != date.today()
         )

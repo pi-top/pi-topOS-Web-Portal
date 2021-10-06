@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 
-import linkScreenCenter from "../../assets/images/tour-links-screen.svg";
+import linkScreenCenter from "../../assets/images/landing-links-screen.svg";
 
 import styles from "./LinksPage.module.css";
-import TourLayout  from "../../components/tourLayout/TourLayout";
+import LandingLayout  from "../../components/landingLayout/LandingLayout";
 import Button from "../../components/atoms/button/Button";
 
-import closePtBrowser from "../../services/closePtBrowser";
+import closePtOsLandingWindow from "../../services/closePtOsLandingWindow";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 import openFurther from "../../services/openFurther";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openForum from "../../services/openForum";
-import stopTourAutostart from "../../services/stopTourAutostart";
+import stopLandingAutostart from "../../services/stopLandingAutostart";
 import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import getFurtherUrl from "../../services/getFurtherUrl";
 
@@ -19,9 +19,9 @@ import { runningOnWebRenderer } from "../../helpers/utils";
 
 
 export default () => {
-  const kbUrl = "https://knowledgebase.pi-top.com";
+  const kbUrl = "https://knowledgebase.pi-top.com/knowledge";
   const forumUrl = "https://forum.pi-top.com";
-  const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com");
+  const [pythonDocsUrl, setPythonDocsUrl] = useState("https://docs.pi-top.com/python-sdk/");
   const [furtherUrl, setFurtherUrl] = useState("https://further.pi-top.com/start");
   const [isOpeningLink, setIsOpeningLink] = useState(false);
 
@@ -37,7 +37,7 @@ export default () => {
       serviceMap.get(link).callback();
       window.setTimeout(() => {
         setIsOpeningLink(false);
-        closePtBrowser();
+        closePtOsLandingWindow();
       }, 10000);
     }
   }
@@ -67,8 +67,8 @@ export default () => {
   }, []);
 
   return (
-    <TourLayout
-      onCloseButton={() => !isOpeningLink && stopTourAutostart().then(() => closePtBrowser())}
+    <LandingLayout
+      onCloseButton={() => !isOpeningLink && stopLandingAutostart().then(() => closePtOsLandingWindow())}
       isLoadingBanner={isOpeningLink}
       banner={{
         src: linkScreenCenter,
@@ -86,7 +86,7 @@ export default () => {
       nextButton={{
         onClick: () => {
           openLink(furtherUrl);
-          stopTourAutostart();
+          stopLandingAutostart();
           },
         label: 'Go to Further',
         disabled: isOpeningLink,
@@ -99,6 +99,6 @@ export default () => {
         <p>Have some questions? Go to <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(kbUrl)}> Knowledge Base </Button> or connect with our community on our   <Button className={styles.linkButton} unstyled disabled={isOpeningLink} onClick={() => openLink(forumUrl)}> Forum </Button></p>
       </div>
 
-    </TourLayout>
+    </LandingLayout>
   );
 };

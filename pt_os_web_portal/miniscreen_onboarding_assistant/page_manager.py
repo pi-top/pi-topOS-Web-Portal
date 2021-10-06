@@ -1,177 +1,193 @@
 from threading import Event
-from time import sleep
 
+from PIL import ImageDraw
 from pitop.common.logger import PTLogger
-from pitop.miniscreen.oled.core.contrib.luma.core.virtual import viewport
+from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
-from .. import state
 from ..event import AppEvents, subscribe
-from .pages import Page, PageGenerator
+from .pages.guide import GuidePage, GuidePageGenerator
+from .pages.menu import MenuPage, MenuPageGenerator
+from .viewport import ViewportManager
+
+scroll_px_resolution = 2
 
 
 class PageManager:
-    def __init__(self, miniscreen, default_page_interval=1):
-        self._miniscreen = miniscreen
+    def __init__(self, miniscreen, page_redraw_speed, scroll_speed, skip_speed):
+        self._ms = miniscreen
 
-        self._miniscreen.up_button.when_released = (
-            self.set_current_page_to_previous_page
+        self.page_redraw_speed = page_redraw_speed
+        self.scroll_speed = scroll_speed
+        self.skip_speed = skip_speed
+
+        self.is_skipping = False
+
+        self._ms.up_button.when_released = self.set_page_to_previous_page
+        self._ms.down_button.when_released = self.set_page_to_next_page
+        self._ms.select_button.when_released = self.handle_select_btn
+        self._ms.cancel_button.when_released = self.handle_cancel_btn
+
+        self.guide_viewport = ViewportManager(
+            "guide",
+            miniscreen,
+            [
+                GuidePageGenerator.get_page(guide_page_type)(
+                    miniscreen.size, miniscreen.mode, page_redraw_speed
+                )
+                for guide_page_type in GuidePage
+            ],
         )
-        self._miniscreen.down_button.when_released = self.set_current_page_to_next_page
-        self._miniscreen.cancel_button.when_released = (
-            self.set_current_page_to_previous_page
+
+        def menu_overlay(image):
+            title_overlay_h = 19
+            asst = MiniscreenAssistant(self._ms.mode, self._ms.size)
+            ImageDraw.Draw(image).rectangle(
+                ((0, 0), (self._ms.size[0], title_overlay_h)), fill=1
+            )
+            ImageDraw.Draw(image).rectangle(
+                ((0, title_overlay_h), (self._ms.size[0], title_overlay_h)), fill=0
+            )
+            asst.render_text(
+                image,
+                xy=(self._ms.size[0] / 2, self._ms.size[1] / 6),
+                text="M E N U",
+                wrap=False,
+                font=asst.get_mono_font_path(bold=True),
+                fill=0,
+            )
+
+        self.menu_viewport = ViewportManager(
+            "menu",
+            miniscreen,
+            [
+                MenuPageGenerator.get_page(menu_page_type)(
+                    miniscreen.size, miniscreen.mode, page_redraw_speed
+                )
+                for menu_page_type in MenuPage
+            ],
+            overlay_render_func=menu_overlay,
         )
-        self._miniscreen.select_button.when_released = (
-            self.set_current_page_to_next_page
-        )
 
-        def automatic_transition_to_last_page(_):
-            last_page_index = len(self.pages) - 1
-            # Only do automatic update if on previous page
-            if self.current_page_index == last_page_index - 1:
-                self.set_current_page_to(self.get_page(last_page_index))
-
-        subscribe(AppEvents.READY_TO_BE_A_MAKER, automatic_transition_to_last_page)
-
-        size = miniscreen.size
-        width = size[0]
-        height = size[1]
-
-        mode = miniscreen.mode
-
+        self.active_viewport = self.guide_viewport
         self.page_has_changed = Event()
 
-        def page_instance(page_type):
-            return PageGenerator.get_page(page_type)(size, mode, default_page_interval)
+        self.setup_event_triggers()
 
-        self.pages = [page_instance(page_type) for page_type in Page]
+    def setup_event_triggers(self):
+        def soft_transition_to_last_page(_):
+            if self.active_viewport != self.guide_viewport:
+                return
 
-        self.current_page_index = 0
-        state_page_name = state.get("miniscreen_onboarding", "page_name")
-        if state_page_name:
-            try:
-                index = self.get_page_index(Page[state_page_name])
-                PTLogger.info(f"Setting initial page index to {index}")
-                self.current_page_index = index
-                state.remove("miniscreen_onboarding", "page_name")
-            except Exception:
-                PTLogger.error(
-                    "Couldn't restore page from state - starting from scratch"
-                )
+            last_page_index = len(self.active_viewport.pages) - 1
+            # Only do automatic update if on previous page
+            if self.guide_viewport.page_index == last_page_index - 1:
+                self.guide_viewport.page_index = last_page_index
 
-        self.viewport = viewport(
-            miniscreen.device,
-            width=width,
-            height=height * len(Page),
+        subscribe(AppEvents.READY_TO_BE_A_MAKER, soft_transition_to_last_page)
+
+        def hard_transition_to_connect_page(_):
+            self.active_viewport = self.guide_viewport
+            self.active_viewport.page_index = len(self.active_viewport.pages) - 2
+            self.is_skipping = True
+
+        subscribe(
+            AppEvents.USER_SKIPPED_CONNECTION_GUIDE, hard_transition_to_connect_page
         )
 
-        self.viewport.set_position((0, self.current_page_index * height))
+    def handle_select_btn(self):
+        if self.active_viewport == self.guide_viewport:
+            self.set_page_to_next_page()
+        else:
+            self.active_viewport.current_page.on_select_press()
 
-        for i, page in enumerate(self.pages):
-            self.viewport.add_hotspot(page, (0, i * height))
+        self.page_has_changed.set()
 
-        def save_miniscreen_onboarding_app_state(restarting_web_portal):
-            if restarting_web_portal:
-                state.set(
-                    "miniscreen_onboarding", "page_name", self.current_page.type.name
-                )
-                state.set(
-                    "miniscreen_onboarding",
-                    "carry_on_page_is_visible",
-                    str(
-                        self.get_page(self.get_page_index(Page.CARRY_ON)).visible
-                    ).lower(),
-                )
+    def handle_cancel_btn(self):
+        if self.active_viewport == self.guide_viewport:
+            self.active_viewport = self.menu_viewport
+            self.active_viewport.move_to_page(0)
+        else:
+            self.active_viewport = self.guide_viewport
 
-        subscribe(AppEvents.RESTARTING_WEB_PORTAL, save_miniscreen_onboarding_app_state)
-
-        if state.get("miniscreen_onboarding", "carry_on_page_is_visible") == "true":
-            self.get_page(self.get_page_index(Page.CARRY_ON)).visible = True
-            state.remove("miniscreen_onboarding", "carry_on_page_is_visible")
-
-        state.remove("miniscreen_onboarding")
-
-    def get_page_index(self, page_enum):
-        for index, page in enumerate(self.pages):
-            if page.type == page_enum:
-                return index
+        self.page_has_changed.set()
 
     def get_page(self, index):
-        return self.pages[index]
+        return self.active_viewport.pages[index]
 
     @property
-    def current_page(self):
-        return self.get_page(self.current_page_index)
+    def page(self):
+        return self.get_page(self.active_viewport.page_index)
 
-    def viewport_position_is_correct(self):
-        return (
-            self.viewport._position[1]
-            == self.current_page_index * self.current_page.height
-        )
+    @property
+    def needs_to_scroll(self):
+        y_pos = self.active_viewport.y_pos
+        correct_y_pos = self.active_viewport.page_index * self.page.height
 
-    def set_current_page_to(self, page):
-        if not self.viewport_position_is_correct():
+        return y_pos != correct_y_pos
+
+    def set_page_to(self, page):
+        if self.needs_to_scroll:
             return
 
         new_page = page.type
+
         new_page_index = new_page.value - 1
-        if self.current_page_index == new_page_index:
+        if self.active_viewport.page_index == new_page_index:
             PTLogger.debug(
                 f"Miniscreen onboarding: Already on page '{new_page.name}' - nothing to do"
             )
             return
 
-        PTLogger.debug(f"Page index: {self.current_page_index} -> {new_page_index}")
-        self.current_page_index = new_page_index
+        PTLogger.debug(
+            f"Page index: {self.active_viewport.page_index} -> {new_page_index}"
+        )
+        self.active_viewport.page_index = new_page_index
         self.page_has_changed.set()
 
-    def set_current_page_to_previous_page(self):
-        self.set_current_page_to(self.get_previous_page())
+    def set_page_to_previous_page(self):
+        self.set_page_to(self.get_previous_page())
 
-    def set_current_page_to_next_page(self):
-        self.set_current_page_to(self.get_next_page())
+    def set_page_to_next_page(self):
+        self.set_page_to(self.get_next_page())
 
     def get_previous_page(self):
         # Return next page if at top
-        if self.current_page_index == 0:
+        if self.active_viewport.page_index == 0:
             return self.get_next_page()
 
-        candidate = self.get_page(self.current_page_index - 1)
-        return candidate if candidate.visible else self.current_page
+        candidate = self.get_page(self.active_viewport.page_index - 1)
+        return candidate if candidate.visible else self.page
 
     def get_next_page(self):
         # Return current page if at end
-        if self.current_page_index + 1 >= len(Page):
-            return self.current_page
+        if self.active_viewport.page_index + 1 >= len(self.active_viewport.pages):
+            return self.page
 
-        candidate = self.get_page(self.current_page_index + 1)
-        return candidate if candidate.visible else self.current_page
+        candidate = self.get_page(self.active_viewport.page_index + 1)
+        return candidate if candidate.visible else self.page
 
-    def refresh(self):
-        self.viewport.refresh()
+    def display_current_viewport_image(self):
+        self._ms.device.display(self.active_viewport.image)
 
     def wait_until_timeout_or_page_has_changed(self):
-        self.page_has_changed.wait(self.current_page.interval)
+        if self.needs_to_scroll:
+            if self.is_skipping:
+                interval = self.skip_speed
+            else:
+                interval = self.scroll_speed
+        else:
+            interval = self.page_redraw_speed
+
+        self.page_has_changed.wait(interval)
         if self.page_has_changed.is_set():
             self.page_has_changed.clear()
 
-    def scroll_to_current_page(self, interval):
-        PTLogger.info(
-            f"Miniscreen onboarding: Scrolling to page {self.current_page.type}"
-        )
-
-        y_pos = self.current_page_index * self._miniscreen.size[1]
-
-        if y_pos == self.viewport._position[1]:
+    def update_scroll_position(self):
+        if not self.needs_to_scroll:
+            self.is_skipping = False
             return
 
-        direction_scalar = 1 if y_pos - self.viewport._position[1] > 0 else -1
-        pixels_to_jump_per_frame = 2
-        while y_pos != self.viewport._position[1]:
-            self.viewport.set_position(
-                (
-                    0,
-                    self.viewport._position[1]
-                    + (direction_scalar * pixels_to_jump_per_frame),
-                )
-            )
-            sleep(interval)
+        correct_y_pos = self.active_viewport.page_index * self._ms.size[1]
+        move_down = correct_y_pos > self.active_viewport.y_pos
+
+        self.active_viewport.y_pos += scroll_px_resolution * (1 if move_down else -1)

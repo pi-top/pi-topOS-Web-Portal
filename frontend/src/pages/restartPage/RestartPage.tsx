@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Line as ProgressBar } from "rc-progress";
 
 import Layout from "../../components/layout/Layout";
@@ -8,6 +8,7 @@ import rebootScreen from "../../assets/images/reboot-screen.png";
 import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
+import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
@@ -33,6 +34,8 @@ export type Props = {
   rebootError: boolean;
   progressPercentage: number;
   progressMessage: string;
+  displayManualPowerOnDialog: boolean;
+  onManualPowerOnDialogClose: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
 };
@@ -45,9 +48,17 @@ export default ({
   rebootError,
   progressPercentage,
   progressMessage,
+  displayManualPowerOnDialog,
+  onManualPowerOnDialogClose,
   setupDevice,
   onBackClick,
 }: Props) => {
+  const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
+
+  useEffect(() => {
+    setManualPowerOnDialogActive(displayManualPowerOnDialog);
+  }, [displayManualPowerOnDialog])
+
   let errorMessage = "";
   if (globalError) {
     errorMessage = ErrorMessage.GlobalError;
@@ -88,6 +99,15 @@ export default ({
       }
       className={styles.root}
     >
+
+      <ManualPowerOnDialogContainer
+        active={manualPowerOnDialogActive}
+        onClose={() => {
+          setManualPowerOnDialogActive(!manualPowerOnDialogActive);
+          onManualPowerOnDialogClose();
+        }}
+      />
+
       {isSettingUpDevice && (
         <div className={styles.progress}>
           <ProgressBar
