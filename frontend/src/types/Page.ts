@@ -8,7 +8,7 @@ export enum Page {
   Registration = "REGISTRATION",
   Restart = "RESTART",
   Terms = "TERMS",
-  TourSplash = "TOURSPLASH",
+  LandingSplash = "LANDINGSPLASH",
   Links = "LINKS",
 }
 
@@ -22,6 +22,6 @@ export enum PageRoute {
   Registration = "/onboarding/registration",
   Restart = "/onboarding/reboot",
   Terms = "/onboarding/terms",
-  Links = "/tour/links",
-  TourSplash = "/tour"
+  Links = "/landing/links",
+  LandingSplash = "/landing"
 }

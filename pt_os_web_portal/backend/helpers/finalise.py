@@ -5,7 +5,7 @@ from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
 from pitop.common.logger import PTLogger
 from pitop.system import device_type
-from pt_fw_updater.check import main as update_firmware
+from pt_fw_updater.update import main as update_firmware
 
 from ... import state
 from .paths import use_test_path
@@ -27,13 +27,16 @@ def available_space() -> str:
     return space
 
 
-def configure_tour() -> None:
-    PTLogger.debug("Function: configure_tour()")
-    run_command(
-        f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-tour.desktop /etc/xdg/autostart",
-        timeout=60,
-        lower_priority=True,
-    )
+def configure_landing() -> None:
+    PTLogger.debug("Function: configure_landing()")
+    try:
+        run_command(
+            f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-landing.desktop /etc/xdg/autostart",
+            timeout=60,
+            lower_priority=True,
+        )
+    except Exception as e:
+        PTLogger.error(f"configure_tour: {e}")
 
 
 def deprioritise_openbox_session() -> None:
@@ -48,8 +51,13 @@ def deprioritise_openbox_session() -> None:
 
 def stop_onboarding_autostart() -> None:
     PTLogger.debug("Function: stop_onboarding_autostart()")
-    remove("/etc/xdg/autostart/pt-os-setup.desktop")
-    state.set("app", "onboarded", "true")
+    try:
+        remove("/etc/xdg/autostart/pt-os-setup.desktop")
+        state.set("app", "onboarded", "true")
+    except FileNotFoundError:
+        PTLogger.debug("stop_onboarding_autostart: Onboarding already disabled")
+    except Exception as e:
+        PTLogger.error(f"stop_onboarding_autostart: {e}")
 
 
 def enable_firmware_updater_service():
@@ -86,18 +94,27 @@ def enable_pt_miniscreen():
 def restore_files():
     PTLogger.debug("Function: restore_files()")
 
-    run_command(
-        "rsync -av /usr/lib/pt-os-web-portal/bak/ /", timeout=30, lower_priority=True
-    )
-    run_command("rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True)
-
-
-def disable_tour():
-    PTLogger.debug("Function: disable_tour()")
     try:
-        remove("/etc/xdg/autostart/pt-os-tour.desktop")
+        run_command(
+            "rsync -av /usr/lib/pt-os-web-portal/bak/ /",
+            timeout=30,
+            lower_priority=True,
+        )
+        run_command(
+            "rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True
+        )
     except FileNotFoundError:
-        PTLogger.debug("Tour already disabled.")
+        PTLogger.debug("restore_files: Files already restored")
+    except Exception as e:
+        PTLogger.error(f"restore_files: {e}")
+
+
+def disable_landing():
+    PTLogger.debug("Function: disable_landing()")
+    try:
+        remove("/etc/xdg/autostart/pt-os-landing.desktop")
+    except FileNotFoundError:
+        PTLogger.debug("Landing already disabled.")
 
 
 def python_sdk_docs_url():
@@ -111,7 +128,12 @@ def onboarding_completed():
 
 def update_eeprom():
     PTLogger.debug("Function: update_eeprom()")
-    run_command("/usr/lib/pt-os-notify-services/pt-eeprom -f", timeout=10, check=False)
+    try:
+        run_command(
+            "/usr/lib/pt-os-notify-services/pt-eeprom -f", timeout=10, check=False
+        )
+    except Exception as e:
+        PTLogger.error(f"update_eeprom: {e}")
 
 
 def do_firmware_update():
@@ -119,10 +141,11 @@ def do_firmware_update():
         return
 
     fw_dev_id_str = "pt4_hub"
+
     try:
         update_firmware(fw_dev_id_str, force=True)
     except Exception as e:
-        PTLogger.warning(e)
+        PTLogger.warning(f"do_firmware_update: {e}")
 
     if not FirmwareDevice(
         FirmwareDevice.str_name_to_device_id(fw_dev_id_str)

@@ -37,6 +37,7 @@ const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 type ExtendedRenderResult = RenderResult & {
   waitForPreparation: () => Promise<HTMLElement>,
   waitForGenericError: () => any,
+  waitForInstallingPackages: () => any,
   waitForUpgradeFinish: () => any,
   queryByTestId: BoundFunction<QueryByBoundAttribute>,
 };
@@ -119,6 +120,12 @@ describe("UpgradePageContainer", () => {
             text && await waitForElement(() => result.getByText(text))
           }))
         },
+        waitForInstallingPackages: async () => {
+          await Promise.all(UpgradePageExplanation.InProgress
+            .split("\n").map(async (text, _): Promise<any> => {
+            text && await waitForElement(() => result.getByText(text))
+          }))
+        },
       };
     };
   });
@@ -156,17 +163,10 @@ describe("UpgradePageContainer", () => {
     expect(getByText("Update")).toHaveProperty("disabled", true);
   });
 
-  it("Back button is present", async () => {
-    const { getByText } = mount();
+  it("Back button isn't present", async () => {
+    const { queryByText } = mount();
 
-    expect(getByText("Back")).toBeInTheDocument();
-  });
-
-  it("calls goToPreviousPage when back button clicked", async () => {
-    const { getByText } = mount();
-
-    fireEvent.click(getByText("Back"));
-    expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
+    expect(queryByText("Back")).not.toBeInTheDocument();
   });
 
   it("Skip button is not present", async () => {
@@ -250,17 +250,10 @@ describe("UpgradePageContainer", () => {
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
 
-    it("Back button is present", async () => {
-      const { getByText } = mount();
+    it("Back button isn't present", async () => {
+      const { queryByText } = mount();
 
-      expect(getByText("Back")).toBeInTheDocument();
-    });
-
-    it("calls goToPreviousPage when back button clicked", async () => {
-      const { getByText } = mount();
-
-      fireEvent.click(getByText("Back"));
-      expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
+      expect(queryByText("Back")).not.toBeInTheDocument();
     });
 
   });
@@ -575,14 +568,14 @@ describe("UpgradePageContainer", () => {
         expect(queryByText("Skip")).not.toBeInTheDocument();
       });
 
-      it("Back button is rendered", async () => {
+      it("Back button isn't rendered", async () => {
         const { waitForGenericError, getByText, queryByText } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
         await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
-        expect(queryByText("Back")).toBeInTheDocument();
+        expect(queryByText("Back")).not.toBeInTheDocument();
       });
 
       it("Update button is present", async () => {
@@ -988,13 +981,13 @@ describe("UpgradePageContainer", () => {
         expect(queryByText("Skip")).not.toBeInTheDocument();
       });
 
-      it("Back button is rendered", async () => {
+      it("Back button isn't rendered", async () => {
         const { waitForGenericError, getByText, queryByText } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
 
-        expect(queryByText("Back")).toBeInTheDocument();
+        expect(queryByText("Back")).not.toBeInTheDocument();
       });
 
       it("Update button is present", async () => {
@@ -1066,11 +1059,11 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the 'upgrade is in progress' message", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForInstallingPackages } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
+      await waitForInstallingPackages();
     });
 
     it("renders progress bar correctly", async () => {
@@ -1103,20 +1096,20 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Update button is disabled", async () => {
-      const { getByText, waitForPreparation } = mount();
+      const { getByText, waitForPreparation, waitForInstallingPackages } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
+      await waitForInstallingPackages();
 
       await waitForElement(() => getByText("Update"));
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
 
     it("Back button is not rendered", async () => {
-      const { getByText, queryByText, waitForPreparation } = mount();
+      const { getByText, queryByText, waitForInstallingPackages, waitForPreparation } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
-      await waitForElement(() => getByText(UpgradePageExplanation.InProgress));
+      await waitForInstallingPackages();
 
       expect(queryByText("Back")).not.toBeInTheDocument();
     });
@@ -1191,9 +1184,10 @@ describe("UpgradePageContainer", () => {
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      expect(
-        queryByText(UpgradePageExplanation.InProgress)
-      ).not.toBeInTheDocument();
+      await Promise.all(UpgradePageExplanation.InProgress
+        .split("\n").map(async (text, _): Promise<any> => {
+        text && expect(queryByText(text)).not.toBeInTheDocument()
+      }))
     });
 
     it("renders the textarea component", async () => {

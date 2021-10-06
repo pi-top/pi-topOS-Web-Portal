@@ -9,4 +9,5 @@ export type BuildInfo = {
   buildRepo: string;
   finalRepo: string;
   ptOsWebPortalVersion: string;
+  hubFirmwareVersion: string;
 }

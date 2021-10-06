@@ -507,11 +507,11 @@ describe("App", () => {
         isConnectedToNetworkMock.mockResolvedValue({ connected: true });
       });
 
-      it("it navigates to RegistrationPage on Next button click after succesfully joining", async () => {
+      it("it navigates to UpgradePage on Next button click after succesfully joining", async () => {
         const {
           getByText,
           waitForWifiPage,
-          queryByText,
+          waitForUpgradePage,
           queryReactSelect,
         } = mount(PageRoute.Wifi);
         await waitForWifiPage();
@@ -525,8 +525,7 @@ describe("App", () => {
         await waitForElement(() => getByText("OK"));
         fireEvent.click(getByText("OK"));
 
-        await wait();
-        expect(queryByText("Next")).toHaveProperty("disabled", false);
+        await waitForUpgradePage();
       });
 
       it("navigates to RegistrationPage on Skip button click", async () => {

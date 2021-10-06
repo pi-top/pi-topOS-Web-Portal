@@ -5,10 +5,10 @@ import Button, { Props as ButtonProps } from "../atoms/button/Button";
 import Spinner from "../atoms/spinner/Spinner";
 import MaskedDiv from "../atoms/masked/MaskedDiv";
 
-import styles from "./TourLayout.module.css";
+import styles from "./LandingLayout.module.css";
 import Image from "../atoms/image/Image";
 
-import closeButtonImage from "../../assets/images/tour-close-button.svg";
+import closeButtonImage from "../../assets/images/landing-close-button.svg";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 

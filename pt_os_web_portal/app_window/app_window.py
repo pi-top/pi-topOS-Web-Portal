@@ -64,10 +64,10 @@ class OsUpdaterAppWindow(AppWindow):
 
 
 @dataclass
-class TourAppWindow(AppWindow):
-    url: str = "http://localhost/tour"
+class LandingAppWindow(AppWindow):
+    url: str = "http://localhost/landing"
     width_scalar: float = 0.65
     height_scalar: float = 0.7
-    title: str = "pi-topOS Tour"
+    title: str = "pi-topOS Landing"
     icon: str = "/usr/share/icons/hicolor/scalable/apps/pt-os-about.svg"
     hide_frame: bool = True

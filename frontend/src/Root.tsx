@@ -19,7 +19,7 @@ export default () => (
     }
   >
     <BrowserRouter>
-      <Route path="/tour" component={LinksPage} />
+      <Route path="/landing" component={LinksPage} />
       <Route path="/onboarding" component={OnboardingApp} />
       <Route path="/about" component={AboutPageContainer} />
       <Route path="/updater"

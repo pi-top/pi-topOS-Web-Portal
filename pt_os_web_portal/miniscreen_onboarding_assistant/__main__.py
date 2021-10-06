@@ -6,6 +6,7 @@ from . import OnboardingAssistantApp
 
 
 @click.command()
+@click.version_option()
 def main() -> None:
     onboarding_app = OnboardingAssistantApp()
     onboarding_app.start()

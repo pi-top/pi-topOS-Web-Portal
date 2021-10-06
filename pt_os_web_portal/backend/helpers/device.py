@@ -1,5 +1,6 @@
 from os.path import exists
 
+from pitop.common.common_names import DeviceName
 from pitop.system import device_type
 
 HUB_SERIAL_FILE = "/run/pt_hub_serial"
@@ -19,7 +20,7 @@ def serial_number():
 
 
 def firmware_version():
-    if device_type() == "pi_top_4":
+    if device_type() == DeviceName.pi_top_4.value:
         from pitop.common.firmware_device import FirmwareDevice
 
         return FirmwareDevice(

@@ -52,6 +52,10 @@ class App:
         self.wsgi_server.start()
 
     def stop(self):
+        def stop_wsgi_server():
+            self.wsgi_server.stop()
+            PTLogger.info("Stopped: WSGI Server")
+
         # Using thread pool with context will cause it to behave
         # as if Executor.shutdown() were called with `wait=True`
         with ThreadPoolExecutor() as executor:
@@ -60,6 +64,6 @@ class App:
                 lambda: self.miniscreen_onboarding
                 and self.miniscreen_onboarding.stop(),
                 self.connection_manager.stop,
-                self.wsgi_server.stop,
+                stop_wsgi_server,
             ]:
                 executor.submit(stop_func)
