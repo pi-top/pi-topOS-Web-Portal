@@ -10,6 +10,7 @@ import serverStatus from "../../services/serverStatus"
 import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
+  Cleanup = "OS_UPGRADE_CLEANUP",
   UpdateSources = "UPDATE_SOURCES",
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
   Upgrade = "OS_UPGRADE",
@@ -44,7 +45,7 @@ export type SizeMessagePayload = {
 };
 
 export type UpgradeMessage = {
-  type: OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade | OSUpdaterMessageType.UpdateSources;
+  type: OSUpdaterMessageType.UpdateSources | OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade | OSUpdaterMessageType.Cleanup;
   payload: UpgradeMessagePayload;
 };
 
@@ -85,6 +86,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
   const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
   const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
+  const [cleanupIsRunning, setCleanupIsRunning] = useState(false);
   const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState<ErrorType>(ErrorType.None);
@@ -228,10 +230,20 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       return;
     }
 
+    if (message.type === OSUpdaterMessageType.Upgrade) {
+      if (message.payload.status === UpdateMessageStatus.Finish) {
+        setCleanupIsRunning(true);
+        socket.send("cleanup");
+      } else if (message.payload.status === UpdateMessageStatus.Start) {
+        setUpgradeIsRunning(true);
+      }
+    }
+
     if (
-      message.type === OSUpdaterMessageType.Upgrade &&
+      message.type === OSUpdaterMessageType.Cleanup &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
+
       if (checkingWebPortal) {
         setInstallingWebPortalUpgrade(false);
 
@@ -243,6 +255,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         setUpgradeIsRunning(false);
         setUpgradeIsRequired(false);
         setUpgradeFinished(true);
+        setCleanupIsRunning(false);
       }
     }
 
@@ -330,6 +343,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       downloadSize={updateSize.downloadSize}
       requireBurn={requireBurn}
       shouldBurn={shouldBurn}
+      cleanupIsRunning={cleanupIsRunning}
       checkingWebPortal={checkingWebPortal}
       error={error}
       updatingSources={updatingSources}

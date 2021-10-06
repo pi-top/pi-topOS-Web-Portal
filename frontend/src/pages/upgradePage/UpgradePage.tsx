@@ -24,6 +24,7 @@ export enum UpgradePageExplanation {
   InProgress = "Now sit back and relax - this may take some time...\nPlease, DO NOT POWER OFF YOUR DEVICE!",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to {continueButtonAction}.",
   WaitingForServer = "Please wait...",
+  CleanupInProgress = "Cleaning up, please wait...",
   UpdatingSources = "We're checking to see if there are updates available",
   Preparing = "Preparing all packages to be updated...",
   PreparingWebPortal = "Preparing to update myself...",
@@ -45,6 +46,7 @@ export type Props = {
   upgradeIsRunning: boolean,
   upgradeFinished: boolean,
   waitingForServer: boolean,
+  cleanupIsRunning: boolean,
   downloadSize: number,
   error: ErrorType,
   requireBurn: boolean,
@@ -67,6 +69,7 @@ export default ({
   upgradeIsRunning,
   upgradeFinished,
   downloadSize,
+  cleanupIsRunning,
   waitingForServer,
   requireBurn,
   shouldBurn,
@@ -140,6 +143,9 @@ export default ({
     }
     if (upgradeIsRunning) {
       return UpgradePageExplanation.InProgress;
+    }
+    if (cleanupIsRunning) {
+      return UpgradePageExplanation.CleanupInProgress;
     }
     if (upgradeIsPrepared) {
       if (downloadSize) {
