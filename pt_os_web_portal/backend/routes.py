@@ -24,6 +24,7 @@ from .helpers.finalise import (
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_pt_miniscreen,
+    fw_update_is_due,
     onboarding_completed,
     reboot,
     restore_files,
@@ -378,6 +379,12 @@ def post_update_hub_firmware():
     PTLogger.debug("Route '/update-hub-firmware'")
     do_firmware_update()
     return "OK"
+
+
+@app.route("/hub-firmware-update-is-due", methods=["GET"])
+def get_hub_firmware_is_due():
+    PTLogger.debug("Route '/hub-firmware-update-is-due'")
+    return jdumps(fw_update_is_due())
 
 
 @app.route("/python-sdk-docs-url", methods=["GET"])

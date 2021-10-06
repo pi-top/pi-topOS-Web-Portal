@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 
-import semver from 'semver';
 import RestartPage from "./RestartPage";
 
 import configureLanding from "../../services/configureLanding";
@@ -18,6 +17,7 @@ import updateHubFirmware from "../../services/updateHubFirmware";
 import getBuildInfo from "../../services/getBuildInfo";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
+import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
 
 const maxProgress = 11; // this is the number of services for setting up
 
@@ -45,15 +45,16 @@ export default ({
   const [progress, setProgress] = useState(0);
   const [isWaitingForServer, setIsWaitingForServer] = useState(false);
   const [serverRebooted, setServerRebooted] = useState(false);
-  const [manualPowerOnRequired, setManualPowerOnRequired] = useState(false);
+  const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
   const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
 
   useEffect(() => {
     getBuildInfo()
       .then((buildInfo) => {
-        setManualPowerOnRequired(semver.lt(buildInfo.hubFirmwareVersion, "3.0"));
+        const versionArray = buildInfo.hubFirmwareVersion.split(".");
+        setLegacyHubFirmware(versionArray.length >= 2 && parseInt(versionArray[0]) <= 3 && parseInt(versionArray[1]) === 0);
       })
-      .catch(() => setManualPowerOnRequired(false))
+      .catch(() => setLegacyHubFirmware(false))
   }, [])
 
   function safelyRunService(service: () => Promise<void>, message: string) {
@@ -177,8 +178,13 @@ export default ({
           )
           .catch(console.error)
           .finally(() => {
-            if (manualPowerOnRequired) {
-              setDisplayManualPowerOnDialog(true);
+            if (legacyHubFirmware) {
+              getHubFirmwareUpdateIsDue()
+                .then((dueUpdate) => {
+                  setDisplayManualPowerOnDialog(dueUpdate);
+                  !dueUpdate && rebootPiTop();
+                })
+                .catch(() => rebootPiTop())
             } else {
               rebootPiTop();
             }
