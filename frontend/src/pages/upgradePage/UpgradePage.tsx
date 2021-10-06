@@ -9,7 +9,7 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import upgradePage from "../../assets/images/upgrade-page.png";
 import styles from "./UpgradePage.module.css";
 
-import { ErrorType, OSUpdaterMessage, OSUpdaterMessageType, UpdateMessageStatus } from "./UpgradePageContainer"
+import { ErrorType, OSUpdaterMessage, OSUpdaterMessageType, UpdateMessageStatus, UpdateState } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
 import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
 
@@ -39,18 +39,11 @@ export type Props = {
   onRetry: (defaultBackend: boolean) => void;
   isCompleted?: boolean;
   message?: OSUpdaterMessage,
-  updatingSources: boolean,
-  upgradeIsPrepared: boolean,
-  upgradeIsRequired: boolean,
-  upgradeIsRunning: boolean,
-  upgradeFinished: boolean,
-  waitingForServer: boolean,
+  updateState: UpdateState,
   downloadSize: number,
   error: ErrorType,
   requireBurn: boolean,
   shouldBurn: boolean,
-  checkingWebPortal: boolean,
-  installingWebPortalUpgrade: boolean,
 };
 
 export default ({
@@ -59,25 +52,17 @@ export default ({
   onNextClick,
   onStartUpgradeClick,
   onRetry,
+  updateState,
   isCompleted,
   message,
-  updatingSources,
-  upgradeIsPrepared,
-  upgradeIsRequired,
-  upgradeIsRunning,
-  upgradeFinished,
   downloadSize,
-  waitingForServer,
   requireBurn,
   shouldBurn,
-  checkingWebPortal,
-  installingWebPortalUpgrade,
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
   const [isUsingDefaultBackend, setIsUsingDefaultBackend] = useState(true);
   const [isRetrying, setIsRetrying] = useState(false);
-
 
   useEffect(() => {
     setIsNewOsDialogActive(requireBurn || shouldBurn);
@@ -97,7 +82,7 @@ export default ({
   }
 
   const getPromptMessage = () => {
-    if (upgradeFinished) {
+    if (updateState === UpdateState.Finished) {
       return <>Your system is <span className="green">up to date</span>!</>
     } else if (isRetrying) {
       return <>OK, let's try <span className="green">updating</span> again!</>
@@ -123,45 +108,38 @@ export default ({
     if (error) {
       return ""
     }
-    if (waitingForServer) {
-      return UpgradePageExplanation.WaitingForServer;
-    }
-    if (upgradeFinished) {
-      return UpgradePageExplanation.Finish.replace(
-        "{continueButtonLabel}",
-        continueButtonLabel
-      ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
-    }
-    if (!upgradeIsRequired) {
-      return UpgradePageExplanation.Finish.replace(
-        "{continueButtonLabel}",
-        continueButtonLabel
-      ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
-    }
-    if (upgradeIsRunning) {
-      return UpgradePageExplanation.InProgress;
-    }
-    if (upgradeIsPrepared) {
-      if (downloadSize) {
-        return UpgradePageExplanation.UpgradePreparedWithDownload
-          .replace("{size}", prettyBytes(downloadSize))
-          .replace("{time}", "a few");
-      }
-      return UpgradePageExplanation.UpgradePreparedWithoutDownload
-    }
-    if (updatingSources) {
-      return UpgradePageExplanation.UpdatingSources;
-    }
-    if (checkingWebPortal && !installingWebPortalUpgrade) {
-      return UpgradePageExplanation.PreparingWebPortal;
-    }
-    if (checkingWebPortal && installingWebPortalUpgrade) {
-      return UpgradePageExplanation.UpdatingWebPortal;
-    }
-    return UpgradePageExplanation.Preparing;
+
+    switch (updateState) {
+      case UpdateState.UpdatingSources:
+        return UpgradePageExplanation.UpdatingSources;
+      case UpdateState.PreparingWebPortal:
+        return UpgradePageExplanation.PreparingWebPortal;
+      case UpdateState.UpgradingWebPortal:
+        return UpgradePageExplanation.UpdatingWebPortal;
+      case UpdateState.WaitingForServer:
+        return UpgradePageExplanation.WaitingForServer;
+      case UpdateState.PreparingSystemUpgrade:
+        return UpgradePageExplanation.Preparing;
+      case UpdateState.UpgradingSystem:
+        return UpgradePageExplanation.InProgress;
+      case UpdateState.WaitingForUserInput:
+        if (downloadSize) {
+          return UpgradePageExplanation.UpgradePreparedWithDownload
+            .replace("{size}", prettyBytes(downloadSize))
+            .replace("{time}", "a few");
+        }
+        return UpgradePageExplanation.UpgradePreparedWithoutDownload;
+      case UpdateState.Finished:
+        return UpgradePageExplanation.Finish.replace(
+          "{continueButtonLabel}",
+          continueButtonLabel
+        ).replace("{continueButtonAction}", onBackClick? "continue" : "finish");
+      default:
+        return ""
+    };
   };
 
-  const continueButtonLabel = hasError() ? "Retry" : upgradeIsRequired ? "Update" : onBackClick? "Next" : "Exit"
+  const continueButtonLabel = hasError() ? "Retry" : updateState === UpdateState.WaitingForUserInput ? "Update" : onBackClick? "Next" : "Exit"
 
   return (
     <>
@@ -173,16 +151,16 @@ export default ({
         prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
-          onClick: hasError() ? () => {setIsRetrying(true); onRetry(isUsingDefaultBackend)} : upgradeIsRequired ? onStartUpgradeClick : onNextClick,
+          onClick: hasError() ? () => {setIsRetrying(true); onRetry(isUsingDefaultBackend)} : updateState === UpdateState.WaitingForUserInput ? onStartUpgradeClick : onNextClick,
           label: continueButtonLabel,
-          disabled: (!upgradeIsPrepared || upgradeIsRunning || waitingForServer) && !hasError()
+          disabled: updateState !== UpdateState.WaitingForUserInput && !hasError()
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
-        showBack={onBackClick !== undefined && !upgradeIsRunning && !updatingSources}
+        showBack={onBackClick !== undefined && !(updateState === UpdateState.UpdatingSources || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal)}
         backButton={{
           onClick: onBackClick,
-          disabled: upgradeIsRunning || updatingSources
+          disabled: updateState === UpdateState.UpdatingSources || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal
         }}
       >
         { hasError() && (
@@ -212,22 +190,22 @@ export default ({
           onClose={() => setIsNewOsDialogActive(false)}
         />
 
-        { !waitingForServer && message && message?.type === OSUpdaterMessageType.Upgrade &&
+        { updateState !== UpdateState.WaitingForServer && message && message?.type === OSUpdaterMessageType.Upgrade &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { !waitingForServer && message && message?.type === OSUpdaterMessageType.UpdateSources &&
+        { updateState !== UpdateState.WaitingForServer && message && message?.type === OSUpdaterMessageType.UpdateSources &&
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { !hasError() && waitingForServer && (
+        { !hasError() && updateState === UpdateState.WaitingForServer && (
           <>
             <Spinner size={40} />{" "}
           </>
         )}
 
         {(message?.type === OSUpdaterMessageType.Upgrade || message?.type === OSUpdaterMessageType.UpdateSources)
-          && !waitingForServer
+          && updateState !== UpdateState.WaitingForServer
           && !hasError()
           && isUsingDefaultBackend
           && (

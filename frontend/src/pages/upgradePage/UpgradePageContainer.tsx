@@ -14,6 +14,7 @@ export enum OSUpdaterMessageType {
   PrepareUpgrade = "OS_PREPARE_UPGRADE",
   Upgrade = "OS_UPGRADE",
   Size = "SIZE",
+  State = "STATE",
 }
 
 export enum UpdateMessageStatus {
@@ -23,10 +24,24 @@ export enum UpdateMessageStatus {
   Status = "STATUS",
 }
 
+export enum UpdateState {
+  None = "NONE",
+  Error = "ERROR",
+  WaitingForServer = "WAITING_FOR_SERVER",
+  UpdatingSources = "UPDATING_SOURCES",
+  PreparingWebPortal = "PREPARING_WEBPORTAL",
+  PreparingSystemUpgrade = "PREPARING_SYSTEM_UPGRADE",
+  UpgradingWebPortal = "UPGRADING_WEB_PORTAL",
+  WaitingForUserInput = "WAITING_FOR_USER_INPUT",
+  UpgradingSystem = "UPGRADING_SYSTEM",
+  Finished = "FINISHED",
+}
+
 export enum ErrorType {
   None,
   GenericError,
   NoSpaceAvailable,
+  ClientExists,
 }
 
 export type UpgradeMessagePayload = {
@@ -43,6 +58,12 @@ export type SizeMessagePayload = {
   status: UpdateMessageStatus;
 };
 
+export type StateMessagePayload = {
+  clients: number;
+  busy: boolean;
+  status: UpdateMessageStatus;
+};
+
 export type UpgradeMessage = {
   type: OSUpdaterMessageType.PrepareUpgrade | OSUpdaterMessageType.Upgrade | OSUpdaterMessageType.UpdateSources;
   payload: UpgradeMessagePayload;
@@ -53,7 +74,12 @@ export type SizeMessage = {
   payload: SizeMessagePayload;
 };
 
-export type OSUpdaterMessage = UpgradeMessage | SizeMessage;
+export type StateMessage = {
+  type: OSUpdaterMessageType.State;
+  payload: StateMessagePayload;
+};
+
+export type OSUpdaterMessage = UpgradeMessage | SizeMessage | StateMessage;
 
 export type Props = {
   goToNextPage?: () => void;
@@ -77,21 +103,28 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     setIsOpen(true);
   }
 
-  const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
-  const [installingWebPortalUpgrade, setInstallingWebPortalUpgrade] = useState(false);
-  const [preparingAll, setIsPreparingAll] = useState(false);
-  const [preparingWebPortal, setIsPreparingWebPortal] = useState(false);
-  const [updatingSources, setIsUpdatingSources] = useState(false);
-  const [upgradeIsPrepared, setUpgradeIsPrepared] = useState(false);
-  const [upgradeIsRequired, setUpgradeIsRequired] = useState(true);
-  const [upgradeIsRunning, setUpgradeIsRunning] = useState(false);
-  const [upgradeFinished, setUpgradeFinished] = useState(false);
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [availableSpace, setAvailableSpace] = useState(0);
-  const [waitingForServer, setWaitingForServer] = useState(false);
   const [requireBurn, setRequireBurn] = useState(false);
   const [shouldBurn, setShouldBurn] = useState(false);
+  const [reattach, setReattach] = useState(false);
+  const [state, setState] = useState<UpdateState>(UpdateState.None)
+
+  let checkingWebPortal = window.location.search !== "?all";
+  useEffect(() => {
+    if (!checkingWebPortal) {
+      getMajorOsUpdates()
+          .then((response) => {
+            setShouldBurn(response.shouldBurn);
+            setRequireBurn(response.requireBurn);
+          })
+          .catch(() => {
+            setShouldBurn(false);
+            setRequireBurn(false);
+          })
+    }
+  }, [checkingWebPortal]);
 
   useEffect(() => {
     getAvailableSpace()
@@ -100,63 +133,46 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, []);
 
   useEffect(() => {
-    isOpen && socket.send("default-updater-backend")
+    error !== ErrorType.None && setState(UpdateState.Error);
+  }, [error]);
+
+  useEffect(() => {
+    if (isOpen) {
+      socket.send("default-updater-backend");
+      socket.send("state");
+    }
   }, [isOpen, socket]);
 
   useEffect(() => {
-    isOpen && updatingSources && socket.send("update_sources");
-  }, [isOpen, socket, updatingSources]);
+    if (!isOpen) {
+      return ;
+    }
+    console.log("APP STATE: ", state);
+    state === UpdateState.UpdatingSources && socket.send("update_sources");
+    state === UpdateState.PreparingWebPortal && socket.send("prepare_web_portal");
+    state === UpdateState.PreparingSystemUpgrade && socket.send("prepare");
 
-  useEffect(() => {
-    isOpen && preparingAll && socket.send("prepare");
-  }, [isOpen, socket, preparingAll]);
+  }, [isOpen, socket, state]);
 
-  useEffect(() => {
-    isOpen && preparingWebPortal && socket.send("prepare_web_portal");
-  }, [isOpen, socket, preparingWebPortal]);
 
   const doRetry = useCallback(
     (defaultBackend: boolean) => {
       socket.send(defaultBackend ? "default-updater-backend" : "legacy-updater-backend");
-
-      // reset all state to defaults and start again
       setError(ErrorType.None);
-      // setMessage(undefined);
-      setInstallingWebPortalUpgrade(false);
-      setIsPreparingAll(false);
-      setIsPreparingWebPortal(false);
-      setIsUpdatingSources(false);
-      setUpgradeIsPrepared(false);
-      setUpgradeIsRequired(true);
-      setUpgradeIsRunning(false);
-      setUpgradeFinished(false);
       setUpdateSize({downloadSize: 0, requiredSpace: 0});
-      if (checkingWebPortal) {
-        setIsUpdatingSources(true);
-      } else {
-        setCheckingWebPortal(true);
-      }
+      socket.send("state")
     },
-    [checkingWebPortal],
+    [],
   )
 
   useEffect(() => {
-    if (checkingWebPortal) {
-      setIsUpdatingSources(true);
+    if (reattach) {
+      console.log("Recreate existing state ...")
     } else {
-      setIsPreparingAll(true);
-
-      getMajorOsUpdates()
-        .then((response) => {
-          setShouldBurn(response.shouldBurn);
-          setRequireBurn(response.requireBurn);
-        })
-        .catch(() => {
-          setShouldBurn(false);
-          setRequireBurn(false);
-        })
+      setState(UpdateState.UpdatingSources)
     }
-  }, [checkingWebPortal]);
+  }, [reattach]);
+
 
   useEffect(() => {
     if (availableSpace < updateSize.requiredSpace + updateSize.downloadSize) {
@@ -166,14 +182,22 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
   useEffect(() => {
     socket.onclose = () => {
-      !upgradeFinished && setError(ErrorType.GenericError);
+      state !== UpdateState.Finished && setError(ErrorType.GenericError);
       setIsOpen(false);
     };
-  }, [socket, upgradeFinished]);
+  }, [socket, state]);
 
   useEffect(() => {
     if (!message) {
       return;
+    }
+
+    if (message.type === OSUpdaterMessageType.State) {
+      if (message.payload.clients < 0) {
+        setError(ErrorType.ClientExists);
+      } else {
+        setReattach(message.payload.busy);
+      }
     }
 
     if (
@@ -185,43 +209,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
     if (
       message.type === OSUpdaterMessageType.PrepareUpgrade &&
-      message.payload.status === UpdateMessageStatus.Error
-    ) {
-      setError(ErrorType.GenericError);
-      setUpgradeIsPrepared(false);
-    }
-
-    if (
-      message.type === OSUpdaterMessageType.Upgrade &&
-      message.payload.status === UpdateMessageStatus.Error
-    ) {
-      setError(ErrorType.GenericError);
-      setUpgradeIsRunning(false);
-    }
-
-    if (
-      message.type === OSUpdaterMessageType.UpdateSources &&
-      message.payload.status === UpdateMessageStatus.Error
-    ) {
-      setIsUpdatingSources(false);
-      setError(ErrorType.GenericError);
-    }
-
-    if (
-      message.type === OSUpdaterMessageType.UpdateSources &&
-      message.payload.status === UpdateMessageStatus.Finish
-    ) {
-      setIsUpdatingSources(false);
-      if (checkingWebPortal) {
-        setIsPreparingAll(false);
-        setIsPreparingWebPortal(true);
-      } else {
-        setIsPreparingAll(true);
-      }
-    }
-
-    if (
-      message.type === OSUpdaterMessageType.PrepareUpgrade &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
       socket.send("size");
@@ -229,20 +216,27 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (
-      message.type === OSUpdaterMessageType.Upgrade &&
+      message.type === OSUpdaterMessageType.PrepareUpgrade &&
+      message.payload.status === UpdateMessageStatus.Error
+    ) {
+      setError(ErrorType.GenericError);
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.UpdateSources &&
+      message.payload.status === UpdateMessageStatus.Error
+    ) {
+      setError(ErrorType.GenericError);
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.UpdateSources &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
       if (checkingWebPortal) {
-        setInstallingWebPortalUpgrade(false);
-
-        setWaitingForServer(true);
-        restartWebPortalService()
-          .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
-          .finally(() => setTimeout(waitUntilServerIsOnline, 300));
+        setState(UpdateState.PreparingWebPortal);
       } else {
-        setUpgradeIsRunning(false);
-        setUpgradeIsRequired(false);
-        setUpgradeFinished(true);
+        setState(UpdateState.PreparingSystemUpgrade);
       }
     }
 
@@ -251,29 +245,50 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.payload.status === UpdateMessageStatus.Start
     ) {
       if (checkingWebPortal) {
-        setInstallingWebPortalUpgrade(true);
+        setState(UpdateState.UpgradingWebPortal);
       } else {
-        setUpgradeIsRunning(true);
+        setState(UpdateState.UpgradingSystem);
       }
     }
 
+    if (
+      message.type === OSUpdaterMessageType.Upgrade &&
+      message.payload.status === UpdateMessageStatus.Finish
+    ) {
+      if (checkingWebPortal) {
+        setState(UpdateState.WaitingForServer);
+        restartWebPortalService()
+          .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
+          .finally(() => setTimeout(waitUntilServerIsOnline, 300));
+      } else {
+        setState(UpdateState.Finished);
+      }
+    }
+
+    if (
+      message.type === OSUpdaterMessageType.Upgrade &&
+      message.payload.status === UpdateMessageStatus.Error
+    ) {
+      setError(ErrorType.GenericError);
+    }
+
+
     if (message.type === OSUpdaterMessageType.Size) {
-      if (!checkingWebPortal){
-        setUpgradeIsPrepared(true);
+      if (!checkingWebPortal || state === UpdateState.PreparingSystemUpgrade){
         setUpdateSize(message.payload.size);
+        setState(UpdateState.WaitingForUserInput);
       }
 
       try {
         const noUpdatesAvailable = !(message.payload.size.downloadSize || message.payload.size.requiredSpace);
         if (noUpdatesAvailable && checkingWebPortal) {
           // no web-portal updates, prepare to update all packages now
-          setCheckingWebPortal(false);
+          checkingWebPortal = false;
+          setState(UpdateState.PreparingSystemUpgrade);
         } else if (noUpdatesAvailable && !checkingWebPortal) {
           // no packages to upgrade, page is now complete
-          setUpgradeIsRunning(false);
-          setUpgradeIsRequired(false);
-          setUpgradeFinished(true);
-        } else if (checkingWebPortal) {
+          setState(UpdateState.Finished);
+        } else if (state === UpdateState.PreparingWebPortal) {
           // there's an update to pt-os-web-portal, install it
           socket.send("start");
         }
@@ -322,18 +337,11 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       }}
       isCompleted={isCompleted}
       message={message}
-      upgradeIsPrepared={upgradeIsPrepared}
-      upgradeIsRequired={upgradeIsRequired}
-      upgradeIsRunning={upgradeIsRunning}
-      upgradeFinished={upgradeFinished}
-      waitingForServer={waitingForServer}
+      updateState={state}
       downloadSize={updateSize.downloadSize}
       requireBurn={requireBurn}
       shouldBurn={shouldBurn}
-      checkingWebPortal={checkingWebPortal}
       error={error}
-      updatingSources={updatingSources}
-      installingWebPortalUpgrade={installingWebPortalUpgrade}
     />
   );
 };

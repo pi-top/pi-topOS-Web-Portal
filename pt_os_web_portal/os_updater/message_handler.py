@@ -19,12 +19,14 @@ class OSUpdaterFrontendMessageHandler:
             PTLogger.info(f"New websocket {ws} - adding to list of clients")
             self.ws_clients.append(ws)
 
-        try:
-            for ws_client in self.ws_clients:
+        for ws_client in self.ws_clients:
+            try:
                 ws_client.send(message)
-        except WebSocketError:
-            PTLogger.info(f"Request failed - removing {ws} from list of clients")
-            self.ws_clients.remove(ws)
+            except WebSocketError:
+                PTLogger.warning(
+                    f"Request failed - removing {ws_client} from list of clients"
+                )
+                self.ws_clients.remove(ws_client)
 
     def create_emit_update_sources_message(self, ws):
         def emit_update_sources_message(
@@ -41,7 +43,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"APT Source: {percent}% '{message}'")
 
-            self._send(ws, jdumps(data))
+            if ws:
+                self._send(ws, jdumps(data))
 
         return emit_update_sources_message
 
@@ -60,9 +63,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"Upgrade Prepare: {percent}% '{message}'")
 
-            if not ws:
-                return
-            self._send(ws, jdumps(data))
+            if ws:
+                self._send(ws, jdumps(data))
 
         return emit_os_prepare_upgrade_message
 
@@ -81,9 +83,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"OS Upgrade: {percent}% '{message}'")
 
-            if not ws:
-                return
-            self._send(ws, jdumps(data))
+            if ws:
+                self._send(ws, jdumps(data))
 
         return emit_os_upgrade_message
 
@@ -95,9 +96,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"OS upgrade size: {size}")
 
-            if not ws:
-                return
-            self._send(ws, jdumps(data))
+            if ws:
+                self._send(ws, jdumps(data))
 
         return emit_os_size_message
 
@@ -113,8 +113,7 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"OS Updater busy: {is_busy} - clients: {clients}")
 
-            if not ws:
-                return
-            self._send(ws, jdumps(data))
+            if ws:
+                self._send(ws, jdumps(data))
 
         return emit_state_message
