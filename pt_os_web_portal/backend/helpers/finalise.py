@@ -82,7 +82,7 @@ def fw_update_is_due():
 
 def reboot() -> None:
     PTLogger.debug("Function: reboot()")
-    if path.exists("/tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown"):
+    if fw_update_is_due():
         # Do shutdown, let hub start back up
         run_command_background("shutdown -h now")
     else:
