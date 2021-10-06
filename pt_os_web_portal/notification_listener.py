@@ -18,11 +18,18 @@ def handle_os_has_finished_update(state):
     if state == "started":
         return
 
-    if state == "failed":
-        # Not yet implemented
+    if OsUpdaterAppWindow().is_open():
         return
 
-    if not OsUpdaterAppWindow().is_open():
+    if state == "failed":
+        send_notification(
+            title="pi-topOS Software Updater",
+            text="Updates were not applied successfully!",
+            timeout=0,
+            icon_name="system-error",
+        )
+
+    if state == "success":
         send_notification(
             title="pi-topOS Software Updater",
             text="Updates were applied successfully!",
