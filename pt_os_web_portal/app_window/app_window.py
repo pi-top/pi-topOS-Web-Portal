@@ -30,9 +30,16 @@ class AppWindow:
         PTLogger.info(f"AppWindow.run: running {cmd}")
         run_command(f"{cmd}", check=False, timeout=None)
 
+    def is_open(self):
+        return self.title in [
+            " ".join([x for x in line.split(" ") if x][3:])
+            for line in run_command("wmctrl -l", timeout=5).strip().split("\n")
+        ]
+
     def close(self):
         try:
-            run_command(f'wmctrl -c "{self.title}"', timeout=5)
+            # Match full window title
+            run_command(f'wmctrl -v -c -F "{self.title}"', timeout=5)
         except Exception as e:
             PTLogger.error(f"Error closing '{self.title}' window: {e}")
 
@@ -60,7 +67,7 @@ class OsUpdaterAppWindow(AppWindow):
     height_scalar: float = 0.7
     title: str = "pi-topOS Updater Tool"
     icon: str = "/usr/share/icons/Papirus/24x24/apps/system-software-update.svg"
-    hide_frame: bool = True
+    hide_frame: bool = False
 
 
 @dataclass
