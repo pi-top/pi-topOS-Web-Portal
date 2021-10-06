@@ -143,7 +143,7 @@ def do_firmware_update():
     fw_dev_id_str = "pt4_hub"
 
     try:
-        update_firmware(fw_dev_id_str, force=True)
+        update_firmware(fw_dev_id_str, force=False, notify_user=False)
     except Exception as e:
         PTLogger.warning(f"do_firmware_update: {e}")
 
