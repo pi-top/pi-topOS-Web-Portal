@@ -4,6 +4,7 @@
 frontend/**/build
 frontend/node_modules
 pt_os_web_portal/backend/build
+pt_os_web_portal/backend/static/
 pt_os_web_portal/**/build
 .idea
 *__pycache__

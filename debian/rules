@@ -14,12 +14,20 @@ override_dh_auto_test:
 
 
 override_dh_auto_build:
+	npm config set prefix ~/.local
+
 	cd frontend/ && \
-		npm config set prefix ~/.local && \
 		npm install -g yarn && \
 		~/.local/bin/yarn install && \
 		node_modules/react-scripts/bin/react-scripts.js build && \
 		mv build ../pt_os_web_portal/backend/
+
+	npm install -g markdown-styles && \
+		mkdir -p ./pt_os_web_portal/backend/static/guides && \
+		~/.local/bin/generate-md \
+			--layout github \
+			--input ./guides \
+			--output ./pt_os_web_portal/backend/static/guides
 
 	dh_auto_build
 
