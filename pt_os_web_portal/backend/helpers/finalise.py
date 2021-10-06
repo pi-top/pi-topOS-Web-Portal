@@ -74,6 +74,12 @@ def enable_further_link_service():
     return run_command("systemctl enable further-link", timeout=30, lower_priority=True)
 
 
+def fw_update_is_due():
+    PTLogger.debug("Function: fw_update_is_due()")
+
+    return path.exists("/tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown")
+
+
 def reboot() -> None:
     PTLogger.debug("Function: reboot()")
     if path.exists("/tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown"):
