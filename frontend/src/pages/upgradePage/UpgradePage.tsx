@@ -24,10 +24,10 @@ export enum UpgradePageExplanation {
   InProgress = "Now sit back and relax - this may take some time...\nPlease, DO NOT POWER OFF YOUR DEVICE!",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to {continueButtonAction}.",
   WaitingForServer = "Please wait...",
-  UpdatingSources = "We're checking to see if there are updates available",
+  UpdatingSources = "Checking to see if there are updates available...",
   Preparing = "Preparing all packages to be updated...",
   PreparingWebPortal = "Preparing to update myself...",
-  UpdatingWebPortal = "I'm updating myself, please wait",
+  UpdatingWebPortal = "I'm updating myself, please wait...",
 }
 
 
