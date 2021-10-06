@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 
-import semver from 'semver';
 import RestartPage from "./RestartPage";
 
 import configureLanding from "../../services/configureLanding";
@@ -52,7 +51,8 @@ export default ({
   useEffect(() => {
     getBuildInfo()
       .then((buildInfo) => {
-        setLegacyHubFirmware(semver.lt(buildInfo.hubFirmwareVersion, "3.0"));
+        const versionArray = buildInfo.hubFirmwareVersion.split(".");
+        setLegacyHubFirmware(versionArray.length >= 2 && parseInt(versionArray[0]) <= 3 && parseInt(versionArray[1]) === 0);
       })
       .catch(() => setLegacyHubFirmware(false))
   }, [])
