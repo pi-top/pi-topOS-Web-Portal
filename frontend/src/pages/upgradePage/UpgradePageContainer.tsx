@@ -37,6 +37,16 @@ export enum UpdateState {
   Finished = "FINISHED",
 }
 
+export enum SocketMessage {
+  PREPARE_SYSTEM_UPGRADE = "prepare",
+  PREPARE_WEB_PORTAL_UPGRADE = "prepare_web_portal",
+  UPDATE_SOURCES = "update_sources",
+  START_UPGRADE = "start",
+  USE_DEFAULT_UPDATER = "default-updater-backend",
+  USE_LEGACY_UPDATER = "legacy-updater-backend",
+  GET_UPGRADE_SIZE = "size",
+}
+
 export enum ErrorType {
   None,
   GenericError,
@@ -138,7 +148,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
   useEffect(() => {
     if (isOpen) {
-      socket.send("default-updater-backend");
+      socket.send(SocketMessage.USE_DEFAULT_UPDATER);
       setState(UpdateState.UpdatingSources);
     }
   }, [isOpen, socket]);
@@ -149,25 +159,25 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
     switch (state) {
       case UpdateState.UpdatingSources:
-        socket.send("update_sources");
-        break
+        socket.send(SocketMessage.UPDATE_SOURCES);
+        break;
       case UpdateState.PreparingWebPortal:
-        socket.send("prepare_web_portal");
-        break
+        socket.send(SocketMessage.PREPARE_WEB_PORTAL_UPGRADE);
+        break;
       case UpdateState.PreparingSystemUpgrade:
-        socket.send("prepare");
-        break
+        socket.send(SocketMessage.PREPARE_SYSTEM_UPGRADE);
+        break;
       case UpdateState.UpgradingWebPortal:
       case UpdateState.UpgradingSystem:
-        socket.send("start");
-        break
+        socket.send(SocketMessage.START_UPGRADE);
+        break;
     }
   }, [isOpen, socket, state]);
 
 
   const doRetry = useCallback(
     (defaultBackend: boolean) => {
-      socket.send(defaultBackend ? "default-updater-backend" : "legacy-updater-backend");
+      socket.send(defaultBackend ? SocketMessage.USE_DEFAULT_UPDATER : SocketMessage.USE_LEGACY_UPDATER);
       setError(ErrorType.None);
       setUpdateSize({downloadSize: 0, requiredSpace: 0});
       setCheckingWebPortal(true);
@@ -205,7 +215,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.PrepareUpgrade &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
-      socket.send("size");
+      socket.send(SocketMessage.GET_UPGRADE_SIZE);
     }
 
     if (
