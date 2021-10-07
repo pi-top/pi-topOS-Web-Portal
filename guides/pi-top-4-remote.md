@@ -1,22 +1,89 @@
 # Featured Guide: Using a pi-top [4] Without A Screen/Keyboard From Another Device
 
-pi-topOS on a pi-top [4] makes it easy to connect remotely. In this guide, we will cover the different ways that you can use your pi-top [4] remotely, and how to configure your pi-top [4] using the miniscreen's menu.
 
-## Working Online/Offline
-It is important to determine if you are intending to work with an internet connection or not. In each chapter, be sure to follow the instructions for your given use case.
+pi-topOS on a pi-top [4] makes it easy to connect remotely. In this guide, we will cover the different ways that you can use your pi-top [4] remotely, things to watch out for as well as how to configure your pi-top [4] using the miniscreen's menu. We will also learn about some important things to be aware of, such as network securiy.
 
-The recommended method for working offline is via a Direct Wi-Fi connection to the pi-top [4]. However, leaving this on when you are also connected to a network is strongly discouraged, as this can lead to security issues. Disabling this is simple - check out the [ENABLING/DISABLING INTERFACES] section.
+<!--
+TO ADD:
 
-<!-- Table of contents? -->
+* using the display cable
+  * may require disconnect/reconnect
+  * requires dongle
+-->
+
+## ⚠️ Before Continuing!
+Please read the following notices before continuing.
+
+### 🙅 Working Online/Offline
+Before continuing, it is important to determine if you are intending to work with an internet connection or not. In each chapter, be sure to follow the instructions for your given use case.
+
+#### 🚨 NOTICE: Avoid unnecessary Wi-Fi transmission
+
+Whilst we recommend Direct Wi-Fi connection to the pi-top [4] as a convenient method for working offline, it *does* mean that the Raspberry Pi in the pi-top is **broadcasting as a Wi-Fi network**. In addition, leaving this on while you are also connected to a network is strongly discouraged, as this can lead to security issues.
+
+It is always advisable to attempt to keep Wi-Fi transmissions to a _minimum_, and so:
+
+##### **Direct Wi-Fi Connection should be [disabled](#enabling-disabling-network-options) whenever it is not needed**.
+
+----
+
+##### Jump To Section
+1. [Quick Start: Accessing The Desktop Remotely (Recommended for Anyone)](#quick-start-accessing-the-desktop-remotely-recommended-for-anyone)
+2. [Quick Start: Remote Programming with Visual Studio Code (Recommended for Programmers)](#quick-start-remote-programming-with-visual-studio-code-recommended-for-programmers)
+3. [More Information](#more-information)
+4. [References](#references)
+
+----
 
 ## Quick Start: Accessing The Desktop Remotely (Recommended for Anyone)
+
+When using a pi-top [4] remotely, the most obvious 'interface' that is missing is a graphical desktop, capable of displaying windowed applications to a display, as opposed to a simple text-only output (known as a console or terminal).
+
+Using the desktop with a display is straightforward as the connection is handled via an HDMI cable. When working remotely, the display needs to be sent over a network connection (this can be wireless or wired).
+
+### Remotely viewing and controlling a desktop
+VNC is a graphical desktop sharing system that allows you to remotely control the desktop interface of one computer (running VNC Server) from another computer or mobile device (running VNC Viewer). VNC Viewer transmits the keyboard and either mouse or touch events to VNC Server, and receives updates to the screen in return.
+
+You will see the desktop of the Raspberry Pi inside a window on your computer or mobile device. You’ll be able to control it as though you were working on the Raspberry Pi itself.
+
+VNC Connect from RealVNC is included with Raspberry Pi OS. It consists of both VNC Server, which allows you to control your Raspberry Pi remotely, and VNC Viewer, which allows you to control desktop computers remotely from your Raspberry Pi should you want to.
+
+You must enable VNC Server before you can use it. By default, VNC Server gives you remote access to the graphical desktop that is running on your Raspberry Pi, as though you were sitting in front of it.
+
+However, you can also use VNC Server to gain graphical remote access to your Raspberry Pi if it is headless or not running a graphical desktop. For more information on this, see Creating a virtual desktop, further below.
+
+#### Prerequisite: Install VNC Viewer
+
+First make sure you have RealVNC's VNC Viewer installed. If not, you can install it from the [VNC Viewer downloads page](https://www.realvnc.com/en/connect/download/viewer).
 
 - get instructions for this from any previous 'getting started' info on using VNC
 https://www.raspberrypi.org/documentation/computers/remote-access.html#connecting-to-your-raspberry-pi
 
-* Enable VNC
-* Download and Install VNC Viewer
-* Connect
+https://www.realvnc.com/en/connect/download/viewer/
+
+#### Step 1: Enable VNC service on pi-top
+
+* Enable VNC on pi-top
+
+#### Step 2: Connect via VNC Viewer
+
+* On your pi-top [4], navigate to a networking page (using a terminal window or via SSH) use these instructions or run ifconfig to discover your private IP address.
+
+On the device you’ll use to take control, download VNC Viewer. For best results, use the compatible app from RealVNC.
+
+Enter your Raspberry Pi’s private IP address into VNC Viewer:
+
+
+
+----
+
+##### Jump To Section
+1. [Quick Start: Accessing The Desktop Remotely (Recommended for Anyone)](#quick-start-accessing-the-desktop-remotely-recommended-for-anyone)
+2. [Quick Start: Remote Programming with Visual Studio Code (Recommended for Programmers)](#quick-start-remote-programming-with-visual-studio-code-recommended-for-programmers)
+3. [More Information](#more-information)
+4. [References](#references)
+
+----
 
 ## Quick Start: Remote Programming with Visual Studio Code (Recommended for Programmers)
 
@@ -37,7 +104,6 @@ First make sure you have VS Code installed. If not, you can install it from the 
 #### Step 1: Enable SSH service on pi-top
 
 * Enable SSH on pi-top
-- https://www.raspberrypi.org/blog/coding-on-raspberry-pi-remotely-with-visual-studio-code/
 
 #### Step 2: Set up VS Code
 
@@ -73,6 +139,31 @@ In the remote session, not all extensions you have installed locally will be ava
 
 Things like language packs and other programming tools are not installed in the remote session, so you’ll need to re-install them. When you install these extensions, you’ll see the **Install** button has changed to **Install in SSH:< hostname >** to show it’s being installed remotely.
 
+----
+
+##### Jump To Section
+1. [Quick Start: Accessing The Desktop Remotely (Recommended for Anyone)](#quick-start-accessing-the-desktop-remotely-recommended-for-anyone)
+2. [Quick Start: Remote Programming with Visual Studio Code (Recommended for Programmers)](#quick-start-remote-programming-with-visual-studio-code-recommended-for-programmers)
+3. [More Information](#more-information)
+4. [References](#references)
+
+----
+
+## Using The pi-top Display Cable (Secure)
+Wired connections offer a secure connection between devices. Whilst Direct Wi-Fi connection offers a convenient solution for connecting to a pi-top [4], it is not always a suitable option.
+
+pi-top Display Cable provides a way to connect to your pi-top [4] directly, without the need for additional Wi-Fi transmission.
+
+----
+
+##### Jump To Section
+1. [Quick Start: Accessing The Desktop Remotely (Recommended for Anyone)](#quick-start-accessing-the-desktop-remotely-recommended-for-anyone)
+2. [Quick Start: Remote Programming with Visual Studio Code (Recommended for Programmers)](#quick-start-remote-programming-with-visual-studio-code-recommended-for-programmers)
+3. [More Information](#more-information)
+4. [References](#references)
+
+----
+
 ## More Information
 
 This section covers details for users interested in understanding all of the different ways that they can use their pi-top [4] from another device.
@@ -100,3 +191,18 @@ Whilst this is possible, it is generally not recommended due to the extra comple
 
 
 #### VNC
+
+----
+
+##### Jump To Section
+1. [Quick Start: Accessing The Desktop Remotely (Recommended for Anyone)](#quick-start-accessing-the-desktop-remotely-recommended-for-anyone)
+2. [Quick Start: Remote Programming with Visual Studio Code (Recommended for Programmers)](#quick-start-remote-programming-with-visual-studio-code-recommended-for-programmers)
+3. [More Information](#more-information)
+4. [References](#references)
+
+----
+
+## References
+
+- https://www.raspberrypi.org/blog/coding-on-raspberry-pi-remotely-with-visual-studio-code
+- https://www.raspberrypi.org/documentation
