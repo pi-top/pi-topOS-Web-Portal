@@ -246,6 +246,7 @@ describe("UpgradePageContainer", () => {
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
+      await wait();
 
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
@@ -643,9 +644,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { getByText, queryByTestId } = mount();
+      const { getByText, findByTestId, queryByTestId } = mount();
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
 
+      await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
@@ -1180,9 +1182,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't render the 'is upgrading' message", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation, waitForGenericError, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
+      await waitForGenericError();
 
       await Promise.all(UpgradePageExplanation.InProgress
         .split("\n").map(async (text, _): Promise<any> => {
@@ -1191,18 +1194,20 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const { waitForPreparation, waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
+      await waitForGenericError();
 
       await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
     it("messages are displayed in the textarea component", async () => {
-      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const { waitForPreparation, waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
+      await waitForGenericError();
 
       await findByTestId("textarea");
       const textAreaElement = queryByTestId("textarea");
@@ -1388,6 +1393,16 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
+    it("Next button is enabled", async () => {
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForUpgradeFinish();
+
+      await waitForElement(() => getByText("Next"));
+      expect(getByText("Next")).toHaveProperty("disabled", false);
+    });
+
     it("doesn't request to restart the pt-os-web-portal systemd service", async () => {
       const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
@@ -1407,13 +1422,8 @@ describe("UpgradePageContainer", () => {
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
-      jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
-      await wait();
-      jest.runOnlyPendingTimers();
-      jest.runOnlyPendingTimers();
-      await wait();
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 

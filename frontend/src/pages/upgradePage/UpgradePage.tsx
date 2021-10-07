@@ -139,7 +139,7 @@ export default ({
     };
   };
 
-  const continueButtonLabel = hasError() ? "Retry" : updateState === UpdateState.WaitingForUserInput ? "Update" : onBackClick? "Next" : "Exit"
+  const continueButtonLabel = hasError() ? "Retry" : updateState !== UpdateState.Finished ? "Update" : onBackClick? "Next" : "Exit"
 
   return (
     <>
@@ -153,14 +153,14 @@ export default ({
         nextButton={{
           onClick: hasError() ? () => {setIsRetrying(true); onRetry(isUsingDefaultBackend)} : updateState === UpdateState.WaitingForUserInput ? onStartUpgradeClick : onNextClick,
           label: continueButtonLabel,
-          disabled: updateState !== UpdateState.WaitingForUserInput && !hasError()
+          disabled: !hasError() && (updateState === UpdateState.WaitingForServer || updateState === UpdateState.None || updateState === UpdateState.UpdatingSources || updateState === UpdateState.PreparingSystemUpgrade || updateState === UpdateState.PreparingWebPortal || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal )
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
-        showBack={onBackClick !== undefined && !(updateState === UpdateState.UpdatingSources || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal)}
+        showBack={onBackClick !== undefined && (hasError() || updateState === UpdateState.Error || updateState === UpdateState.WaitingForUserInput || updateState === UpdateState.Finished)}
         backButton={{
           onClick: onBackClick,
-          disabled: updateState === UpdateState.UpdatingSources || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal
+          disabled: !hasError() && (updateState === UpdateState.UpdatingSources || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal)
         }}
       >
         { hasError() && (
