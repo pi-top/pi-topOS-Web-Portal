@@ -15,10 +15,7 @@ class OSUpdaterFrontendMessageHandler:
     ws_clients: List[WebSocket] = []
 
     def _send(self, ws, message):
-        if ws not in self.ws_clients:
-            PTLogger.info(f"New websocket {ws} - adding to list of clients")
-            self.ws_clients.append(ws)
-
+        failed_ws_clients = []
         for ws_client in self.ws_clients:
             try:
                 ws_client.send(message)
@@ -26,7 +23,15 @@ class OSUpdaterFrontendMessageHandler:
                 PTLogger.warning(
                     f"Request failed - removing {ws_client} from list of clients"
                 )
-                self.ws_clients.remove(ws_client)
+                failed_ws_clients.append(ws_client)
+
+        for ws_client in failed_ws_clients:
+            self.ws_clients.remove(ws_client)
+
+    def _register_client(self, ws):
+        if ws not in self.ws_clients:
+            PTLogger.info(f"New websocket {ws} - adding to list of clients")
+            self.ws_clients.append(ws)
 
     def create_emit_update_sources_message(self, ws):
         def emit_update_sources_message(
@@ -66,6 +71,7 @@ class OSUpdaterFrontendMessageHandler:
             if ws:
                 self._send(ws, jdumps(data))
 
+        self._register_client(ws)
         return emit_os_prepare_upgrade_message
 
     def create_emit_os_upgrade_message(self, ws):
@@ -86,6 +92,7 @@ class OSUpdaterFrontendMessageHandler:
             if ws:
                 self._send(ws, jdumps(data))
 
+        self._register_client(ws)
         return emit_os_upgrade_message
 
     def create_emit_os_size_message(self, ws):
@@ -99,10 +106,12 @@ class OSUpdaterFrontendMessageHandler:
             if ws:
                 self._send(ws, jdumps(data))
 
+        self._register_client(ws)
         return emit_os_size_message
 
     def create_emit_state_message(self, ws):
-        def emit_state_message(message_type, is_busy, clients):
+        def emit_state_message(message_type, is_busy):
+            clients = self.active_clients()
             data = {
                 "type": EventNames.STATE.name,
                 "payload": {
@@ -114,6 +123,17 @@ class OSUpdaterFrontendMessageHandler:
             PTLogger.info(f"OS Updater busy: {is_busy} - clients: {clients}")
 
             if ws:
-                self._send(ws, jdumps(data))
+                ws.send(jdumps(data))
 
+        self._register_client(ws)
         return emit_state_message
+
+    def active_clients(self):
+        clients = 0
+        for ws_client in self.ws_clients:
+            try:
+                ws_client.send("ping")
+                clients += 1
+            except WebSocketError:
+                pass
+        return clients

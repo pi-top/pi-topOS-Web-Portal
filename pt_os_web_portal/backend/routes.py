@@ -270,6 +270,7 @@ def os_upgrade(ws):
         if not message:
             continue
 
+        PTLogger.info(f"/os_upgrade - received message: '{message}'")
         funcs = {
             "update_sources": get_os_updater().update_sources,
             "prepare": get_os_updater().stage_packages,

@@ -147,11 +147,7 @@ class OSUpdater:
     def state(self, ws=None):
         callback = self.message_handler.create_emit_state_message(ws)
         try:
-            callback(
-                MessageType.STATUS,
-                self.active_backend.lock,
-                len(self.message_handler.ws_clients),
-            )
+            callback(MessageType.STATUS, self.active_backend.lock)
         except Exception as e:
             PTLogger.error(f"OSUpdater state: {e}")
             callback(MessageType.ERROR, False, 0)
