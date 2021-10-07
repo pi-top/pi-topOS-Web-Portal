@@ -140,6 +140,19 @@ export default ({
   };
 
   const continueButtonLabel = hasError() ? "Retry" : updateState !== UpdateState.Finished ? "Update" : onBackClick? "Next" : "Exit"
+  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal]
+  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal]
+  const showBackButtonStates = [UpdateState.Error, UpdateState.WaitingForUserInput, UpdateState.Finished]
+  const onNextButtonClick = () => {
+    if (hasError()) {
+        setIsRetrying(true);
+        onRetry(isUsingDefaultBackend)
+    } else if (updateState === UpdateState.WaitingForUserInput) {
+      onStartUpgradeClick();
+    } else {
+      onNextClick && onNextClick();
+    }
+  }
 
   return (
     <>
@@ -151,16 +164,16 @@ export default ({
         prompt={getPromptMessage()}
         explanation={getExplanation()}
         nextButton={{
-          onClick: hasError() ? () => {setIsRetrying(true); onRetry(isUsingDefaultBackend)} : updateState === UpdateState.WaitingForUserInput ? onStartUpgradeClick : onNextClick,
+          onClick: onNextButtonClick,
           label: continueButtonLabel,
-          disabled: !hasError() && (updateState === UpdateState.WaitingForServer || updateState === UpdateState.None || updateState === UpdateState.UpdatingSources || updateState === UpdateState.PreparingSystemUpgrade || updateState === UpdateState.PreparingWebPortal || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal )
+          disabled: !hasError() && nextButtonDisabledStates.includes(updateState)
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={onSkipClick !== undefined && (isCompleted || hasError())}
-        showBack={onBackClick !== undefined && (hasError() || updateState === UpdateState.Error || updateState === UpdateState.WaitingForUserInput || updateState === UpdateState.Finished)}
+        showSkip={onSkipClick !== undefined && (hasError() || isCompleted)}
+        showBack={onBackClick !== undefined && (hasError() || showBackButtonStates.includes(updateState))}
         backButton={{
           onClick: onBackClick,
-          disabled: !hasError() && (updateState === UpdateState.UpdatingSources || updateState === UpdateState.UpgradingSystem || updateState === UpdateState.UpgradingWebPortal)
+          disabled: !hasError() && backButtonDisabledStates.includes(updateState)
         }}
       >
         { hasError() && (
