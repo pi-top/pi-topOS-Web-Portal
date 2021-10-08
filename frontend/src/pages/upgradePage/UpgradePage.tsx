@@ -16,6 +16,7 @@ import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/Upgr
 export enum ErrorMessage {
   NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
   GenericError = "There was a problem during system update.\nIf this is the first time, please try again using the recommended method.\nIf you're experiencing repeated issues, try another method.",
+  CloseOtherWindow = "The OS Updater application is already running in another window.",
 }
 
 export enum UpgradePageExplanation {
@@ -76,6 +77,8 @@ export default ({
     switch (error) {
       case ErrorType.NoSpaceAvailable:
         return ErrorMessage.NoSpaceAvailable;
+      case ErrorType.UpdaterAlreadyRunning:
+        return ErrorMessage.CloseOtherWindow;
       default:
         return ErrorMessage.GenericError
     }
@@ -140,8 +143,8 @@ export default ({
   };
 
   const continueButtonLabel = hasError() ? "Retry" : updateState !== UpdateState.Finished ? "Update" : onBackClick? "Next" : "Exit"
-  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal]
-  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal]
+  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect]
+  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect]
   const showBackButtonStates = [UpdateState.Error, UpdateState.WaitingForUserInput, UpdateState.Finished]
   const onNextButtonClick = () => {
     if (hasError()) {
@@ -166,7 +169,8 @@ export default ({
         nextButton={{
           onClick: onNextButtonClick,
           label: continueButtonLabel,
-          disabled: !hasError() && nextButtonDisabledStates.includes(updateState)
+          disabled: !hasError() && nextButtonDisabledStates.includes(updateState),
+          hidden: error === ErrorType.UpdaterAlreadyRunning
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (hasError() || isCompleted)}
@@ -186,13 +190,15 @@ export default ({
             }
           </span>
 
-          <CheckBox
-            name="legacy-backend"
-            label="Use alternate update method"
-            checked={!isUsingDefaultBackend}
-            onChange={() => setIsUsingDefaultBackend(!isUsingDefaultBackend)}
-            className={styles.checkbox}
-          />
+          { error !== ErrorType.UpdaterAlreadyRunning &&
+            <CheckBox
+              name="legacy-backend"
+              label="Use alternate update method"
+              checked={!isUsingDefaultBackend}
+              onChange={() => setIsUsingDefaultBackend(!isUsingDefaultBackend)}
+              className={styles.checkbox}
+            />
+          }
           </>
         )}
 

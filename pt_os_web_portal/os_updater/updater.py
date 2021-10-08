@@ -150,4 +150,4 @@ class OSUpdater:
             callback(MessageType.STATUS, self.active_backend.lock)
         except Exception as e:
             PTLogger.error(f"OSUpdater state: {e}")
-            callback(MessageType.ERROR, False, 0)
+            callback(MessageType.ERROR, False)

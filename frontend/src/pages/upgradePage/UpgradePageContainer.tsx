@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
 
@@ -26,6 +26,8 @@ export enum UpdateMessageStatus {
 
 export enum UpdateState {
   None = "NONE",
+  Connect = "CONNECT",
+  Reattaching = "REATTACHING",
   Error = "ERROR",
   WaitingForServer = "WAITING_FOR_SERVER",
   UpdatingSources = "UPDATING_SOURCES",
@@ -45,13 +47,14 @@ export enum SocketMessage {
   USE_DEFAULT_UPDATER = "default-updater-backend",
   USE_LEGACY_UPDATER = "legacy-updater-backend",
   GET_UPGRADE_SIZE = "size",
+  GET_STATE = "state",
 }
 
 export enum ErrorType {
   None,
   GenericError,
   NoSpaceAvailable,
-  ClientExists,
+  UpdaterAlreadyRunning,
 }
 
 export type UpgradeMessagePayload = {
@@ -121,6 +124,24 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [shouldBurn, setShouldBurn] = useState(false);
   const [state, setState] = useState<UpdateState>(UpdateState.None)
 
+  const previousStateRef = useRef<UpdateState>();
+  const checkingWebPortalRef = useRef<boolean>();
+
+  useEffect(() => {
+    previousStateRef.current = state;
+    checkingWebPortalRef.current = checkingWebPortal;
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      socket.send(SocketMessage.USE_DEFAULT_UPDATER);
+      if (checkingWebPortalRef.current) {
+        setState(UpdateState.Connect);
+      } else {
+        setState(UpdateState.UpdatingSources);
+      }
+    }
+  }, [isOpen, socket]);
 
   useEffect(() => {
     if (!checkingWebPortal) {
@@ -147,17 +168,14 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, [error]);
 
   useEffect(() => {
-    if (isOpen) {
-      socket.send(SocketMessage.USE_DEFAULT_UPDATER);
-      setState(UpdateState.UpdatingSources);
-    }
-  }, [isOpen, socket]);
-
-  useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen || previousStateRef.current === UpdateState.Reattaching) {
       return ;
     }
+
     switch (state) {
+      case UpdateState.Connect:
+        socket.send(SocketMessage.GET_STATE);
+        break;
       case UpdateState.UpdatingSources:
         socket.send(SocketMessage.UPDATE_SOURCES);
         break;
@@ -173,7 +191,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         break;
     }
   }, [isOpen, socket, state]);
-
 
   const doRetry = useCallback(
     (defaultBackend: boolean) => {
@@ -205,10 +222,50 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (
+      (message.type === OSUpdaterMessageType.PrepareUpgrade ||
+        message.type === OSUpdaterMessageType.UpdateSources ||
+        message.type === OSUpdaterMessageType.Upgrade ||
+        message.type === OSUpdaterMessageType.Size) &&
+      message.payload.status === UpdateMessageStatus.Error
+    ) {
+      setError(ErrorType.GenericError);
+    }
+
+    if (
       (message.type === OSUpdaterMessageType.PrepareUpgrade || message.type === OSUpdaterMessageType.Upgrade)
       && message.payload?.percent
     ) {
         document.title = "[" + message.payload.percent + "%] pi-topOS System Update";
+    }
+
+    if (message.type === OSUpdaterMessageType.State) {
+
+      if (message.payload.clients >= 1) {
+        setError(ErrorType.UpdaterAlreadyRunning);
+        return ;
+      }
+      setState(message.payload.busy ? UpdateState.Reattaching : UpdateState.UpdatingSources);
+    }
+
+    if (
+      state === UpdateState.Reattaching &&
+      (message.type === OSUpdaterMessageType.PrepareUpgrade ||
+        message.type === OSUpdaterMessageType.UpdateSources ||
+        message.type === OSUpdaterMessageType.Upgrade) &&
+      message.payload.status === UpdateMessageStatus.Status
+    ) {
+      // Infer current state based on the type of message received
+      switch (message.type) {
+        case OSUpdaterMessageType.PrepareUpgrade:
+          setState(UpdateState.PreparingWebPortal);
+          break;
+        case OSUpdaterMessageType.UpdateSources:
+          setState(UpdateState.UpdatingSources);
+          break;
+        case OSUpdaterMessageType.Upgrade:
+          setState(UpdateState.UpgradingWebPortal);
+          break;
+      }
     }
 
     if (
@@ -219,21 +276,10 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (
-      (message.type === OSUpdaterMessageType.PrepareUpgrade ||
-        message.type === OSUpdaterMessageType.UpdateSources ||
-        message.type === OSUpdaterMessageType.Upgrade ) &&
-      message.payload.status === UpdateMessageStatus.Error
-    ) {
-      setError(ErrorType.GenericError);
-    }
-
-    if (
       message.type === OSUpdaterMessageType.UpdateSources &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
-      if (checkingWebPortal) {
-        setState(UpdateState.PreparingWebPortal);
-      }
+      setState(checkingWebPortal ? UpdateState.PreparingWebPortal : UpdateState.PreparingSystemUpgrade);
     }
 
     if (
@@ -257,7 +303,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
       try {
         const noUpdatesAvailable = !(message.payload.size.downloadSize || message.payload.size.requiredSpace);
-
         if (noUpdatesAvailable) {
           // no updates available - continue to system upgrade if was preparing web-portal, or finish page
           setState(state === UpdateState.PreparingWebPortal ? UpdateState.PreparingSystemUpgrade : UpdateState.Finished);
@@ -266,12 +311,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
           // there's an update available - install if it's from web-portal or wait for user input
           setState(state === UpdateState.PreparingWebPortal ? UpdateState.UpgradingWebPortal : UpdateState.WaitingForUserInput);
         }
-
       } catch (_) {
-        setError(ErrorType.GenericError);
-      }
-
-      if (message.payload.status === UpdateMessageStatus.Error) {
         setError(ErrorType.GenericError);
       }
     }

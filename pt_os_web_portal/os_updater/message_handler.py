@@ -122,10 +122,12 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"OS Updater busy: {is_busy} - clients: {clients}")
 
-            if ws:
-                ws.send(jdumps(data))
+            if not ws:
+                return
+            ws.send(jdumps(data))
+            if clients == 0:
+                self._register_client(ws)
 
-        self._register_client(ws)
         return emit_state_message
 
     def active_clients(self):
@@ -134,6 +136,8 @@ class OSUpdaterFrontendMessageHandler:
             try:
                 ws_client.send("ping")
                 clients += 1
+            except Exception as e:
+                PTLogger.error(f"OSUpdaterFrontendMessageHandler.active_clients : {e}")
             except WebSocketError:
                 pass
         return clients

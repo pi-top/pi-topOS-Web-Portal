@@ -196,6 +196,9 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
           }
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
         });
       });
     });
@@ -239,14 +242,15 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't render the Skip button", async () => {
-      const { queryByText } = mount();
+      const { queryByText, getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
-      await wait();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
@@ -283,6 +287,10 @@ describe("UpgradePageContainer", () => {
             if (data === "start") {
               socket.send(JSON.stringify(Messages.UpgradeStart));
               socket.send(JSON.stringify(Messages.UpgradeStatus));
+            }
+
+            if (data === "state") {
+              socket.send(JSON.stringify(Messages.StateNotBusy));
             }
           });
         });
@@ -351,6 +359,10 @@ describe("UpgradePageContainer", () => {
             if (data === "size") {
               socket.send(JSON.stringify(Messages.NoSize));
             }
+
+            if (data === "state") {
+              socket.send(JSON.stringify(Messages.StateNotBusy));
+            }
           });
         });
       });
@@ -382,6 +394,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -475,6 +490,9 @@ describe("UpgradePageContainer", () => {
         let times = 0;
         server.on("connection", (socket) => {
           socket.on("message", (data) => {
+            if (data === "state") {
+              socket.send(JSON.stringify(Messages.StateNotBusy));
+            }
             if (data === "update_sources") {
               socket.send(JSON.stringify(Messages.UpdateSourcesStart));
               socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -607,6 +625,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -692,6 +714,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -839,6 +864,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1023,6 +1051,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1129,6 +1160,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1293,6 +1327,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1451,6 +1488,9 @@ describe("UpgradePageContainer", () => {
       server.on("connection", (socket) => {
         let times = 0;
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1520,6 +1560,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1588,6 +1631,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1651,6 +1698,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1713,6 +1764,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
