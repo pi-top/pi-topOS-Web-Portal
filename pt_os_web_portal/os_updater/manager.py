@@ -1,4 +1,5 @@
-from typing import List
+from subprocess import run
+from typing import Dict, List
 
 from pitop.common.logger import PTLogger
 
@@ -43,6 +44,86 @@ class OSUpdateManager:
         finally:
             self.lock = False
 
+    def get_upgrade_dependencies(
+        self, package: apt.Package, dependency_dict: Dict  # type: ignore
+    ) -> Dict:
+        """
+        Returns a dictionary with the dependencies and the versions required to
+        upgrade the given package.
+
+        This is not a straightforward task since multiple entries of a
+        dependency might appear in the dependency array if the package requires
+        a specific version or range of versions of a dependency.
+
+        e.g.: if package A depends on package B (>1.0, <1.5), the dependency
+        array of A will be [B(>1.0), B(<1.5)]
+        """
+
+        PTLogger.debug("Generating list of pi-top packages...")
+
+        pi_top_packages = str(
+            run(
+                ["aptitude", "search", "?origin (pi-top)", "-F", "\\%p"],
+                capture_output=True,
+            ).stdout,
+            "utf8",
+        )
+
+        for package_dependencies in package.candidate.dependencies:
+            for dependency in package_dependencies:
+
+                if len(dependency.target_versions) == 0:
+                    continue
+
+                if dependency.name not in dependency_dict:
+                    dependency_dict[dependency.name] = set(dependency.target_versions)
+
+                    # Only recurse pi-top package dependencies to ensure that the latest are included
+                    if dependency.name not in pi_top_packages:
+                        continue
+
+                    if dependency.name not in self.cache:
+                        continue
+
+                    self.get_upgrade_dependencies(
+                        self.cache[dependency.name], dependency_dict
+                    )
+                else:
+                    # store only the versions that comply with previous and new constraints
+                    dependency_dict[dependency.name] = set(
+                        dependency.target_versions
+                    ) & set(dependency_dict[dependency.name])
+        return dependency_dict
+
+    def stage_package(self, package_name: str) -> None:
+        package = self.cache.get(package_name)
+        if package is None:
+            PTLogger.info(f"OS Updater: invalid package '{package_name}' - skipping")
+            return
+        if not package.is_upgradable:
+            PTLogger.info(
+                f"OS Updater: package '{package_name}' has no updates - skipping"
+            )
+            return
+        PTLogger.info(f"OS Updater: staging package '{package_name}' to be updated")
+
+        package.mark_upgrade()
+        dependency_dict = self.get_upgrade_dependencies(package, {})
+        for pkg_name, versions in dependency_dict.items():
+            if len(versions) == 0:
+                # There are no versions of the package available
+                # TODO: This means it will fail to install?
+                continue
+
+            pkg = self.cache.get(pkg_name)
+            if pkg:
+                pkg.candidate = sorted([*versions], reverse=True)[0]
+                if pkg.is_upgradable:
+                    PTLogger.info(
+                        f"OS Updater: staging upgrade for package '{pkg}' to version '{pkg.candidate.version}'"
+                    )
+                    pkg.mark_upgrade()
+
     def stage_upgrade(self, callback, packages=[]) -> None:
         PTLogger.info("OsUpdateManager: Staging packages for upgrade")
         if self.lock:
@@ -57,21 +138,7 @@ class OSUpdateManager:
                 self.cache.upgrade(True)
             else:
                 for package_name in packages:
-                    if self.cache.get(package_name) is None:
-                        PTLogger.info(
-                            f"OsUpdateManager: invalid package '{package_name}' - skipping"
-                        )
-                        continue
-                    package = self.cache.get(package_name)
-                    if package.is_upgradable:
-                        PTLogger.info(
-                            f"OsUpdateManager: package '{package_name}' was staged to be updated"
-                        )
-                        package.mark_upgrade()
-                    else:
-                        PTLogger.info(
-                            f"OsUpdateManager: package '{package_name}' has no updates - skipping"
-                        )
+                    self.stage_package(package_name)
 
             PTLogger.info(
                 f"OsUpdateManager: Will upgrade/install {self.cache.install_count} packages"
