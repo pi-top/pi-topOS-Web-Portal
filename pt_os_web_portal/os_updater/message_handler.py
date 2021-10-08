@@ -14,23 +14,22 @@ from .types import EventNames, MessageType
 class OSUpdaterFrontendMessageHandler:
     ws_clients: List[WebSocket] = []
 
-    def _send(self, ws, message):
+    def _send(self, message):
         failed_ws_clients = []
         for ws_client in self.ws_clients:
-            try:
+            if not ws_client.closed:
                 ws_client.send(message)
-            except WebSocketError:
-                PTLogger.warning(
-                    f"Request failed - removing {ws_client} from list of clients"
-                )
+            else:
                 failed_ws_clients.append(ws_client)
 
         for ws_client in failed_ws_clients:
             self.ws_clients.remove(ws_client)
 
-    def _register_client(self, ws):
+    def register_client(self, ws):
         if ws not in self.ws_clients:
-            PTLogger.info(f"New websocket {ws} - adding to list of clients")
+            PTLogger.info(
+                f"OSUpdaterFrontendMessageHandler.register_client : New websocket {ws} - adding to list of clients"
+            )
             self.ws_clients.append(ws)
 
     def create_emit_update_sources_message(self, ws):
@@ -48,8 +47,7 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"APT Source: {percent}% '{message}'")
 
-            if ws:
-                self._send(ws, jdumps(data))
+            self._send(jdumps(data))
 
         return emit_update_sources_message
 
@@ -68,10 +66,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"Upgrade Prepare: {percent}% '{message}'")
 
-            if ws:
-                self._send(ws, jdumps(data))
+            self._send(jdumps(data))
 
-        self._register_client(ws)
         return emit_os_prepare_upgrade_message
 
     def create_emit_os_upgrade_message(self, ws):
@@ -89,10 +85,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"OS Upgrade: {percent}% '{message}'")
 
-            if ws:
-                self._send(ws, jdumps(data))
+            self._send(jdumps(data))
 
-        self._register_client(ws)
         return emit_os_upgrade_message
 
     def create_emit_os_size_message(self, ws):
@@ -103,10 +97,8 @@ class OSUpdaterFrontendMessageHandler:
             }
             PTLogger.info(f"OS upgrade size: {size}")
 
-            if ws:
-                self._send(ws, jdumps(data))
+            self._send(jdumps(data))
 
-        self._register_client(ws)
         return emit_os_size_message
 
     def create_emit_state_message(self, ws):
@@ -126,7 +118,7 @@ class OSUpdaterFrontendMessageHandler:
                 return
             ws.send(jdumps(data))
             if clients == 0:
-                self._register_client(ws)
+                self.register_client(ws)
 
         return emit_state_message
 
@@ -136,8 +128,8 @@ class OSUpdaterFrontendMessageHandler:
             try:
                 ws_client.send("ping")
                 clients += 1
-            except Exception as e:
-                PTLogger.error(f"OSUpdaterFrontendMessageHandler.active_clients : {e}")
             except WebSocketError:
                 pass
+            except Exception as e:
+                PTLogger.error(f"OSUpdaterFrontendMessageHandler.active_clients : {e}")
         return clients

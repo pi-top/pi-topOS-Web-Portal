@@ -217,7 +217,7 @@ export default ({
           <UpgradeHistoryTextArea message={parseMessage(message)} />
         }
 
-        { !hasError() && updateState === UpdateState.WaitingForServer && (
+        { !hasError() && (updateState === UpdateState.WaitingForServer || updateState === UpdateState.Reattaching ) && (
           <>
             <Spinner size={40} />{" "}
           </>

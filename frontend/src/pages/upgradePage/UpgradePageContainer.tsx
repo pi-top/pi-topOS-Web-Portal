@@ -31,7 +31,7 @@ export enum UpdateState {
   Error = "ERROR",
   WaitingForServer = "WAITING_FOR_SERVER",
   UpdatingSources = "UPDATING_SOURCES",
-  PreparingWebPortal = "PREPARING_WEBPORTAL",
+  PreparingWebPortal = "PREPARING_WEB_PORTAL",
   PreparingSystemUpgrade = "PREPARING_SYSTEM_UPGRADE",
   UpgradingWebPortal = "UPGRADING_WEB_PORTAL",
   WaitingForUserInput = "WAITING_FOR_USER_INPUT",
@@ -100,6 +100,14 @@ export type Props = {
   isCompleted?: boolean;
 };
 
+function usePrevious(value: any) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
@@ -124,22 +132,12 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [shouldBurn, setShouldBurn] = useState(false);
   const [state, setState] = useState<UpdateState>(UpdateState.None)
 
-  const previousStateRef = useRef<UpdateState>();
-  const checkingWebPortalRef = useRef<boolean>();
-
-  useEffect(() => {
-    previousStateRef.current = state;
-    checkingWebPortalRef.current = checkingWebPortal;
-  });
+  const previousState = usePrevious(state);
 
   useEffect(() => {
     if (isOpen) {
       socket.send(SocketMessage.USE_DEFAULT_UPDATER);
-      if (checkingWebPortalRef.current) {
-        setState(UpdateState.Connect);
-      } else {
-        setState(UpdateState.UpdatingSources);
-      }
+      setState(UpdateState.Connect);
     }
   }, [isOpen, socket]);
 
@@ -168,7 +166,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, [error]);
 
   useEffect(() => {
-    if (!isOpen || previousStateRef.current === UpdateState.Reattaching) {
+    if (!isOpen || previousState === UpdateState.Reattaching) {
       return ;
     }
 
@@ -239,7 +237,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (message.type === OSUpdaterMessageType.State) {
-
       if (message.payload.clients >= 1) {
         setError(ErrorType.UpdaterAlreadyRunning);
         return ;
@@ -248,22 +245,18 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
 
     if (
-      state === UpdateState.Reattaching &&
-      (message.type === OSUpdaterMessageType.PrepareUpgrade ||
-        message.type === OSUpdaterMessageType.UpdateSources ||
-        message.type === OSUpdaterMessageType.Upgrade) &&
-      message.payload.status === UpdateMessageStatus.Status
+      state === UpdateState.Reattaching && message.payload.status === UpdateMessageStatus.Status
     ) {
       // Infer current state based on the type of message received
       switch (message.type) {
         case OSUpdaterMessageType.PrepareUpgrade:
           setState(UpdateState.PreparingWebPortal);
           break;
-        case OSUpdaterMessageType.UpdateSources:
-          setState(UpdateState.UpdatingSources);
-          break;
         case OSUpdaterMessageType.Upgrade:
           setState(UpdateState.UpgradingWebPortal);
+          break;
+        case OSUpdaterMessageType.UpdateSources:
+          setState(UpdateState.UpdatingSources);
           break;
       }
     }

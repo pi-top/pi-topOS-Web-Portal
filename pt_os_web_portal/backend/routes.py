@@ -265,40 +265,40 @@ def get_is_connected_to_ssid():
 def os_upgrade(ws):
     thread_arr = list()
 
+    event_lookup = {
+        "update_sources": get_os_updater().update_sources,
+        "prepare": get_os_updater().stage_packages,
+        "prepare_web_portal": get_os_updater().stage_web_portal,
+        "start": get_os_updater().start_os_upgrade,
+        "size": get_os_updater().upgrade_size,
+        "legacy-updater-backend": get_os_updater().use_legacy_backend,
+        "default-updater-backend": get_os_updater().use_default_backend,
+        "state": get_os_updater().state,
+    }
+
     while not ws.closed:
         message = ws.receive()
         if not message:
             continue
 
-        PTLogger.info(f"/os_upgrade - received message: '{message}'")
-        funcs = {
-            "update_sources": get_os_updater().update_sources,
-            "prepare": get_os_updater().stage_packages,
-            "prepare_web_portal": get_os_updater().stage_web_portal,
-            "start": get_os_updater().start_os_upgrade,
-            "size": get_os_updater().upgrade_size,
-            "legacy-updater-backend": get_os_updater().use_legacy_backend,
-            "default-updater-backend": get_os_updater().use_default_backend,
-            "state": get_os_updater().state,
-        }
-
-        if not funcs.get(message):
+        if not event_lookup.get(message):
             PTLogger.warning(
-                f"Invalid message from websocket '{message}' - doing nothing"
+                f"/os_upgrade - Invalid message from websocket '{message}' - doing nothing"
             )
-            return
+            continue
+        PTLogger.info(f"/os_upgrade - received message: '{message}'")
 
         t = Thread(
-            target=funcs.get(message),
+            target=event_lookup.get(message),
             args=(ws,),
             daemon=True,
         )
         t.start()
         thread_arr.append(t)
 
-    for t in thread_arr:
-        if t.is_alive():
-            t.join()
+    # for t in thread_arr:
+    #     if t.is_alive():
+    #         t.join()
 
 
 # Register
