@@ -2,7 +2,7 @@ import { ValueType } from "react-select";
 
 type SelectOption = { value: string; label: string; };
 
-export default function isSingleOption(onChangeValue: ValueType<SelectOption, false>): onChangeValue is SelectOption {
+export default function isSingleOption(onChangeValue: ValueType<SelectOption>): onChangeValue is SelectOption {
   if (!onChangeValue) {
     return false;
   }
