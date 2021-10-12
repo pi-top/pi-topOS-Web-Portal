@@ -1,8 +1,10 @@
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
 
 import useSocket from "../../hooks/useSocket";
+import usePrevious from "../../hooks/usePrevious";
+
 import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
 import restartWebPortalService from "../../services/restartWebPortalService";
@@ -100,14 +102,6 @@ export type Props = {
   isCompleted?: boolean;
 };
 
-function usePrevious(value: any) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
 export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
@@ -165,30 +159,40 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     error !== ErrorType.None && setState(UpdateState.Error);
   }, [error]);
 
-  useEffect(() => {
-    if (!isOpen || previousState === UpdateState.Reattaching) {
-      return ;
-    }
+  const sendMessageForCurrentState = useCallback(
+    (currentState: UpdateState) => {
+      if (previousState === UpdateState.Reattaching) {
+        // we just reattached to a running update - don't send any messages
+        return ;
+      }
 
-    switch (state) {
-      case UpdateState.Connect:
-        socket.send(SocketMessage.GET_STATE);
-        break;
-      case UpdateState.UpdatingSources:
-        socket.send(SocketMessage.UPDATE_SOURCES);
-        break;
-      case UpdateState.PreparingWebPortal:
-        socket.send(SocketMessage.PREPARE_WEB_PORTAL_UPGRADE);
-        break;
-      case UpdateState.PreparingSystemUpgrade:
-        socket.send(SocketMessage.PREPARE_SYSTEM_UPGRADE);
-        break;
-      case UpdateState.UpgradingWebPortal:
-      case UpdateState.UpgradingSystem:
-        socket.send(SocketMessage.START_UPGRADE);
-        break;
+      switch (currentState) {
+        case UpdateState.Connect:
+          socket.send(SocketMessage.GET_STATE);
+          break;
+        case UpdateState.UpdatingSources:
+          socket.send(SocketMessage.UPDATE_SOURCES);
+          break;
+        case UpdateState.PreparingWebPortal:
+          socket.send(SocketMessage.PREPARE_WEB_PORTAL_UPGRADE);
+          break;
+        case UpdateState.PreparingSystemUpgrade:
+          socket.send(SocketMessage.PREPARE_SYSTEM_UPGRADE);
+          break;
+        case UpdateState.UpgradingWebPortal:
+        case UpdateState.UpgradingSystem:
+          socket.send(SocketMessage.START_UPGRADE);
+          break;
+      }
+    },
+    [socket]  // eslint-disable-line react-hooks/exhaustive-deps
+  )
+
+  useEffect(() => {
+    if (isOpen) {
+      sendMessageForCurrentState(state);
     }
-  }, [isOpen, socket, state]);
+  }, [isOpen, state, sendMessageForCurrentState]);
 
   const doRetry = useCallback(
     (defaultBackend: boolean) => {
@@ -198,7 +202,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       setCheckingWebPortal(true);
       setState(UpdateState.UpdatingSources);
     },
-    [],
+    [socket],
   )
 
   useEffect(() => {
