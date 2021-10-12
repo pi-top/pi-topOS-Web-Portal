@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
 
@@ -118,14 +118,15 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     setIsOpen(true);
   }
 
-  const [checkingWebPortal, setCheckingWebPortal] = useState(window.location.search !== "?all");
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
   const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [availableSpace, setAvailableSpace] = useState(0);
   const [requireBurn, setRequireBurn] = useState(false);
   const [shouldBurn, setShouldBurn] = useState(false);
-  const [state, setState] = useState<UpdateState>(UpdateState.None)
+  const [state, setState] = useState<UpdateState>(UpdateState.None);
+  const [checkOsVersionUpdate, setCheckOsVersionUpdate] = useState(false);
 
+  const checkingWebPortalRef = useRef(window.location.search !== "?all");
   const previousState = usePrevious(state);
 
   useEffect(() => {
@@ -136,7 +137,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   }, [isOpen, socket]);
 
   useEffect(() => {
-    if (!checkingWebPortal) {
+    if (checkOsVersionUpdate) {
       getMajorOsUpdates()
           .then((response) => {
             setShouldBurn(response.shouldBurn);
@@ -147,7 +148,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
             setRequireBurn(false);
           })
     }
-  }, [checkingWebPortal]);
+  }, [checkOsVersionUpdate]);
 
   useEffect(() => {
     getAvailableSpace()
@@ -162,7 +163,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
   const sendMessageForCurrentState = useCallback(
     (currentState: UpdateState) => {
       if (previousState === UpdateState.Reattaching) {
-        // we just reattached to a running update - don't send any messages
+        // we just reattached to a running update - don't need to send any message
         return ;
       }
 
@@ -199,7 +200,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       socket.send(defaultBackend ? SocketMessage.USE_DEFAULT_UPDATER : SocketMessage.USE_LEGACY_UPDATER);
       setError(ErrorType.None);
       setUpdateSize({downloadSize: 0, requiredSpace: 0});
-      setCheckingWebPortal(true);
+      checkingWebPortalRef.current = true;
       setState(UpdateState.UpdatingSources);
     },
     [socket],
@@ -217,6 +218,25 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       setIsOpen(false);
     };
   }, [socket, state]);
+
+
+  const serviceRestartTimoutMs = 30000;
+  const timeoutServerStatusRequestMs = 300;
+  const serverStatusRequestIntervalMs = 700;
+  let elapsedWaitingTimeMs = 0;
+
+  let waitUntilServerIsOnline = () => {
+    const interval = setInterval(async () => {
+      try {
+        elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
+        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
+        serverStatus({ timeout: timeoutServerStatusRequestMs })
+          .then(() => clearInterval(interval))
+          .catch(() => {})
+        window.location.replace(window.location.pathname + "?all")
+      } catch (_) {}
+    }, serverStatusRequestIntervalMs);
+  }
 
   useEffect(() => {
     if (!message) {
@@ -276,14 +296,14 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       message.type === OSUpdaterMessageType.UpdateSources &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
-      setState(checkingWebPortal ? UpdateState.PreparingWebPortal : UpdateState.PreparingSystemUpgrade);
+      setState(checkingWebPortalRef.current ? UpdateState.PreparingWebPortal : UpdateState.PreparingSystemUpgrade);
     }
 
     if (
       message.type === OSUpdaterMessageType.Upgrade &&
       message.payload.status === UpdateMessageStatus.Finish
     ) {
-      if (checkingWebPortal) {
+      if (checkingWebPortalRef.current) {
         setState(UpdateState.WaitingForServer);
         restartWebPortalService()
           .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
@@ -303,7 +323,8 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         if (noUpdatesAvailable) {
           // no updates available - continue to system upgrade if was preparing web-portal, or finish page
           setState(state === UpdateState.PreparingWebPortal ? UpdateState.PreparingSystemUpgrade : UpdateState.Finished);
-          setCheckingWebPortal(false);
+          checkingWebPortalRef.current = false
+          setCheckOsVersionUpdate(true);
         } else {
           // there's an update available - install if it's from web-portal or wait for user input
           setState(state === UpdateState.PreparingWebPortal ? UpdateState.UpgradingWebPortal : UpdateState.WaitingForUserInput);
@@ -314,23 +335,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     }
   }, [message, socket]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const serviceRestartTimoutMs = 30000;
-  const timeoutServerStatusRequestMs = 300;
-  const serverStatusRequestIntervalMs = 700;
-  let elapsedWaitingTimeMs = 0;
-
-  let waitUntilServerIsOnline = () => {
-    const interval = setInterval(async () => {
-      try {
-        elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
-        elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
-        serverStatus({ timeout: timeoutServerStatusRequestMs })
-          .then(() => clearInterval(interval))
-          .catch(() => {})
-        window.location.replace(window.location.pathname + "?all")
-      } catch (_) {}
-    }, serverStatusRequestIntervalMs);
-  }
 
   return (
     <UpgradePage
