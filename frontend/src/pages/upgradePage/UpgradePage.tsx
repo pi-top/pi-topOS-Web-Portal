@@ -12,6 +12,7 @@ import styles from "./UpgradePage.module.css";
 import { ErrorType, OSUpdaterMessage, OSUpdaterMessageType, UpdateMessageStatus, UpdateState } from "./UpgradePageContainer"
 import NewOsVersionDialogContainer from "./newOsVersionDialog/NewOsVersionDialogContainer";
 import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/UpgradeHistoryTextArea";
+import { runningOnWebRenderer } from "../../helpers/utils";
 
 export enum ErrorMessage {
   NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
@@ -170,7 +171,7 @@ export default ({
           onClick: onNextButtonClick,
           label: continueButtonLabel,
           disabled: !hasError() && nextButtonDisabledStates.includes(updateState),
-          hidden: error === ErrorType.UpdaterAlreadyRunning
+          hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && !runningOnWebRenderer() && onSkipClick !== undefined)
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (hasError() || isCompleted === true)}

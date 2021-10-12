@@ -189,7 +189,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
     if (isOpen) {
       sendMessageForCurrentState(state);
     }
-  }, [isOpen, state]);
+  }, [isOpen, state]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const doRetry = useCallback(
     (defaultBackend: boolean) => {
