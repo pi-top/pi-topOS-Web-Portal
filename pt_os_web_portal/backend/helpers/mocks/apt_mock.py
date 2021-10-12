@@ -93,6 +93,7 @@ class AptCacheMock:
 class AptMock:
     Cache = CacheMock
     cache = AptCacheMock
+    Package = PackageMock
 
 
 class ProgressMock:

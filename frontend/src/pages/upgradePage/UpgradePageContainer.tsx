@@ -162,17 +162,13 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
   const sendMessageForCurrentState = useCallback(
     (currentState: UpdateState) => {
-      if (previousState === UpdateState.Reattaching) {
-        // we just reattached to a running update - don't need to send any message
-        return ;
-      }
 
       switch (currentState) {
         case UpdateState.Connect:
           socket.send(SocketMessage.GET_STATE);
           break;
         case UpdateState.UpdatingSources:
-          socket.send(SocketMessage.UPDATE_SOURCES);
+          previousState !== UpdateState.Reattaching && socket.send(SocketMessage.UPDATE_SOURCES);
           break;
         case UpdateState.PreparingWebPortal:
           socket.send(SocketMessage.PREPARE_WEB_PORTAL_UPGRADE);
@@ -182,18 +178,18 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
           break;
         case UpdateState.UpgradingWebPortal:
         case UpdateState.UpgradingSystem:
-          socket.send(SocketMessage.START_UPGRADE);
+          previousState !== UpdateState.Reattaching && socket.send(SocketMessage.START_UPGRADE);
           break;
       }
     },
-    [socket]  // eslint-disable-line react-hooks/exhaustive-deps
+    [socket, previousState]  // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   useEffect(() => {
     if (isOpen) {
       sendMessageForCurrentState(state);
     }
-  }, [isOpen, state, sendMessageForCurrentState]);
+  }, [isOpen, state]);
 
   const doRetry = useCallback(
     (defaultBackend: boolean) => {
