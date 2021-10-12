@@ -173,7 +173,7 @@ export default ({
           hidden: error === ErrorType.UpdaterAlreadyRunning
         }}
         skipButton={{ onClick: onSkipClick }}
-        showSkip={onSkipClick !== undefined && (hasError() || isCompleted)}
+        showSkip={onSkipClick !== undefined && (hasError() || isCompleted === true)}
         showBack={onBackClick !== undefined && (hasError() || showBackButtonStates.includes(updateState))}
         backButton={{
           onClick: onBackClick,
