@@ -24,6 +24,7 @@ export enum UpgradePageExplanation {
   UpgradePreparedWithDownload = "{size} of new packages need to be installed. This might take {time} minutes.",
   UpgradePreparedWithoutDownload = "Some packages need to be installed. This might take a few minutes.",
   InProgress = "Now sit back and relax - this may take some time...\nPlease, DO NOT POWER OFF YOUR DEVICE!",
+  FinishStandaloneUpdaterAppOnWebBrowser = "Great, system update has been successfully installed!\n\nYou can now close this window.",
   Finish = "Great, system update has been successfully installed!\n\nPlease click the {continueButtonLabel} button to {continueButtonAction}.",
   WaitingForServer = "Please wait...",
   UpdatingSources = "Checking to see if there are updates available...",
@@ -134,6 +135,9 @@ export default ({
         }
         return UpgradePageExplanation.UpgradePreparedWithoutDownload;
       case UpdateState.Finished:
+        if (runsUpdaterStandaloneAppInBrowser) {
+          return UpgradePageExplanation.FinishStandaloneUpdaterAppOnWebBrowser
+        }
         return UpgradePageExplanation.Finish.replace(
           "{continueButtonLabel}",
           continueButtonLabel
@@ -143,10 +147,12 @@ export default ({
     };
   };
 
-  const continueButtonLabel = hasError() ? "Retry" : updateState !== UpdateState.Finished ? "Update" : onBackClick? "Next" : "Exit"
-  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect, UpdateState.Reattaching]
-  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect, UpdateState.Reattaching, UpdateState.PreparingWebPortal]
-  const showBackButtonStates = [UpdateState.Error, UpdateState.WaitingForUserInput, UpdateState.Finished]
+  const continueButtonLabel = hasError() ? "Retry" : updateState !== UpdateState.Finished ? "Update" : onBackClick? "Next" : "Exit";
+  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect, UpdateState.Reattaching];
+  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect, UpdateState.Reattaching, UpdateState.PreparingWebPortal];
+  const showBackButtonStates = [UpdateState.Error, UpdateState.WaitingForUserInput, UpdateState.Finished];
+  const runsUpdaterStandaloneAppInBrowser = !runningOnWebRenderer() && onBackClick === undefined;
+
   const onNextButtonClick = () => {
     if (hasError()) {
         setIsRetrying(true);
@@ -171,7 +177,7 @@ export default ({
           onClick: onNextButtonClick,
           label: continueButtonLabel,
           disabled: !hasError() && nextButtonDisabledStates.includes(updateState),
-          hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && !runningOnWebRenderer() && onBackClick === undefined)
+          hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && runsUpdaterStandaloneAppInBrowser)
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (hasError() || isCompleted === true)}
