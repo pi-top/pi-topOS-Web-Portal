@@ -144,8 +144,8 @@ export default ({
   };
 
   const continueButtonLabel = hasError() ? "Retry" : updateState !== UpdateState.Finished ? "Update" : onBackClick? "Next" : "Exit"
-  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect]
-  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect]
+  const nextButtonDisabledStates = [UpdateState.WaitingForServer, UpdateState.None, UpdateState.UpdatingSources, UpdateState.PreparingSystemUpgrade, UpdateState.PreparingWebPortal, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect, UpdateState.Reattaching]
+  const backButtonDisabledStates = [UpdateState.UpdatingSources, UpdateState.UpgradingSystem, UpdateState.UpgradingWebPortal, UpdateState.Connect, UpdateState.Reattaching, UpdateState.PreparingWebPortal]
   const showBackButtonStates = [UpdateState.Error, UpdateState.WaitingForUserInput, UpdateState.Finished]
   const onNextButtonClick = () => {
     if (hasError()) {
@@ -171,7 +171,7 @@ export default ({
           onClick: onNextButtonClick,
           label: continueButtonLabel,
           disabled: !hasError() && nextButtonDisabledStates.includes(updateState),
-          hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && !runningOnWebRenderer() && onSkipClick !== undefined)
+          hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && !runningOnWebRenderer() && onBackClick === undefined)
         }}
         skipButton={{ onClick: onSkipClick }}
         showSkip={onSkipClick !== undefined && (hasError() || isCompleted === true)}
