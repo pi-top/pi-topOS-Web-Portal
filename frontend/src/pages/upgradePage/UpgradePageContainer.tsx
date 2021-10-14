@@ -131,7 +131,6 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
 
   useEffect(() => {
     if (isOpen) {
-      socket.send(SocketMessage.USE_DEFAULT_UPDATER);
       setState(UpdateState.Connect);
     }
   }, [isOpen, socket]);
@@ -261,7 +260,13 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         setError(ErrorType.UpdaterAlreadyRunning);
         return ;
       }
-      setState(message.payload.busy ? UpdateState.Reattaching : UpdateState.UpdatingSources);
+
+      if (message.payload.busy) {
+        setState(UpdateState.Reattaching);
+      } else {
+        socket.send(SocketMessage.USE_DEFAULT_UPDATER);
+        setState(UpdateState.UpdatingSources);
+      }
     }
 
     if (
