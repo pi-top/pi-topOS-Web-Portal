@@ -106,5 +106,21 @@
             "percent": 0.0,
             "message": "There was an error while upgrading packages."
         }
+    },
+    "StateNotBusy": {
+        "type": "STATE",
+        "payload": {
+            "status": "STATUS",
+            "clients": 0,
+            "busy": false
+        }
+    },
+    "StateBusy": {
+        "type": "STATE",
+        "payload": {
+            "status": "STATUS",
+            "clients": 0,
+            "busy": true
+        }
     }
 }

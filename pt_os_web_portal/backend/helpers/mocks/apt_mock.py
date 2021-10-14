@@ -1,12 +1,21 @@
 from time import sleep
 
 
+class PackageMock:
+    def __init__(self, package_name) -> None:
+        self.name = package_name
+        self.is_upgradable = False
+
+    def mark_upgrade(self) -> None:
+        pass
+
+
 class CacheMock:
     required_download = 2155000000
     install_count = 1
     required_space = 99300000
-    sleep_time = 0
-    _dummy_messages = [
+    sleep_time = 1
+    _dummy_upgrade_messages = [
         ["dpkg-exec", 0.0, "Running dpkg"],
         [
             "gnome-control-center-data",
@@ -24,14 +33,25 @@ class CacheMock:
             "Installing gnome-control-center-data (armhf)",
         ],
     ]
+    _sources_to_update = 4
+    packages = {
+        "pt-os-web-portal": PackageMock("pt-os-web-portal"),
+        "python3-pitop": PackageMock("python3-pitop"),
+        "python3-pitop-full": PackageMock("python3-pitop-full"),
+    }
+
+    def get(self, package_name):
+        return self.packages.get(package_name)
 
     def update(self, progress=None):
-        if self.sleep_time:
-            print(f"CacheMock.update: Sleeping for {self.sleep_time}s")
-            sleep(self.sleep_time)
+        progress.total_items = self._sources_to_update
         if hasattr(progress, "pulse"):
-            progress.pulse(None)
-        # sleep(2)
+            for idx in range(self._sources_to_update):
+                progress.current_items = idx
+                progress.pulse(None)
+                if self.sleep_time:
+                    print(f"CacheMock.update: Sleeping for {self.sleep_time}s")
+                    sleep(self.sleep_time)
 
     def open(self, opt=None):
         pass
@@ -50,11 +70,13 @@ class CacheMock:
             fetch_progress.pulse(None)
 
         if hasattr(install_progress, "status_change"):
-            for pkg_name, percent, status in self._dummy_messages:
+            for pkg_name, percent, status in self._dummy_upgrade_messages:
                 install_progress.status_change(
                     pkg=pkg_name, percent=percent, status=status
                 )
-                # sleep(0.5)
+                if self.sleep_time:
+                    print(f"CacheMock.commit: Sleeping for {self.sleep_time}s")
+                    sleep(self.sleep_time)
 
     def keys(self):
         return {}
@@ -71,6 +93,7 @@ class AptCacheMock:
 class AptMock:
     Cache = CacheMock
     cache = AptCacheMock
+    Package = PackageMock
 
 
 class ProgressMock:
