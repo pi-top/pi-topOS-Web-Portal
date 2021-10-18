@@ -1,0 +1,20 @@
+.header {
+  /* align-items: center; */
+  background-image: url('../../assets/images/header-background.svg');
+  background-repeat: no-repeat;
+  /* background-size: 100%; */
+  width: 100%;
+  /* position: absolute; */
+  /* z-index: 1000; */
+  height: 100px;
+}
+
+.logoContainer {
+  max-width: 80%;
+  min-height: 80px;
+  padding: 30px 0 0 30px;
+}
+
+h1 {
+  margin: 0;
+}

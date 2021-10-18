@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 150px);
+  width: 100%;
+}
+
+.landingList {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.landingPage {
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  overflow: auto;
+
+  margin: 0 20px 20px 20px;
+
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
