@@ -250,6 +250,10 @@ describe("App", () => {
           socket.send(JSON.stringify(Messages.UpgradeStatus));
           socket.send(JSON.stringify(Messages.UpgradeFinish));
         }
+
+        if (data === "state") {
+          socket.send(JSON.stringify(Messages.StateNotBusy));
+        }
       });
     });
   });

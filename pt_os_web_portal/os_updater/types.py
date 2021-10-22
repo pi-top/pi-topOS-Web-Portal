@@ -12,4 +12,5 @@ class EventNames(Enum):
     OS_UPGRADE = auto()
     OS_PREPARE_UPGRADE = auto()
     SIZE = auto()
+    STATE = auto()
     UPDATE_SOURCES = auto()

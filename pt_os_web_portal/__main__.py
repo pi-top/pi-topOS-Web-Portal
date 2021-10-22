@@ -31,7 +31,12 @@ def configure_interrupt_signals(app):
     default=20,
     show_default=True,
 )
-@click.option("--test-mode")
+@click.option(
+    "-t",
+    "--test-mode",
+    help="test mode",
+    is_flag=True,
+)
 @click.version_option()
 def main(test_mode, log_level):
     if not is_root():

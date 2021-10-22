@@ -196,6 +196,9 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
           }
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
         });
       });
     });
@@ -239,13 +242,15 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't render the Skip button", async () => {
-      const { queryByText } = mount();
+      const { queryByText, getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
+      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
       expect(getByText("Update")).toHaveProperty("disabled", true);
     });
@@ -282,6 +287,10 @@ describe("UpgradePageContainer", () => {
             if (data === "start") {
               socket.send(JSON.stringify(Messages.UpgradeStart));
               socket.send(JSON.stringify(Messages.UpgradeStatus));
+            }
+
+            if (data === "state") {
+              socket.send(JSON.stringify(Messages.StateNotBusy));
             }
           });
         });
@@ -350,6 +359,10 @@ describe("UpgradePageContainer", () => {
             if (data === "size") {
               socket.send(JSON.stringify(Messages.NoSize));
             }
+
+            if (data === "state") {
+              socket.send(JSON.stringify(Messages.StateNotBusy));
+            }
           });
         });
       });
@@ -381,6 +394,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -474,6 +490,9 @@ describe("UpgradePageContainer", () => {
         let times = 0;
         server.on("connection", (socket) => {
           socket.on("message", (data) => {
+            if (data === "state") {
+              socket.send(JSON.stringify(Messages.StateNotBusy));
+            }
             if (data === "update_sources") {
               socket.send(JSON.stringify(Messages.UpdateSourcesStart));
               socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -606,6 +625,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -643,9 +666,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { getByText, queryByTestId } = mount();
+      const { getByText, findByTestId, queryByTestId } = mount();
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
 
+      await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
@@ -690,6 +714,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -837,6 +864,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1021,6 +1051,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1127,6 +1160,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1180,9 +1216,10 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't render the 'is upgrading' message", async () => {
-      const { getByText, waitForPreparation, queryByText } = mount();
+      const { getByText, waitForPreparation, waitForGenericError, queryByText } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
+      await waitForGenericError();
 
       await Promise.all(UpgradePageExplanation.InProgress
         .split("\n").map(async (text, _): Promise<any> => {
@@ -1191,18 +1228,20 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const { waitForPreparation, waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
+      await waitForGenericError();
 
       await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
     });
 
     it("messages are displayed in the textarea component", async () => {
-      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const { waitForPreparation, waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
+      await waitForGenericError();
 
       await findByTestId("textarea");
       const textAreaElement = queryByTestId("textarea");
@@ -1288,6 +1327,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1388,6 +1430,16 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Next")).toBeInTheDocument();
     });
 
+    it("Next button is enabled", async () => {
+      const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
+      await waitForPreparation();
+      fireEvent.click(getByText("Update"));
+      await waitForUpgradeFinish();
+
+      await waitForElement(() => getByText("Next"));
+      expect(getByText("Next")).toHaveProperty("disabled", false);
+    });
+
     it("doesn't request to restart the pt-os-web-portal systemd service", async () => {
       const { getByText, waitForPreparation, waitForUpgradeFinish } = mount();
       await waitForPreparation();
@@ -1407,13 +1459,8 @@ describe("UpgradePageContainer", () => {
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
-      jest.useFakeTimers();
 
       fireEvent.click(getByText("Next"));
-      await wait();
-      jest.runOnlyPendingTimers();
-      jest.runOnlyPendingTimers();
-      await wait();
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
@@ -1441,6 +1488,9 @@ describe("UpgradePageContainer", () => {
       server.on("connection", (socket) => {
         let times = 0;
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1510,6 +1560,9 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1578,6 +1631,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1641,6 +1698,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
@@ -1703,6 +1764,10 @@ describe("UpgradePageContainer", () => {
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
           if (data === "update_sources") {
             socket.send(JSON.stringify(Messages.UpdateSourcesStart));
             socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
