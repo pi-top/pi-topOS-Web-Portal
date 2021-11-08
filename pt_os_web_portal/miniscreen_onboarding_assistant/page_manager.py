@@ -1,13 +1,15 @@
+import logging
 from threading import Event
 
 from PIL import ImageDraw
-from pitop.common.logger import PTLogger
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ..event import AppEvents, subscribe
 from .pages.guide import GuidePage, GuidePageGenerator
 from .pages.menu import MenuPage, MenuPageGenerator
 from .viewport import ViewportManager
+
+logger = logging.getLogger(__name__)
 
 scroll_px_resolution = 2
 
@@ -133,12 +135,12 @@ class PageManager:
 
         new_page_index = new_page.value - 1
         if self.active_viewport.page_index == new_page_index:
-            PTLogger.debug(
+            logger.debug(
                 f"Miniscreen onboarding: Already on page '{new_page.name}' - nothing to do"
             )
             return
 
-        PTLogger.debug(
+        logger.debug(
             f"Page index: {self.active_viewport.page_index} -> {new_page_index}"
         )
         self.active_viewport.page_index = new_page_index

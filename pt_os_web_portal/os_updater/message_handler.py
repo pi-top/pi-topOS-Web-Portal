@@ -1,12 +1,14 @@
+import logging
 from json import dumps as jdumps
 from typing import List
 
 from geventwebsocket.exceptions import WebSocketError
 from geventwebsocket.websocket import WebSocket
-from pitop.common.logger import PTLogger
 
 from ..backend.helpers.modules import get_apt
 from .types import EventNames, MessageType
+
+logger = logging.getLogger(__name__)
 
 (apt, apt.progress, apt_pkg) = get_apt()
 
@@ -27,7 +29,7 @@ class OSUpdaterFrontendMessageHandler:
 
     def register_client(self, ws):
         if ws not in self.ws_clients:
-            PTLogger.info(
+            logger.info(
                 f"OSUpdaterFrontendMessageHandler.register_client : New websocket {ws} - adding to list of clients"
             )
             self.ws_clients.append(ws)
@@ -45,7 +47,7 @@ class OSUpdaterFrontendMessageHandler:
                     "message": message,
                 },
             }
-            PTLogger.info(f"APT Source: {percent}% '{message}'")
+            logger.info(f"APT Source: {percent}% '{message}'")
 
             self._send(jdumps(data))
 
@@ -64,7 +66,7 @@ class OSUpdaterFrontendMessageHandler:
                     "message": message,
                 },
             }
-            PTLogger.info(f"Upgrade Prepare: {percent}% '{message}'")
+            logger.info(f"Upgrade Prepare: {percent}% '{message}'")
 
             self._send(jdumps(data))
 
@@ -83,7 +85,7 @@ class OSUpdaterFrontendMessageHandler:
                     "message": message,
                 },
             }
-            PTLogger.info(f"OS Upgrade: {percent}% '{message}'")
+            logger.info(f"OS Upgrade: {percent}% '{message}'")
 
             self._send(jdumps(data))
 
@@ -95,7 +97,7 @@ class OSUpdaterFrontendMessageHandler:
                 "type": EventNames.SIZE.name,
                 "payload": {"size": size, "status": message_type.name},
             }
-            PTLogger.info(f"OS upgrade size: {size}")
+            logger.info(f"OS upgrade size: {size}")
 
             self._send(jdumps(data))
 
@@ -112,7 +114,7 @@ class OSUpdaterFrontendMessageHandler:
                     "status": message_type.name,
                 },
             }
-            PTLogger.info(f"OS Updater busy: {is_busy} - clients: {clients}")
+            logger.info(f"OS Updater busy: {is_busy} - clients: {clients}")
 
             if not ws:
                 return
@@ -131,5 +133,5 @@ class OSUpdaterFrontendMessageHandler:
             except WebSocketError:
                 pass
             except Exception as e:
-                PTLogger.error(f"OSUpdaterFrontendMessageHandler.active_clients : {e}")
+                logger.error(f"OSUpdaterFrontendMessageHandler.active_clients : {e}")
         return clients

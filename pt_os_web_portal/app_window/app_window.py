@@ -1,7 +1,9 @@
+import logging
 from dataclasses import dataclass
 
 from pitop.common.command_runner import run_command
-from pitop.common.logger import PTLogger
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -27,7 +29,7 @@ class AppWindow:
         cmd += f"--size={self.width_scalar}x{self.height_scalar} "
         cmd += f"{self.url}"
 
-        PTLogger.info(f"AppWindow.run: running {cmd}")
+        logger.info(f"AppWindow.run: running {cmd}")
         run_command(f"{cmd}", check=False, timeout=None)
 
     def is_open(self):
@@ -41,7 +43,7 @@ class AppWindow:
             # Match full window title
             run_command(f'wmctrl -v -c -F "{self.title}"', timeout=5)
         except Exception as e:
-            PTLogger.error(f"Error closing '{self.title}' window: {e}")
+            logger.error(f"Error closing '{self.title}' window: {e}")
 
 
 @dataclass

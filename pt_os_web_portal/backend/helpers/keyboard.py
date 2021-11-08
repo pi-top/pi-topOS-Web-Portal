@@ -1,14 +1,16 @@
+import logging
 from fileinput import input as finput
 from typing import Optional, Tuple
 
 from pitop.common.command_runner import run_command
-from pitop.common.logger import PTLogger
 
 from .paths import default_keyboard_conf
 
+logger = logging.getLogger(__name__)
+
 
 def current_keyboard_layout() -> Tuple[str, Optional[str]]:
-    PTLogger.info("Function: current_keyboard_layout()")
+    logger.info("Function: current_keyboard_layout()")
     layout_code = ""
     variant = None
 
@@ -19,7 +21,7 @@ def current_keyboard_layout() -> Tuple[str, Optional[str]]:
         elif "variant:" in line:
             variant = line.split(":")[1].strip()
 
-    PTLogger.info(
+    logger.info(
         "Current keyboard layout: layout_code='%s', variant='%s'"
         % (layout_code, variant)
     )
@@ -30,17 +32,17 @@ def current_keyboard_layout() -> Tuple[str, Optional[str]]:
 
 
 def set_keyboard_layout(layout_code, variant):
-    PTLogger.info(
+    logger.info(
         "Function: set_keyboard_layout(layout_code=%s, variant=%s)"
         % (layout_code, variant)
     )
     if variant is None:
-        PTLogger.info("No keyboard variant detected")
+        logger.info("No keyboard variant detected")
         variant = ""
 
     layout_str = 'XKBLAYOUT="' + layout_code + '"'
     variant_str = 'XKBVARIANT="' + variant + '"'
-    PTLogger.info(
+    logger.info(
         "Updating %s with %s and %s"
         % (default_keyboard_conf(), layout_str, variant_str)
     )
@@ -59,7 +61,7 @@ def set_keyboard_layout(layout_code, variant):
 
 
 def list_keyboard_layout_codes() -> dict:
-    PTLogger.info("Function: list_keyboard_layout_codes()")
+    logger.info("Function: list_keyboard_layout_codes()")
     layouts = {
         "us": "United States",
         "ad": "Andorra",
@@ -155,7 +157,7 @@ def list_keyboard_layout_codes() -> dict:
 
 
 def list_keyboard_layout_variants() -> dict:
-    PTLogger.info("Function: list_keyboard_layout_variants()")
+    logger.info("Function: list_keyboard_layout_variants()")
     af_variants = {
         "olpc-fa": "OLPC Dari",
         "olpc-ps": "OLPC Pashto",

@@ -1,7 +1,7 @@
+import logging
 from threading import Thread
 from time import sleep
 
-from pitop.common.logger import PTLogger
 from pitop.common.sys_info import (
     get_address_for_connected_device,
     get_ap_mode_status,
@@ -9,6 +9,8 @@ from pitop.common.sys_info import (
 )
 
 from .event import AppEvents, post_event
+
+logger = logging.getLogger(__name__)
 
 
 class ApConnection:
@@ -52,7 +54,7 @@ class ConnectionManager:
         self.__stop = True
         if self.__thread and self.__thread.is_alive():
             self.__thread.join()
-        PTLogger.info("Stopped: Connection manager")
+        logger.info("Stopped: Connection manager")
 
     def _main(self):
         while not self.__stop:

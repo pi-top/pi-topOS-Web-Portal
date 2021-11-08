@@ -1,8 +1,9 @@
+import logging
 from pathlib import Path
 
-from pitop.common.logger import PTLogger
-
 from .event import AppEvents, subscribe
+
+logger = logging.getLogger(__name__)
 
 
 class FWUpdaterBreadcrumbManager:
@@ -51,18 +52,14 @@ def handle_os_updater_upgrade_event(status):
     if status == "started":
         # tell firmware updater updater not to timeout
         if not FWUpdaterBreadcrumbManager().is_ready():
-            PTLogger.info(
-                "Creating 'extend timeout' breadcrumb for pt-firmware-updater"
-            )
+            logger.info("Creating 'extend timeout' breadcrumb for pt-firmware-updater")
             FWUpdaterBreadcrumbManager().set_extend_timeout()
 
     if status in ["success", "failed"]:
         FWUpdaterBreadcrumbManager().set_ready("pt-os-web-portal: Finished update.")
         # Tell firmware updater to no longer block on extended timeout
         if FWUpdaterBreadcrumbManager().is_extending_timeout():
-            PTLogger.info(
-                "Removing 'extend timeout' breadcrumb for pt-firmware-updater"
-            )
+            logger.info("Removing 'extend timeout' breadcrumb for pt-firmware-updater")
             FWUpdaterBreadcrumbManager().clear_extend_timeout()
 
 
