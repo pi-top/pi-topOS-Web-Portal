@@ -1,14 +1,16 @@
+import logging
 from re import search
 from typing import List
 
 from pitop.common.command_runner import run_command
-from pitop.common.logger import PTLogger
 
 from .paths import default_locale, locales_gen, supported_locales
 
+logger = logging.getLogger(__name__)
+
 
 def list_locales_supported() -> list:
-    PTLogger.info("Function: list_locales_supported()")
+    logger.info("Function: list_locales_supported()")
 
     with open(supported_locales()) as file:
         lines = [line.rstrip() for line in file]
@@ -27,7 +29,7 @@ def list_locales_supported() -> list:
 
 
 def current_locale() -> str:
-    PTLogger.info("Function: current_locale()")
+    logger.info("Function: current_locale()")
 
     with open(default_locale()) as file:
         lang_lines = [line.rstrip() for line in file if line.startswith("LANG=")]
@@ -36,12 +38,12 @@ def current_locale() -> str:
 
         # Get last one, in case there are multiple
         locale = lang_lines[-1].split("=")[1].split(".UTF-8")[0]
-        PTLogger.info("Current locale: '%s'" % locale)
+        logger.info("Current locale: '%s'" % locale)
         return locale
 
 
 def list_locales_available() -> list:
-    PTLogger.info("Function: list_locales_available()")
+    logger.info("Function: list_locales_available()")
 
     with open(locales_gen()) as file:
         lines = [line.rstrip() for line in file]
@@ -60,11 +62,11 @@ def list_locales_available() -> list:
 
 
 def set_locale(locale_code):
-    PTLogger.info("Function: set_locale(locale_code='%s')" % locale_code)
+    logger.info("Function: set_locale(locale_code='%s')" % locale_code)
 
     available_locales = list_locales_available()
     if locale_code not in available_locales:
-        PTLogger.error("Unable to set locale - Not available: %s" % locale_code)
+        logger.error("Unable to set locale - Not available: %s" % locale_code)
         return None
 
     command = "raspi-config nonint do_change_locale %s.UTF-8" % locale_code

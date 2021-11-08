@@ -1,7 +1,9 @@
-from pitop.common.logger import PTLogger
+import logging
 
 from ..backend.helpers.modules import get_apt
 from .types import MessageType
+
+logger = logging.getLogger(__name__)
 
 (apt, apt.progress, apt_pkg) = get_apt()
 
@@ -40,14 +42,14 @@ class InstallProgress(apt.progress.base.InstallProgress):  # type: ignore
         self.packages_with_errors = list()
 
     def status_change(self, pkg, percent, status):
-        PTLogger.debug(f"Progress: {percent}% - {pkg}: {status}")
+        logger.debug(f"Progress: {percent}% - {pkg}: {status}")
         self.callback(MessageType.STATUS, f"{pkg}: {status}", percent)
 
     def update_interface(self):
         apt.progress.base.InstallProgress.update_interface(self)
 
     def error(self, pkg, errormsg):
-        PTLogger.error(f"InstallProgress {pkg}: {errormsg}")
+        logger.error(f"InstallProgress {pkg}: {errormsg}")
         self.packages_with_errors.append(pkg)
         # sent as MessageType.STATUS instead of MessageType.ERROR to avoid confusions,
         # since several other messages are sent after this one

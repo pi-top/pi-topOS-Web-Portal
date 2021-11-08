@@ -1,10 +1,11 @@
+import logging
 from enum import Enum
 from time import sleep
 from typing import Dict, List
 
-from pitop.common.logger import PTLogger
-
 from .modules import get_pywifi
+
+logger = logging.getLogger(__name__)
 
 pywifi = get_pywifi()
 
@@ -25,12 +26,12 @@ class WifiManager:
 
     @staticmethod
     def get_interface(iface_name: str):
-        PTLogger.info("Attempting to get interface '%s'" % iface_name)
+        logger.info("Attempting to get interface '%s'" % iface_name)
 
         for i in pywifi.PyWiFi().interfaces():
-            PTLogger.debug(f"Checking against '{i.name()}'")
+            logger.debug(f"Checking against '{i.name()}'")
             if i.name() == iface_name:
-                PTLogger.info("Successfully got interface '%s'" % iface_name)
+                logger.info("Successfully got interface '%s'" % iface_name)
                 return i
 
         # No wlan0 interface - is this an old Pi?
@@ -84,7 +85,7 @@ class WifiManager:
                 timeout,
             )
             if not silent:
-                PTLogger.info(text)
+                logger.info(text)
             sleep(sleep_time)
             time_waited += sleep_time
             if time_waited >= timeout:
@@ -92,23 +93,23 @@ class WifiManager:
 
     def disconnect(self) -> None:
         if not self.is_inactive():
-            PTLogger.info("Disconnecting interface")
+            logger.info("Disconnecting interface")
             self.wifi_interface.disconnect()
             self.wait_for(self.is_inactive, "disconnection")
-        PTLogger.info("Interface disconnected")
+        logger.info("Interface disconnected")
 
     def scan_and_get_results(self) -> List:
         if not self.is_scanning():
-            PTLogger.info("Starting networks scan")
+            logger.info("Starting networks scan")
             self.wifi_interface.scan()
 
             WifiManager.wait_for(
                 self.is_scanning, "scan completion", condition_true=False, silent=True
             )
 
-        PTLogger.info("Scan completed")
+        logger.info("Scan completed")
         results = self.wifi_interface.scan_results()
-        PTLogger.info("ssids found: {}".format([r.ssid for r in results]))
+        logger.info("ssids found: {}".format([r.ssid for r in results]))
         return results
 
     def connect(self, ssid: str, password: str) -> None:
@@ -119,7 +120,7 @@ class WifiManager:
                 break
 
         if network_profile is None:
-            PTLogger.info("Unable to find network matching SSID '%s'" % ssid)
+            logger.info("Unable to find network matching SSID '%s'" % ssid)
             return
 
         network_profile.key = password
@@ -128,12 +129,12 @@ class WifiManager:
             network_profile.akm = [None]
         self.disconnect()
 
-        PTLogger.info("Removing all network profiles")
+        logger.info("Removing all network profiles")
         self.wifi_interface.remove_all_network_profiles()
 
         WifiManager.wait_for(self.is_inactive, "interface to become inactive")
 
-        PTLogger.info("Connecting to newly created profile")
+        logger.info("Connecting to newly created profile")
         self.wifi_interface.connect(
             self.wifi_interface.add_network_profile(network_profile)
         )
@@ -141,14 +142,14 @@ class WifiManager:
         WifiManager.wait_for(self.is_connected, "connection", silent=True)
 
         if self.is_connected():
-            PTLogger.info("Updating wpa_supplicant.conf with network data")
+            logger.info("Updating wpa_supplicant.conf with network data")
             self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
                 self.RPI_WLAN_INTERFACE, "SAVE_CONFIG", False
             )
             self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
                 self.RPI_WLAN_INTERFACE, "RECONFIGURE", False
             )
-            PTLogger.info("Waiting for interface to become connected again")
+            logger.info("Waiting for interface to become connected again")
             WifiManager.wait_for(self.is_connected, "connection", silent=True)
 
     def ssid_connected(self) -> str:
@@ -178,7 +179,7 @@ def get_wifi_manager_instance():
 
 def get_ssids() -> List[Dict]:
     wm = get_wifi_manager_instance()
-    PTLogger.info("GETTING LIST OF SSIDS")
+    logger.info("GETTING LIST OF SSIDS")
     return [
         {
             "ssid": r.ssid,
@@ -190,16 +191,16 @@ def get_ssids() -> List[Dict]:
 
 
 def attempt_connection(ssid, password, on_connection=None) -> None:
-    PTLogger.info("Attempting to connect to {}".format(ssid))
+    logger.info("Attempting to connect to {}".format(ssid))
     wm = get_wifi_manager_instance()
     wm.connect(ssid, password)
 
     if wm.is_connected() and on_connection:
-        PTLogger.info("Executing on_connection callback")
+        logger.info("Executing on_connection callback")
         on_connection()
 
 
 def current_wifi_ssid() -> str:
-    PTLogger.info("Attempting to determine to which SSID we're connected to")
+    logger.info("Attempting to determine to which SSID we're connected to")
     wm = get_wifi_manager_instance()
     return wm.ssid_connected()

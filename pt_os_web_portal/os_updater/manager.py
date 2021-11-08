@@ -1,11 +1,12 @@
+import logging
 from subprocess import run
 from typing import Dict, List
-
-from pitop.common.logger import PTLogger
 
 from ..backend.helpers.modules import get_apt
 from .progress import FetchProgress, InstallProgress
 from .types import MessageType
+
+logger = logging.getLogger(__name__)
 
 (apt, apt.progress, apt_pkg) = get_apt()
 
@@ -28,7 +29,7 @@ class OSUpdateManager:
         return self.cache.install_count
 
     def update(self, callback) -> None:
-        PTLogger.info("OsUpdateManager: Updating APT sources")
+        logger.info("OsUpdateManager: Updating APT sources")
         if self.lock:
             callback(MessageType.ERROR, "OsUpdateManager is locked", 0.0)
             return
@@ -39,7 +40,7 @@ class OSUpdateManager:
             self.cache.update(fetch_sources_progress)
             self.cache.open(None)
         except Exception as e:
-            PTLogger.error(f"OsUpdateManager Error: {e}")
+            logger.error(f"OsUpdateManager Error: {e}")
             raise
         finally:
             self.lock = False
@@ -59,7 +60,7 @@ class OSUpdateManager:
         array of A will be [B(>1.0), B(<1.5)]
         """
 
-        PTLogger.debug("Generating list of pi-top packages...")
+        logger.debug("Generating list of pi-top packages...")
 
         pi_top_packages = str(
             run(
@@ -98,14 +99,14 @@ class OSUpdateManager:
     def stage_package(self, package_name: str) -> None:
         package = self.cache.get(package_name)
         if package is None:
-            PTLogger.info(f"OS Updater: invalid package '{package_name}' - skipping")
+            logger.info(f"OS Updater: invalid package '{package_name}' - skipping")
             return
         if not package.is_upgradable:
-            PTLogger.info(
+            logger.info(
                 f"OS Updater: package '{package_name}' has no updates - skipping"
             )
             return
-        PTLogger.info(f"OS Updater: staging package '{package_name}' to be updated")
+        logger.info(f"OS Updater: staging package '{package_name}' to be updated")
 
         package.mark_upgrade()
         dependency_dict = self.get_upgrade_dependencies(package, {})
@@ -119,13 +120,13 @@ class OSUpdateManager:
             if pkg:
                 pkg.candidate = sorted([*versions], reverse=True)[0]
                 if pkg.is_upgradable:
-                    PTLogger.info(
+                    logger.info(
                         f"OS Updater: staging upgrade for package '{pkg}' to version '{pkg.candidate.version}'"
                     )
                     pkg.mark_upgrade()
 
     def stage_upgrade(self, callback, packages=[]) -> None:
-        PTLogger.info("OsUpdateManager: Staging packages for upgrade")
+        logger.info("OsUpdateManager: Staging packages for upgrade")
         if self.lock:
             callback(MessageType.ERROR, "OsUpdateManager is locked", 0.0)
             return
@@ -133,44 +134,44 @@ class OSUpdateManager:
 
         try:
             if len(packages) == 0:
-                PTLogger.info("OsUpdateManager: Staging all packages to be upgraded")
+                logger.info("OsUpdateManager: Staging all packages to be upgraded")
                 self.cache.upgrade()
                 self.cache.upgrade(True)
             else:
                 for package_name in packages:
                     self.stage_package(package_name)
 
-            PTLogger.info(
+            logger.info(
                 f"OsUpdateManager: Will upgrade/install {self.cache.install_count} packages"
             )
-            PTLogger.info(
+            logger.info(
                 f"OsUpdateManager: Need to download {apt_pkg.size_to_str(self.cache.required_download)}"
             )
-            PTLogger.info(
+            logger.info(
                 f"OsUpdateManager: After this operation, {apt_pkg.size_to_str(self.cache.required_space)} of additional disk space will be used."
             )
         except Exception as e:
-            PTLogger.error(f"OsUpdateManager Error: {e}")
+            logger.error(f"OsUpdateManager Error: {e}")
             raise
         finally:
             self.lock = False
 
     def download_size(self):
         size = self.cache.required_download if self.cache else 0
-        PTLogger.info(
+        logger.info(
             f"OsUpdateManager download_size: Need to download {apt_pkg.size_to_str(size)} - ({size} B)"
         )
         return size
 
     def required_space(self):
         size = self.cache.required_space if self.cache else 0
-        PTLogger.info(
+        logger.info(
             f"OsUpdateManager required_space: {apt_pkg.size_to_str(size)} - ({size} B) needed for upgrade"
         )
         return size
 
     def upgrade(self, callback):
-        PTLogger.info("OsUpdateManager: starting upgrade")
+        logger.info("OsUpdateManager: starting upgrade")
         if self.lock:
             callback(MessageType.ERROR, "OsUpdateManager is locked", 0.0)
             return
@@ -189,4 +190,4 @@ class OSUpdateManager:
         finally:
             self.lock = False
 
-        PTLogger.info("OsUpdateManager: finished upgrade")
+        logger.info("OsUpdateManager: finished upgrade")
