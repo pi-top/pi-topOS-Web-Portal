@@ -1,4 +1,5 @@
 click python3-click; PEP386
+click-logging python3-click-logging; PEP386
 Flask python3-flask; PEP386
 Flask-Cors python3-flask-cors; PEP386
 Flask-Sockets python3-flask-sockets; PEP386
