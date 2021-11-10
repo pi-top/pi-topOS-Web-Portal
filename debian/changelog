@@ -1,24 +1,5 @@
 pi-top-os-web-portal (0.9.0-2) bullseye; urgency=medium
 
-  * Rework miniscreen onboarding pages text
-  * Rename: miniscreen assists with onboarding (#261)
-  * Update references to OnboardingAssistantApp
-  * Remove singleton for state (#264)
-  * Get hostname dynamically
-  * [pre-commit.ci] pre-commit autoupdate (#266)
-  * Update copy in Upgrade Page (#267)
-  * Drop shebangs (#269)
-  * Preserve miniscreen onboarding app state on service restart (#268)
-  * Bump tmpl from 1.0.4 to 1.0.5 in /frontend (#271)
-  * Fix IsADirectoryError on state file
-  * Drop 'enable AP mode' functions
-  * Reliable, asynchronous cleanup (#260)
-  * OS Updater: Add legacy updater logic on upgrade failure (#270)
-  * Move device registration info fetching to about.py
-  * Stop tour autostart regardless of web-renderer
-  * Use `pi-topd` (#273)
-  * Show only one checkbox on upgrade error (#274)
-  * New changelog entry: v0.9.0-1 (#259)
   * Handle any number of unrequired arguments in signal handler
   * Improve handling of closing "web-renderer" based apps (#275)
   * Miniscreen onboarding: add new menu on cancel button (#263)
