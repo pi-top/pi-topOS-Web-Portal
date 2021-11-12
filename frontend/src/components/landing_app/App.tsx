@@ -10,6 +10,11 @@ import keyboardScreen from "../../assets/images/keyboard-screen.png";
 
 import ErrorPage from "../../pages/errorPage/ErrorPage";
 import isConnectedToNetwork from "../../services/isConnectedToNetwork";
+import getFurtherUrl from "../../services/getFurtherUrl";
+import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
+import openKnowledgeBase from "../../services/openKnowledgeBase";
+import openFurther from "../../services/openFurther";
+import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 
 
 export enum PageRoute {
@@ -20,19 +25,31 @@ export enum PageRoute {
   KnowledgeBase = "/landing/kb",
 }
 
+export type UrlData = {
+  defaultUrl : string,
+  urlService?: () => Promise<{[s: string]: string}>,
+  onWebRenderer: () => Promise<void>,
+}
+
 export type LandingPageElement = {
   url: string;
   title: string;
   message: string;
   prompt: ReactElement;
   image: string;
-  onNextButtonClick: () => void;
+  urlInfo : UrlData;
+  buttonLabel?: string;
 };
+
 
 const furtherPage: LandingPageElement = {
   title: "Learn by making on Further",
   url: PageRoute.Further,
-  onNextButtonClick: () => console.log("http://further.pi-top.com"),
+  urlInfo: {
+    onWebRenderer: openFurther,
+    defaultUrl: "http://further.pi-top.com",
+    urlService: getFurtherUrl,
+  },
   message: "A community of pi-top owners who like hands on learning.  It's time to get you started and show you a bit about how Further works. Grab your pi-top and hit next to continue.",
   prompt: <>Learn by making on{" "}<span className="green">Further :)</span></>,
   image: introScreen,
@@ -41,7 +58,11 @@ const furtherPage: LandingPageElement = {
 const sdkPage: LandingPageElement = {
   title: "Python SDK",
   url: PageRoute.SDK,
-  onNextButtonClick: () => console.log("http://docs.pi-top.com"),
+  urlInfo: {
+    defaultUrl: "http://docs.pi-top.com",
+    urlService: getPythonSDKDocsUrl,
+    onWebRenderer: openPythonSDKDocs,
+  },
   message: "The Software Development Kit (SDK) provides an easy-to-use framework to interact with your pi-top using python. It also contains CLI utilities to manage your pi-top using the terminal.\nPress the \"Let's Go\" button to open its documentation and start making!",
   prompt: <>Checkout the Python{" "}<span className="green">SDK</span></>,
   image: registrationScreen,
@@ -50,7 +71,10 @@ const sdkPage: LandingPageElement = {
 const roverPage: LandingPageElement = {
   title: "Rover Controller",
   url: PageRoute.Rover,
-  onNextButtonClick: () => console.log("rover page"),
+  urlInfo: {
+    defaultUrl: "http://www.google.com",
+    onWebRenderer: openPythonSDKDocs,
+  },
   message: "Take adventures with your very own pi-top[4] Mars rover!",
   prompt: <>Rover{" "}<span className="green">Controller</span></>,
   image: upgradePage,
@@ -59,11 +83,15 @@ const roverPage: LandingPageElement = {
 const knowledgeBasePage: LandingPageElement = {
   title: "pi-top Knowledge Base",
   url: PageRoute.KnowledgeBase,
-  onNextButtonClick: () => console.log("http://docs.pi-top.com"),
+  urlInfo: {
+    defaultUrl: "https://knowledgebase.pi-top.com",
+    onWebRenderer: openKnowledgeBase,
+  },
   message: "Do you have any questions or need help with your device? Go and checkout our Knowledge Base, a comprehensive technical guide for your pi-top products.",
   prompt: <>Knowledge{" "}<span className="green">Base</span></>,
   image: keyboardScreen,
 }
+
 
 export default () => {
   const [, setIsConnected] = useState(false);
