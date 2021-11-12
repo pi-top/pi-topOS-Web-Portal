@@ -23,6 +23,7 @@ export type Props = {
   backButton?: LayoutButtonProps;
   showSkip?: boolean;
   showBack?: boolean;
+  showHeader?: boolean;
   explanation?: string;
   children?: ReactNode;
   className?: string;
@@ -34,6 +35,7 @@ export default ({
   nextButton,
   skipButton,
   backButton,
+  showHeader = true,
   showSkip = true,
   showBack = true,
   explanation,
@@ -44,7 +46,7 @@ export default ({
 
 
   <div className={cx(styles.layout, className)}>
-    <Header />
+    {showHeader && <Header />}
     <div className={styles.banner}>
       <Image
         src={src}

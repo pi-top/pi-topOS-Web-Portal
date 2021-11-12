@@ -4,6 +4,7 @@ from further_link.start_further import get_further_url
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_user_using_display
 from pitop.common.logger import PTLogger
+from pitop.common.sys_info import is_connected_to_internet
 
 
 def disable_landing():
@@ -43,3 +44,41 @@ def open_forum():
 
 def get_chromium_command(url):
     return f"su {get_user_using_display(':0')} -c \"chromium-browser --new-window --start-maximized {url}\""
+
+
+def landing_page_elements():
+    is_connected = is_connected_to_internet()
+    elements = []
+
+    if is_connected:
+        elements.append(
+            {
+                "title": "Learn by making on Further",
+                "name": "further",
+                "url": "/further",
+            }
+        )
+    elements.append(
+        {
+            "title": "Python SDK",
+            "name": "python-sdk-docs",
+            "url": "/python-sdk",
+        }
+    )
+    elements.append(
+        {
+            "title": "Rover Controller",
+            "rover": "rover",
+            "url": "/rover",
+        }
+    )
+    if is_connected:
+        elements.append(
+            {
+                "title": "pi-top Knowledge Base",
+                "name": "kb",
+                "url": "/knowledge-base",
+            }
+        )
+
+    return elements

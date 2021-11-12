@@ -8,7 +8,7 @@ def use_test_path():
     try:
         return app.config["TESTING"] or platform == "darwin"
     except Exception:
-        return False
+        return True
 
 
 def get_test_file_path(filename):

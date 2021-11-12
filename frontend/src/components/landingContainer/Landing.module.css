@@ -9,11 +9,12 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
+  flex: 1;
 }
 
 .landingPage {
   display: flex;
-  flex: auto;
+  flex: 2;
   flex-direction: column;
   overflow: auto;
 

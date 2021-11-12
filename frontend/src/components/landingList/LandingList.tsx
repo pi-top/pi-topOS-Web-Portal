@@ -35,7 +35,7 @@ export default ({
 
   return (
     <div className={cx(styles.container, className)}>
-      {renderElements(elements)}
+      {elements && renderElements(elements)}
     </div>
   );
 };

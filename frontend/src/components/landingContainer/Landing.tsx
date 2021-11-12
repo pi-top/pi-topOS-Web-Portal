@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import cx from "classnames";
 import styles from './Landing.module.css';
 
@@ -11,20 +11,29 @@ export type Props = {
 };
 
 export default ({ elements }: Props) => {
-  const [ selectedElement, setSelectedElement ] = useState<LandingElement>(elements[0])
+  const [ selectedElement, setSelectedElement ] = useState<LandingElement | undefined >()
+
+  useEffect(() => {
+    elements && elements.length > 0 && setSelectedElement(elements[0]);
+  }, [elements])
 
   return (
     <div className={cx(styles.container)}>
-        <LandingListContainer
-          elements={elements}
-          activeElement={selectedElement}
-          onClick={(element: LandingElement) => setSelectedElement(element)}
-          className={styles.landingList}
-        />
+        { elements && selectedElement !== undefined && (
+          <>
+          <LandingListContainer
+            elements={elements}
+            activeElement={selectedElement}
+            onClick={(element: LandingElement) => setSelectedElement(element)}
+            className={styles.landingList}
+          />
 
-        <div className={styles.landingPage}>
-				  <LandingDetailContainer element={selectedElement}/>
-        </div>
+          <div className={styles.landingPage}>
+            <LandingDetailContainer element={selectedElement}/>
+          </div>
+
+          </>
+        )}
     </div>
   );
 };

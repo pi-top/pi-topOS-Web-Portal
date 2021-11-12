@@ -4,7 +4,7 @@ import { LandingElement } from '../landingContainer/LandingContainer';
 import LandingDetail from './LandingDetail';
 
 export type Props = {
-  element: LandingElement;
+  element?: LandingElement;
 };
 
 export default ({ element } : Props) => {
