@@ -1,17 +1,17 @@
 import React from 'react';
-import { LandingElement } from '../landingContainer/LandingContainer';
+import { LandingPageElement } from '../landing_app/App';
 import LandingList from './LandingList';
 
 export type Props = {
-  activeElement: LandingElement;
-  elements: LandingElement[];
-  onClick: (element: LandingElement) => void;
+  activeElement: LandingPageElement;
+  pages: LandingPageElement[];
+  onClick: (element: LandingPageElement) => void;
   className?: string;
 };
 
 export default ({
   activeElement,
-  elements,
+  pages,
   onClick,
   className = '',
 }: Props) => {
@@ -19,7 +19,7 @@ export default ({
     <LandingList
       activeElement={activeElement}
       onClick={onClick}
-      elements={elements}
+      pages={pages}
       className={className}
     />
   );

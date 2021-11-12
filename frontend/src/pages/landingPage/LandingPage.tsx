@@ -5,12 +5,19 @@ import styles from "./LandingPage.module.css";
 
 import LandingHeader from "../../components/landingHeader/LandingHeader";
 import LandingContainer from "../../components/landingContainer/LandingContainer";
+import { LandingPageElement } from "../../components/landing_app/App";
 
-export default () => {
+export type Props = {
+    pages: LandingPageElement[];
+};
+
+export default ({pages} : Props) => {
     return (
     <div className={cx(styles.layout)}>
         <LandingHeader />
-        <LandingContainer />
+        <LandingContainer
+            pages={pages}
+        />
     </div>
     );
 };

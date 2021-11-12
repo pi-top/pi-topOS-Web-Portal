@@ -1,8 +1,0 @@
-.message {
-  composes: text from '../../globalStyles/Typography.module.css';
-  font-size: 14px;
-  line-height: 1.5;
-  margin-top: 20px;
-  text-align: center;
-  width: 120%;
-}

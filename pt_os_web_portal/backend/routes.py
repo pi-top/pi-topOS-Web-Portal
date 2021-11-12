@@ -39,7 +39,6 @@ from .helpers.keyboard import (
 )
 from .helpers.landing import (
     disable_landing,
-    landing_page_elements,
     open_forum,
     open_further,
     open_knowledge_base,
@@ -65,13 +64,9 @@ def get_os_updater():
 
 
 class FrontendAppRoutes(Enum):
-    ABOUT = "/about"
-    FURTHER = "/further"
     LANDING = "/landing"
     ONBOARDING = "/onboarding"
-    KNOWLEDGE_BASE = "/knowledge-base"
-    ROVER = "/rover"
-    PYTHON_SDK = "/python-sdk"
+    ABOUT = "/about"
     UPDATER = "/updater"
 
     @classmethod
@@ -502,9 +497,3 @@ def post_onboarding_ready_to_be_a_maker():
     logger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"
-
-
-@app.route("/landing-page-elements", methods=["GET"])
-def get_landing_elements():
-    logger.debug("Route '/landing-page-elements'")
-    return jdumps(landing_page_elements())

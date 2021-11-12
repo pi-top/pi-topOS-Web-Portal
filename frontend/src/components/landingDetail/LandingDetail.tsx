@@ -1,17 +1,16 @@
 import React from 'react';
 import cx from "classnames";
 import styles from './LandingDetail.module.css';
-
-import { LandingElement } from '../landingContainer/LandingContainer';
+import { LandingPageElement } from '../landing_app/App';
 
 export type Props = {
-  element?: LandingElement;
+  page?: LandingPageElement;
 };
 
-export default ({ element } : Props) => {
+export default ({ page } : Props) => {
   return (
     <div className={cx(styles.container)}>
-      {element && <embed type="text/html" src={element.url} width="100%" height="100%" />}
+      {page && <embed type="text/html" src={page.url} width="100%" height="100%" />}
     </div>
   );
 };

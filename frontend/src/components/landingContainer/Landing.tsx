@@ -4,32 +4,32 @@ import styles from './Landing.module.css';
 
 import LandingListContainer from "../landingList/LandingListContainer";
 import LandingDetailContainer from "../landingDetail/LandingDetailContainer";
-import { LandingElement } from './LandingContainer';
+import { LandingPageElement } from '../landing_app/App';
 
 export type Props = {
-  elements: LandingElement[];
+  pages: LandingPageElement[];
 };
 
-export default ({ elements }: Props) => {
-  const [ selectedElement, setSelectedElement ] = useState<LandingElement | undefined >()
+export default ({ pages }: Props) => {
+  const [ selectedElement, setSelectedElement ] = useState<LandingPageElement | undefined >()
 
   useEffect(() => {
-    elements && elements.length > 0 && setSelectedElement(elements[0]);
-  }, [elements])
+    pages && pages.length > 0 && setSelectedElement(pages[0]);
+  }, [pages])
 
   return (
     <div className={cx(styles.container)}>
-        { elements && selectedElement !== undefined && (
+        { pages && selectedElement !== undefined && (
           <>
           <LandingListContainer
-            elements={elements}
+            pages={pages}
             activeElement={selectedElement}
-            onClick={(element: LandingElement) => setSelectedElement(element)}
+            onClick={(element: LandingPageElement) => setSelectedElement(element)}
             className={styles.landingList}
           />
 
           <div className={styles.landingPage}>
-            <LandingDetailContainer element={selectedElement}/>
+            <LandingDetailContainer page={selectedElement}/>
           </div>
 
           </>

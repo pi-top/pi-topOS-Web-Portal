@@ -1,14 +1,14 @@
 import React from 'react';
+import { LandingPageElement } from '../landing_app/App';
 
-import { LandingElement } from '../landingContainer/LandingContainer';
 import LandingDetail from './LandingDetail';
 
 export type Props = {
-  element?: LandingElement;
+  page?: LandingPageElement;
 };
 
-export default ({ element } : Props) => {
+export default ({ page } : Props) => {
   return (
-    <LandingDetail element={element} />
+    <LandingDetail page={page} />
   );
 };
