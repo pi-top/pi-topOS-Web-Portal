@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from json import dumps as jdumps
 from os import path
@@ -7,7 +8,6 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
-from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
 from ..app_window import LandingAppWindow, OsUpdaterAppWindow
@@ -57,6 +57,8 @@ from .helpers.wifi_country import (
 )
 from .helpers.wifi_manager import attempt_connection, current_wifi_ssid, get_ssids
 
+logger = logging.getLogger(__name__)
+
 
 def get_os_updater():
     return app.config["OS_UPDATER"]
@@ -93,9 +95,9 @@ def abort_on_no_data(data):
 
 @app.route("/", methods=["GET"])
 def index():
-    PTLogger.debug("Route '/'")
+    logger.debug("Route '/'")
     if not onboarding_completed():
-        PTLogger.info("Onboarding not completed yet. Redirecting...")
+        logger.info("Onboarding not completed yet. Redirecting...")
         return redirect(FrontendAppRoutes.ONBOARDING.value)
     return redirect(FrontendAppRoutes.LANDING.value)
 
@@ -113,26 +115,26 @@ def not_found(e):
 # Startup
 @app.route("/build-info", methods=["GET"])
 def get_build_info():
-    PTLogger.debug("Route '/build-info'")
+    logger.debug("Route '/build-info'")
     return abort_on_no_data(os_build_info())
 
 
 # Language
 @app.route("/list-locales-supported", methods=["GET"])
 def get_locales_supported():
-    PTLogger.debug("Route '/list-locales-supported'")
+    logger.debug("Route '/list-locales-supported'")
     return abort_on_no_data(list_locales_supported())
 
 
 @app.route("/current-locale", methods=["GET"])
 def get_current_locale():
-    PTLogger.debug("Route '/current-locale'")
+    logger.debug("Route '/current-locale'")
     return abort_on_no_data(current_locale())
 
 
 @app.route("/set-locale", methods=["POST"])
 def post_locale():
-    PTLogger.debug("Route '/set-locale'")
+    logger.debug("Route '/set-locale'")
     locale_code = request.get_json().get("locale_code")
     if not isinstance(locale_code, str):
         return abort(422)
@@ -146,19 +148,19 @@ def post_locale():
 # Wifi Country
 @app.route("/list-wifi-countries", methods=["GET"])
 def get_wifi_countries():
-    PTLogger.debug("Route '/list-wifi-countries'")
+    logger.debug("Route '/list-wifi-countries'")
     return abort_on_no_data(list_wifi_countries())
 
 
 @app.route("/current-wifi-country", methods=["GET"])
 def get_current_wifi_country():
-    PTLogger.debug("Route '/current-wifi-country'")
+    logger.debug("Route '/current-wifi-country'")
     return abort_on_no_data(current_wifi_country())
 
 
 @app.route("/set-wifi-country", methods=["POST"])
 def post_country():
-    PTLogger.debug("Route '/set-wifi-country'")
+    logger.debug("Route '/set-wifi-country'")
     country = request.get_json().get("wifi_country")
     if not isinstance(country, str):
         return abort(422)
@@ -196,19 +198,19 @@ def post_timezone():
 # Keyboard
 @app.route("/list-keyboard-layout-codes", methods=["GET"])
 def get_keyboard_layout_codes():
-    PTLogger.debug("Route '/list-keyboard-layout-codes'")
+    logger.debug("Route '/list-keyboard-layout-codes'")
     return abort_on_no_data(list_keyboard_layout_codes())
 
 
 @app.route("/list-keyboard-layout-variants", methods=["GET"])
 def get_keyboard_layout_variants():
-    PTLogger.debug("Route '/list-keyboard-layout-variants'")
+    logger.debug("Route '/list-keyboard-layout-variants'")
     return abort_on_no_data(list_keyboard_layout_variants())
 
 
 @app.route("/current-keyboard-layout", methods=["GET"])
 def get_current_keyboard_layout():
-    PTLogger.debug("Route '/current-keyboard-layout'")
+    logger.debug("Route '/current-keyboard-layout'")
     layout, variant = current_keyboard_layout()
     if layout is None:
         abort(404)
@@ -217,7 +219,7 @@ def get_current_keyboard_layout():
 
 @app.route("/set-keyboard-layout", methods=["POST"])
 def post_keyboard_layout():
-    PTLogger.debug("Route '/set-keyboard-layout'")
+    logger.debug("Route '/set-keyboard-layout'")
     layout = request.get_json().get("layout")
     if not isinstance(layout, str):
         return abort(422)
@@ -231,14 +233,14 @@ def post_keyboard_layout():
 # Wifi connection
 @app.route("/wifi-ssids", methods=["GET"])
 def get_wifi_ssids():
-    PTLogger.debug("Route '/wifi-ssids'")
+    logger.debug("Route '/wifi-ssids'")
 
     return abort_on_no_data(get_ssids())
 
 
 @app.route("/wifi-credentials", methods=["POST"])
 def post_wifi_credentials():
-    PTLogger.debug("Route '/wifi-credentials'")
+    logger.debug("Route '/wifi-credentials'")
     ssid = request.get_json().get("ssid")
     password = request.get_json().get("password")
     if not isinstance(ssid, str) or not isinstance(password, str):
@@ -254,14 +256,14 @@ def post_wifi_credentials():
 
 @app.route("/is-connected", methods=["GET"])
 def get_is_connected():
-    PTLogger.debug("Route '/is-connected'")
+    logger.debug("Route '/is-connected'")
     is_connected = is_connected_to_internet()
     return jdumps({"connected": is_connected})
 
 
 @app.route("/current-wifi-ssid", methods=["GET"])
 def get_is_connected_to_ssid():
-    PTLogger.debug("Route '/current-wifi-ssid'")
+    logger.debug("Route '/current-wifi-ssid'")
     return abort_on_no_data(current_wifi_ssid())
 
 
@@ -287,11 +289,11 @@ def os_upgrade(ws):
             continue
 
         if not event_lookup.get(message):
-            PTLogger.warning(
+            logger.warning(
                 f"/os_upgrade - Invalid message from websocket '{message}' - doing nothing"
             )
             continue
-        PTLogger.info(f"/os_upgrade - received message: '{message}'")
+        logger.info(f"/os_upgrade - received message: '{message}'")
 
         t = Thread(
             target=event_lookup.get(message),
@@ -309,7 +311,7 @@ def os_upgrade(ws):
 # Register
 @app.route("/set-registration", methods=["POST"])
 def post_registration():
-    PTLogger.debug("Route '/set-registration'")
+    logger.debug("Route '/set-registration'")
     email = request.get_json().get("email")
     if not isinstance(email, str):
         return abort(422)
@@ -321,162 +323,162 @@ def post_registration():
 # Finalise
 @app.route("/available-space", methods=["GET"])
 def get_available_space():
-    PTLogger.debug("Route '/available-space'")
+    logger.debug("Route '/available-space'")
     return abort_on_no_data(available_space())
 
 
 @app.route("/configure-landing", methods=["POST"])
 def post_configure_landing():
-    PTLogger.debug("Route '/configure-landing'")
+    logger.debug("Route '/configure-landing'")
     configure_landing()
     return "OK"
 
 
 @app.route("/deprioritise-openbox-session", methods=["POST"])
 def post_deprioritise_openbox_session():
-    PTLogger.debug("Route '/deprioritise-openbox-session'")
+    logger.debug("Route '/deprioritise-openbox-session'")
     deprioritise_openbox_session()
     return "OK"
 
 
 @app.route("/stop-onboarding-autostart", methods=["POST"])
 def post_stop_onboarding_autostart():
-    PTLogger.debug("Route '/stop-onboarding-autostart'")
+    logger.debug("Route '/stop-onboarding-autostart'")
     stop_onboarding_autostart()
     return "OK"
 
 
 @app.route("/enable-firmware-updater-service", methods=["POST"])
 def post_enable_firmware_updater_service():
-    PTLogger.debug("Route '/enable-firmware-updater-service'")
+    logger.debug("Route '/enable-firmware-updater-service'")
     enable_firmware_updater_service()
     return "OK"
 
 
 @app.route("/enable-further-link-service", methods=["POST"])
 def post_enable_further_link_service():
-    PTLogger.debug("Route '/enable-further-link-service'")
+    logger.debug("Route '/enable-further-link-service'")
     enable_further_link_service()
     return "OK"
 
 
 @app.route("/reboot", methods=["POST"])
 def post_reboot():
-    PTLogger.debug("Route '/reboot'")
+    logger.debug("Route '/reboot'")
     reboot()
     return "OK"  # no response here is also OK!
 
 
 @app.route("/enable-pt-miniscreen", methods=["POST"])
 def post_enable_pt_miniscreen():
-    PTLogger.debug("Route '/enable-pt-miniscreen'")
+    logger.debug("Route '/enable-pt-miniscreen'")
     enable_pt_miniscreen()
     return "OK"
 
 
 @app.route("/restore-files", methods=["POST"])
 def post_restore_files():
-    PTLogger.debug("Route '/restore-files'")
+    logger.debug("Route '/restore-files'")
     restore_files()
     return "OK"
 
 
 @app.route("/update-hub-firmware", methods=["POST"])
 def post_update_hub_firmware():
-    PTLogger.debug("Route '/update-hub-firmware'")
+    logger.debug("Route '/update-hub-firmware'")
     do_firmware_update()
     return "OK"
 
 
 @app.route("/hub-firmware-update-is-due", methods=["GET"])
 def get_hub_firmware_is_due():
-    PTLogger.debug("Route '/hub-firmware-update-is-due'")
+    logger.debug("Route '/hub-firmware-update-is-due'")
     return jdumps(fw_update_is_due())
 
 
 @app.route("/python-sdk-docs-url", methods=["GET"])
 def get_python_sdk_docs_url():
-    PTLogger.debug("Route '/python-sdk-docs-url")
+    logger.debug("Route '/python-sdk-docs-url")
     return jdumps({"url": python_sdk_docs_url()})
 
 
 @app.route("/disable-landing", methods=["POST"])
 def post_disable_landing():
-    PTLogger.debug("Route '/disable-landing'")
+    logger.debug("Route '/disable-landing'")
     disable_landing()
     return "OK"
 
 
 @app.route("/close-os-updater-window", methods=["POST"])
 def post_close_os_updater_window():
-    PTLogger.debug("Route '/close-os-updater-window'")
+    logger.debug("Route '/close-os-updater-window'")
     OsUpdaterAppWindow().close()
     return "OK"
 
 
 @app.route("/close-pt-os-landing-window", methods=["POST"])
 def post_close_pt_os_landing_window():
-    PTLogger.debug("Route '/close-pt-os-landing-window'")
+    logger.debug("Route '/close-pt-os-landing-window'")
     LandingAppWindow().close()
     return "OK"
 
 
 @app.route("/open-further", methods=["POST"])
 def post_open_further():
-    PTLogger.debug("Route '/open-further'")
+    logger.debug("Route '/open-further'")
     open_further()
     return "OK"
 
 
 @app.route("/further-url", methods=["GET"])
 def further_url():
-    PTLogger.debug("Route '/further-url'")
+    logger.debug("Route '/further-url'")
     return jdumps({"url": get_further_url()})
 
 
 @app.route("/open-python-sdk-docs", methods=["POST"])
 def post_open_python_sdk_docs():
-    PTLogger.debug("Route '/open-python-sdk-docs'")
+    logger.debug("Route '/open-python-sdk-docs'")
     open_python_sdk_docs()
     return "OK"
 
 
 @app.route("/open-knowledge-base", methods=["POST"])
 def post_open_knowledge_base():
-    PTLogger.debug("Route '/open-knowledge-base'")
+    logger.debug("Route '/open-knowledge-base'")
     open_knowledge_base()
     return "OK"
 
 
 @app.route("/open-forum", methods=["POST"])
 def post_open_forum():
-    PTLogger.debug("Route '/open-forum'")
+    logger.debug("Route '/open-forum'")
     open_forum()
     return "OK"
 
 
 @app.route("/about-device", methods=["GET"])
 def get_about_device():
-    PTLogger.debug("Route '/about-device'")
+    logger.debug("Route '/about-device'")
     return jdumps(about_device())
 
 
 @app.route("/status", methods=["GET"])
 def get_status():
-    PTLogger.debug("Route '/status'")
+    logger.debug("Route '/status'")
     return "OK"
 
 
 @app.route("/update-eeprom", methods=["POST"])
 def post_update_eeprom():
-    PTLogger.debug("Route '/update-eeprom'")
+    logger.debug("Route '/update-eeprom'")
     update_eeprom()
     return "OK"
 
 
 @app.route("/restart-web-portal-service", methods=["POST"])
 def post_restart_web_portal_service():
-    PTLogger.debug("Route '/restart-web-portal-service'")
+    logger.debug("Route '/restart-web-portal-service'")
     post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
     return "OK"
@@ -484,25 +486,25 @@ def post_restart_web_portal_service():
 
 @app.route("/FSMePro/<filename>", methods=["GET"])
 def FSMePro(filename):
-    PTLogger.debug(f"Route '/FSMePro/{filename}'")
+    logger.debug(f"Route '/FSMePro/{filename}'")
     current_dir = path.dirname(path.realpath(__file__))
     return send_from_directory(str(current_dir) + "/../resources/fonts", filename)
 
 
 @app.route("/os-updates", methods=["GET"])
 def get_os_check_update():
-    PTLogger.debug("Route '/os-updates'")
+    logger.debug("Route '/os-updates'")
     return jdumps(check_relevant_pi_top_os_version_updates())
 
 
 @app.route("/onboarding-miniscreen-ready-to-be-a-maker", methods=["POST"])
 def post_onboarding_ready_to_be_a_maker():
-    PTLogger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
+    logger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"
 
 
 @app.route("/landing-page-elements", methods=["GET"])
 def get_landing_elements():
-    PTLogger.debug("Route '/landing-page-elements'")
+    logger.debug("Route '/landing-page-elements'")
     return jdumps(landing_page_elements())

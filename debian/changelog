@@ -1,3 +1,44 @@
+pi-top-os-web-portal (0.9.0-2) bullseye; urgency=medium
+
+  * Handle any number of unrequired arguments in signal handler
+  * Improve handling of closing "web-renderer" based apps (#275)
+  * Miniscreen onboarding: add new menu on cancel button (#263)
+  * Add additional IPs
+  * Use 'onboarded' app state variable
+  * Add hub firmware update to finalise step (#280)
+  * Add firmware version to onboarding menu (#281)
+  * Fix device type check
+  * Move to upgradePage when wifi dialog closes and connected (#285)
+  * Add header with logo to onboarding pages (#283)
+  * Don't display 'skip' button while updating sources (#286)
+  * Intialize PageManager on OnboardingAssistantApp constructor (#287)
+  * Fix reading output of subprocess.run (#288)
+  * Get Further URL from Further Link (#289)
+  * Rename tour to landing (#291)
+  * Improve logging & fixes (#290)
+  * Add extra stop logging
+  * Display hub firmware version alongside build-info (#292)
+  * Update URL
+  * Update KB URLs
+  * Suggest user not to power off during system upgrade (#294)
+  * Clear wifi password when closing dialog (#295)
+  * Fix firmware upgrade on restart page (#296)
+  * Add notification if OS updater window is closed (#297)
+  * Improve copy
+  * Warn user about potential manual power on when upgrading legacy firmware (#298)
+  * Include dependencies when updating pi-top packages (including self and dependencies) (#258)
+  * [pre-commit.ci] pre-commit autoupdate (#301)
+  * Updater app recovers when closed & re-opened (#300)
+  * Bump actions/checkout from 2.3.4 to 2.3.5 (#303)
+  * [pre-commit.ci] pre-commit autoupdate (#304)
+  * Remove PTLogger (#306)
+  * [pre-commit.ci] pre-commit autoupdate (#307)
+  * Add click-logging to py3dist-overrides
+  * Relax SDK version dependency in Debian packaging
+  * Add click-logging to setup.cfg
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 09 Nov 2021 17:02:31 +0000
+
 pi-top-os-web-portal (0.9.0-1) bullseye; urgency=medium
 
   * Use `pi-topd` (#273)

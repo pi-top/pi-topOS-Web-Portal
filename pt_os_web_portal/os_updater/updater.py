@@ -1,9 +1,9 @@
+import logging
 from datetime import date, datetime
 from enum import Enum, auto
 from threading import Thread
 from time import sleep
 
-from pitop.common.logger import PTLogger
 from pitop.common.sys_info import is_connected_to_internet
 
 from .. import state
@@ -13,6 +13,8 @@ from .manager import OSUpdateManager
 from .message_handler import OSUpdaterFrontendMessageHandler
 from .system_clock import is_system_clock_synchronized, synchronize_system_clock
 from .types import MessageType
+
+logger = logging.getLogger(__name__)
 
 
 class UpdaterBackend(Enum):
@@ -37,13 +39,13 @@ class OSUpdater:
     def stop(self):
         while self.active_backend.lock:
             # TODO: lower to debug
-            PTLogger.info("Waiting: OS updater backend lock")
+            logger.info("Waiting: OS updater backend lock")
             sleep(0.2)
 
         if self.thread.is_alive():
             self.thread.join()
 
-        PTLogger.info("Stopped: OS updater")
+        logger.info("Stopped: OS updater")
 
     def updates_available(self):
         self.update_sources()
@@ -71,7 +73,7 @@ class OSUpdater:
         post_event(AppEvents.OS_ALREADY_CHECKED_UPDATES, should_check_for_updates)
 
         if should_check_for_updates:
-            PTLogger.info("OSUpdater: Checking for updates...")
+            logger.info("OSUpdater: Checking for updates...")
             post_event(AppEvents.OS_HAS_UPDATES, self.updates_available())
 
     def update_sources(self, ws=None):
@@ -121,7 +123,7 @@ class OSUpdater:
                 },
             )
         except Exception as e:
-            PTLogger.error(f"OSUpdater upgrade_size: {e}")
+            logger.error(f"OSUpdater upgrade_size: {e}")
             callback(MessageType.ERROR, {"downloadSize": 0, "requiredSpace": 0})
 
     def start_os_upgrade(self, ws=None):
@@ -137,11 +139,11 @@ class OSUpdater:
             post_event(AppEvents.OS_UPDATER_UPGRADE, "failed")
 
     def use_legacy_backend(self, ws=None):
-        PTLogger.info("OSUpdater: Using legacy backend...")
+        logger.info("OSUpdater: Using legacy backend...")
         self.active_backend = self.backends[UpdaterBackend.LEGACY]
 
     def use_default_backend(self, ws=None):
-        PTLogger.info("OSUpdater: Using default backend...")
+        logger.info("OSUpdater: Using default backend...")
         self.active_backend = self.backends[UpdaterBackend.PY_APT]
 
     def state(self, ws=None):
@@ -149,5 +151,5 @@ class OSUpdater:
         try:
             callback(MessageType.STATUS, self.active_backend.lock)
         except Exception as e:
-            PTLogger.error(f"OSUpdater state: {e}")
+            logger.error(f"OSUpdater state: {e}")
             callback(MessageType.ERROR, False)
