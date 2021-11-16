@@ -1,9 +1,10 @@
+import logging
 from inspect import signature
 from subprocess import PIPE, CalledProcessError, Popen
 
-from pitop.common.logger import PTLogger
-
 from .types import MessageType
+
+logger = logging.getLogger(__name__)
 
 
 class LegacyOSUpdateManager:
@@ -27,13 +28,13 @@ class LegacyOSUpdateManager:
                         callback(  # lgtm [py/call/wrong-arguments]
                             MessageType.STATUS, line, 0.0
                         )
-                PTLogger.info(line)
+                logger.info(line)
 
         if check and p.returncode != 0:
             raise CalledProcessError(p.returncode, p.args)
 
     def update(self, callback) -> None:
-        PTLogger.info("LegacyOSUpdaterManager: Updating APT sources")
+        logger.info("LegacyOSUpdaterManager: Updating APT sources")
         if self.lock:
             callback(MessageType.ERROR, "LegacyOSUpdaterManager is locked", 0.0)
             return
@@ -42,13 +43,13 @@ class LegacyOSUpdateManager:
         try:
             self.__run(["apt-get", "update"], callback)
         except Exception as e:
-            PTLogger.error(f"LegacyOSUpdaterManager Error: {e}")
+            logger.error(f"LegacyOSUpdaterManager Error: {e}")
             raise
         finally:
             self.lock = False
 
     def stage_upgrade(self, callback, packages=[]) -> None:
-        PTLogger.info("LegacyOSUpdaterManager: Staging packages for upgrade")
+        logger.info("LegacyOSUpdaterManager: Staging packages for upgrade")
         if self.lock:
             callback(MessageType.ERROR, "LegacyOSUpdaterManager is locked", 0.0)
             return
@@ -105,17 +106,17 @@ class LegacyOSUpdateManager:
                         self.install_count = 1
 
             self.__run(cmd, get_update_info, check=False)
-            PTLogger.info(
+            logger.info(
                 f"LegacyOSUpdateManager: Will upgrade/install {self.install_count} packages"
             )
-            PTLogger.info(
+            logger.info(
                 f"LegacyOSUpdateManager: Need to download {self.download_size_str}"
             )
-            PTLogger.info(
+            logger.info(
                 f"LegacyOSUpdateManager: After this operation, {self.required_space_str} of additional disk space will be used."
             )
         except Exception as e:
-            PTLogger.error(f"{e}")
+            logger.error(f"{e}")
             raise e
         finally:
             self.lock = False
@@ -127,7 +128,7 @@ class LegacyOSUpdateManager:
         return self._required_space
 
     def upgrade(self, callback):
-        PTLogger.info("LegacyOSUpdaterManager: starting upgrade")
+        logger.info("LegacyOSUpdaterManager: starting upgrade")
         if self.lock:
             callback(MessageType.ERROR, "LegacyOSUpdaterManager is locked", 0.0)
             return
@@ -162,4 +163,4 @@ class LegacyOSUpdateManager:
         finally:
             self.lock = False
 
-        PTLogger.info("LegacyOSUpdaterManager: finished upgrade")
+        logger.info("LegacyOSUpdaterManager: finished upgrade")

@@ -1,12 +1,16 @@
+import logging
 from os import geteuid
 from signal import SIGINT, SIGTERM
 from sys import exit
 
 import click
+import click_logging
 from gevent import signal_handler, wait
-from pitop.common.logger import PTLogger
 
 from .app import App
+
+logger = logging.getLogger()
+click_logging.basic_config(logger)
 
 
 def is_root() -> bool:
@@ -15,9 +19,9 @@ def is_root() -> bool:
 
 def configure_interrupt_signals(app):
     def handler(*_):
-        PTLogger.info("Stopping...")
+        logger.info("Stopping...")
         app.stop()
-        PTLogger.debug("Stopped!")
+        logger.debug("Stopped!")
 
     signal_handler(SIGINT, handler)
     signal_handler(SIGTERM, handler)
@@ -25,25 +29,17 @@ def configure_interrupt_signals(app):
 
 @click.command()
 @click.option(
-    "--log-level",
-    type=int,
-    help="set logging level from 10 (more verbose) to 50 (less verbose)",
-    default=20,
-    show_default=True,
-)
-@click.option(
     "-t",
     "--test-mode",
     help="test mode",
     is_flag=True,
 )
+@click_logging.simple_verbosity_option(logger)
 @click.version_option()
-def main(test_mode, log_level):
+def main(test_mode):
     if not is_root():
         print("pi-topOS Web Portal must be run as root!")
         exit(1)
-
-    PTLogger.setup_logging(logger_name="pt-os-web-portal", logging_level=log_level)
 
     app = App(test_mode)
     configure_interrupt_signals(app)

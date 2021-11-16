@@ -1,6 +1,9 @@
-from pitop.common.logger import PTLogger
+import logging
+
 from pitop.common.pt_os import get_pitopOS_info
 from requests import get
+
+logger = logging.getLogger(__name__)
 
 
 def check_relevant_pi_top_os_version_updates():
@@ -20,7 +23,7 @@ def check_relevant_pi_top_os_version_updates():
         }
 
     url_query_dict = build_info_query_params()
-    PTLogger.info(
+    logger.info(
         f"Checking if there are major OS updates - sending request to {URL} with {url_query_dict}"
     )
     data = {
@@ -31,10 +34,10 @@ def check_relevant_pi_top_os_version_updates():
     }
     try:
         response = get(URL, url_query_dict, timeout=5).json()
-        PTLogger.info(f"Response was: {response}")
+        logger.info(f"Response was: {response}")
         for k, v in response.items():
             data.update({k: v})
     except Exception as e:
-        PTLogger.warning(f"{e}")
+        logger.warning(f"{e}")
     finally:
         return data

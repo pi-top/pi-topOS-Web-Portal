@@ -1,11 +1,14 @@
+import logging
+
 from pitop.common.command_runner import run_command
-from pitop.common.logger import PTLogger
 
 from .paths import iso_countries
 
+logger = logging.getLogger(__name__)
+
 
 def list_wifi_countries() -> dict:
-    PTLogger.info("Function: list_wifi_countries()")
+    logger.info("Function: list_wifi_countries()")
     with open(iso_countries()) as file:
         country_pairs = [
             line.rstrip().split() for line in file if not line.startswith("#")
@@ -19,24 +22,24 @@ def list_wifi_countries() -> dict:
 
 
 def current_wifi_country() -> str:
-    PTLogger.info("Function: current_wifi_country()")
+    logger.info("Function: current_wifi_country()")
 
     wifi_country = run_command(
         "raspi-config nonint get_wifi_country", check=False, timeout=5
     ).strip()
-    PTLogger.info("Current Wi-Fi country: '%s'" % wifi_country)
+    logger.info("Current Wi-Fi country: '%s'" % wifi_country)
 
     return wifi_country
 
 
 def set_wifi_country(wifi_country_code):
-    PTLogger.info(
+    logger.info(
         "Function: set_wifi_country(wifi_country_code='%s')" % wifi_country_code
     )
     code = wifi_country_code.upper()
     country_codes = list_wifi_countries().keys()
     if code not in country_codes:
-        PTLogger.error("Unable to set Wi-Fi country - Not available: %s" % code)
+        logger.error("Unable to set Wi-Fi country - Not available: %s" % code)
         return None
 
     return run_command("raspi-config nonint do_wifi_country %s" % code, timeout=5)

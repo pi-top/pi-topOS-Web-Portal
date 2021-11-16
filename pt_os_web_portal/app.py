@@ -1,9 +1,9 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
-from pitop.common.logger import PTLogger
 from pitop.system import device_type
 
 from . import state
@@ -14,6 +14,8 @@ from .miniscreen_onboarding_assistant.onboarding_assistant_app import (
     OnboardingAssistantApp,
 )
 from .os_updater import OSUpdater
+
+logger = logging.getLogger(__name__)
 
 
 class App:
@@ -39,7 +41,7 @@ class App:
             state.get("app", "onboarded", fallback="false") == "false"
             and device_type() == DeviceName.pi_top_4.value
         ):
-            PTLogger.info(
+            logger.info(
                 "Onboarding not completed - starting miniscreen onboarding application"
             )
             self.miniscreen_onboarding = OnboardingAssistantApp()
@@ -54,7 +56,7 @@ class App:
     def stop(self):
         def stop_wsgi_server():
             self.wsgi_server.stop()
-            PTLogger.info("Stopped: WSGI Server")
+            logger.info("Stopped: WSGI Server")
 
         # Using thread pool with context will cause it to behave
         # as if Executor.shutdown() were called with `wait=True`
