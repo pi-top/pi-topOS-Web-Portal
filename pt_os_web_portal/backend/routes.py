@@ -497,3 +497,24 @@ def post_onboarding_ready_to_be_a_maker():
     logger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"
+
+
+@app.route("/client-ip", methods=["GET"])
+def get_my_ip():
+    logger.debug("Route '/client-ip'")
+    logger.info(f"{request.remote_addr.split(':')[-1]}")
+    return request.remote_addr.split(":")[-1]
+
+
+@app.route("/device-ip-addresses", methods=["GET"])
+def get_device_ip_addresses():
+    logger.debug("Route '/device-ip-addresses'")
+    from pitop.common.sys_info import get_internal_ip
+
+    ips = list()
+    for iface in ["wlan0", "eth0", "ptusb0"]:
+        ip = get_internal_ip(iface)
+        if ip.replace("Internet Addresses Not Found", ""):
+            ips.append(ip)
+    logger.info(f"Device IPs: {ips}")
+    return jdumps(ips)

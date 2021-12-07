@@ -15,6 +15,8 @@ import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../services/updateHubFirmware";
 import getBuildInfo from "../../services/getBuildInfo";
+import getDeviceIPAddresses from "../../services/getDeviceIPAddresses";
+import hostStatus from "../../services/hostStatus";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
@@ -47,6 +49,21 @@ export default ({
   const [serverRebooted, setServerRebooted] = useState(false);
   const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
   const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
+  const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
+  const [onSameNetwork, setOnSameNetwork] = useState(false);
+
+  useEffect(() => {
+    getDeviceIPAddresses()
+      .then((addresses) => {
+        addresses.map((address, index) => {
+          hostStatus(address)
+            .then((_) => {setOnSameNetwork(true)})
+            .catch(() => null)
+            .finally(() => {index === addresses.length - 1 && setCheckingOnSameNetwork(false)});
+        })
+      })
+      .catch(() => setCheckingOnSameNetwork(false));
+  }, []);
 
   useEffect(() => {
     getBuildInfo()
@@ -121,6 +138,8 @@ export default ({
       progressPercentage={calculatePercentageProgress(progress, maxProgress)}
       progressMessage={progressMessage}
       onBackClick={goToPreviousPage}
+      checkingOnSameNetwork={checkingOnSameNetwork}
+      onSameNetwork={onSameNetwork}
       setupDevice={() => {
         setIsSettingUpDevice(true);
 

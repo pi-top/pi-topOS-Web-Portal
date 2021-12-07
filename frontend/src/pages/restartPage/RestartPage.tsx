@@ -23,7 +23,9 @@ export enum ServerStatusMessages {
 
 export enum ExplanationMessages {
   OnWebRenderer = "Press 'restart' and I'll set some stuff up before rebooting. This might take up to a couple of minutes.",
-  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere"
+  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere",
+  CheckingConnectivity = "Please wait - we're performing some checks before continuing...",
+  ConnectToCorrectNetwork = "Your pi-top is not connected to the same network as your device.\n\nThis probably means that your device is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.\n\nPlease, make sure you connect your device back to your Wi-Fi network and refresh this page.",
 }
 
 export type Props = {
@@ -35,6 +37,8 @@ export type Props = {
   progressPercentage: number;
   progressMessage: string;
   displayManualPowerOnDialog: boolean;
+  checkingOnSameNetwork: boolean;
+  onSameNetwork: boolean;
   onManualPowerOnDialogClose: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
@@ -49,6 +53,8 @@ export default ({
   progressPercentage,
   progressMessage,
   displayManualPowerOnDialog,
+  checkingOnSameNetwork,
+  onSameNetwork,
   onManualPowerOnDialogClose,
   setupDevice,
   onBackClick,
@@ -68,7 +74,16 @@ export default ({
     errorMessage = isWaitingForServer ? ErrorMessage.TimeoutError : ErrorMessage.RebootError;
   }
 
-  let explanationMessage = runningOnWebRenderer() ? ExplanationMessages.OnWebRenderer : ExplanationMessages.OnBrowser;
+  const getExplanationMessage = () => {
+    if (checkingOnSameNetwork) {
+      return ExplanationMessages.CheckingConnectivity;
+    } else if (onSameNetwork) {
+      return ExplanationMessages.ConnectToCorrectNetwork;
+    } else if (runningOnWebRenderer()) {
+      return ExplanationMessages.OnWebRenderer
+    }
+    return ExplanationMessages.OnBrowser;
+  }
 
   return (
     <Layout
@@ -81,11 +96,11 @@ export default ({
           Right, I need a quick <span className="green">nap</span>
         </>
       }
-      explanation={explanationMessage}
+      explanation={getExplanationMessage()}
       nextButton={{
         onClick: setupDevice,
         label: "Restart",
-        disabled: isSettingUpDevice || rebootError || isWaitingForServer,
+        disabled: isSettingUpDevice || rebootError || isWaitingForServer || checkingOnSameNetwork || !onSameNetwork,
         hidden: isWaitingForServer || serverRebooted
       }}
       backButton={
