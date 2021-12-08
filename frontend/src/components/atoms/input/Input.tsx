@@ -1,120 +1,75 @@
-import React, { PureComponent, InputHTMLAttributes } from "react";
+import React, { HTMLProps, useCallback } from "react";
 import cx from "classnames";
 
 import styles from "./Input.module.css";
 
-export type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> & {
+export type Props = Omit<HTMLProps<HTMLInputElement>, "onChange"> & {
+  id: string;
+  ariaLabel?: string;
   autoCapitalize?: string;
   autoCorrect?: string;
   autoFocus?: boolean;
+  bordered?: boolean;
   className?: string;
-  inputClassName?: string;
+  value?: string;
   defaultValue?: string;
-  disabled?: boolean;
-  id: string;
-  label?: string;
-  maxLength?: number;
-  minLength?: number;
-  onBlur?: () => void;
-  onChange?: (value: string) => void;
-  onFocus?: () => void;
-  onPaste?: (pastedText: string) => string;
-  placeholder?: string;
-  required?: boolean;
-  type?: string;
   helpText?: string;
+  innerRef?: (e: HTMLInputElement) => void;
+  inputClassName?: string;
+  maskPath?: string;
+  masked?: boolean;
+  onChange?: (s: string) => void;
 };
 
-export type State = {
-  value: string;
+const Input = ({
+  id,
+  ariaLabel = "",
+  bordered = false,
+  className = "",
+  helpText = "",
+  innerRef,
+  inputClassName = "",
+  label = "",
+  defaultValue = "",
+  onKeyDown = () => {},
+  onChange = () => {},
+  type = "text",
+  ...restProps
+}: Props) => {
+  const handleChange = useCallback(
+    (
+      ev: React.ChangeEvent<HTMLInputElement> | { target: { value: string } }
+    ) => {
+      const {
+        target: { value: newValue },
+      } = ev;
+
+      onChange(newValue);
+    },
+    [onChange]
+  );
+
+  return (
+    <div className={className}>
+      {label && (
+        <label className={styles.label} htmlFor={id}>
+          {label}
+        </label>
+      )}
+      <input
+        aria-label={ariaLabel}
+        // overwrite aria-label if it is passed in restProps
+        {...restProps}
+        type={type}
+        className={cx(styles.input, inputClassName)}
+        id={id}
+        onChange={handleChange}
+        onKeyDown={onKeyDown}
+        ref={innerRef}
+      />
+      {helpText && <span className={styles.helpText}>{helpText}</span>}
+    </div>
+  );
 };
 
-export default class Input extends PureComponent<Props, State> {
-  state = {
-    value: this.props.defaultValue || ""
-  };
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const { defaultValue } = this.props;
-    if (nextProps.defaultValue !== defaultValue) {
-      const value = nextProps.defaultValue || "";
-      this.setState({ value });
-      this.handleChange({ target: { value } });
-    }
-  }
-
-  handlePaste = (ev: React.ClipboardEvent<HTMLInputElement>) => {
-    const { onPaste } = this.props;
-
-    ev.preventDefault();
-
-    const text = ev.clipboardData.getData("Text");
-    const returnedValue = onPaste ? onPaste(text) : text;
-
-    this.handleChange({ target: { value: returnedValue } });
-  };
-
-  handleChange = ({ target: { value } }: { target: { value: string } }) => {
-    const { onChange = () => null } = this.props;
-
-    this.setState({ value }, () => {
-      onChange(value);
-    });
-  };
-
-  render() {
-    const {
-      autoCapitalize,
-      autoCorrect,
-      autoFocus,
-      className,
-      inputClassName,
-      disabled,
-      id,
-      label,
-      maxLength,
-      minLength,
-      onBlur,
-      onFocus,
-      onPaste,
-      placeholder,
-      required,
-      type,
-      helpText,
-      defaultValue,
-      ...props
-    } = this.props;
-    const { value } = this.state;
-
-    return (
-      <div className={cx(styles.root, className)}>
-        {label && (
-          <label className={styles.label} htmlFor={id}>
-            {label}
-          </label>
-        )}
-        <input
-          autoCapitalize={autoCapitalize}
-          autoCorrect={autoCorrect}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus={autoFocus}
-          className={cx(styles.input, inputClassName)}
-          disabled={disabled}
-          id={id}
-          maxLength={maxLength}
-          minLength={minLength}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onPaste={onPaste ? this.handlePaste : () => {}}
-          placeholder={placeholder}
-          required={required}
-          type={type}
-          value={value}
-          {...props}
-          onChange={this.handleChange}
-        />
-        {helpText && <span className={styles.helpText}>{helpText}</span>}
-      </div>
-    );
-  }
-}
+export default Input;
