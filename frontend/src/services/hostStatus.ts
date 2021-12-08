@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function hostStatus(hostIP: string) {
   const { data } = await axios.get<string>(
-    `http://${hostIP}/client-ip`,
+    `http://${hostIP}/status`,
     { timeout: 5000 }
   );
 

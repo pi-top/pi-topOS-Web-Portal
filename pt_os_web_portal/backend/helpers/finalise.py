@@ -1,9 +1,11 @@
 import logging
 from os import path, remove
+from typing import List
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
+from pitop.common.sys_info import get_internal_ip
 from pitop.system import device_type
 from pt_fw_updater.update import main as update_firmware
 
@@ -164,3 +166,21 @@ def do_firmware_update():
         "touch /tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown",
         timeout=10,
     )
+
+
+def get_non_ap_ip_addresses() -> List:
+    ips = list()
+    for iface in ["wlan0", "eth0", "ptusb0"]:
+        ip = get_internal_ip(iface)
+        if ip.replace("Internet Addresses Not Found", ""):
+            ips.append(ip)
+    logger.info(f"Device IPs: {ips}")
+    return ips
+
+
+def disable_ap_mode() -> None:
+    logger.info("Function disble_ap_mode()")
+    try:
+        run_command("/usr/bin/wifi-ap-sta off", check=False, timeout=20)
+    except Exception as e:
+        logger.error(f"disable_ap_mode(): {e}")

@@ -9,6 +9,7 @@ import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
+import MoveAwayFromApDialogContainer from "./moveAwayFromApDialog/MoveAwayFromApDialogContainer";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
@@ -25,7 +26,6 @@ export enum ExplanationMessages {
   OnWebRenderer = "Press 'restart' and I'll set some stuff up before rebooting. This might take up to a couple of minutes.",
   OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere",
   CheckingConnectivity = "Please wait - we're performing some checks before continuing...",
-  ConnectToCorrectNetwork = "Your pi-top is not connected to the same network as your device.\n\nThis probably means that your device is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.\n\nPlease, make sure you connect your device back to your Wi-Fi network and refresh this page.",
 }
 
 export type Props = {
@@ -38,7 +38,8 @@ export type Props = {
   progressMessage: string;
   displayManualPowerOnDialog: boolean;
   checkingOnSameNetwork: boolean;
-  onSameNetwork: boolean;
+  displayMoveAwayFromApDialog: boolean;
+  piTopIpAddress: string;
   onManualPowerOnDialogClose: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
@@ -53,17 +54,23 @@ export default ({
   progressPercentage,
   progressMessage,
   displayManualPowerOnDialog,
+  displayMoveAwayFromApDialog,
   checkingOnSameNetwork,
-  onSameNetwork,
+  piTopIpAddress,
   onManualPowerOnDialogClose,
   setupDevice,
   onBackClick,
 }: Props) => {
   const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
+  const [moveAwayFromAPDialogActive, setMoveAwayFromAPDialogActive] = useState(false);
 
   useEffect(() => {
     setManualPowerOnDialogActive(displayManualPowerOnDialog);
   }, [displayManualPowerOnDialog])
+
+  useEffect(() => {
+    setMoveAwayFromAPDialogActive(displayMoveAwayFromApDialog);
+  }, [displayMoveAwayFromApDialog])
 
   let errorMessage = "";
   if (globalError) {
@@ -77,8 +84,6 @@ export default ({
   const getExplanationMessage = () => {
     if (checkingOnSameNetwork) {
       return ExplanationMessages.CheckingConnectivity;
-    } else if (onSameNetwork) {
-      return ExplanationMessages.ConnectToCorrectNetwork;
     } else if (runningOnWebRenderer()) {
       return ExplanationMessages.OnWebRenderer
     }
@@ -100,7 +105,7 @@ export default ({
       nextButton={{
         onClick: setupDevice,
         label: "Restart",
-        disabled: isSettingUpDevice || rebootError || isWaitingForServer || checkingOnSameNetwork || !onSameNetwork,
+        disabled: isSettingUpDevice || rebootError || isWaitingForServer || checkingOnSameNetwork || moveAwayFromAPDialogActive,
         hidden: isWaitingForServer || serverRebooted
       }}
       backButton={
@@ -108,8 +113,8 @@ export default ({
           ? undefined
           : {
               onClick: onBackClick,
-              disabled: isSettingUpDevice || isWaitingForServer,
-              hidden: isWaitingForServer || serverRebooted
+              disabled: isSettingUpDevice || isWaitingForServer || moveAwayFromAPDialogActive,
+              hidden: isWaitingForServer || serverRebooted || checkingOnSameNetwork
             }
       }
       className={styles.root}
@@ -121,6 +126,14 @@ export default ({
           setManualPowerOnDialogActive(!manualPowerOnDialogActive);
           onManualPowerOnDialogClose();
         }}
+      />
+
+      <MoveAwayFromApDialogContainer
+        active={moveAwayFromAPDialogActive}
+        onSkip={() => {
+          setMoveAwayFromAPDialogActive(!moveAwayFromAPDialogActive);
+        }}
+        piTopIpAddress={piTopIpAddress}
       />
 
       {isSettingUpDevice && (

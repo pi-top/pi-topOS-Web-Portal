@@ -51,13 +51,17 @@ export default ({
   const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
   const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
   const [onSameNetwork, setOnSameNetwork] = useState(false);
+  const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
 
   useEffect(() => {
     getDeviceIPAddresses()
       .then((addresses) => {
         addresses.map((address, index) => {
-          hostStatus(address)
-            .then((_) => {setOnSameNetwork(true)})
+          return hostStatus(address)
+            .then((_) => {
+              setPiTopIpAddress(address);
+              setOnSameNetwork(true);
+            })
             .catch(() => null)
             .finally(() => {index === addresses.length - 1 && setCheckingOnSameNetwork(false)});
         })
@@ -139,7 +143,8 @@ export default ({
       progressMessage={progressMessage}
       onBackClick={goToPreviousPage}
       checkingOnSameNetwork={checkingOnSameNetwork}
-      onSameNetwork={onSameNetwork}
+      displayMoveAwayFromApDialog={onSameNetwork}
+      piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);
 

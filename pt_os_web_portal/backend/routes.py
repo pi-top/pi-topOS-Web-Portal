@@ -20,11 +20,13 @@ from .helpers.finalise import (
     available_space,
     configure_landing,
     deprioritise_openbox_session,
+    disable_ap_mode,
     do_firmware_update,
     enable_firmware_updater_service,
     enable_further_link_service,
     enable_pt_miniscreen,
     fw_update_is_due,
+    get_non_ap_ip_addresses,
     onboarding_completed,
     reboot,
     restore_files,
@@ -499,22 +501,14 @@ def post_onboarding_ready_to_be_a_maker():
     return "OK"
 
 
-@app.route("/client-ip", methods=["GET"])
-def get_my_ip():
-    logger.debug("Route '/client-ip'")
-    logger.info(f"{request.remote_addr.split(':')[-1]}")
-    return request.remote_addr.split(":")[-1]
-
-
 @app.route("/device-ip-addresses", methods=["GET"])
 def get_device_ip_addresses():
     logger.debug("Route '/device-ip-addresses'")
-    from pitop.common.sys_info import get_internal_ip
+    return jdumps(get_non_ap_ip_addresses())
 
-    ips = list()
-    for iface in ["wlan0", "eth0", "ptusb0"]:
-        ip = get_internal_ip(iface)
-        if ip.replace("Internet Addresses Not Found", ""):
-            ips.append(ip)
-    logger.info(f"Device IPs: {ips}")
-    return jdumps(ips)
+
+@app.route("/disable-ap-mode", methods=["POST"])
+def post_disable_ap_mode():
+    logger.debug("Route '/disable-ap-mode'")
+    disable_ap_mode()
+    return "OK"
