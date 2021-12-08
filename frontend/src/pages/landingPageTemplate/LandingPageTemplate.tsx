@@ -9,36 +9,33 @@ import styles from "./LandingPageTemplate.module.css";
 import { runningOnWebRenderer } from "../../helpers/utils";
 import closePtOsLandingWindow from "../../services/closePtOsLandingWindow";
 
-export type Props = {
-  page: LandingPageElement;
-};
+export type Props = LandingPageElement;
 
-
-export default ({ page }: Props) => {
+export default ({ ...props }: Props) => {
   const [isOpeningUrl, setIsOpeningUrl] = useState(false);
-  const [url, setUrl] = useState<string>(page.urlInfo.defaultUrl);
+  const [url, setUrl] = useState<string>(props.urlInfo.defaultUrl);
   const [, setError] = useState(false);
 
   useEffect(() => {
-    if (page.urlInfo.urlService) {
-      page.urlInfo.urlService()
+    if (props.urlInfo.urlService) {
+      props.urlInfo.urlService()
         .then((data: any) => setUrl(data.url))
-        .catch(() => setUrl(page.urlInfo.defaultUrl))
+        .catch(() => setUrl(props.urlInfo.defaultUrl))
     }
-  }, [page]);
+  }, [props]);
 
   return (
     <Layout
       banner={{
-        src: page.image,
+        src: props.image,
         alt: "banner"
       }}
-      prompt={page.prompt}
+      prompt={props.prompt}
       nextButton={{
         onClick: () => {
           if (runningOnWebRenderer()) {
             setIsOpeningUrl(true);
-            page.urlInfo.onWebRenderer()
+            props.urlInfo.onWebRenderer()
               .then(() => {
                 setIsOpeningUrl(true);
                 window.setTimeout(() => {
@@ -52,7 +49,7 @@ export default ({ page }: Props) => {
             window.open(url)
           }
         },
-        label: page.buttonLabel? page.buttonLabel : "Let's Go",
+        label: props.buttonLabel? props.buttonLabel : "Let's Go",
         disabled: isOpeningUrl,
       }}
 
@@ -62,10 +59,10 @@ export default ({ page }: Props) => {
       showHeader={false}
     >
       <div className={styles.message}>
-        {page.message &&
+        {props.message &&
           <span className={styles.message}>
           {
-              page.message.split('\n').map((item, key) => {
+              props.message.split('\n').map((item, key) => {
                 return <span key={key}>{item}<br/></span>
               })
           }
