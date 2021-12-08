@@ -3,7 +3,7 @@ import cx from "classnames";
 import styles from './LandingList.module.css';
 
 import Button from '../atoms/button/Button';
-import { LandingPageElement } from '../landing_app/App';
+import { LandingPageElement } from '../landing/Landing';
 
 export type Props = {
   activeElement: LandingPageElement;

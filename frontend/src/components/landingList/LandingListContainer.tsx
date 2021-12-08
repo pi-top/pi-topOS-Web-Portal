@@ -1,5 +1,5 @@
 import React from 'react';
-import { LandingPageElement } from '../landing_app/App';
+import { LandingPageElement } from '../../components/landing/Landing';
 import LandingList from './LandingList';
 
 export type Props = {

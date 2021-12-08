@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { LandingPageElement } from "../../components/landing_app/App";
+import { LandingPageElement } from '../../components/landing/Landing';
 
 import Layout from "../../components/layout/Layout";
 import Spinner from "../../components/atoms/spinner/Spinner";
