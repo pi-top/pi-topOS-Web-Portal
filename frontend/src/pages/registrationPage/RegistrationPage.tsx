@@ -98,7 +98,7 @@ export default ({
           id="registration-page-email"
           form="registration-form"
           type="email"
-          defaultValue={email}
+          value={email}
           onChange={newEmail => setEmail(newEmail)}
           placeholder="Please enter your email..."
           disabled={isRegistering}
