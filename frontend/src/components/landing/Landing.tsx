@@ -34,8 +34,10 @@ export type LandingPageElement = {
 const pages = [
   {
     title: "Learn by making on Further",
+    id: "further",
     detail: (
       <LandingPageTemplate
+        key="further"
         title="Learn by making on Further"
         urlInfo={{
           onWebRenderer: openFurther,
@@ -50,8 +52,10 @@ const pages = [
   },
   {
     title: "Python SDK",
+    id: "sdk",
     detail: (
       <LandingPageTemplate
+        key="sdk"
         title="Python SDK"
         urlInfo={{
           defaultUrl: "http://docs.pi-top.com",
@@ -68,8 +72,10 @@ const pages = [
   },
   {
     title: "Rover Controller",
+    id: "rover",
     detail: (
       <LandingPageTemplate
+        key="rover"
         title="Rover Controller"
         urlInfo={{
           defaultUrl: "http://docs.pi-top.com",
@@ -83,8 +89,10 @@ const pages = [
   },
   {
     title: "pi-top Knowledge Base",
+    id: "kb",
     detail: (
       <LandingPageTemplate
+        key="kb"
         title="pi-top Knowledge Base"
         urlInfo={{
           defaultUrl: "https://knowledgebase.pi-top.com",
@@ -106,12 +114,12 @@ export default () => {
     <div className={cx(styles.container)}>
       <div className={styles.landingList}>
         {pages.map((element) => (
-          <div key={element.title} className={styles.elementDiv}>
+          <div key={element.id} className={styles.elementDiv}>
             <Button
               unstyled
               className={cx(
                 styles.element,
-                selectedElement.title === element.title
+                selectedElement.id === element.id
                   ? styles.selectedElement
                   : ""
               )}
