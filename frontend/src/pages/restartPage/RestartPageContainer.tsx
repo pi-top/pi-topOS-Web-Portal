@@ -56,7 +56,6 @@ export default ({
   useEffect(() => {
     verifyDeviceNetwork()
       .then((data) => {
-          console.log(data);
           setOnSameNetwork(data.onSameNetwork)
           data.piTopIp && setPiTopIpAddress(data.piTopIp);
       })
