@@ -14,6 +14,7 @@ import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../services/updateHubFirmware";
+import disableApMode from "../../services/disableApMode";
 import getBuildInfo from "../../services/getBuildInfo";
 import getDeviceIPAddresses from "../../services/getDeviceIPAddresses";
 import hostStatus from "../../services/hostStatus";
@@ -198,6 +199,12 @@ export default ({
             safelyRunService(
               enablePtMiniscreen,
               "Reminded myself to tell the miniscreen to do its thing in the morning..."
+            )
+          )
+          .finally(() =>
+            onSameNetwork && safelyRunService(
+              disableApMode,
+              "Disabling my access point..."
             )
           )
           .catch(console.error)
