@@ -9,6 +9,7 @@ pt_os_web_portal/**/build
 *__pycache__
 *.pytest_cache*
 *.coverage*
+*.egg-info/
 
 # C++ objects and libs
 *.slo

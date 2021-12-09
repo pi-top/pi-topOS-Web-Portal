@@ -41,7 +41,7 @@ class AppWindow:
     def close(self):
         try:
             # Match full window title
-            run_command(f'wmctrl -v -c -F "{self.title}"', timeout=5)
+            run_command(f'wmctrl -v -c "{self.title}"', timeout=5)
         except Exception as e:
             logger.error(f"Error closing '{self.title}' window: {e}")
 
