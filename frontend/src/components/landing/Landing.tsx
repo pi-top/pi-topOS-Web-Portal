@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from "react";
+import React, { useState } from "react";
 import cx from "classnames";
 import styles from "./Landing.module.css";
 
@@ -16,20 +16,6 @@ import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openFurther from "../../services/openFurther";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 
-export type UrlData = {
-  defaultUrl: string;
-  urlService?: () => Promise<{ [s: string]: string }>;
-  onWebRenderer: () => Promise<void>;
-};
-
-export type LandingPageElement = {
-  title: string;
-  message: string;
-  prompt: ReactElement;
-  image: string;
-  urlInfo: UrlData;
-  buttonLabel?: string;
-};
 
 const pages = [
   {
@@ -62,9 +48,9 @@ const pages = [
           urlService: getPythonSDKDocsUrl,
           onWebRenderer: openPythonSDKDocs,
         }}
-        message={
-          'The Software Development Kit (SDK) provides an easy-to-use framework to interact with your pi-top using python. It also contains CLI utilities to manage your pi-top using the terminal.\nPress the "Let\'s Go" button to open its documentation and start making!'
-        }
+        message={<>
+          The Software Development Kit (SDK) provides an easy-to-use framework to interact with your pi-top using python. It also contains CLI utilities to manage your pi-top using the terminal.<br />Press the "Let's Go" button to open its documentation and start making!
+        </>}
         prompt={<>Checkout the Python <span className="green">SDK</span></>}
         image={registrationScreen}
       />

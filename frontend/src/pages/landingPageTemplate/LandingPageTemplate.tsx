@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-
-import { LandingPageElement } from '../../components/landing/Landing';
+import React, { useEffect, useState, ReactElement } from "react";
 
 import Layout from "../../components/layout/Layout";
 import Spinner from "../../components/atoms/spinner/Spinner";
@@ -9,7 +7,20 @@ import styles from "./LandingPageTemplate.module.css";
 import { runningOnWebRenderer } from "../../helpers/utils";
 import closePtOsLandingWindow from "../../services/closePtOsLandingWindow";
 
-export type Props = LandingPageElement;
+export type UrlData = {
+  defaultUrl: string;
+  urlService?: () => Promise<{ [s: string]: string }>;
+  onWebRenderer: () => Promise<void>;
+};
+
+export type Props = {
+  title: string;
+  message: React.ReactNode;
+  prompt: ReactElement;
+  image: string;
+  urlInfo: UrlData;
+  buttonLabel?: string;
+};
 
 export default ({ ...props }: Props) => {
   const [isOpeningUrl, setIsOpeningUrl] = useState(false);
@@ -59,15 +70,8 @@ export default ({ ...props }: Props) => {
       showHeader={false}
     >
       <div className={styles.message}>
-        {props.message &&
-          <span className={styles.message}>
-          {
-              props.message.split('\n').map((item, key) => {
-                return <span key={key}>{item}<br/></span>
-              })
-          }
-          </span>
-        }
+        {props.message}
+        <br />
         {isOpeningUrl && <Spinner size={45} />}
       </div>
     </Layout>
