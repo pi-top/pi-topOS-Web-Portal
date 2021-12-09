@@ -16,11 +16,10 @@ import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../services/updateHubFirmware";
 import disableApMode from "../../services/disableApMode";
 import getBuildInfo from "../../services/getBuildInfo";
-import getDeviceIPAddresses from "../../services/getDeviceIPAddresses";
-import hostStatus from "../../services/hostStatus";
+import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
+import verifyDeviceNetwork from "../../services/verifyDeviceNetwork";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
-import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
 
 const maxProgress = 11; // this is the number of services for setting up
 
@@ -55,19 +54,14 @@ export default ({
   const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
 
   useEffect(() => {
-    getDeviceIPAddresses()
-      .then((addresses) => {
-        addresses.map((address, index) => {
-          return hostStatus(address)
-            .then((_) => {
-              setPiTopIpAddress(address);
-              setOnSameNetwork(true);
-            })
-            .catch(() => null)
-            .finally(() => {index === addresses.length - 1 && setCheckingOnSameNetwork(false)});
-        })
+    verifyDeviceNetwork()
+      .then((data) => {
+          console.log(data);
+          setOnSameNetwork(data.onSameNetwork)
+          data.piTopIp && setPiTopIpAddress(data.piTopIp);
       })
-      .catch(() => setCheckingOnSameNetwork(false));
+      .catch(() => null)
+      .finally(() => setCheckingOnSameNetwork(false));
   }, []);
 
   useEffect(() => {
@@ -144,7 +138,7 @@ export default ({
       progressMessage={progressMessage}
       onBackClick={goToPreviousPage}
       checkingOnSameNetwork={checkingOnSameNetwork}
-      displayMoveAwayFromApDialog={onSameNetwork}
+      displayMoveAwayFromApDialog={!checkingOnSameNetwork && !onSameNetwork}
       piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);

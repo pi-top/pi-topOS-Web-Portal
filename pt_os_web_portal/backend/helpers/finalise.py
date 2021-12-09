@@ -1,6 +1,6 @@
 import logging
 from os import path, remove
-from typing import List
+from typing import Dict, List
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
@@ -179,8 +179,28 @@ def get_non_ap_ip_addresses() -> List:
 
 
 def disable_ap_mode() -> None:
-    logger.info("Function disble_ap_mode()")
+    logger.info("Function disable_ap_mode()")
     try:
         run_command("/usr/bin/wifi-ap-sta disable", check=False, timeout=20)
     except Exception as e:
         logger.error(f"disable_ap_mode(): {e}")
+
+
+def on_same_network(request) -> Dict:
+    logger.info("Function on_same_network()")
+    on_same_network = False
+    pi_top_ip = ""
+    client_ip = request.remote_addr.split(":")[-1]
+    for ip in get_non_ap_ip_addresses():
+        if ip.split(".")[:-1] == client_ip.split(".")[:-1]:
+            on_same_network = True
+            pi_top_ip = ip
+            break
+
+    response = {
+        "clientIp": client_ip,
+        "piTopIp": pi_top_ip,
+        "onSameNetwork": on_same_network,
+    }
+    logger.info(f"on_same_network: {response}")
+    return response

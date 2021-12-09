@@ -26,7 +26,7 @@ from .helpers.finalise import (
     enable_further_link_service,
     enable_pt_miniscreen,
     fw_update_is_due,
-    get_non_ap_ip_addresses,
+    on_same_network,
     onboarding_completed,
     reboot,
     restore_files,
@@ -501,14 +501,14 @@ def post_onboarding_ready_to_be_a_maker():
     return "OK"
 
 
-@app.route("/device-ip-addresses", methods=["GET"])
-def get_device_ip_addresses():
-    logger.debug("Route '/device-ip-addresses'")
-    return jdumps(get_non_ap_ip_addresses())
-
-
 @app.route("/disable-ap-mode", methods=["POST"])
 def post_disable_ap_mode():
     logger.debug("Route '/disable-ap-mode'")
     disable_ap_mode()
     return "OK"
+
+
+@app.route("/on-same-network", methods=["GET"])
+def get_client_on_same_network():
+    logger.debug("Route '/on-same-network'")
+    return jdumps(on_same_network(request))
