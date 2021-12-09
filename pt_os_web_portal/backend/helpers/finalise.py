@@ -181,6 +181,6 @@ def get_non_ap_ip_addresses() -> List:
 def disable_ap_mode() -> None:
     logger.info("Function disble_ap_mode()")
     try:
-        run_command("/usr/bin/wifi-ap-sta off", check=False, timeout=20)
+        run_command("/usr/bin/wifi-ap-sta disable", check=False, timeout=20)
     except Exception as e:
         logger.error(f"disable_ap_mode(): {e}")
