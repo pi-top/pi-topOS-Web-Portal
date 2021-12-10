@@ -11,6 +11,7 @@ export type Props = {
   children: JSX.Element;
   className?: string;
   backdropClassName?: string;
+  dataTestId?: string;
 };
 
 const Dialog = ({
@@ -20,10 +21,11 @@ const Dialog = ({
   children,
   className,
   backdropClassName,
+  dataTestId,
 }: Props) => {
   return createPortal(
     <div
-      data-testid="dialog"
+      data-testid={dataTestId ? dataTestId : "dialog"}
       role="button"
       aria-pressed="false"
       onClick={onClose}

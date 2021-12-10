@@ -166,4 +166,61 @@ describe("RestartPage", () => {
       expect(defaultProps.setupDevice).toHaveBeenCalled();
     })
   });
+
+  describe("when checkingOnSameNetwork is true", () => {
+    beforeEach(() => {
+      defaultProps = {
+        ...defaultProps,
+        checkingOnSameNetwork: true,
+      };
+
+      rerender(<RestartPage {...defaultProps} />);
+    });
+
+    it("renders prompt correctly", () => {
+      const prompt = restartPage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
+    it("renders explanation", () => {
+      expect(getByText(ExplanationMessages.CheckingConnectivity)).toBeInTheDocument();
+    });
+
+    it("restart button is disabled", () => {
+      expect(queryByText("Restart")).toBeDisabled();
+    });
+
+    it("back button is hidden", () => {
+      expect(queryByText("Back")).toHaveProperty("hidden");
+    });
+  });
+
+  describe("when devices aren't on the same network", () => {
+    beforeEach(() => {
+      defaultProps = {
+        ...defaultProps,
+        checkingOnSameNetwork: false,
+        displayMoveAwayFromApDialog: true,
+      };
+
+      rerender(<RestartPage {...defaultProps} />);
+    });
+
+    it("renders the dialog", () => {
+      expect(queryByTestId("move-away-from-ap-dialog")).toBeInTheDocument();
+    });
+
+    it("displays the dialog", () => {
+      expect(queryByTestId("move-away-from-ap-dialog")).not.toHaveClass("hidden");
+    });
+
+    it("disables restart button", () => {
+      expect(queryByText("Restart")).toBeDisabled();
+    });
+
+    it("disables back button", () => {
+      expect(queryByText("Back")).toBeDisabled();
+    });
+  });
+
 });

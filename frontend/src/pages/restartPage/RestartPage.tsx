@@ -62,7 +62,7 @@ export default ({
   onBackClick,
 }: Props) => {
   const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
-  const [moveAwayFromAPDialogActive, setMoveAwayFromAPDialogActive] = useState(false);
+  const [moveAwayFromAPDialogActive, setMoveAwayFromAPDialogActive] = useState(displayMoveAwayFromApDialog);
 
   useEffect(() => {
     setManualPowerOnDialogActive(displayManualPowerOnDialog);
@@ -120,7 +120,6 @@ export default ({
       }
       className={styles.root}
     >
-
       <ManualPowerOnDialogContainer
         active={manualPowerOnDialogActive}
         onClose={() => {
@@ -129,13 +128,13 @@ export default ({
         }}
       />
 
-      <MoveAwayFromApDialogContainer
+      {moveAwayFromAPDialogActive && <MoveAwayFromApDialogContainer
         active={moveAwayFromAPDialogActive}
         onSkip={() => {
           setMoveAwayFromAPDialogActive(!moveAwayFromAPDialogActive);
         }}
         piTopIpAddress={piTopIpAddress}
-      />
+      />}
 
       {isSettingUpDevice && (
         <div className={styles.progress}>
