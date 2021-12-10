@@ -26,6 +26,9 @@ import serverStatus from "../../../services/serverStatus";
 import updateEeprom from "../../../services/updateEeprom";
 import enablePtMiniscreen from "../../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../../services/updateHubFirmware";
+import verifyDeviceNetwork from "../../../services/verifyDeviceNetwork";
+import disableApMode from "../../../services/disableApMode";
+
 
 import { act } from "react-dom/test-utils";
 
@@ -40,6 +43,8 @@ jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/updateEeprom");
 jest.mock("../../../services/enablePtMiniscreen");
 jest.mock("../../../services/updateHubFirmware");
+jest.mock("../../../services/verifyDeviceNetwork");
+jest.mock("../../../services/disableApMode");
 
 
 const configureLandingMock = configureLanding as jest.Mock;
@@ -53,6 +58,8 @@ const serverStatusMock = serverStatus as jest.Mock;
 const updateEepromMock = updateEeprom as jest.Mock;
 const enablePtMiniscreenMock = enablePtMiniscreen as jest.Mock;
 const updateHubFirmwareMock = updateHubFirmware as jest.Mock;
+const verifyDeviceNetworkMock = verifyDeviceNetwork as jest.Mock;
+const disableApModeMock = disableApMode as jest.Mock;
 
 
 const mockServices = [
@@ -66,6 +73,7 @@ const mockServices = [
   updateHubFirmwareMock,
   rebootMock,
   enablePtMiniscreenMock,
+  disableApModeMock,
 ];
 
 
@@ -105,6 +113,11 @@ describe("RestartPageContainer", () => {
   beforeEach(async () => {
     resolveMocks();
     serverStatusMock.mockResolvedValue("OK");
+    verifyDeviceNetworkMock.mockResolvedValue({
+      onSameNetwork: true,
+      piTopIp: "192.168.64.1",
+      clientIp: "192.168.64.10",
+    });
     mockUserAgent = "web-renderer";
     defaultProps = {};
 

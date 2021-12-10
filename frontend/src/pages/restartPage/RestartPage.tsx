@@ -147,6 +147,7 @@ export default ({
           <span className={styles.message}>{progressMessage}</span>
         </div>
       )}
+
       {isWaitingForServer ? (
         <>
           <span className={styles.message}>{ServerStatusMessages.Waiting}</span>

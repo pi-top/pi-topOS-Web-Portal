@@ -20,6 +20,7 @@ describe("RestartPage", () => {
   let getByText: BoundFunction<GetByText>;
   let queryByTestId: BoundFunction<QueryByBoundAttribute>;
   let rerender: RenderResult["rerender"];
+
   beforeEach(() => {
     defaultProps = {
       onBackClick: jest.fn(),
@@ -29,6 +30,13 @@ describe("RestartPage", () => {
       progressMessage: "I am setting up",
       rebootError: false,
       globalError: false,
+      isWaitingForServer: false,
+      serverRebooted: false,
+      displayManualPowerOnDialog: false,
+      piTopIpAddress: "pi-top.local",
+      onManualPowerOnDialogClose: jest.fn(),
+      displayMoveAwayFromApDialog: false,
+      checkingOnSameNetwork: false,
     };
 
     ({
