@@ -9,7 +9,7 @@ import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
-import MoveAwayFromApDialogContainer from "./moveAwayFromApDialog/MoveAwayFromApDialogContainer";
+import MoveAwayFromApDialog from "./moveAwayFromApDialog/MoveAwayFromApDialog";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
@@ -128,7 +128,7 @@ export default ({
         }}
       />
 
-      {moveAwayFromAPDialogActive && <MoveAwayFromApDialogContainer
+      {moveAwayFromAPDialogActive && <MoveAwayFromApDialog
         active={moveAwayFromAPDialogActive}
         onSkip={() => {
           setMoveAwayFromAPDialogActive(!moveAwayFromAPDialogActive);
