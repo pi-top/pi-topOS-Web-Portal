@@ -1,4 +1,5 @@
 import logging
+from ipaddress import ip_address
 from os import path, remove
 from typing import Dict, List
 
@@ -168,12 +169,15 @@ def do_firmware_update():
     )
 
 
-def get_non_ap_ip_addresses() -> List:
+def get_ip_address_for_interfaces(interfaces: List) -> List:
     ips = list()
-    for iface in ["wlan0", "eth0", "ptusb0"]:
+    for iface in interfaces:
         ip = get_internal_ip(iface)
-        if ip.replace("Internet Addresses Not Found", ""):
+        try:
+            ip_address(ip)
             ips.append(ip)
+        except ValueError:
+            continue
     logger.info(f"Device IPs: {ips}")
     return ips
 
@@ -188,14 +192,29 @@ def disable_ap_mode() -> None:
 
 def on_same_network(request) -> Dict:
     logger.info("Function on_same_network()")
-    on_same_network = False
-    pi_top_ip = ""
+
+    def ip_addresses_on_same_network(ip1, ip2):
+        # TODO: add support for ipv6
+        return ip1.split(".")[:-1] == ip2.split(".")[:-1]
+
     client_ip = request.remote_addr.split(":")[-1]
-    for ip in get_non_ap_ip_addresses():
-        if ip.split(".")[:-1] == client_ip.split(".")[:-1]:
-            on_same_network = True
-            pi_top_ip = ip
-            break
+    pi_top_ip = ""
+    on_same_network = False
+
+    ap_interface_ip = get_internal_ip("wlan_ap0")
+    connected_only_via_ap = (
+        ip_addresses_on_same_network(client_ip, ap_interface_ip)
+        and len(get_ip_address_for_interfaces(["wlan0", "eth0"])) == 0
+    )
+    if connected_only_via_ap:
+        on_same_network = True
+        pi_top_ip = ap_interface_ip
+    else:
+        for ip in get_ip_address_for_interfaces(["wlan0", "eth0", "ptusb0"]):
+            if ip_addresses_on_same_network(ip, client_ip):
+                on_same_network = True
+                pi_top_ip = ip
+                break
 
     response = {
         "clientIp": client_ip,
