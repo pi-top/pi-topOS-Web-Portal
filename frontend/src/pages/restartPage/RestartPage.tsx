@@ -84,7 +84,8 @@ export default ({
   const getExplanationMessage = () => {
     if (checkingOnSameNetwork) {
       return ExplanationMessages.CheckingConnectivity;
-    } else if (runningOnWebRenderer()) {
+    }
+    if (runningOnWebRenderer()) {
       return ExplanationMessages.OnWebRenderer
     }
     return ExplanationMessages.OnBrowser;
