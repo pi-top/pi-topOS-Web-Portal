@@ -1,7 +1,8 @@
 import logging
-from ipaddress import ip_address
+from ipaddress import ip_address, ip_network
 from os import path, remove
-from typing import Dict, List
+from subprocess import DEVNULL, PIPE, Popen
+from typing import Dict
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
@@ -169,19 +170,6 @@ def do_firmware_update():
     )
 
 
-def get_ip_address_for_interfaces(interfaces: List) -> List:
-    ips = list()
-    for iface in interfaces:
-        ip = get_internal_ip(iface)
-        try:
-            ip_address(ip)
-            ips.append(ip)
-        except ValueError:
-            continue
-    logger.info(f"Device IPs: {ips}")
-    return ips
-
-
 def disable_ap_mode() -> None:
     logger.info("Function disable_ap_mode()")
     try:
@@ -193,33 +181,45 @@ def disable_ap_mode() -> None:
 def on_same_network(request) -> Dict:
     logger.info("Function on_same_network()")
 
-    def ip_addresses_on_same_network(ip1, ip2):
-        # TODO: add support for ipv6
-        return ip1.split(".")[:-1] == ip2.split(".")[:-1]
+    def has_ip(iface):
+        try:
+            ip_address(get_internal_ip(iface))
+            return True
+        except ValueError:
+            return False
 
-    client_ip = request.remote_addr.split(":")[-1]
-    pi_top_ip = ""
-    on_same_network = False
+    class InterfaceNetworkData:
+        def __init__(self, interface):
+            self.interface = interface
+            self.ip = ip_address(get_internal_ip(self.interface))
+            self.network = ip_network(f"{self.ip}/{self.netmask}", strict=False)
 
-    ap_interface_ip = get_internal_ip("wlan_ap0")
-    connected_only_via_ap = (
-        ip_addresses_on_same_network(client_ip, ap_interface_ip)
-        and len(get_ip_address_for_interfaces(["wlan0", "eth0"])) == 0
+        @property
+        def netmask(self):
+            cmd = f"ifconfig {self.interface} " + "| awk '/netmask /{ print $4;}'"
+            output = (
+                Popen(cmd, shell=True, stdout=PIPE, stderr=DEVNULL)
+                .stdout.read()
+                .strip()
+            )
+            return output.decode("utf-8")
+
+    def get_non_ap_ip():
+        for iface in ("wlan0", "eth0", "ptusb0"):
+            if has_ip(iface):
+                return get_internal_ip(iface)
+        return ""
+
+    client_ip = request.remote_addr
+    pi_top_ip = get_non_ap_ip()
+    should_switch_network = (
+        ip_address(client_ip) in InterfaceNetworkData("wlan_ap0").network and pi_top_ip
     )
-    if connected_only_via_ap:
-        on_same_network = True
-        pi_top_ip = ap_interface_ip
-    else:
-        for ip in get_ip_address_for_interfaces(["wlan0", "eth0", "ptusb0"]):
-            if ip_addresses_on_same_network(ip, client_ip):
-                on_same_network = True
-                pi_top_ip = ip
-                break
 
     response = {
         "clientIp": client_ip,
         "piTopIp": pi_top_ip,
-        "onSameNetwork": on_same_network,
+        "shouldSwitchNetwork": should_switch_network,
     }
     logger.info(f"on_same_network: {response}")
     return response

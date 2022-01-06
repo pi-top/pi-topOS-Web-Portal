@@ -50,14 +50,14 @@ export default ({
   const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
   const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
   const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
-  const [onSameNetwork, setOnSameNetwork] = useState(false);
+  const [displaySwitchNetworkDialog, setDisplaySwitchNetworkDialog] = useState(false);
   const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
 
   useEffect(() => {
     verifyDeviceNetwork()
       .then((data) => {
-          setOnSameNetwork(data.onSameNetwork)
-          data.piTopIp && setPiTopIpAddress(data.piTopIp);
+        setDisplaySwitchNetworkDialog(data.shouldSwitchNetwork)
+        data.piTopIp && setPiTopIpAddress(data.piTopIp);
       })
       .catch(() => null)
       .finally(() => setCheckingOnSameNetwork(false));
@@ -137,7 +137,7 @@ export default ({
       progressMessage={progressMessage}
       onBackClick={goToPreviousPage}
       checkingOnSameNetwork={checkingOnSameNetwork}
-      displayMoveAwayFromApDialog={!checkingOnSameNetwork && !onSameNetwork}
+      displayMoveAwayFromApDialog={!checkingOnSameNetwork && displaySwitchNetworkDialog}
       piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);
@@ -195,7 +195,7 @@ export default ({
             )
           )
           .finally(() =>
-            onSameNetwork && safelyRunService(
+            displaySwitchNetworkDialog && safelyRunService(
               disableApMode,
               "Disabling my access point..."
             )
