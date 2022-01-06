@@ -114,7 +114,7 @@ describe("RestartPageContainer", () => {
     resolveMocks();
     serverStatusMock.mockResolvedValue("OK");
     verifyDeviceNetworkMock.mockResolvedValue({
-      shouldSwitchNetwork: true,
+      shouldSwitchNetwork: false,
       piTopIp: "192.168.64.1",
       clientIp: "192.168.64.10",
     });

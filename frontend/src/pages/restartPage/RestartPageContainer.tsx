@@ -195,7 +195,7 @@ export default ({
             )
           )
           .finally(() =>
-            displaySwitchNetworkDialog && safelyRunService(
+            ! displaySwitchNetworkDialog && safelyRunService(
               disableApMode,
               "Disabling my access point..."
             )
