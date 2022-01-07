@@ -11,13 +11,27 @@ export type Props = {
   onSkip: () => void;
 };
 
-const getMessage = () => {
+export const getMessage = () => {
   return (
     <>
       <span className={styles.dialogTitle}>Reconnect to your Wi-Fi</span>
     </>
   );
 };
+
+export const getContent = () => {
+  return (
+    <>
+      Your pi-top is not connected to the same network as your device.
+      <br></br>
+      <br></br>
+      This probably means that your computer is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.
+      <br></br>
+      <br></br>
+      Please, make sure you connect your computer to your Wi-Fi network and refresh this page.
+    </>
+  )
+}
 
 export default ({
   active,
@@ -31,13 +45,7 @@ export default ({
     <Dialog active={active} message={getMessage()} className={styles.dialog} dataTestId="move-away-from-ap-dialog">
       <div className={styles.content}>
         <div className={styles.message}>
-          Your pi-top is not connected to the same network as your device.
-          <br></br>
-          <br></br>
-          This probably means that your computer is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.
-          <br></br>
-          <br></br>
-          Please, make sure you connect your computer to your Wi-Fi network and refresh this page.
+          {getContent()}
         </div>
 
         <div className={styles.buttons}>
