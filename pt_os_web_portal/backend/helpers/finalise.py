@@ -222,14 +222,16 @@ def should_switch_network(request) -> Dict:
     pi_top_non_ap_ip = get_non_ap_ip()
     should_switch_network = (
         client_ip in InterfaceNetworkData("wlan_ap0").network
-        and len(pi_top_non_ap_ip) == 0
+        and len(pi_top_non_ap_ip) != 0
     )
+
+    pi_top_ip = pi_top_non_ap_ip
+    if len(pi_top_ip) == 0:
+        pi_top_ip = get_internal_ip("wlan_ap0")
 
     response = {
         "clientIp": client_ip.exploded,
-        "piTopIp": pi_top_non_ap_ip
-        if len(pi_top_non_ap_ip) == 0
-        else get_internal_ip("wlan_ap0"),
+        "piTopIp": pi_top_ip,
         "shouldSwitchNetwork": should_switch_network,
     }
     logger.info(f"should_switch_network: {response}")
