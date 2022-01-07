@@ -7,7 +7,10 @@ from typing import Dict
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
-from pitop.common.sys_info import get_internal_ip
+from pitop.common.sys_info import (
+    get_address_for_ptusb_connected_device,
+    get_internal_ip,
+)
 from pitop.system import device_type
 from pt_fw_updater.update import main as update_firmware
 
@@ -178,15 +181,8 @@ def disable_ap_mode() -> None:
         logger.error(f"disable_ap_mode(): {e}")
 
 
-def on_same_network(request) -> Dict:
-    logger.info("Function on_same_network()")
-
-    def has_ip(iface):
-        try:
-            ip_address(get_internal_ip(iface))
-            return True
-        except ValueError:
-            return False
+def should_switch_network(request) -> Dict:
+    logger.info("Function should_switch_network()")
 
     class InterfaceNetworkData:
         def __init__(self, interface):
@@ -205,21 +201,36 @@ def on_same_network(request) -> Dict:
             return output.decode("utf-8")
 
     def get_non_ap_ip():
-        for iface in ("wlan0", "eth0", "ptusb0"):
-            if has_ip(iface):
-                return get_internal_ip(iface)
+        for iface in ("wlan0", "eth0"):
+            try:
+                ip = ip_address(get_internal_ip(iface))
+                return ip.exploded
+            except ValueError:
+                pass
+
+        # ptusb0 always has an IP address, so check is performed differently
+        if len(get_address_for_ptusb_connected_device()) > 0:
+            return get_internal_ip("ptusb0")
+
         return ""
 
-    client_ip = request.remote_addr
-    pi_top_ip = get_non_ap_ip()
+    client_ip = ip_address(request.remote_addr)
+    if client_ip.ipv4_mapped:
+        # request.remote_addr is always an ipv6 address
+        client_ip = client_ip.ipv4_mapped
+
+    pi_top_non_ap_ip = get_non_ap_ip()
     should_switch_network = (
-        ip_address(client_ip) in InterfaceNetworkData("wlan_ap0").network and pi_top_ip
+        client_ip in InterfaceNetworkData("wlan_ap0").network
+        and len(pi_top_non_ap_ip) == 0
     )
 
     response = {
-        "clientIp": client_ip,
-        "piTopIp": pi_top_ip,
+        "clientIp": client_ip.exploded,
+        "piTopIp": pi_top_non_ap_ip
+        if len(pi_top_non_ap_ip) == 0
+        else get_internal_ip("wlan_ap0"),
         "shouldSwitchNetwork": should_switch_network,
     }
-    logger.info(f"on_same_network: {response}")
+    logger.info(f"should_switch_network: {response}")
     return response

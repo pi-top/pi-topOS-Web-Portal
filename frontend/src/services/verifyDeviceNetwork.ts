@@ -5,7 +5,7 @@ import apiBaseUrl from "./apiBaseUrl";
 
 export default async function verifyDeviceNetwork() {
   const { data } = await axios.get<SwitchNetworkData>(
-    `${apiBaseUrl}/on-same-network`
+    `${apiBaseUrl}/should-switch-networks`
   );
 
   return data;

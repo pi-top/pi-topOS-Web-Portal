@@ -26,10 +26,10 @@ from .helpers.finalise import (
     enable_further_link_service,
     enable_pt_miniscreen,
     fw_update_is_due,
-    on_same_network,
     onboarding_completed,
     reboot,
     restore_files,
+    should_switch_network,
     stop_onboarding_autostart,
     update_eeprom,
 )
@@ -508,7 +508,7 @@ def post_disable_ap_mode():
     return "OK"
 
 
-@app.route("/on-same-network", methods=["GET"])
-def get_client_on_same_network():
-    logger.debug("Route '/on-same-network'")
-    return jdumps(on_same_network(request))
+@app.route("/should-switch-networks", methods=["GET"])
+def get_client_should_switch_network():
+    logger.debug("Route '/should-switch-networks'")
+    return jdumps(should_switch_network(request))
