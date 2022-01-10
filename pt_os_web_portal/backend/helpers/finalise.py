@@ -1,13 +1,13 @@
 import logging
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_address
 from os import path, remove
-from subprocess import DEVNULL, PIPE, Popen
 from typing import Dict
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
 from pitop.common.sys_info import (
+    InterfaceNetworkData,
     get_address_for_ptusb_connected_device,
     get_internal_ip,
 )
@@ -184,22 +184,6 @@ def disable_ap_mode() -> None:
 def should_switch_network(request) -> Dict:
     logger.info("Function should_switch_network()")
 
-    class InterfaceNetworkData:
-        def __init__(self, interface):
-            self.interface = interface
-            self.ip = ip_address(get_internal_ip(self.interface))
-            self.network = ip_network(f"{self.ip}/{self.netmask}", strict=False)
-
-        @property
-        def netmask(self):
-            cmd = f"ifconfig {self.interface} " + "| awk '/netmask /{ print $4;}'"
-            output = (
-                Popen(cmd, shell=True, stdout=PIPE, stderr=DEVNULL)
-                .stdout.read()
-                .strip()
-            )
-            return output.decode("utf-8")
-
     def get_non_ap_ip():
         for iface in ("wlan0", "eth0"):
             try:
@@ -208,9 +192,10 @@ def should_switch_network(request) -> Dict:
             except ValueError:
                 pass
 
-        # ptusb0 always has an IP address, so check is performed differently
-        if len(get_address_for_ptusb_connected_device()) > 0:
-            return get_internal_ip("ptusb0")
+        # ptusb0 interface always has an IP address, so check is performed differently
+        ptusb0_data = InterfaceNetworkData("ptusb0")
+        if len(get_address_for_ptusb_connected_device(network=ptusb0_data.network)) > 0:
+            return ptusb0_data.ip.exploded
 
         return ""
 
