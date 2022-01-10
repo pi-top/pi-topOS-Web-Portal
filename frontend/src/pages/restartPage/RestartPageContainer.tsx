@@ -52,11 +52,12 @@ export default ({
   const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
   const [displaySwitchNetworkDialog, setDisplaySwitchNetworkDialog] = useState(false);
   const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
+  const [turnOffAp, setTurnOffAp] = useState(true);
 
   useEffect(() => {
     verifyDeviceNetwork()
       .then((data) => {
-        setDisplaySwitchNetworkDialog(data.shouldSwitchNetwork)
+        setDisplaySwitchNetworkDialog(data.shouldSwitchNetwork);
         data.piTopIp && setPiTopIpAddress(data.piTopIp);
       })
       .catch(() => null)
@@ -138,6 +139,7 @@ export default ({
       onBackClick={goToPreviousPage}
       checkingOnSameNetwork={checkingOnSameNetwork}
       displayMoveAwayFromApDialog={!checkingOnSameNetwork && displaySwitchNetworkDialog}
+      onDisplayMoveAwayFromApDialogSkip={() => setTurnOffAp(false)}
       piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);
@@ -195,7 +197,7 @@ export default ({
             )
           )
           .finally(() =>
-            ! displaySwitchNetworkDialog && safelyRunService(
+            turnOffAp && safelyRunService(
               disableApMode,
               "Disabling my access point..."
             )

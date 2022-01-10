@@ -41,6 +41,7 @@ export type Props = {
   displayMoveAwayFromApDialog: boolean;
   piTopIpAddress: string;
   onManualPowerOnDialogClose: () => void;
+  onDisplayMoveAwayFromApDialogSkip: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
 };
@@ -55,6 +56,7 @@ export default ({
   progressMessage,
   displayManualPowerOnDialog,
   displayMoveAwayFromApDialog,
+  onDisplayMoveAwayFromApDialogSkip,
   checkingOnSameNetwork,
   piTopIpAddress,
   onManualPowerOnDialogClose,
@@ -132,6 +134,7 @@ export default ({
         active={moveAwayFromAPDialogActive}
         onSkip={() => {
           setMoveAwayFromAPDialogActive(!moveAwayFromAPDialogActive);
+          onDisplayMoveAwayFromApDialogSkip();
         }}
         piTopIpAddress={piTopIpAddress}
       />}
