@@ -63,17 +63,17 @@ const disableApModeMock = disableApMode as jest.Mock;
 
 
 const mockServices = [
-  configureLandingMock,
-  deprioritiseOpenboxSessionMock,
-  enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
+  enableFurtherLinkServiceMock,
+  deprioritiseOpenboxSessionMock,
   restoreFilesMock,
+  configureLandingMock,
   stopOnboardingAutostartMock,
-  updateEepromMock,
   updateHubFirmwareMock,
-  rebootMock,
+  updateEepromMock,
   enablePtMiniscreenMock,
   disableApModeMock,
+  rebootMock,
 ];
 
 
@@ -284,6 +284,22 @@ describe("RestartPageContainer", () => {
     describe('when update hub firmware fails', () => {
       beforeEach(() => {
         updateHubFirmwareMock.mockRejectedValue(new Error());
+      });
+
+      it('calls remaining services', async () => {
+        fireEvent.click(getByText("Restart"));
+
+        await wait();
+
+        mockServices.forEach((mock) => {
+          expect(mock).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('when disabling access point fails', () => {
+      beforeEach(() => {
+        disableApModeMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {

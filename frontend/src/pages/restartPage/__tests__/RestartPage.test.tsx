@@ -37,6 +37,7 @@ describe("RestartPage", () => {
       onManualPowerOnDialogClose: jest.fn(),
       displayMoveAwayFromApDialog: false,
       checkingOnSameNetwork: false,
+      onDisplayMoveAwayFromApDialogSkip: jest.fn(),
     };
 
     ({
