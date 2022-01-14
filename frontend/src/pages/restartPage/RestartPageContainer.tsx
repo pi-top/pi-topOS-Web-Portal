@@ -9,6 +9,7 @@ import enableFirmwareUpdaterService from "../../services/enableFirmwareUpdaterSe
 import enableFurtherLinkService from "../../services/enableFurtherLinkService";
 import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 import reboot from "../../services/reboot";
+import setHubToMode5 from "../../services/setHubToMode5";
 import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
@@ -174,6 +175,12 @@ export default ({
             safelyRunService(
               enablePtMiniscreen,
               "Reminded myself to tell the miniscreen to do its thing in the morning..."
+            )
+          )
+          .finally(() =>
+            safelyRunService(
+              setHubToMode5,
+              "Made sure that the miniscreen doesn't go to sleep while I reboot..."
             )
           )
           .catch(console.error)
