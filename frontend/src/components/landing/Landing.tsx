@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cx from "classnames";
 import styles from "./Landing.module.css";
 
@@ -15,6 +15,7 @@ import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openFurther from "../../services/openFurther";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
+import stopLandingAutostart from "../../services/stopLandingAutostart";
 
 
 const pages = [
@@ -95,6 +96,10 @@ const pages = [
 
 export default () => {
   const [selectedElement, setSelectedElement] = useState(pages[0]);
+
+  useEffect(() => {
+    stopLandingAutostart().catch(() => null);
+  }, []);
 
   return (
     <div className={cx(styles.container)}>
