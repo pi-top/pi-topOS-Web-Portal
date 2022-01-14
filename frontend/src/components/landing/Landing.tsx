@@ -17,8 +17,14 @@ import openFurther from "../../services/openFurther";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
 import stopLandingAutostart from "../../services/stopLandingAutostart";
 
+export type LandingPageElement = {
+  title: string;
+  id: string;
+  detail: JSX.Element;
+};
 
-const pages = [
+
+const landingPages = [
   {
     title: "Learn by making on Further",
     id: "further",
@@ -93,8 +99,11 @@ const pages = [
   },
 ];
 
+export type Props = {
+  pages: LandingPageElement[];
+};
 
-export default () => {
+export default ({ pages = landingPages }: Props) => {
   const [selectedElement, setSelectedElement] = useState(pages[0]);
 
   useEffect(() => {
