@@ -28,6 +28,7 @@ from .helpers.finalise import (
     onboarding_completed,
     reboot,
     restore_files,
+    set_hub_to_mode_5,
     stop_onboarding_autostart,
     update_eeprom,
 )
@@ -354,6 +355,13 @@ def post_enable_firmware_updater_service():
 def post_enable_further_link_service():
     logger.debug("Route '/enable-further-link-service'")
     enable_further_link_service()
+    return "OK"
+
+
+@app.route("/set-hub-mode-5", methods=["POST"])
+def post_set_hub_to_mode_5():
+    logger.debug("Route '/set-hub-mode-5'")
+    set_hub_to_mode_5()
     return "OK"
 
 

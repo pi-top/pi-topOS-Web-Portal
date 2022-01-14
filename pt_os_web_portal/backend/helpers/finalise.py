@@ -1,9 +1,11 @@
 import logging
 from os import path, remove
 
+from pitop.common.bitwise_ops import set_bits_high, set_bits_low
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
+from pitop.common.i2c_device import I2CDevice
 from pitop.system import device_type
 from pt_fw_updater.update import main as update_firmware
 
@@ -164,3 +166,31 @@ def do_firmware_update():
         "touch /tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown",
         timeout=10,
     )
+
+
+def set_hub_to_mode_5():
+    logger.debug("Function: set_hub_to_mode_5()")
+    ID__MCU_SOFT_VERS_MAJOR = 0xE0
+    PWR__SHUTDOWN_CTRL_REG = 0xA0
+
+    if device_type() != DeviceName.pi_top_4.value:
+        logger.info("Device isn't a pi-top [4] - skipping...")
+        return
+
+    try:
+        i2c_device = I2CDevice("/dev/i2c-1", 0x11)
+        i2c_device.set_delays(0.001, 0.001)
+        i2c_device.connect()
+    except Exception as e:
+        logger.debug(f"Error: {e}")
+        return
+
+    if int(i2c_device.read_unsigned_byte(ID__MCU_SOFT_VERS_MAJOR)) > 3:
+        logger.info("Setting hub to mode 5...")
+        full_byte = i2c_device.read_unsigned_byte(PWR__SHUTDOWN_CTRL_REG)
+        full_byte = set_bits_low(0b00010000, full_byte)
+        full_byte = set_bits_high(0b00101000, full_byte)
+        logger.debug(
+            f"Writing {bin(full_byte)} to register '{hex(PWR__SHUTDOWN_CTRL_REG)}'"
+        )
+        i2c_device.write_byte(PWR__SHUTDOWN_CTRL_REG, full_byte)
