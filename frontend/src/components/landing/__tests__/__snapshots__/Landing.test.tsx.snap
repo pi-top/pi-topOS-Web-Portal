@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Landing renders correct image 1`] = `
+<img
+  alt="banner"
+  class="image"
+  draggable="false"
+  src="Any image"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`Landing renders prompt 1`] = `
+<h1
+  class="prompt"
+>
+  This is a 
+  <span
+    class="green"
+  >
+    prompt
+  </span>
+</h1>
+`;

@@ -57,8 +57,8 @@ describe("Landing", () => {
     } = render(<Landing {...defaultProps} />));
   });
 
-  it("renders banner image", () => {
-    expect(queryByAltText("banner")).toBeInTheDocument();
+  it("renders correct image", () => {
+    expect(queryByAltText("banner")).toMatchSnapshot();
   });
 
   it("renders message", () => {
@@ -66,7 +66,8 @@ describe("Landing", () => {
   });
 
   it("renders prompt", () => {
-    expect(getByText(pageContent.prompt)).toBeInTheDocument();
+    const prompt = layout.querySelector(".prompt");
+    expect(prompt).toMatchSnapshot();
   });
 
 });
