@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Landing renders correct image 1`] = `
+exports[`Landing renders the active page image 1`] = `
 <img
   alt="banner"
   class="image"
@@ -10,7 +10,7 @@ exports[`Landing renders correct image 1`] = `
 />
 `;
 
-exports[`Landing renders prompt 1`] = `
+exports[`Landing renders the active page prompt 1`] = `
 <h1
   class="prompt"
 >
@@ -20,5 +20,29 @@ exports[`Landing renders prompt 1`] = `
   >
     prompt
   </span>
+</h1>
+`;
+
+exports[`Landing when clicking another page from the list renders the selected page image 1`] = `
+<img
+  alt="banner"
+  class="image"
+  draggable="false"
+  src="Second image"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`Landing when clicking another page from the list renders the selected page prompt 1`] = `
+<h1
+  class="prompt"
+>
+  This is the prompt for the 
+  <span
+    class="green"
+  >
+    second
+  </span>
+   page
 </h1>
 `;

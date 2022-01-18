@@ -1,34 +1,62 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, getAllByText, render, wait, waitForElement } from "@testing-library/react";
 
 import Landing, { Props } from "../Landing";
 import LandingPageTemplate from "../../../pages/landingPageTemplate/LandingPageTemplate";
 
-const pageContent = {
-  title: "This is the title",
+const firstPageContent = {
+  title: "This is the title of the first page",
   id: "kb",
-  templateTitle: "This is the title for the template",
+  templateTitle: "This is the title for the first page",
   urlInfo: {
     defaultUrl: "https://www.pi-top.com",
     onWebRenderer: jest.fn(),
   },
-  message: "A message",
+  message: "A message for the first",
   prompt: <>This is a <span className="green">prompt</span></>,
   image: "Any image"
 }
 
+const secondPageContent = {
+  title: "This is another title",
+  id: "sdk",
+  templateTitle: "This is title for the second page",
+  urlInfo: {
+    defaultUrl: "https://further.pi-top.com",
+    onWebRenderer: jest.fn(),
+  },
+  message: "This is the message for the second page",
+  prompt: <>This is the prompt for the <span className="green">second</span> page</>,
+  image: "Second image"
+}
+
+
 const landingPages = [
   {
-    title: pageContent.title,
-    id: pageContent.id,
+    title: firstPageContent.title,
+    id: firstPageContent.id,
     detail: (
       <LandingPageTemplate
-        key={pageContent.id}
-        title={pageContent.templateTitle}
-        urlInfo={pageContent.urlInfo}
-        message={pageContent.message}
-        prompt={pageContent.prompt}
-        image={pageContent.image}
+        key={firstPageContent.id}
+        title={firstPageContent.templateTitle}
+        urlInfo={firstPageContent.urlInfo}
+        message={firstPageContent.message}
+        prompt={firstPageContent.prompt}
+        image={firstPageContent.image}
+      />
+    )
+  },
+  {
+    title: secondPageContent.title,
+    id: secondPageContent.id,
+    detail: (
+      <LandingPageTemplate
+        key={secondPageContent.id}
+        title={secondPageContent.templateTitle}
+        urlInfo={secondPageContent.urlInfo}
+        message={secondPageContent.message}
+        prompt={secondPageContent.prompt}
+        image={secondPageContent.image}
       />
     )
   },
@@ -57,17 +85,61 @@ describe("Landing", () => {
     } = render(<Landing {...defaultProps} />));
   });
 
-  it("renders correct image", () => {
+  it("renders the list of pages", () => {
+    expect(layout.querySelector(".landingList")).toBeInTheDocument();
+  });
+
+  it("renders all the provided pages in the list of pages", () => {
+    landingPages.forEach((page) => {
+      expect(queryByText(page.title)).toBeInTheDocument()
+    });
+  });
+
+  it("first element of the list is set as active in the list of pages", () => {
+    expect(layout.querySelector(".selectedElement")).toHaveTextContent(firstPageContent.title);
+  });
+
+  it("only one element of the list is set as active", () => {
+    expect(layout.querySelectorAll(".selectedElement").length).toBe(1)
+  });
+
+  it("renders the active page image", () => {
     expect(queryByAltText("banner")).toMatchSnapshot();
   });
 
-  it("renders message", () => {
-    expect(getByText(pageContent.message)).toBeInTheDocument();
+  it("renders the active page message", () => {
+    expect(getByText(firstPageContent.message)).toBeInTheDocument();
   });
 
-  it("renders prompt", () => {
-    const prompt = layout.querySelector(".prompt");
-    expect(prompt).toMatchSnapshot();
+  it("renders the active page prompt", () => {
+    expect(layout.querySelector(".prompt")).toMatchSnapshot();
+  });
+
+  describe("when clicking another page from the list", () => {
+    beforeEach(async () => {
+      fireEvent.click(getByText(secondPageContent.title))
+      wait();
+    });
+
+    it("clicked page is set as active in the list of pages", () => {
+      expect(layout.querySelector(".selectedElement")).toHaveTextContent(secondPageContent.title);
+    });
+
+    it("only one element of the list is set as active", () => {
+      expect(layout.querySelectorAll(".selectedElement").length).toBe(1)
+    });
+
+    it("renders the selected page image", () => {
+      expect(queryByAltText("banner")).toMatchSnapshot();
+    });
+
+    it("renders the selected page message", () => {
+      expect(getByText(secondPageContent.message)).toBeInTheDocument();
+    });
+
+    it("renders the selected page prompt", () => {
+      expect(layout.querySelector(".prompt")).toMatchSnapshot();
+    });
   });
 
 });
