@@ -3,6 +3,12 @@ import { fireEvent, getAllByText, render, wait, waitForElement } from "@testing-
 
 import Landing, { Props } from "../Landing";
 import LandingPageTemplate from "../../../pages/landingPageTemplate/LandingPageTemplate";
+import stopLandingAutostart from "../../../services/stopLandingAutostart";
+
+jest.mock("../../../services/stopLandingAutostart");
+
+const stopLandingAutostartMock = stopLandingAutostart as jest.Mock;
+
 
 const firstPageContent = {
   title: "This is the title of the first page",
@@ -71,6 +77,8 @@ describe("Landing", () => {
   let getByText: any;
   let rerender: any;
   beforeEach(() => {
+    stopLandingAutostartMock.mockResolvedValue("OK");
+
     defaultProps = {
       pages: landingPages,
     };
@@ -113,6 +121,10 @@ describe("Landing", () => {
 
   it("renders the active page prompt", () => {
     expect(layout.querySelector(".prompt")).toMatchSnapshot();
+  });
+
+  it("stops landing from autostarting on boot", () => {
+    expect(stopLandingAutostartMock).toHaveBeenCalled();
   });
 
   describe("when clicking another page from the list", () => {
