@@ -4,8 +4,8 @@ import closeButtonImage from "../../assets/images/landing-close-button.svg";
 import { runningOnWebRenderer } from '../../helpers/utils';
 import MaskedDiv from '../atoms/masked/MaskedDiv';
 import Button from '../atoms/button/Button';
+import closePtOsLandingWindow from '../../services/closePtOsLandingWindow';
 
-const onCloseButton = () => {};
 
 export default () => {
   return (
@@ -20,7 +20,10 @@ export default () => {
           className={styles.closeButtonDiv}
           mask={`url(${closeButtonImage})`}
         >
-          <Button className={styles.closeButton} onClick={onCloseButton}> </Button>
+          <Button
+            className={styles.closeButton}
+            onClick={() => closePtOsLandingWindow().catch(() => null)}>
+          </Button>
         </MaskedDiv>
       }
     </header>
