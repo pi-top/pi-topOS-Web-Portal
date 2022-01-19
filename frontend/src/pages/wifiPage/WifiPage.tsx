@@ -51,7 +51,7 @@ export default ({
   const [selectedNetwork, setSelectedNetwork] = useState(connectedNetwork);
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
 
-  const { ssid: selectedSSID } = selectedNetwork || {};
+  const { ssid: selectedSSID, bssid: selectedBSSID, frequency: selectedFrequency } = selectedNetwork || {};
   const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
   const getExplanation = () => {
     if (connectedNetwork) {
@@ -62,6 +62,13 @@ export default ({
     }
     return ExplanationMessage.NotConnected;
   }
+
+  const createNetworkLabel = (ssid: string, frequency: string) => {
+    if (!frequency) {
+      return ssid;
+    }
+    return ssid + " [" + frequency + "]";
+  };
 
   return (
     <>
@@ -85,22 +92,22 @@ export default ({
       >
         <div className={styles.wifiSelectContainer}>
           <Select
-            // force rerenders when selected ssid changes
-            key={selectedSSID}
+            // force rerender when selected ssid changes
+            key={selectedBSSID}
             value={
-              selectedSSID && {
-                value: selectedSSID,
-                label: selectedSSID,
+              selectedBSSID && selectedSSID && selectedFrequency && {
+                value: selectedBSSID,
+                label: createNetworkLabel(selectedSSID, selectedFrequency),
               }
             }
-            options={networks.map(({ ssid }) => ({
-              value: ssid,
-              label: ssid,
+            options={networks.map(({ ssid, frequency, bssid }) => ({
+              value: bssid,
+              label: createNetworkLabel(ssid, frequency),
             }))}
-            onChange={(newSSID) => {
+            onChange={(newBSSID) => {
               setIsConnectDialogActive(true);
               setSelectedNetwork(
-                networks.find((network) => newSSID === network.ssid)
+                networks.find((network) => newBSSID === network.bssid)
               );
             }}
             placeholder="Please select WiFi network..."
