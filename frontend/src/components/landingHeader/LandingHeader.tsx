@@ -22,7 +22,9 @@ export default () => {
         >
           <Button
             className={styles.closeButton}
-            onClick={() => closePtOsLandingWindow().catch(() => null)}>
+            onClick={() => closePtOsLandingWindow().catch(() => null)}
+            aria-label="close-window"
+          >
           </Button>
         </MaskedDiv>
       }
