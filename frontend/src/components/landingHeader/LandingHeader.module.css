@@ -27,6 +27,7 @@ h1 {
 
 .closeButton {
   background-color: #505050;
+  min-width: 53px;
 }
 
 .closeButton:hover:enabled {
