@@ -112,15 +112,14 @@ class WifiManager:
         logger.info("ssids found: {}".format([r.ssid for r in results]))
         return results
 
-    def connect(self, ssid: str, password: str) -> None:
+    def connect(self, bssid: str, password: str) -> None:
         network_profile = None
         for r in self.scan_and_get_results():
-            if r.ssid == ssid:
+            if r.bssid == bssid:
                 network_profile = r
                 break
-
         if network_profile is None:
-            logger.info("Unable to find network matching SSID '%s'" % ssid)
+            logger.info(f"Unable to find network matching BSSID '{bssid}'")
             return
 
         network_profile.key = password
@@ -185,15 +184,17 @@ def get_ssids() -> List[Dict]:
             "ssid": r.ssid,
             "passwordRequired": len(r.akm) != 0
             and pywifi.const.AKM_TYPE_NONE not in r.akm,
+            "frequency": r.freq,
+            "bssid": r.bssid,
         }
         for r in wm.scan_and_get_results()
     ]
 
 
-def attempt_connection(ssid, password, on_connection=None) -> None:
-    logger.info("Attempting to connect to {}".format(ssid))
+def attempt_connection(bssid: str, password: str, on_connection=None) -> None:
+    logger.info(f"Attempting to connect to network with bssid '{bssid}'")
     wm = get_wifi_manager_instance()
-    wm.connect(ssid, password)
+    wm.connect(bssid, password)
 
     if wm.is_connected() and on_connection:
         logger.info("Executing on_connection callback")
