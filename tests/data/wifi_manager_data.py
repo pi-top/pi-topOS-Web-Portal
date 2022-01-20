@@ -106,7 +106,7 @@ network_profiles = [
         "akm": [2, 4],
         "cipher": 0,
         "ssid": "Martina -1-5G",
-        "bssid": "18:35:d1:20:98:5f",
+        "bssid": "48:35:d1:20:98:5f",
         "key": None,
         "freq": 5200,
         "signal": -92,

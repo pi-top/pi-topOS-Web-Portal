@@ -11,7 +11,7 @@ from tests.data.keyboard_data import keyboard_file_before
 
 @pytest.fixture(scope="session")
 def app():
-    app = create_app(test=True)
+    app = create_app(test_mode=True, os_updater=None)
     testing_client = app.test_client()
     ctx = app.app_context()
     ctx.push()
@@ -61,7 +61,7 @@ def wifi_manager_module():
 
     import backend.helpers.wifi_manager
 
-    create_app(test=True)
+    create_app(test_mode=True, os_updater=None)
     yield backend.helpers.wifi_manager
 
     del sys.modules["backend.helpers.wifi_manager"]
@@ -71,9 +71,9 @@ def wifi_manager_module():
 def os_updater_module():
     import sys
 
-    import backend.helpers.os_updater
+    import pt_os_web_portal.backend.helpers.os_updater
 
-    create_app(test=True)
-    yield backend.helpers.os_updater
+    create_app(test_mode=True, os_updater=None)
+    yield pt_os_web_portal.backend.helpers.os_updater
 
-    del sys.modules["backend.helpers.os_updater"]
+    del sys.modules["pt_os_web_portal.backend.helpers.os_updater"]
