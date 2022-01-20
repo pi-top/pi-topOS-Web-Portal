@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LandingHeader renders header 1`] = `
+<header
+  class="header"
+>
+  <div
+    class="logoContainer"
+  >
+    <h1>
+      Welcome to 
+      <span
+        class="green"
+      >
+        pi-topOS
+      </span>
+    </h1>
+  </div>
+</header>
+`;
+
+exports[`LandingHeader renders prompt message 1`] = `
+<div
+  class="logoContainer"
+>
+  <h1>
+    Welcome to 
+    <span
+      class="green"
+    >
+      pi-topOS
+    </span>
+  </h1>
+</div>
+`;
