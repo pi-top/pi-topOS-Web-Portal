@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from time import sleep
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .modules import get_pywifi
 
@@ -106,11 +106,22 @@ class WifiManager:
             WifiManager.wait_for(
                 self.is_scanning, "scan completion", condition_true=False, silent=True
             )
-
         logger.info("Scan completed")
-        results = self.wifi_interface.scan_results()
-        logger.info("ssids found: {}".format([r.ssid for r in results]))
-        return results
+
+        networks: Dict[str, Any] = {}
+        for network in self.wifi_interface.scan_results():
+            ssid = network.ssid
+            ssid_to_display = (
+                network.ssid if network.freq < 5000 else f"{network.ssid} [5G]"
+            )
+            if (
+                ssid_to_display in networks
+                and getattr(networks[ssid], "signal", -100) > network.signal
+            ):
+                continue
+            networks[ssid_to_display] = network
+        logger.info(f"Found SSIDs: {tuple(networks.keys())}")
+        return [networks[ssid_to_display] for ssid_to_display in networks]
 
     def connect(self, bssid: str, password: str) -> None:
         network_profile = None
