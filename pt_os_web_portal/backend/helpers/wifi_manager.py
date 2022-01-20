@@ -181,10 +181,9 @@ def get_ssids() -> List[Dict]:
     logger.info("GETTING LIST OF SSIDS")
     return [
         {
-            "ssid": r.ssid,
+            "ssid": r.ssid if r.freq < 5000 else f"{r.ssid} [5G]",
             "passwordRequired": len(r.akm) != 0
             and pywifi.const.AKM_TYPE_NONE not in r.akm,
-            "frequency": r.freq,
             "bssid": r.bssid,
         }
         for r in wm.scan_and_get_results()

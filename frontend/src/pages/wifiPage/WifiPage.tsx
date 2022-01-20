@@ -51,7 +51,7 @@ export default ({
   const [selectedNetwork, setSelectedNetwork] = useState(connectedNetwork);
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
 
-  const { ssid: selectedSSID, bssid: selectedBSSID, frequency: selectedFrequency } = selectedNetwork || {};
+  const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
   const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
   const getExplanation = () => {
     if (connectedNetwork) {
@@ -62,13 +62,6 @@ export default ({
     }
     return ExplanationMessage.NotConnected;
   }
-
-  const createNetworkLabel = (ssid: string, frequency: string) => {
-    if (!frequency) {
-      return ssid;
-    }
-    return ssid + " [" + frequency + "]";
-  };
 
   return (
     <>
@@ -95,14 +88,14 @@ export default ({
             // force rerender when selected ssid changes
             key={selectedBSSID}
             value={
-              selectedBSSID && selectedSSID && selectedFrequency && {
+              selectedBSSID && selectedSSID && {
                 value: selectedBSSID,
-                label: createNetworkLabel(selectedSSID, selectedFrequency),
+                label: selectedSSID,
               }
             }
-            options={networks.map(({ ssid, frequency, bssid }) => ({
+            options={networks.map(({ ssid, bssid }) => ({
               value: bssid,
-              label: createNetworkLabel(ssid, frequency),
+              label: ssid,
             }))}
             onChange={(newBSSID) => {
               setIsConnectDialogActive(true);
