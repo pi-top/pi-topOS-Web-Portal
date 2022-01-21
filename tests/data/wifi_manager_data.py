@@ -1,14 +1,42 @@
 wifi_ssids = [
-    {"ssid": "Depto 606-5G", "passwordRequired": True},
-    {"ssid": "Depto 606", "passwordRequired": True},
-    {"ssid": "VTR-5737196", "passwordRequired": True},
-    {"ssid": "VTR-5737196", "passwordRequired": True},
-    {"ssid": "VTR-2049450", "passwordRequired": True},
-    {"ssid": "VTR-7138797 - 5G", "passwordRequired": True},
-    {"ssid": "VTR-3847319", "passwordRequired": True},
-    {"ssid": "Paraya_5G", "passwordRequired": True},
-    {"ssid": "Martina -1-5G", "passwordRequired": True},
-    {"ssid": "Free internet!", "passwordRequired": False},
+    {
+        "ssid": "Depto 606-5G [5G]",
+        "passwordRequired": True,
+        "bssid": "e0:cc:7a:fd:84:50",
+    },
+    {"ssid": "Depto 606", "passwordRequired": True, "bssid": "e0:cc:7a:fd:84:4c"},
+    {"ssid": "VTR-5737196", "passwordRequired": True, "bssid": "c0:05:c2:68:46:69"},
+    {
+        "ssid": "VTR-5737196 [5G]",
+        "passwordRequired": True,
+        "bssid": "c0:05:c2:68:46:6f",
+    },
+    {
+        "ssid": "VTR-2049450 [5G]",
+        "passwordRequired": True,
+        "bssid": "e4:57:40:99:ee:15",
+    },
+    {
+        "ssid": "VTR-7138797 - 5G [5G]",
+        "passwordRequired": True,
+        "bssid": "e4:57:40:35:da:0b",
+    },
+    {
+        "ssid": "VTR-3847319 [5G]",
+        "passwordRequired": True,
+        "bssid": "40:0d:10:eb:e4:77",
+    },
+    {"ssid": "Paraya_5G [5G]", "passwordRequired": True, "bssid": "e4:57:40:92:22:15"},
+    {
+        "ssid": "Martina -1-5G [5G]",
+        "passwordRequired": True,
+        "bssid": "18:35:d1:20:98:5f",
+    },
+    {
+        "ssid": "Free internet! [5G]",
+        "passwordRequired": False,
+        "bssid": "18:35:d1:20:98:5f",
+    },
 ]
 
 network_profiles = [

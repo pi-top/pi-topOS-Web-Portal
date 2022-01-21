@@ -10,7 +10,6 @@ from tests.data.finalise_data import cmd_line_before
 from tests.data.keyboard_data import keyboard_file_before
 
 
-@pytest.fixture(autouse=True)
 def patch_modules():
     modules_to_patch = [
         "further_link.start_further",
@@ -31,14 +30,10 @@ def patch_modules():
     for module in modules_to_patch:
         modules[module] = Mock()
 
-    yield
-
-    for module in modules_to_patch:
-        del modules[module]
-
 
 @pytest.fixture(scope="session")
 def app():
+    patch_modules()
     from pt_os_web_portal.backend import create_app
 
     app = create_app(test_mode=True, os_updater=None)
@@ -57,7 +52,7 @@ def socket_app():
     p.kill()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def cleanup_files():
     yield
     cleanup_files = [
@@ -70,7 +65,7 @@ def cleanup_files():
             os.remove(file)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def restore_files():
     yield
     file_data = [

@@ -31,11 +31,11 @@ class WifiManager:
         for i in pywifi.PyWiFi().interfaces():
             logger.debug(f"Checking against '{i.name()}'")
             if i.name() == iface_name:
-                logger.info("Successfully got interface '%s'" % iface_name)
+                logger.info(f"Successfully got interface '{iface_name}'")
                 return i
 
         # No wlan0 interface - is this an old Pi?
-        raise Exception("Unable to find %s" % iface_name)
+        raise Exception(f"Unable to find interface '{iface_name}'")
 
     def get_status(self) -> IfaceStatus:
         status_int = self.wifi_interface.status()

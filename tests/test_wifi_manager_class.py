@@ -47,7 +47,7 @@ def test_scan_and_get_results_output(wifi_manager_module):
     ]
 
 
-def test_connect_success_updates_state(wifi_manager_module):
+def test_on_connection_success_state_is_updated(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
     assert wifi_manager.is_inactive() is True
     wifi_manager.connect(
@@ -56,7 +56,6 @@ def test_connect_success_updates_state(wifi_manager_module):
     assert wifi_manager.is_connected() is True
 
 
-@pytest.mark.skip
 def test_connect_verifies_data_with_scan_and_get_results(wifi_manager_module, mocker):
     wifi_manager = wifi_manager_module.WifiManager()
     mocker.spy(wifi_manager, "scan_and_get_results")
@@ -66,8 +65,9 @@ def test_connect_verifies_data_with_scan_and_get_results(wifi_manager_module, mo
     assert wifi_manager.scan_and_get_results.call_count == 1
 
 
-@pytest.mark.skip
-def test_disconnect_is_called_before_connecting(wifi_manager_module, mocker):
+def test_disconnect_is_called_before_connecting_on_valid_bssid(
+    wifi_manager_module, mocker
+):
     wifi_manager = wifi_manager_module.WifiManager()
     mocker.spy(wifi_manager, "disconnect")
     wifi_manager.connect(
@@ -76,11 +76,10 @@ def test_disconnect_is_called_before_connecting(wifi_manager_module, mocker):
     assert wifi_manager.disconnect.call_count == 1
 
 
-@pytest.mark.skip
-def test_disconnect_is_not_called_on_invalid_ssids(wifi_manager_module, mocker):
+def test_disconnect_is_not_called_on_invalid_bssid(wifi_manager_module, mocker):
     wifi_manager = wifi_manager_module.WifiManager()
     mocker.spy(wifi_manager, "disconnect")
-    wifi_manager.connect(ssid="invalid ssid", password="this-is-not-my-real-password")
+    wifi_manager.connect(bssid="invalid bssid", password="this-is-not-my-real-password")
     assert wifi_manager.disconnect.call_count == 0
 
 
@@ -91,7 +90,7 @@ def test_connect_fix_on_networks_without_security(wifi_manager_module):
     assert wifi_manager.is_connected() is True
 
 
-def test_connect_failure_on_invalid_ssid(wifi_manager_module):
+def test_connect_failure_on_invalid_bssid(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
     assert wifi_manager.is_inactive() is True
     assert wifi_manager.is_connected() is False
@@ -103,7 +102,6 @@ def test_connect_failure_on_invalid_ssid(wifi_manager_module):
     assert wifi_manager.is_connected() is False
 
 
-@pytest.mark.skip
 def test_connect_excepts_on_failure(wifi_manager_module, mocker):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.mocks.pywifi_mock.PyWiFiInterfaceMock.connect",
@@ -117,8 +115,7 @@ def test_connect_excepts_on_failure(wifi_manager_module, mocker):
         )
 
 
-@pytest.mark.skip
-def test_ssid_connected_success(wifi_manager_module, mocker):
+def test_ssid_connected_function_output(wifi_manager_module, mocker):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas",
         return_value=wpa_cli_status,
@@ -132,19 +129,22 @@ def test_ssid_connected_success(wifi_manager_module, mocker):
     assert wifi_manager.ssid_connected() == "Depto 606-5G"
 
 
-@pytest.mark.skip
-def test_ssid_connected_returns_empty_if_disconnected(wifi_manager_module, mocker):
+def test_ssid_connected_function_returns_empty_string_if_disconnected(
+    wifi_manager_module, mocker
+):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
         return_value=wifi_manager_module.IfaceStatus.INACTIVE,
     )
 
     wifi_manager = wifi_manager_module.WifiManager()
+    assert wifi_manager.is_inactive() is True
     assert wifi_manager.ssid_connected() == ""
 
 
-@pytest.mark.skip
-def test_ssid_connected_returns_empty_on_exception(wifi_manager_module, mocker):
+def test_ssid_connected_function_returns_empty_string_on_exception(
+    wifi_manager_module, mocker
+):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
         side_effect=Exception("Internal failure..."),
@@ -154,7 +154,6 @@ def test_ssid_connected_returns_empty_on_exception(wifi_manager_module, mocker):
     assert wifi_manager.ssid_connected() == ""
 
 
-@pytest.mark.skip
 def test_disconnect_waits_until_inactive_to_return(wifi_manager_module, mocker):
     def set_status_to_inactive():
         mocker.patch(
@@ -178,7 +177,6 @@ def test_disconnect_waits_until_inactive_to_return(wifi_manager_module, mocker):
     assert wifi_manager.wait_for.call_count == 1
 
 
-@pytest.mark.skip
 def test_disconnect_calls_interface_disconnect(wifi_manager_module, mocker):
     def set_status_to_inactive():
         mocker.patch(

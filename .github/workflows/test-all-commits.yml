@@ -22,7 +22,7 @@ jobs:
 
      - name: Run Python tests and generate coverage report
        run: |
-         TESTING=1 pytest --verbose --cov-report term-missing --cov=pt_os_web_portal
+         pytest --verbose --cov-report term-missing --cov=pt_os_web_portal
          coverage xml
 
      - name: Upload Python test coverage reports to Codecov
