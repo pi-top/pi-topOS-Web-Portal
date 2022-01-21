@@ -4,13 +4,15 @@ from time import sleep
 
 import pytest
 
-from pt_os_web_portal.backend import create_app
-from tests.data.finalise_data import cmd_line_before
-from tests.data.keyboard_data import keyboard_file_before
+from .backend import create_app
+from .tests.data.finalise_data import cmd_line_before
+from .tests.data.keyboard_data import keyboard_file_before
 
 
 @pytest.fixture(scope="session")
 def app():
+    print("__________________________________")
+    print("__________________________________")
     app = create_app(test_mode=True, os_updater=None)
     testing_client = app.test_client()
     ctx = app.app_context()
@@ -59,12 +61,14 @@ def restore_files():
 def wifi_manager_module():
     import sys
 
-    import backend.helpers.wifi_manager
+    import pt_os_web_portal.backend.helpers.wifi_manager
 
     create_app(test_mode=True, os_updater=None)
-    yield backend.helpers.wifi_manager
+    yield pt_os_web_portal.backend.helpers.wifi_manager
 
-    del sys.modules["backend.helpers.wifi_manager"]
+    if "pt_os_web_portal.backend.helpers.wifi_manager" in sys.modules:
+        del sys.modules["pt_os_web_portal.backend.helpers.wifi_manager"]
+    del pt_os_web_portal.backend.helpers.wifi_manager
 
 
 @pytest.fixture(scope="function")
@@ -76,4 +80,6 @@ def os_updater_module():
     create_app(test_mode=True, os_updater=None)
     yield pt_os_web_portal.backend.helpers.os_updater
 
-    del sys.modules["pt_os_web_portal.backend.helpers.os_updater"]
+    if "pt_os_web_portal.backend.helpers.os_updater" in sys.modules:
+        del sys.modules["pt_os_web_portal.backend.helpers.os_updater"]
+    del pt_os_web_portal.backend.helpers.os_updater

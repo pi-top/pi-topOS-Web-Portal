@@ -1,5 +1,4 @@
 from flask import json
-
 from tests.data.timezone_data import timezones_list
 from tests.utils import dotdict
 

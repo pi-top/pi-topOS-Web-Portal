@@ -1,5 +1,4 @@
 from flask import json
-
 from tests.data.keyboard_data import (
     keyboard_code_list,
     keyboard_current,

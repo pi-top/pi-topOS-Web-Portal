@@ -1,6 +1,5 @@
 import pytest
-
-from tests.data.wifi_manager_data import network_profiles, wpa_cli_status
+from data.wifi_manager_data import network_profiles, wpa_cli_status
 
 
 def test_constructor_excepts_when_interface_doesnt_exist(wifi_manager_module):
