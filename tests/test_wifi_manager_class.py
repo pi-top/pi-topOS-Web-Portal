@@ -33,6 +33,7 @@ def test_scan_and_get_results_output(wifi_manager_module):
     assert wifi_manager.is_inactive() is True
     assert type(networks) == list
     assert len(networks) == len(network_profiles)
+
     network_profile_keys = list(networks[0].__dict__.keys())
     assert network_profile_keys == [
         "id",
@@ -45,6 +46,51 @@ def test_scan_and_get_results_output(wifi_manager_module):
         "freq",
         "signal",
     ]
+
+
+def test_reported_5G_networks_have_5G_suffix(wifi_manager_module):
+    reported_networks = wifi_manager_module.get_ssids()
+
+    def find_reported_network_by_bssid(bssid):
+        for network in reported_networks:
+            if network.get("bssid") == bssid:
+                return network
+
+    for network_profile in network_profiles:
+        reported_network = find_reported_network_by_bssid(network_profile.get("bssid"))
+        if reported_network:
+            assert expected_name_for_network_profile(
+                network_profile
+            ) == reported_network.get("ssid")
+
+
+def expected_name_for_network_profile(network_profile):
+    expected_name = network_profile.get("ssid")
+    if network_profile.get("freq") >= 5000:
+        expected_name += " [5G]"
+    return expected_name
+
+
+def test_reported_ssids_dont_include_repeaters(wifi_manager_module):
+    reported_networks = wifi_manager_module.get_ssids()
+
+    def find_reported_network_by_key_value(key, value):
+        for network in reported_networks:
+            if network.get(key) == value:
+                return network
+
+    for network_profile in network_profiles:
+        reported_network = find_reported_network_by_key_value(
+            key="bssid", value=network_profile.get("bssid")
+        )
+        if not reported_network:
+            # a network detected by the low level backend wasn't reported to the frontend
+            reported_ssid = expected_name_for_network_profile(network_profile)
+            reported_network = find_reported_network_by_key_value(
+                key="ssid", value=reported_ssid
+            )
+            # but another one with the same SSID was reported - it's okay
+            assert reported_network is not None
 
 
 def test_on_connection_success_state_is_updated(wifi_manager_module):
