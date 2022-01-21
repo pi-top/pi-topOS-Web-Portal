@@ -1,6 +1,7 @@
 from os.path import isfile
 
 from helpers.registration import pi_top_registration_txt
+
 from tests.utils import assert_file_content
 
 

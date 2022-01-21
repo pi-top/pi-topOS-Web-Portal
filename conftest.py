@@ -6,8 +6,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from .tests.data.finalise_data import cmd_line_before
-from .tests.data.keyboard_data import keyboard_file_before
+from tests.data.finalise_data import cmd_line_before
+from tests.data.keyboard_data import keyboard_file_before
 
 
 @pytest.fixture(autouse=True)
@@ -39,7 +39,7 @@ def patch_modules():
 
 @pytest.fixture(scope="session")
 def app():
-    from .backend import create_app
+    from pt_os_web_portal.backend import create_app
 
     app = create_app(test_mode=True, os_updater=None)
     testing_client = app.test_client()
@@ -88,8 +88,7 @@ def restore_files():
 @pytest.fixture(scope="function")
 def wifi_manager_module():
     import pt_os_web_portal.backend.helpers.wifi_manager
-
-    from .backend import create_app
+    from pt_os_web_portal.backend import create_app
 
     create_app(test_mode=True, os_updater=None)
     yield pt_os_web_portal.backend.helpers.wifi_manager
@@ -102,8 +101,7 @@ def wifi_manager_module():
 @pytest.fixture(scope="function")
 def os_updater_module():
     import pt_os_web_portal.backend.helpers.os_updater
-
-    from .backend import create_app
+    from pt_os_web_portal.backend import create_app
 
     create_app(test_mode=True, os_updater=None)
     yield pt_os_web_portal.backend.helpers.os_updater

@@ -1,4 +1,5 @@
 from flask import json
+
 from tests.data.wifi_manager_data import wifi_ssids, wpa_cli_status
 from tests.utils import dotdict
 
