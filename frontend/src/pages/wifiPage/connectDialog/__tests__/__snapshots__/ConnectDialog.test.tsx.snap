@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ConnectDialog when a password protected network is received renders dialog message correctly 1`] = `
-<h3
+<div
   class="messageContainer"
   data-testid="dialog-message"
 >
@@ -14,11 +14,11 @@ exports[`ConnectDialog when a password protected network is received renders dia
    
   requires
    a password
-</h3>
+</div>
 `;
 
 exports[`ConnectDialog when an unprotected network is received renders dialog message correctly 1`] = `
-<h3
+<div
   class="messageContainer"
   data-testid="dialog-message"
 >
@@ -31,5 +31,5 @@ exports[`ConnectDialog when an unprotected network is received renders dialog me
    
   does not require
    a password
-</h3>
+</div>
 `;

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`WifiPageContainer when networks are loaded successfully when option with password is selected renders dialog message correctly 1`] = `
-<h3
+<div
   class="messageContainer"
   data-testid="dialog-message"
 >
@@ -14,5 +14,5 @@ exports[`WifiPageContainer when networks are loaded successfully when option wit
    
   requires
    a password
-</h3>
+</div>
 `;
