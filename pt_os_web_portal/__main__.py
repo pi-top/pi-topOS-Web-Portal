@@ -22,6 +22,7 @@ def configure_interrupt_signals(app):
         logger.info("Stopping...")
         app.stop()
         logger.debug("Stopped!")
+        exit(0)
 
     signal_handler(SIGINT, handler)
     signal_handler(SIGTERM, handler)
