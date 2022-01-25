@@ -110,13 +110,12 @@ class WifiManager:
 
         networks: Dict[str, Any] = {}
         for network in self.wifi_interface.scan_results():
-            ssid = network.ssid
             ssid_to_display = (
                 network.ssid if network.freq < 5000 else f"{network.ssid} [5G]"
             )
             if (
                 ssid_to_display in networks
-                and getattr(networks[ssid], "signal", -100) > network.signal
+                and getattr(networks[ssid_to_display], "signal", -100) > network.signal
             ):
                 continue
             networks[ssid_to_display] = network
