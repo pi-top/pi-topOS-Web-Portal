@@ -4,10 +4,12 @@ import {
   fireEvent,
   BoundFunction,
   GetByBoundAttribute,
+  GetAllByText,
   QueryByText,
   GetByText,
   RenderResult,
   QueryByBoundAttribute,
+  within,
 } from "@testing-library/react";
 import { AllByText, wait } from "@testing-library/dom";
 
@@ -15,7 +17,7 @@ import WifiPage, { Props, ErrorMessage, ExplanationMessage } from "../WifiPage";
 import queryReactSelect from "../../../../test/helpers/queryReactSelect";
 import reactSelectIsDisabled from "../../../../test/helpers/reactSelectIsDisabled";
 import { KeyCode } from "../../../../test/types/Keys";
-import { Network } from '../../../types/Network';
+import { Network } from "../../../types/Network";
 import querySpinner from "../../../../test/helpers/querySpinner";
 import connectToNetwork from "../../../services/connectToNetwork";
 
@@ -29,7 +31,8 @@ describe("WifiPage", () => {
   let queryByText: BoundFunction<QueryByText>;
   let getByText: BoundFunction<GetByText>;
   let queryAllByText: BoundFunction<AllByText>;
-  let queryByTestId: BoundFunction<QueryByBoundAttribute>;
+  let getAllByText: GetAllByText;
+  let getByTestId: BoundFunction<GetByBoundAttribute>;
   let queryByAltText: BoundFunction<QueryByBoundAttribute>;
   let queryByLabelText: BoundFunction<QueryByBoundAttribute>;
   let getByLabelText: BoundFunction<GetByBoundAttribute>;
@@ -48,24 +51,26 @@ describe("WifiPage", () => {
       isCompleted: false,
     };
 
-    connectToNetworkMock.mockResolvedValue('OK')
-
-    ({
-      container: wifiPage,
-      getByAltText,
-      queryByText,
-      queryAllByText,
-      queryByTestId,
-      queryByAltText,
-      queryByLabelText,
-      getByLabelText,
-      getByText,
-      rerender,
-    } = render(<WifiPage {...defaultProps} />));
+    connectToNetworkMock.mockResolvedValue("OK")(
+      ({
+        container: wifiPage,
+        getAllByText,
+        getByAltText,
+        queryByText,
+        queryAllByText,
+        queryByAltText,
+        queryByLabelText,
+        getAllByText,
+        getByLabelText,
+        getByTestId,
+        getByText,
+        rerender,
+      } = render(<WifiPage {...defaultProps} />))
+    );
   });
   afterEach(() => {
     connectToNetworkMock.mockRestore();
-  })
+  });
 
   it("renders the correct banner image", () => {
     expect(queryByAltText("wifi-page-banner")).toMatchSnapshot();
@@ -78,6 +83,10 @@ describe("WifiPage", () => {
 
   it("Next button is disabled on no internet", () => {
     expect(getByText("Next")).toHaveProperty("disabled");
+  });
+
+  it("renders skip button", () => {
+    expect(queryAllByText("Skip")).toHaveLength(2);
   });
 
   it("calls onBackClick when back button clicked", () => {
@@ -112,13 +121,35 @@ describe("WifiPage", () => {
     expect(querySpinner(wifiPage)).not.toBeInTheDocument();
   });
 
-  it("renders the dialog", () => {
-    expect(queryByTestId("dialog")).toBeInTheDocument();
+  it("renders a hidden connect dialog", () => {
+    expect(getByTestId("connect-dialog")).toHaveClass("hidden");
   });
 
-  it("hides the connect dialog", () => {
-    expect(queryByTestId("dialog")).toHaveClass("hidden");
+  it("renders a hidden skip warning dialog", () => {
+    expect(getByTestId("skip-warning-dialog")).toHaveClass("hidden");
   });
+
+  it("renders skip warning dialog when skip button pressed", () => {
+    fireEvent.click(getAllByText("Skip")[0]);
+    expect(getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
+  });
+
+  it('hides skip warning dialog when "Connect" button clicked', () => {
+    fireEvent.click(getAllByText("Skip")[0]);
+    expect(getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
+
+    fireEvent.click(getByText("Connect"));
+    expect(getByTestId("skip-warning-dialog")).toHaveClass("hidden");
+  });
+
+  it("skips to next page when warning dialog skip button clicked", () => {
+    fireEvent.click(
+      within(getByTestId("skip-warning-dialog")).getByText("Skip")
+    );
+
+    expect(defaultProps.onSkipClick).toHaveBeenCalled();
+  });
+
 
   describe("when entering page with an internet connection", () => {
     beforeEach(() => {
@@ -140,16 +171,6 @@ describe("WifiPage", () => {
       fireEvent.click(getByText("Next"));
 
       expect(defaultProps.onNextClick).toHaveBeenCalled();
-    });
-
-    it("skip button exists", () => {
-      expect(queryByText("Skip")).toBeInTheDocument();
-    });
-
-    it("calls onSkipClick when skip button clicked", () => {
-      fireEvent.click(getByText("Skip"));
-
-      expect(defaultProps.onSkipClick).toHaveBeenCalled();
     });
   });
 
@@ -207,16 +228,6 @@ describe("WifiPage", () => {
 
     it("renders error message", () => {
       expect(queryByText(ErrorMessage.FetchNetworks)).toBeInTheDocument();
-    });
-
-    it("skip button is present", () => {
-      expect(getByText("Skip")).toBeInTheDocument();
-    });
-
-    it("calls onSkipClick when skip button clicked", () => {
-      fireEvent.click(getByText("Skip"));
-
-      expect(defaultProps.onSkipClick).toHaveBeenCalled();
     });
   });
 
@@ -289,11 +300,13 @@ describe("WifiPage", () => {
       });
 
       it("shows the connect dialog", () => {
-        expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+        expect(getByTestId("connect-dialog")).not.toHaveClass("hidden");
       });
 
       it("renders dialog message correctly", () => {
-        expect(queryByTestId("dialog-message")).toMatchSnapshot();
+        expect(
+          within(getByTestId("connect-dialog")).getByTestId("dialog-message")
+        ).toMatchSnapshot();
       });
 
       describe("on cancel click", () => {
@@ -302,7 +315,7 @@ describe("WifiPage", () => {
         });
 
         it("hides the dialog", () => {
-          expect(queryByTestId("dialog")).toHaveClass("hidden");
+          expect(getByTestId("connect-dialog")).toHaveClass("hidden");
         });
 
         it("resets selected network", () => {
@@ -310,19 +323,19 @@ describe("WifiPage", () => {
         });
       });
 
-      describe('when finished connecting to network', () => {
+      describe("when finished connecting to network", () => {
         beforeEach(async () => {
-          fireEvent.click(getByText('Join'));
+          fireEvent.click(getByText("Join"));
 
           await wait();
         });
 
-        it('hides the connect dialog on OK click', () => {
-          fireEvent.click(getByText('OK'));
+        it("hides the connect dialog on OK click", () => {
+          fireEvent.click(getByText("OK"));
 
-          expect(queryByTestId("dialog")).toHaveClass("hidden");
-        })
-      })
+          expect(getByTestId("connect-dialog")).toHaveClass("hidden");
+        });
+      });
     });
   });
 });
