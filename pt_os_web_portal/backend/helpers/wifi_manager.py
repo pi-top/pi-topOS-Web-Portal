@@ -98,6 +98,14 @@ class WifiManager:
             self.wait_for(self.is_inactive, "disconnection")
         logger.info("Interface disconnected")
 
+    def ssid_to_display(self, network_profile) -> str:  # type: ignore
+        ssid = network_profile.ssid
+        if len(ssid) == 0:
+            ssid = "[Hidden Network]"
+        if network_profile.freq >= 5000:
+            ssid = f"{ssid} [5G]"
+        return ssid
+
     def scan_and_get_results(self) -> List:
         if not self.is_scanning():
             logger.info("Starting networks scan")
@@ -110,9 +118,7 @@ class WifiManager:
 
         networks: Dict[str, Any] = {}
         for network in self.wifi_interface.scan_results():
-            ssid_to_display = (
-                network.ssid if network.freq < 5000 else f"{network.ssid} [5G]"
-            )
+            ssid_to_display = self.ssid_to_display(network)
             if (
                 ssid_to_display in networks
                 and getattr(networks[ssid_to_display], "signal", -100) > network.signal
@@ -191,7 +197,7 @@ def get_ssids() -> List[Dict]:
     logger.info("GETTING LIST OF SSIDS")
     return [
         {
-            "ssid": r.ssid if r.freq < 5000 else f"{r.ssid} [5G]",
+            "ssid": wm.ssid_to_display(r),
             "passwordRequired": len(r.akm) != 0
             and pywifi.const.AKM_TYPE_NONE not in r.akm,
             "bssid": r.bssid,

@@ -244,3 +244,18 @@ def test_disconnect_calls_interface_disconnect(wifi_manager_module, mocker):
 
     wifi_manager.disconnect()
     assert wifi_manager.wifi_interface.disconnect.call_count == 1
+
+
+def displayed_ssid_for_network(wifi_manager_module):
+    from pt_os_web_portal.backend.helpers.mocks.pywifi_mock import PyWiFiProfile
+
+    wifi_manager = wifi_manager_module.WifiManager()
+
+    test_data = [
+        ({"ssid": "", "freq": 2400}, "[Hidden Network]"),
+        ({"ssid": "", "freq": 5400}, "[Hidden Network] [5G]"),
+        ({"ssid": "any ssid", "freq": 5400}, "any ssid [5G]"),
+        ({"ssid": "any ssid", "freq": 2400}, "any ssid"),
+    ]
+    for (profile, expected_ssid) in test_data:
+        assert wifi_manager.ssid_to_display(PyWiFiProfile(profile)) == expected_ssid
