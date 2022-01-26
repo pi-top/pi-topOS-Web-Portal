@@ -1,0 +1,18 @@
+.actions {
+  position: relative;
+  width: 450px;
+  height: 100%;
+  margin: 0 auto;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.cancel {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  height: 20px;
+  color: var(--green);
+}

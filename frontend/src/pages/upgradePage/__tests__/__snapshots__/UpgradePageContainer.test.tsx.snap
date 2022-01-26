@@ -204,18 +204,17 @@ exports[`UpgradePageContainer when there are major OS updates available and user
   >
     <header
       class="header"
+    />
+    <div
+      class="messageContainer"
+      data-testid="dialog-message"
     >
-      <h3
-        class="messageContainer"
-        data-testid="dialog-message"
+      <span
+        class="dialogTitle"
       >
-        <span
-          class="dialogTitle"
-        >
-          This version of pi-topOS is no longer supported
-        </span>
-      </h3>
-    </header>
+        This version of pi-topOS is no longer supported
+      </span>
+    </div>
     <div
       class="content"
     >
@@ -273,18 +272,17 @@ exports[`UpgradePageContainer when there are major OS updates available and user
   >
     <header
       class="header"
+    />
+    <div
+      class="messageContainer"
+      data-testid="dialog-message"
     >
-      <h3
-        class="messageContainer"
-        data-testid="dialog-message"
+      <span
+        class="dialogTitle"
       >
-        <span
-          class="dialogTitle"
-        >
-          Major OS update required
-        </span>
-      </h3>
-    </header>
+        Major OS update required
+      </span>
+    </div>
     <div
       class="content"
     >
