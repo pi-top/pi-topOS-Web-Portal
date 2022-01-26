@@ -39,6 +39,21 @@ def test_post_wifi_credentials_aborts_on_connection_failure(app, mocker):
     assert response.status_code == 401
 
 
+def test_post_wifi_credentials_aborts_on_unexistant_bssid(app, mocker):
+    connect_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect",
+        side_effect=Exception("Waited too long..."),
+    )
+
+    response = app.post(
+        "/wifi-credentials",
+        json={"bssid": "this-bssid-doesnt-exist", "password": "not-a-password"},
+    )
+
+    connect_mock.assert_called_once_with("this-bssid-doesnt-exist", "not-a-password")
+    assert response.status_code == 401
+
+
 def test_post_wifi_credentials_failure_on_wrong_ssid_type(app, mocker):
     connect_mock = mocker.patch(
         "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"

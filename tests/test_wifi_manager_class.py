@@ -122,10 +122,15 @@ def test_disconnect_is_called_before_connecting_on_valid_bssid(
     assert wifi_manager.disconnect.call_count == 1
 
 
-def test_disconnect_is_not_called_on_invalid_bssid(wifi_manager_module, mocker):
+def test_connect_raises_exception_on_unexistant_bssid(wifi_manager_module, mocker):
     wifi_manager = wifi_manager_module.WifiManager()
     mocker.spy(wifi_manager, "disconnect")
-    wifi_manager.connect(bssid="invalid bssid", password="this-is-not-my-real-password")
+
+    with pytest.raises(Exception):
+        wifi_manager.connect(
+            bssid="invalid bssid", password="this-is-not-my-real-password"
+        )
+
     assert wifi_manager.disconnect.call_count == 0
 
 
@@ -140,10 +145,12 @@ def test_connect_failure_on_invalid_bssid(wifi_manager_module):
     wifi_manager = wifi_manager_module.WifiManager()
     assert wifi_manager.is_inactive() is True
     assert wifi_manager.is_connected() is False
-    connect_output = wifi_manager.connect(
-        bssid="a-non-existant-bssid", password="this-is-a-password"
-    )
-    assert connect_output is None
+
+    with pytest.raises(Exception):
+        connect_output = wifi_manager.connect(
+            bssid="a-non-existant-bssid", password="this-is-a-password"
+        )
+        assert connect_output is None
     assert wifi_manager.is_inactive() is True
     assert wifi_manager.is_connected() is False
 

@@ -135,8 +135,7 @@ class WifiManager:
                 network_profile = r
                 break
         if network_profile is None:
-            logger.info(f"Unable to find network matching BSSID '{bssid}'")
-            return
+            raise Exception(f"Unable to find network matching BSSID '{bssid}'")
 
         network_profile.key = password
         if len(network_profile.akm) == 0:

@@ -243,7 +243,8 @@ def post_wifi_credentials():
 
     try:
         attempt_connection(bssid, password)
-    except Exception:
+    except Exception as e:
+        logger.error(f"Error: {e}")
         return abort(401)
 
     return "OK"
