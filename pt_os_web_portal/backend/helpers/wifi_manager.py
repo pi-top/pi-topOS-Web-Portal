@@ -155,16 +155,10 @@ class WifiManager:
 
         WifiManager.wait_for(self.is_connected, "connection", silent=True)
 
-        if self.is_connected():
-            logger.info("Updating wpa_supplicant.conf with network data")
-            self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                self.RPI_WLAN_INTERFACE, "SAVE_CONFIG", False
-            )
-            self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                self.RPI_WLAN_INTERFACE, "RECONFIGURE", False
-            )
-            logger.info("Waiting for interface to become connected again")
-            WifiManager.wait_for(self.is_connected, "connection", silent=True)
+        logger.info("Updating wpa_supplicant.conf with network data")
+        self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
+            self.RPI_WLAN_INTERFACE, "SAVE_CONFIG", False
+        )
 
     def ssid_connected(self) -> str:
         try:
