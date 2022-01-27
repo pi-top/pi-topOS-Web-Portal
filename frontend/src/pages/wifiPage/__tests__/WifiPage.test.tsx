@@ -238,10 +238,12 @@ describe("WifiPage", () => {
         networks: [
           {
             ssid: "password-protected-ssid",
+            bssid: "password-protected-bssid",
             passwordRequired: true,
           },
           {
             ssid: "unsecured-ssid",
+            bssid: "unsecured-bssid",
             passwordRequired: false,
           },
         ],

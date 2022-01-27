@@ -53,7 +53,7 @@ export default ({
   const [isSkipWarningDialogActive, setIsSkipWarningDialogActive] =
     useState(false);
 
-  const { ssid: selectedSSID } = selectedNetwork || {};
+  const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
   const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
   const getExplanation = () => {
     if (connectedNetwork) {
@@ -87,22 +87,22 @@ export default ({
       >
         <div className={styles.wifiSelectContainer}>
           <Select
-            // force rerenders when selected ssid changes
-            key={selectedSSID}
+            // force rerender when selected ssid changes
+            key={selectedBSSID}
             value={
-              selectedSSID && {
-                value: selectedSSID,
+              selectedBSSID && selectedSSID && {
+                value: selectedBSSID,
                 label: selectedSSID,
               }
             }
-            options={networks.map(({ ssid }) => ({
-              value: ssid,
+            options={networks.map(({ ssid, bssid }) => ({
+              value: bssid,
               label: ssid,
             }))}
-            onChange={(newSSID) => {
+            onChange={(newBSSID) => {
               setIsConnectDialogActive(true);
               setSelectedNetwork(
-                networks.find((network) => newSSID === network.ssid)
+                networks.find((network) => newBSSID === network.bssid)
               );
             }}
             placeholder="Please select WiFi network..."

@@ -35,7 +35,7 @@ describe("ConnectDialog", () => {
       onDone: jest.fn(),
       connectError: false,
       connect: jest.fn(),
-      network: { ssid: "network-name", passwordRequired: true },
+      network: { ssid: "network-name", bssid: "network-name-bssid", passwordRequired: true },
     };
 
     ReactDom.createPortal = jest.fn();
@@ -174,7 +174,7 @@ describe("ConnectDialog", () => {
     beforeEach(() => {
       defaultProps = {
         ...defaultProps,
-        network: { ssid: "unprotected-network", passwordRequired: false },
+        network: { ssid: "unprotected-network", bssid: "unprotected-network-bssid", passwordRequired: false },
       };
       rerender(<ConnectDialog {...defaultProps} />);
     });

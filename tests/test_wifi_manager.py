@@ -1,21 +1,21 @@
 from flask import json
 
 from tests.data.wifi_manager_data import wifi_ssids, wpa_cli_status
-from tests.utils import dotdict
 
 
-def test_get_wifi_ssids_responds_correctly(app):
+def test_get_wifi_ssids_response_on_success(app):
     response = app.get("/wifi-ssids")
-
     assert json.loads(response.data) == wifi_ssids
     assert response.status_code == 200
 
 
-def test_post_wifi_credentials_responds_on_connect(app, mocker):
-    connect_mock = mocker.patch("backend.helpers.wifi_manager.wifi_manager.connect")
+def test_post_wifi_credentials_response_on_connection_success(mocker, app):
+    connect_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"
+    )
 
     response = app.post(
-        "/wifi-credentials", json={"ssid": "test-ssid", "password": "123"}
+        "/wifi-credentials", json={"bssid": "test-ssid", "password": "123"}
     )
 
     connect_mock.assert_called_once_with("test-ssid", "123")
@@ -24,108 +24,111 @@ def test_post_wifi_credentials_responds_on_connect(app, mocker):
     assert response.data == b"OK"
 
 
-def test_post_wifi_credentials_aborts_on_connect_failure(app, mocker):
+def test_post_wifi_credentials_aborts_on_connection_failure(app, mocker):
     connect_mock = mocker.patch(
-        "backend.helpers.wifi_manager.wifi_manager.connect",
+        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect",
         side_effect=Exception("Waited too long..."),
     )
 
     response = app.post(
-        "/wifi-credentials", json={"ssid": "test-ssid", "password": "123"}
+        "/wifi-credentials",
+        json={"bssid": "an-invalid-bssid", "password": "not-a-password"},
     )
 
-    connect_mock.assert_called_once_with("test-ssid", "123")
-
+    connect_mock.assert_called_once_with("an-invalid-bssid", "not-a-password")
     assert response.status_code == 401
 
 
-def test_post_wifi_credentials_failure_wrong_ssid_type(app, mocker):
-    connect_mock = mocker.patch("backend.helpers.wifi_manager.wifi_manager.connect")
+def test_post_wifi_credentials_aborts_on_unexistant_bssid(app, mocker):
+    connect_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect",
+        side_effect=Exception("Waited too long..."),
+    )
 
-    response = app.post("/wifi-credentials", json={"ssid": True, "password": "123"})
+    response = app.post(
+        "/wifi-credentials",
+        json={"bssid": "this-bssid-doesnt-exist", "password": "not-a-password"},
+    )
+
+    connect_mock.assert_called_once_with("this-bssid-doesnt-exist", "not-a-password")
+    assert response.status_code == 401
+
+
+def test_post_wifi_credentials_failure_on_wrong_ssid_type(app, mocker):
+    connect_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"
+    )
+
+    response = app.post("/wifi-credentials", json={"bssid": True, "password": "123"})
 
     connect_mock.assert_not_called()
-
     assert response.status_code == 422
 
 
-def test_post_wifi_credentials_failure_wrong_password_type(app, mocker):
-    connect_mock = mocker.patch("backend.helpers.wifi_manager.wifi_manager.connect")
+def test_post_wifi_credentials_failure_on_wrong_password_type(app, mocker):
+    connect_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"
+    )
 
     response = app.post(
-        "/wifi-credentials", json={"ssid": "test-ssid", "password": True}
+        "/wifi-credentials", json={"bssid": "test-ssid", "password": True}
     )
 
     connect_mock.assert_not_called()
-
     assert response.status_code == 422
 
 
-def test_get_is_connected_responds_with_correctly_when_connected(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-
+def test_get_is_connected_response_if_connected(app, mocker):
     run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict({"stdout": b"OK", "stderr": b"", "returncode": 0}),
+        "pt_os_web_portal.backend.routes.is_connected_to_internet",
+        return_value=True,
     )
 
     response = app.get("/is-connected")
 
-    run_mock.assert_called_once_with(
-        ["ping", "-c1", "8.8.8.8"],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
-        timeout=10,
-    )
-
+    run_mock.assert_called_once()
     assert response.status_code == 200
     assert json.loads(response.data)["connected"] is True
 
 
-def test_get_is_connected_responds_correctly_when_disconnected(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-
+def test_get_is_connected_response_if_disconnected(app, mocker):
     run_mock = mocker.patch(
-        "backend.helpers.command_runner.run", side_effect=Exception("no connection")
+        "pt_os_web_portal.backend.routes.is_connected_to_internet", return_value=False
     )
 
     response = app.get("/is-connected")
 
-    run_mock.assert_called_once_with(
-        ["ping", "-c1", "8.8.8.8"],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
-        timeout=10,
-    )
-
+    run_mock.assert_called_once()
     assert response.status_code == 200
     assert json.loads(response.data)["connected"] is False
 
 
-def get_is_connected_to_ssid_response_when_connected_to_network(app, mocker):
+def get_is_connected_to_ssid_response_when_connected_to_network(
+    app, mocker, wifi_manager_module
+):
     mocker.patch(
-        "backend.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas",
+        "pt_os_web_portal.backend.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas",
         return_value=wpa_cli_status,
     )
     mocker.patch(
-        "backend.helpers.wifi_manager.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
         return_value=wifi_manager_module.IfaceStatus.CONNECTED,  # noqa: F821
     )
+
     response = app.get("/current-wifi-ssid")
 
     assert response.status_code == 200
     assert json.loads(response.data) == "my_network"
 
 
-def get_is_connected_to_ssid_response_when_not_connected_to_network(app, mocker):
+def get_is_connected_to_ssid_response_when_not_connected_to_network(
+    app, mocker, wifi_manager_module
+):
     mocker.patch(
-        "backend.helpers.wifi_manager.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
         return_value=wifi_manager_module.IfaceStatus.INACTIVE,  # noqa: F821
     )
+
     response = app.get("/current-wifi-ssid")
 
     assert response.status_code == 200
@@ -134,7 +137,7 @@ def get_is_connected_to_ssid_response_when_not_connected_to_network(app, mocker)
 
 def get_is_connected_to_ssid_response_on_internal_failure(app, mocker):
     mocker.patch(
-        "backend.helpers.wifi_manager.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
         side_effect=Exception("Internal failure..."),
     )
     response = app.get("/current-wifi-ssid")

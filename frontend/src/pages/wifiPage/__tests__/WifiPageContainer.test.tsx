@@ -52,7 +52,7 @@ describe("WifiPageContainer", () => {
       (creds: NetworkCredentials) =>
         new Promise((res, rej) => {
           if (
-            creds.ssid === "unsecured-ssid" ||
+            creds.bssid === "unsecured-bssid" ||
             creds.password === "correct-password"
           ) {
             return res();
@@ -140,6 +140,7 @@ describe("WifiPageContainer", () => {
   describe("when connected network is passed", () => {
     const network = {
       ssid: "password-protected-ssid",
+      bssid: "password-protected-bssid",
       passwordRequired: true,
     };
 
@@ -246,6 +247,7 @@ describe("WifiPageContainer", () => {
           {
             ssid: "network-found-on-refresh-ssid",
             passwordRequired: true,
+            bssid: "network-found-on-refresh-bssid",
           },
         ];
 
@@ -292,10 +294,12 @@ describe("WifiPageContainer", () => {
         {
           ssid: "password-protected-ssid",
           passwordRequired: true,
+          bssid: "password-protected-bssid",
         },
         {
           ssid: "unsecured-ssid",
           passwordRequired: false,
+          bssid: "unsecured-bssid",
         },
       ];
 
