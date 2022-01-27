@@ -213,7 +213,7 @@ describe("App", () => {
     setKeyboardMock.mockResolvedValue("OK");
     setRegistrationMock.mockResolvedValue("OK");
     getNetworksMock.mockResolvedValue([
-      { ssid: "wifi network", passwordRequired: false },
+      { ssid: "wifi network", bssid: "wifi network bssid", passwordRequired: false },
     ]);
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
     connectToNetworkMock.mockResolvedValue("OK");

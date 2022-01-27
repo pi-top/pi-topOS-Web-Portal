@@ -1,9 +1,10 @@
 export type Network = {
   ssid: string;
   passwordRequired: boolean
+  bssid: string;
 };
 
 export type NetworkCredentials = {
-  ssid: string;
-  password: string
+  bssid: string;
+  password: string;
 };

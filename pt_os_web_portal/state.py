@@ -1,8 +1,10 @@
 from configparser import ConfigParser
+from os import environ
 from pathlib import Path
 from threading import Lock
 
-STATE_FILE_PATH = "/var/lib/pt-os-web-portal/state.cfg"
+STATE_FILE_DIR = "/var/lib" if environ.get("TESTING", "") != "1" else "/tmp"
+STATE_FILE_PATH = f"{STATE_FILE_DIR}/pt-os-web-portal/state.cfg"
 config_parser = ConfigParser()
 
 path = Path(STATE_FILE_PATH)

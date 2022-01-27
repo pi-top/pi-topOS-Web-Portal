@@ -1,3 +1,5 @@
+from os import environ
+
 from flask import Flask
 from flask_cors import CORS
 from flask_sockets import Sockets
@@ -14,7 +16,7 @@ def create_app(test_mode, os_updater):
 
     CORS(app)
     if test_mode:
-        app.config["TESTING"] = True
+        environ["TESTING"] = "1"
     if os_updater:
         app.config["OS_UPDATER"] = os_updater
 

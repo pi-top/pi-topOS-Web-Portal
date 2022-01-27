@@ -178,7 +178,7 @@ class PyWiFiInterfaceMock:
                 "akm": [],
                 "cipher": 0,
                 "ssid": "Free internet!",
-                "bssid": "18:35:d1:20:98:5f",
+                "bssid": "58:55:31:10:48:3a",
                 "key": None,
                 "freq": 5200,
                 "signal": -92,

@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from time import sleep
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .modules import get_pywifi
 
@@ -31,11 +31,11 @@ class WifiManager:
         for i in pywifi.PyWiFi().interfaces():
             logger.debug(f"Checking against '{i.name()}'")
             if i.name() == iface_name:
-                logger.info("Successfully got interface '%s'" % iface_name)
+                logger.info(f"Successfully got interface '{iface_name}'")
                 return i
 
         # No wlan0 interface - is this an old Pi?
-        raise Exception("Unable to find %s" % iface_name)
+        raise Exception(f"Unable to find interface '{iface_name}'")
 
     def get_status(self) -> IfaceStatus:
         status_int = self.wifi_interface.status()
@@ -98,6 +98,14 @@ class WifiManager:
             self.wait_for(self.is_inactive, "disconnection")
         logger.info("Interface disconnected")
 
+    def ssid_to_display(self, network_profile) -> str:  # type: ignore
+        ssid = network_profile.ssid
+        if len(ssid) == 0:
+            ssid = "[Hidden Network]"
+        if network_profile.freq >= 5000:
+            ssid = f"{ssid} [5G]"
+        return ssid
+
     def scan_and_get_results(self) -> List:
         if not self.is_scanning():
             logger.info("Starting networks scan")
@@ -106,22 +114,28 @@ class WifiManager:
             WifiManager.wait_for(
                 self.is_scanning, "scan completion", condition_true=False, silent=True
             )
-
         logger.info("Scan completed")
-        results = self.wifi_interface.scan_results()
-        logger.info("ssids found: {}".format([r.ssid for r in results]))
-        return results
 
-    def connect(self, ssid: str, password: str) -> None:
+        networks: Dict[str, Any] = {}
+        for network in self.wifi_interface.scan_results():
+            ssid_to_display = self.ssid_to_display(network)
+            if (
+                ssid_to_display in networks
+                and getattr(networks[ssid_to_display], "signal", -100) > network.signal
+            ):
+                continue
+            networks[ssid_to_display] = network
+        logger.info(f"Found SSIDs: {tuple(networks.keys())}")
+        return [networks[ssid_to_display] for ssid_to_display in networks]
+
+    def connect(self, bssid: str, password: str) -> None:
         network_profile = None
         for r in self.scan_and_get_results():
-            if r.ssid == ssid:
+            if r.bssid == bssid:
                 network_profile = r
                 break
-
         if network_profile is None:
-            logger.info("Unable to find network matching SSID '%s'" % ssid)
-            return
+            raise Exception(f"Unable to find network matching BSSID '{bssid}'")
 
         network_profile.key = password
         if len(network_profile.akm) == 0:
@@ -182,18 +196,19 @@ def get_ssids() -> List[Dict]:
     logger.info("GETTING LIST OF SSIDS")
     return [
         {
-            "ssid": r.ssid,
+            "ssid": wm.ssid_to_display(r),
             "passwordRequired": len(r.akm) != 0
             and pywifi.const.AKM_TYPE_NONE not in r.akm,
+            "bssid": r.bssid,
         }
         for r in wm.scan_and_get_results()
     ]
 
 
-def attempt_connection(ssid, password, on_connection=None) -> None:
-    logger.info("Attempting to connect to {}".format(ssid))
+def attempt_connection(bssid: str, password: str, on_connection=None) -> None:
+    logger.info(f"Attempting to connect to network with bssid '{bssid}'")
     wm = get_wifi_manager_instance()
-    wm.connect(ssid, password)
+    wm.connect(bssid, password)
 
     if wm.is_connected() and on_connection:
         logger.info("Executing on_connection callback")

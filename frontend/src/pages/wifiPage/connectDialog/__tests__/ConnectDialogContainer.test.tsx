@@ -34,7 +34,7 @@ describe("ConnectDialogContainer", () => {
       (creds: NetworkCredentials) =>
         new Promise((res, rej) => {
           if (
-            creds.ssid === "unsecured-ssid" ||
+            creds.bssid === "unsecured-bssid" ||
             creds.password === "correct-password"
           ) {
             return res();
@@ -52,6 +52,7 @@ describe("ConnectDialogContainer", () => {
       active: true,
       network: {
         ssid: "unsecured-ssid",
+        bssid: "unsecured-bssid",
         passwordRequired: false,
       },
       onCancel: jest.fn(),
@@ -100,6 +101,7 @@ describe("ConnectDialogContainer", () => {
         ...defaultProps,
         network: {
           ssid: "password-protected-ssid",
+          bssid: "password-protected-bssid",
           passwordRequired: true,
         },
       };
@@ -150,6 +152,7 @@ describe("ConnectDialogContainer", () => {
             ...defaultProps,
             network: {
               ssid: "new-network",
+              bssid: "new-network-bssid",
               passwordRequired: true,
             },
           };
