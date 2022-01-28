@@ -29,6 +29,19 @@ class PageManager:
         self._ms.select_button.when_released = self.handle_select_btn
         self._ms.cancel_button.when_released = self.handle_cancel_btn
 
+        def guide_overlay(image):
+            show_up_arrow = self.active_viewport.page_index != 0
+            show_down_arrow = self.active_viewport.page_index + 2 < len(self.active_viewport.pages)
+
+            if show_up_arrow:
+                ImageDraw.Draw(image).regular_polygon(
+                    ((3, 3), 4), 3, fill=1
+                )
+            if show_down_arrow:
+                ImageDraw.Draw(image).regular_polygon(
+                    ((3, image.size[1] - 4), 4), 3, fill=1, rotation=180
+                )
+
         self.guide_viewport = ViewportManager(
             "guide",
             miniscreen,
@@ -38,6 +51,7 @@ class PageManager:
                 )
                 for guide_page_type in GuidePage
             ],
+            overlay_render_func=guide_overlay,
         )
 
         def menu_overlay(image):
