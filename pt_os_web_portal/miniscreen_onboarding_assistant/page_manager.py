@@ -33,15 +33,18 @@ class PageManager:
 
         def guide_overlay(image):
             show_up_arrow = self.active_viewport.page_index != 0
-            show_down_arrow = self.active_viewport.page_index + 2 < len(self.active_viewport.pages)
+            show_down_arrow = self.active_viewport.page_index + 2 < len(
+                self.active_viewport.pages
+            )
 
             if show_up_arrow:
-                ImageDraw.Draw(image).regular_polygon(
-                    ((3, 3), 4), 3, fill=1
-                )
+                ImageDraw.Draw(image).regular_polygon(((3, 3), 4), 3, fill=1)
             if show_down_arrow:
                 ImageDraw.Draw(image).regular_polygon(
-                    ((3, image.size[1] - 4), 4), 3, fill=self.needs_to_scroll or self.down_arrow_fill, rotation=180
+                    ((3, image.size[1] - 4), 4),
+                    3,
+                    fill=self.needs_to_scroll or self.down_arrow_fill,
+                    rotation=180,
                 )
                 self.down_arrow_fill = not self.down_arrow_fill
 
