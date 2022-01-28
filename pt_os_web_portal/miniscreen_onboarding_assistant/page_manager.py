@@ -29,6 +29,8 @@ class PageManager:
         self._ms.select_button.when_released = self.handle_select_btn
         self._ms.cancel_button.when_released = self.handle_cancel_btn
 
+        self.down_arrow_fill = True
+
         def guide_overlay(image):
             show_up_arrow = self.active_viewport.page_index != 0
             show_down_arrow = self.active_viewport.page_index + 2 < len(self.active_viewport.pages)
@@ -39,8 +41,9 @@ class PageManager:
                 )
             if show_down_arrow:
                 ImageDraw.Draw(image).regular_polygon(
-                    ((3, image.size[1] - 4), 4), 3, fill=1, rotation=180
+                    ((3, image.size[1] - 4), 4), 3, fill=self.needs_to_scroll or self.down_arrow_fill, rotation=180
                 )
+                self.down_arrow_fill = not self.down_arrow_fill
 
         self.guide_viewport = ViewportManager(
             "guide",
