@@ -42,7 +42,7 @@ export default ({
   const url = "http://" + piTopIpAddress + "/onboarding/reboot";
 
   return (
-    <Dialog active={active} message={getMessage()} className={styles.dialog} dataTestId="move-away-from-ap-dialog">
+    <Dialog active={active} message={getMessage()} className={styles.dialog} testId="move-away-from-ap-dialog">
       <div className={styles.content}>
         <div className={styles.message}>
           {getContent()}
