@@ -3,35 +3,36 @@ name: Run Tests and Upload Coverage Report
 on: push
 
 jobs:
-  #test-and-upload-coverage-report:
-  #  runs-on: ubuntu-20.04
-  #  steps:
-  #    - name: Checkout code
-  #      uses: actions/checkout@v2.4.0
+  test-python-coverage-report:
+   runs-on: ubuntu-20.04
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v2.4.0
 
-  #    - name: Setup Python
-  #      uses: actions/setup-python@v2.2.2
-  #      with:
-  #        python-version: 3.7
+     - name: Setup Python
+       uses: actions/setup-python@v2.3.1
+       with:
+         python-version: 3.9
 
-  #    - name: Install pipenv
-  #      uses: dschep/install-pipenv-action@v1
+     - name: Install dependencies
+       run: |
+         sudo apt update
+         sudo apt install python3-pip -y
+         pip3 install -r tests/requirements.txt
 
-  #    - name: Run Python tests and generate coverage report
-  #      run: |
-  #        cd src/server
-  #        pipenv install --dev
-  #        PYTHONPATH=backend pipenv run pytest --verbose --cov-report term-missing --cov=backend
-  #        pipenv run coverage xml
+     - name: Run Python tests and generate coverage report
+       run: |
+         pytest --verbose --cov-report term-missing --cov=pt_os_web_portal
+         coverage xml
 
-  #    - name: Upload Python test coverage reports to Codecov
-  #      uses: codecov/codecov-action@v2.1.0
-  #      with:
-  #        files: ./src/server/coverage.xml
-  #        flags: unittests
-  #        env_vars: OS,PYTHON
-  #        fail_ci_if_error: true
-  #        verbose: true
+     - name: Upload Python test coverage reports to Codecov
+       uses: codecov/codecov-action@v2.1.0
+       with:
+         files: ./coverage.xml
+         flags: python-tests
+         env_vars: OS,PYTHON
+         fail_ci_if_error: true
+         verbose: true
 
   test-js-coverage-report:
     runs-on: ubuntu-20.04
@@ -63,6 +64,6 @@ jobs:
         uses: codecov/codecov-action@v2.1.0
         with:
           files: ./frontend/coverage/clover.xml
-          flags: jstests
+          flags: js-tests
           fail_ci_if_error: true
           verbose: true

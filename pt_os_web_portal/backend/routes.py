@@ -238,14 +238,15 @@ def get_wifi_ssids():
 @app.route("/wifi-credentials", methods=["POST"])
 def post_wifi_credentials():
     logger.debug("Route '/wifi-credentials'")
-    ssid = request.get_json().get("ssid")
+    bssid = request.get_json().get("bssid")
     password = request.get_json().get("password")
-    if not isinstance(ssid, str) or not isinstance(password, str):
+    if not isinstance(bssid, str) or not isinstance(password, str):
         return abort(422)
 
     try:
-        attempt_connection(ssid, password)
-    except Exception:
+        attempt_connection(bssid, password)
+    except Exception as e:
+        logger.error(f"Error: {e}")
         return abort(401)
 
     return "OK"

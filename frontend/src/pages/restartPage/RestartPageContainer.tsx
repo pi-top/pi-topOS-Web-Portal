@@ -73,6 +73,23 @@ export default ({
       .catch(() => setLegacyHubFirmware(false))
   }, [])
 
+  // stop users leaving page when setting up or waiting for reboot to finish.
+  useEffect(() => {
+    if (!(isSettingUpDevice || isWaitingForServer)) {
+      return;
+    }
+
+    function beforeUnloadListener(event: BeforeUnloadEvent) {
+      // prevent leaving page without confirmation
+      event.preventDefault();
+      event.returnValue = true // chrome requires return value to be set
+    }
+
+    window.addEventListener("beforeunload", beforeUnloadListener);
+    return () =>
+      window.removeEventListener("beforeunload", beforeUnloadListener);
+  }, [isSettingUpDevice, isWaitingForServer]);
+
   function safelyRunService(service: () => Promise<void>, message: string) {
     return service()
       .then(() => setProgressMessage(message))

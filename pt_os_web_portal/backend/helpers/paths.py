@@ -1,14 +1,9 @@
-from os import path
+from os import environ, path
 from sys import platform
-
-from flask import current_app as app
 
 
 def use_test_path():
-    try:
-        return app.config["TESTING"] or platform == "darwin"
-    except Exception:
-        return False
+    return environ.get("TESTING", "") == "1" or platform == "darwin"
 
 
 def get_test_file_path(filename):

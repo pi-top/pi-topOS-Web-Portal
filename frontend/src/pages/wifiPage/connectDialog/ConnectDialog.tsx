@@ -37,7 +37,7 @@ export default ({
 
   useEffect(() => {
     setPassword("");
-  }, [network])
+  }, [network]);
 
   const { ssid, passwordRequired } = network || {};
 
@@ -59,7 +59,12 @@ export default ({
   };
 
   return (
-    <Dialog className={styles.dialog} active={active} message={getMessage()}>
+    <Dialog
+      testId="connect-dialog"
+      className={styles.dialog}
+      active={active}
+      message={getMessage()}
+    >
       <div className={styles.content}>
         {isConnecting && <Spinner size={50} />}
 

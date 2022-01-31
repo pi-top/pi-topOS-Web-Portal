@@ -44,7 +44,6 @@ import connectToNetwork from "../../../services/connectToNetwork";
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 
-
 import wsBaseUrl from "../../../services/wsBaseUrl";
 
 jest.mock("../../../services/getNetworks");
@@ -68,7 +67,6 @@ jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
-
 
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
@@ -116,10 +114,10 @@ const keyboardVariants = {
 };
 
 const buildInfo: BuildInfo = {
-  'buildRepo': 'experimental-pkgcld',
-  'buildDate': '2021-08-09',
-  'buildNumber': '100',
-  'buildCommit': '07706af4337c60f4007ef9910c33c6e4daab1646',
+  buildRepo: "experimental-pkgcld",
+  buildDate: "2021-08-09",
+  buildNumber: "100",
+  buildCommit: "07706af4337c60f4007ef9910c33c6e4daab1646",
 };
 
 const upgradePageText =
@@ -154,15 +152,15 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForRestartPage: () => waitForAltText("reboot-screen"),
     // Actions
     upgrade: async () => {
-
       fireEvent.click(result.getByText("Update"));
       await Promise.all(
-        UpgradePageExplanation.Finish
-            .replace("{continueButtonLabel}", "Next")
-            .replace("{continueButtonAction}", "continue")
-        .split("\n").map(async (text, _): Promise<any> => {
-        text && await waitForElement(() => result.getByText(text))
-      }))
+        UpgradePageExplanation.Finish.replace("{continueButtonLabel}", "Next")
+          .replace("{continueButtonAction}", "continue")
+          .split("\n")
+          .map(async (text, _): Promise<any> => {
+            text && (await waitForElement(() => result.getByText(text)));
+          })
+      );
     },
     registerEmail: (email: string) => {
       const emailInput = result.getByPlaceholderText(
@@ -182,7 +180,6 @@ describe("App", () => {
   beforeEach(() => {
     // app services
     getBuildInfoMock.mockResolvedValue(buildInfo);
-
 
     // language page services
     const currentLocale = createLocaleFromCode("en_GB");
@@ -216,7 +213,7 @@ describe("App", () => {
     setKeyboardMock.mockResolvedValue("OK");
     setRegistrationMock.mockResolvedValue("OK");
     getNetworksMock.mockResolvedValue([
-      { ssid: "wifi network", passwordRequired: false },
+      { ssid: "wifi network", bssid: "wifi network bssid", passwordRequired: false },
     ]);
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
     connectToNetworkMock.mockResolvedValue("OK");
@@ -236,7 +233,8 @@ describe("App", () => {
         }
 
         if (data === "prepare" || data === "prepare_web_portal") {
-          nextSizeMessage = data === "prepare_web_portal" ? Messages.NoSize : Messages.Size;
+          nextSizeMessage =
+            data === "prepare_web_portal" ? Messages.NoSize : Messages.Size;
           socket.send(JSON.stringify(Messages.PrepareStart));
           socket.send(JSON.stringify(Messages.PrepareFinish));
         }
@@ -485,9 +483,8 @@ describe("App", () => {
     });
 
     it("allows skipping to UpgradePage if already completed", async () => {
-      const { getByText, waitForWifiPage, waitForUpgradePage } = mount(
-        PageRoute.Wifi
-      );
+      const { getByText, getAllByText, waitForWifiPage, waitForUpgradePage } =
+        mount(PageRoute.Wifi);
       await waitForWifiPage();
 
       // complete WifiPage by navigating to UpgradePage
@@ -499,7 +496,9 @@ describe("App", () => {
       await waitForWifiPage();
 
       // skip to UpgradePage
-      fireEvent.click(getByText("Skip"));
+      const [mainSkip, warningDialogSkip] = getAllByText("Skip");
+      fireEvent.click(mainSkip);
+      fireEvent.click(warningDialogSkip);
       await waitForUpgradePage();
     });
 
@@ -532,15 +531,14 @@ describe("App", () => {
         await waitForUpgradePage();
       });
 
-      it("navigates to RegistrationPage on Skip button click", async () => {
-        const {
-          getByText,
-          waitForWifiPage,
-          waitForRegistrationPage,
-        } = mount(PageRoute.Wifi);
+      it("navigates to RegistrationPage on skip warning dialog skip button click", async () => {
+        const { getAllByText, waitForWifiPage, waitForRegistrationPage } =
+          mount(PageRoute.Wifi);
         await waitForWifiPage();
 
-        fireEvent.click(getByText("Skip"));
+        const [mainSkip, warningDialogSkip] = getAllByText("Skip");
+        fireEvent.click(mainSkip);
+        fireEvent.click(warningDialogSkip);
         await waitForRegistrationPage();
       });
     });
@@ -611,11 +609,8 @@ describe("App", () => {
 
   describe("RegistrationPage", () => {
     it("navigates to RestartPage on next button click", async () => {
-      const {
-        waitForRegistrationPage,
-        registerEmail,
-        waitForRestartPage,
-      } = mount(PageRoute.Registration);
+      const { waitForRegistrationPage, registerEmail, waitForRestartPage } =
+        mount(PageRoute.Registration);
       await waitForRegistrationPage();
 
       await registerEmail("test@test.com");
@@ -633,9 +628,8 @@ describe("App", () => {
     });
 
     it("navigates to UpgradePage on back button click when connected", async () => {
-      const { getByText, waitForRegistrationPage, waitForUpgradePageBanner } = mount(
-        PageRoute.Registration
-      );
+      const { getByText, waitForRegistrationPage, waitForUpgradePageBanner } =
+        mount(PageRoute.Registration);
       await waitForRegistrationPage();
 
       fireEvent.click(getByText("Back"));
@@ -648,12 +642,15 @@ describe("App", () => {
 
       const {
         getByText,
+        getAllByText,
         waitForWifiPage,
         waitForRegistrationPage,
       } = mount(PageRoute.Wifi);
       await waitForWifiPage();
 
-      fireEvent.click(getByText("Skip"));
+      const [mainSkip, warningDialogSkip] = getAllByText("Skip");
+      fireEvent.click(mainSkip);
+      fireEvent.click(warningDialogSkip);
       await waitForRegistrationPage();
 
       fireEvent.click(getByText("Back"));

@@ -26,7 +26,7 @@ exports[`RegistrationPage renders prompt correctly 1`] = `
 `;
 
 exports[`RegistrationPage when clicking over privacy policy renders dialog message correctly 1`] = `
-<h3
+<div
   class="messageContainer"
   data-testid="dialog-message"
 >
@@ -35,5 +35,5 @@ exports[`RegistrationPage when clicking over privacy policy renders dialog messa
   >
     PI-TOP PRIVACY POLICY
   </span>
-</h3>
+</div>
 `;

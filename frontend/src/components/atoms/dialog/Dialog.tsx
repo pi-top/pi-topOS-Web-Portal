@@ -6,26 +6,30 @@ import styles from "./Dialog.module.css";
 
 export type Props = {
   active: boolean;
-  message: ReactNode;
+  image?: string;
+  title?: ReactNode;
+  message?: ReactNode;
   onClose?: () => void;
   children: JSX.Element;
   className?: string;
   backdropClassName?: string;
-  dataTestId?: string;
+  testId?: string;
 };
 
 const Dialog = ({
   active,
+  image,
+  title,
   message,
   onClose,
   children,
   className,
   backdropClassName,
-  dataTestId,
+  testId = 'dialog',
 }: Props) => {
   return createPortal(
     <div
-      data-testid={dataTestId ? dataTestId : "dialog"}
+      data-testid={testId}
       role="button"
       aria-pressed="false"
       onClick={onClose}
@@ -40,10 +44,15 @@ const Dialog = ({
         role="dialog"
       >
         <header className={styles.header}>
-          <h3 data-testid="dialog-message" className={styles.messageContainer}>
-            {message}
-          </h3>
+          {image && (
+            <img src={image} alt="dialog icon" className={styles.image} />
+          )}
+          {title && <h3 className={styles.title}>{title}</h3>}
         </header>
+
+        <div data-testid="dialog-message" className={styles.messageContainer}>
+          {message}
+        </div>
 
         {children}
       </div>

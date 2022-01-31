@@ -10,8 +10,8 @@ import styles from "./WifiPage.module.css";
 import Spinner from "../../components/atoms/spinner/Spinner";
 import Button from "../../components/atoms/button/Button";
 import ConnectDialogContainer from "./connectDialog/ConnectDialogContainer";
+import SkipWarningDialog from "./skipWarningDialog/SkipWarningDialog";
 import { Network } from "../../types/Network";
-
 
 export enum ErrorMessage {
   FetchNetworks = "There was a problem getting networks, please refresh the networks list or skip",
@@ -20,7 +20,7 @@ export enum ErrorMessage {
 export enum ExplanationMessage {
   NotConnected = "Choose from the list below.",
   WiredConnection = "Looks like we're already online. You can still connect to a WiFi network.",
-  WiFiConnection = "We've connected successfully."
+  WiFiConnection = "We've connected successfully.",
 }
 
 export type Props = {
@@ -50,8 +50,10 @@ export default ({
 }: Props) => {
   const [selectedNetwork, setSelectedNetwork] = useState(connectedNetwork);
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
+  const [isSkipWarningDialogActive, setIsSkipWarningDialogActive] =
+    useState(false);
 
-  const { ssid: selectedSSID } = selectedNetwork || {};
+  const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
   const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
   const getExplanation = () => {
     if (connectedNetwork) {
@@ -61,7 +63,7 @@ export default ({
       return ExplanationMessage.WiredConnection;
     }
     return ExplanationMessage.NotConnected;
-  }
+  };
 
   return (
     <>
@@ -80,27 +82,27 @@ export default ({
           onClick: onNextClick,
           disabled: !isConnected,
         }}
-        skipButton={{ onClick: onSkipClick }}
+        skipButton={{ onClick: () => setIsSkipWarningDialogActive(true) }}
         backButton={{ onClick: onBackClick }}
       >
         <div className={styles.wifiSelectContainer}>
           <Select
-            // force rerenders when selected ssid changes
-            key={selectedSSID}
+            // force rerender when selected ssid changes
+            key={selectedBSSID}
             value={
-              selectedSSID && {
-                value: selectedSSID,
+              selectedBSSID && selectedSSID && {
+                value: selectedBSSID,
                 label: selectedSSID,
               }
             }
-            options={networks.map(({ ssid }) => ({
-              value: ssid,
+            options={networks.map(({ ssid, bssid }) => ({
+              value: bssid,
               label: ssid,
             }))}
-            onChange={(newSSID) => {
+            onChange={(newBSSID) => {
               setIsConnectDialogActive(true);
               setSelectedNetwork(
-                networks.find((network) => newSSID === network.ssid)
+                networks.find((network) => newBSSID === network.bssid)
               );
             }}
             placeholder="Please select WiFi network..."
@@ -139,11 +141,16 @@ export default ({
           setSelectedNetwork(undefined);
         }}
         onDone={() => {
-          setIsConnectDialogActive(false)
+          setIsConnectDialogActive(false);
           if (isConnected) {
             onNextClick();
           }
         }}
+      />
+      <SkipWarningDialog
+        active={isSkipWarningDialogActive}
+        onConnectClick={() => setIsSkipWarningDialogActive(false)}
+        onSkipClick={onSkipClick}
       />
     </>
   );

@@ -103,6 +103,19 @@ jest.mock('react-router-dom', () => ({
   }),
 }));
 
+const userMustConfirmBeforeLeaving = () => {
+  // dispatch beforeunload event to simulate beginning of unload process
+  const event = new Event('beforeunload')
+  const preventDefaultSpy = jest.spyOn(event, "preventDefault");
+  window.dispatchEvent(event);
+
+  // calling preventDefault causes most browsers to confirm leaving with user
+  // event.returnValue needs to be set for chrome
+  return (
+    preventDefaultSpy.mock.calls.length > 0 &&
+    event.returnValue
+  );
+};
 
 describe("RestartPageContainer", () => {
   let defaultProps: Props;
@@ -142,6 +155,10 @@ describe("RestartPageContainer", () => {
     expect(
       restartPageContainer.querySelector(".error")
     ).not.toBeInTheDocument();
+  });
+
+  it("does not ask user for confirmation before they leave the page", async () => {
+    expect(userMustConfirmBeforeLeaving()).toBeFalsy();
   });
 
   describe("when globalError is true", () => {
@@ -203,6 +220,16 @@ describe("RestartPageContainer", () => {
       fireEvent.click(getByText("Restart"));
 
       expect(queryByText("Restart")).toBeDisabled();
+
+      await wait();
+    });
+
+    it("asks user for confirmation before they leave the page", async () => {
+      fireEvent.click(getByText("Restart"));
+
+      await wait();
+
+      expect(userMustConfirmBeforeLeaving()).toBeTruthy();
 
       await wait();
     });
@@ -372,6 +399,16 @@ describe("RestartPageContainer", () => {
         expect(querySpinner(restartPageContainer)).toBeInTheDocument();
       });
 
+      it("asks user for confirmation before they leave the page", async () => {
+        fireEvent.click(getByText("Restart"));
+
+        await wait();
+
+        expect(userMustConfirmBeforeLeaving()).toBeTruthy();
+
+        await wait();
+      });
+
       describe('when the device is back online', () => {
         it('updates the displayed message', async () => {
           await act(async () => {
@@ -389,6 +426,15 @@ describe("RestartPageContainer", () => {
             await Promise.resolve();
           });
           expect(querySpinner(restartPageContainer)).not.toBeInTheDocument();
+        });
+
+        it("does not ask user for confirmation before they leave the page", async () => {
+          await act(async () => {
+            jest.runOnlyPendingTimers();
+            jest.runOnlyPendingTimers();
+            await Promise.resolve();
+          });
+          expect(userMustConfirmBeforeLeaving()).toBeFalsy();
         });
       });
     });
