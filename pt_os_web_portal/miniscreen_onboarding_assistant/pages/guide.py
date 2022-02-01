@@ -22,25 +22,22 @@ class GuidePageBase(PageBase):
 
 class GuidePage(Enum):
     START = auto()
-    WELCOME = auto()
     START_WIRELESS_CONNECTION = auto()
-    HELP_URL = auto()
     GET_DEVICE = auto()
+    HELP_URL = auto()
     CONNECT_PITOP_WIFI_NETWORK = auto()
     OPEN_BROWSER = auto()
     CARRY_ON = auto()
 
 
-# TODO: replace with factory
 class GuidePageGenerator:
     @staticmethod
     def get_page(page_type: GuidePage):
         pages = {
             GuidePage.START: StartPage,
-            GuidePage.WELCOME: WelcomePage,
             GuidePage.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
-            GuidePage.HELP_URL: HelpURLPage,
             GuidePage.GET_DEVICE: GetDevicePage,
+            GuidePage.HELP_URL: HelpURLPage,
             GuidePage.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
             GuidePage.OPEN_BROWSER: OpenBrowserPage,
             GuidePage.CARRY_ON: CarryOnPage,
@@ -50,33 +47,12 @@ class GuidePageGenerator:
 
 
 class StartPage(GuidePageBase):
-    """
-    Welcome! Let's get you set up, press any button to get started!
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(type=GuidePage.START, size=size, mode=mode, interval=interval)
-        self.text = "Welcome to your pi-top! Press any button to get started..."
-
-
-class WelcomePage(GuidePageBase):
-    """
-    That's it!
-    Now press DOWN to scroll...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=GuidePage.WELCOME, size=size, mode=mode, interval=interval
-        )
-        self.text = "That's it!\nNow press DOWN to scroll..."
+        self.text = "Welcome to your pi-top! Press DOWN to get started..."
 
 
 class StartWirelessConnectionPage(GuidePageBase):
-    """
-    Awesome! Press DOWN to continue through pi-top connection setup...
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.START_WIRELESS_CONNECTION,
@@ -87,13 +63,16 @@ class StartWirelessConnectionPage(GuidePageBase):
         self.text = "Awesome! Press DOWN to continue through pi-top connection setup..."
 
 
+class GetDevicePage(GuidePageBase):
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=GuidePage.GET_DEVICE, size=size, mode=mode, interval=interval
+        )
+        self.text = "You will need a\nlaptop/computer\nto connect with..."
+        self.wrap = False
+
+
 class HelpURLPage(GuidePageBase):
-    """
-    Detailed setup instructions: pi-top.com/start-4
-
-    Press SELECT to continue
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
@@ -101,26 +80,7 @@ class HelpURLPage(GuidePageBase):
         self.text = "Detailed setup instructions: pi-top.com/start-4"
 
 
-class GetDevicePage(GuidePageBase):
-    """
-    Let's get started! You will need a laptop/computer to connect with...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=GuidePage.GET_DEVICE, size=size, mode=mode, interval=interval
-        )
-        self.text = (
-            "Let's get started!\nYou will need a\nlaptop/computer\nto connect with..."
-        )
-        self.wrap = False
-
-
 class ConnectPitopWifiNetworkPage(GuidePageBase):
-    """
-    Connect to Wi-Fi network '{ssid}' using password '{passphrase}'
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.CONNECT_PITOP_WIFI_NETWORK,
@@ -151,14 +111,6 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
 
 class OpenBrowserPage(GuidePageBase):
-    # Default: "Waiting for connection...", then:
-    """
-    Open browser to
-    http://pi-top.local
-    or
-    http://192.168.64.1
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.OPEN_BROWSER, size=size, mode=mode, interval=interval
@@ -204,11 +156,6 @@ class OpenBrowserPage(GuidePageBase):
 
 
 class CarryOnPage(GuidePageBase):
-    """
-    You've started the onboarding!
-    Continue in your browser...
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.CARRY_ON, size=size, mode=mode, interval=interval
