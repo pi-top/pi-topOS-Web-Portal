@@ -9,7 +9,7 @@ import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
-import MoveAwayFromApDialog from "./moveAwayFromApDialog/MoveAwayFromApDialog";
+import ConnectivityWarningDialog from "./connectivityWarningDialog/ConnectivityWarningDialog";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
@@ -38,10 +38,11 @@ export type Props = {
   progressMessage: string;
   displayManualPowerOnDialog: boolean;
   checkingOnSameNetwork: boolean;
-  displayMoveAwayFromApDialog: boolean;
+  shouldMoveAwayFromAp: boolean;
   piTopIpAddress: string;
   onManualPowerOnDialogClose: () => void;
-  onDisplayMoveAwayFromApDialogSkip: () => void;
+  shouldDisplayConnectivityDialog: boolean,
+  onConnectivityDialogSkip: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
 };
@@ -55,8 +56,9 @@ export default ({
   progressPercentage,
   progressMessage,
   displayManualPowerOnDialog,
-  displayMoveAwayFromApDialog,
-  onDisplayMoveAwayFromApDialogSkip,
+  shouldMoveAwayFromAp,
+  shouldDisplayConnectivityDialog,
+  onConnectivityDialogSkip,
   checkingOnSameNetwork,
   piTopIpAddress,
   onManualPowerOnDialogClose,
@@ -64,15 +66,15 @@ export default ({
   onBackClick,
 }: Props) => {
   const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
-  const [moveAwayFromAPDialogActive, setMoveAwayFromAPDialogActive] = useState(displayMoveAwayFromApDialog);
+  const [connectivityDialogActive, setConnectivityDialogActive] = useState(false);
 
   useEffect(() => {
     setManualPowerOnDialogActive(displayManualPowerOnDialog);
   }, [displayManualPowerOnDialog])
 
   useEffect(() => {
-    setMoveAwayFromAPDialogActive(displayMoveAwayFromApDialog);
-  }, [displayMoveAwayFromApDialog])
+    !checkingOnSameNetwork && shouldDisplayConnectivityDialog && setConnectivityDialogActive(true);
+  }, [checkingOnSameNetwork, shouldDisplayConnectivityDialog])
 
   let errorMessage = "";
   if (globalError) {
@@ -108,7 +110,7 @@ export default ({
       nextButton={{
         onClick: setupDevice,
         label: "Restart",
-        disabled: isSettingUpDevice || rebootError || isWaitingForServer || checkingOnSameNetwork || moveAwayFromAPDialogActive,
+        disabled: isSettingUpDevice || rebootError || isWaitingForServer || checkingOnSameNetwork || connectivityDialogActive,
         hidden: isWaitingForServer || serverRebooted
       }}
       backButton={
@@ -116,25 +118,29 @@ export default ({
           ? undefined
           : {
               onClick: onBackClick,
-              disabled: isSettingUpDevice || isWaitingForServer || moveAwayFromAPDialogActive,
+              disabled: isSettingUpDevice || isWaitingForServer || connectivityDialogActive,
               hidden: isWaitingForServer || serverRebooted || checkingOnSameNetwork
             }
       }
       className={styles.root}
     >
-      <ManualPowerOnDialogContainer
+      {displayManualPowerOnDialog && <ManualPowerOnDialogContainer
         active={manualPowerOnDialogActive}
         onClose={() => {
           setManualPowerOnDialogActive(!manualPowerOnDialogActive);
           onManualPowerOnDialogClose();
         }}
-      />
+      />}
 
-      {moveAwayFromAPDialogActive && <MoveAwayFromApDialog
-        active={moveAwayFromAPDialogActive}
+      {!checkingOnSameNetwork && shouldDisplayConnectivityDialog && <ConnectivityWarningDialog
+        shouldMoveAwayFromAp={shouldMoveAwayFromAp}
+        active={connectivityDialogActive}
         onSkip={() => {
-          setMoveAwayFromAPDialogActive(!moveAwayFromAPDialogActive);
-          onDisplayMoveAwayFromApDialogSkip();
+          setConnectivityDialogActive(!connectivityDialogActive);
+          onConnectivityDialogSkip();
+        }}
+        onContinue={() => {
+          setConnectivityDialogActive(!connectivityDialogActive);
         }}
         piTopIpAddress={piTopIpAddress}
       />}

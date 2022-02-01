@@ -218,6 +218,7 @@ def should_switch_network(request) -> Dict:
         "clientIp": client_ip.exploded,
         "piTopIp": pi_top_ip,
         "shouldSwitchNetwork": should_switch_network,
+        "shouldDisplayDialog": device_type() != DeviceName.pi_top_4.value,
     }
     logger.info(f"should_switch_network: {response}")
     return response

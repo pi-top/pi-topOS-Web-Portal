@@ -50,15 +50,17 @@ export default ({
   const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
   const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
   const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
-  const [displaySwitchNetworkDialog, setDisplaySwitchNetworkDialog] = useState(false);
+  const [shouldMoveAwayFromAp, setShouldMoveAwayFromAp] = useState(false);
+  const [shouldDisplayConnectivityDialog, setShouldDisplayConnectivityDialog] = useState(false);
   const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
   const [turnOffAp, setTurnOffAp] = useState(true);
 
   useEffect(() => {
     verifyDeviceNetwork()
       .then((data) => {
-        setDisplaySwitchNetworkDialog(data.shouldSwitchNetwork);
+        setShouldMoveAwayFromAp(data.shouldSwitchNetwork);
         data.piTopIp && setPiTopIpAddress(data.piTopIp);
+        setShouldDisplayConnectivityDialog(data.shouldDisplayDialog);
       })
       .catch(() => null)
       .finally(() => setCheckingOnSameNetwork(false));
@@ -155,8 +157,9 @@ export default ({
       progressMessage={progressMessage}
       onBackClick={goToPreviousPage}
       checkingOnSameNetwork={checkingOnSameNetwork}
-      displayMoveAwayFromApDialog={!checkingOnSameNetwork && displaySwitchNetworkDialog}
-      onDisplayMoveAwayFromApDialogSkip={() => setTurnOffAp(false)}
+      shouldMoveAwayFromAp={shouldMoveAwayFromAp}
+      shouldDisplayConnectivityDialog={shouldDisplayConnectivityDialog}
+      onConnectivityDialogSkip={() => setTurnOffAp(false)}
       piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);

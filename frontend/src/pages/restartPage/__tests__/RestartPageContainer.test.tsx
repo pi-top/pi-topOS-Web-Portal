@@ -9,6 +9,8 @@ import {
   fireEvent,
   getByLabelText,
   waitForElement,
+  GetByBoundAttribute,
+  QueryByBoundAttribute,
 } from "@testing-library/react";
 
 import RestartPageContainer, { Props } from "../RestartPageContainer";
@@ -122,12 +124,16 @@ describe("RestartPageContainer", () => {
   let restartPageContainer: HTMLElement;
   let queryByText: BoundFunction<QueryByText>;
   let getByText: BoundFunction<GetByText>;
+  let queryByTestId: BoundFunction<QueryByBoundAttribute>;
+  let getByTestId: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
+
   beforeEach(async () => {
     resolveMocks();
     serverStatusMock.mockResolvedValue("OK");
     verifyDeviceNetworkMock.mockResolvedValue({
       shouldSwitchNetwork: false,
+      shouldDisplayDialog: false,
       piTopIp: "192.168.64.1",
       clientIp: "192.168.64.10",
     });
@@ -139,6 +145,8 @@ describe("RestartPageContainer", () => {
       queryByText,
       getByText,
       rerender,
+      queryByTestId,
+      getByTestId,
     } = render(<RestartPageContainer {...defaultProps} />));
   });
   afterEach(() => {
@@ -161,19 +169,16 @@ describe("RestartPageContainer", () => {
     expect(userMustConfirmBeforeLeaving()).toBeFalsy();
   });
 
-  describe("when globalError is true", () => {
-    beforeEach(() => {
-      defaultProps = {
-        ...defaultProps,
-        globalError: true,
-      };
+  it("renders prompt correctly", async () => {
+    expect(restartPageContainer.querySelector(".prompt")).toMatchSnapshot();
+  });
 
-      rerender(<RestartPageContainer {...defaultProps} />);
-    });
+  it("calls verifyDeviceNetwork service", async () => {
+    expect(verifyDeviceNetworkMock).toHaveBeenCalled()
+  });
 
-    it("renders correct error message", () => {
-      expect(getByText(ErrorMessage.GlobalError)).toBeInTheDocument();
-    });
+  it("doesn't render connectivity dialog", async () => {
+    expect(queryByTestId("connectivity-dialog")).not.toBeInTheDocument();
   });
 
   describe("when goToPreviousPage is passed", () => {
@@ -437,6 +442,21 @@ describe("RestartPageContainer", () => {
           expect(userMustConfirmBeforeLeaving()).toBeFalsy();
         });
       });
+    });
+  });
+
+  describe("when globalError is true", () => {
+    beforeEach(() => {
+      defaultProps = {
+        ...defaultProps,
+        globalError: true,
+      };
+
+      rerender(<RestartPageContainer {...defaultProps} />);
+    });
+
+    it("renders correct error message", () => {
+      expect(getByText(ErrorMessage.GlobalError)).toBeInTheDocument();
     });
   });
 });

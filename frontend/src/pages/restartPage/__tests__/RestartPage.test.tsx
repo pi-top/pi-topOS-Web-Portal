@@ -8,6 +8,7 @@ import {
   GetByText,
   RenderResult,
   QueryByBoundAttribute,
+  wait,
 } from "@testing-library/react";
 
 import RestartPage, { Props, ErrorMessage, ExplanationMessages } from "../RestartPage";
@@ -34,10 +35,11 @@ describe("RestartPage", () => {
       serverRebooted: false,
       displayManualPowerOnDialog: false,
       piTopIpAddress: "pi-top.local",
+      shouldDisplayConnectivityDialog: false,
       onManualPowerOnDialogClose: jest.fn(),
-      displayMoveAwayFromApDialog: false,
+      shouldMoveAwayFromAp: false,
       checkingOnSameNetwork: false,
-      onDisplayMoveAwayFromApDialogSkip: jest.fn(),
+      onConnectivityDialogSkip: jest.fn(),
     };
 
     ({
@@ -65,8 +67,12 @@ describe("RestartPage", () => {
     });
   });
 
-  it("does not render error message", () => {
+  it("doesn't render error message", () => {
     expect(queryByTestId("error-message")).not.toBeInTheDocument();
+  });
+
+  it("doesn't render connectivity dialog", () => {
+    expect(queryByTestId("connectivity-dialog")).not.toBeInTheDocument();
   });
 
   it("renders restart button", () => {
@@ -77,8 +83,16 @@ describe("RestartPage", () => {
     expect(queryByText("Back")).toBeInTheDocument();
   });
 
-  it("does not render skip button", () => {
+  it("doesn't render skip button", () => {
     expect(queryByText("Skip")).not.toBeInTheDocument();
+  });
+
+  it("Back button isn't disabled", () => {
+    expect(getByText("Back")).toHaveProperty("disabled", false);
+  });
+
+  it("Restart button isn't disabled", () => {
+    expect(getByText("Restart")).toHaveProperty("disabled", false);
   });
 
   it("calls onBackClick on back button click", () => {
@@ -149,11 +163,11 @@ describe("RestartPage", () => {
       expect(queryByText(ErrorMessage.GlobalError)).toBeInTheDocument();
     });
 
-    it("does not render skip button", () => {
+    it("doesn't render skip button", () => {
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
 
-    it("does not render back button", () => {
+    it("doesn't render back button", () => {
       expect(queryByText("Back")).not.toBeInTheDocument();
     })
 
@@ -201,18 +215,48 @@ describe("RestartPage", () => {
       defaultProps = {
         ...defaultProps,
         checkingOnSameNetwork: false,
-        displayMoveAwayFromApDialog: true,
+        shouldMoveAwayFromAp: true,
+        shouldDisplayConnectivityDialog: true,
       };
 
       rerender(<RestartPage {...defaultProps} />);
     });
 
     it("renders the dialog", () => {
-      expect(queryByTestId("move-away-from-ap-dialog")).toBeInTheDocument();
+      expect(queryByTestId("connectivity-dialog")).toBeInTheDocument();
     });
 
     it("displays the dialog", () => {
-      expect(queryByTestId("move-away-from-ap-dialog")).not.toHaveClass("hidden");
+      expect(queryByTestId("connectivity-dialog")).not.toHaveClass("hidden");
+    });
+
+    it("disables restart button", () => {
+      expect(queryByText("Restart")).toBeDisabled();
+    });
+
+    it("disables back button", () => {
+      expect(queryByText("Back")).toBeDisabled();
+    });
+  });
+
+  describe("when the only connection method is AP", () => {
+    beforeEach(() => {
+      defaultProps = {
+        ...defaultProps,
+        checkingOnSameNetwork: false,
+        shouldMoveAwayFromAp: false,
+        shouldDisplayConnectivityDialog: true,
+      };
+
+      rerender(<RestartPage {...defaultProps} />);
+    });
+
+    it("renders the dialog", () => {
+      expect(queryByTestId("connectivity-dialog")).toBeInTheDocument();
+    });
+
+    it("displays the dialog", () => {
+      expect(queryByTestId("connectivity-dialog")).not.toHaveClass("hidden");
     });
 
     it("disables restart button", () => {

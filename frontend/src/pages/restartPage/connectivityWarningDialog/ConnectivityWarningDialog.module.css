@@ -44,6 +44,11 @@
   align-items: flex-end;
 }
 
+.continueButtonContainer {
+  flex: 1;
+  display: flex;
+}
+
 .refreshButtonContainer {
   flex: 1;
   display: flex;
@@ -63,5 +68,11 @@
 .skipButton {
   color: var(--green);
   margin-left: auto;
+  height: 40px;
+}
+
+.continueButton {
+  color: var(--green);
+  margin: auto;
   height: 40px;
 }
