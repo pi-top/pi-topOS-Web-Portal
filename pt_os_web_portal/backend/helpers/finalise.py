@@ -193,9 +193,8 @@ def should_switch_network(request) -> Dict:
                 pass
 
         # ptusb0 interface always has an IP address, so check is performed differently
-        ptusb0_data = InterfaceNetworkData("ptusb0")
-        if len(get_address_for_ptusb_connected_device(network=ptusb0_data.network)) > 0:
-            return ptusb0_data.ip.exploded
+        if len(get_address_for_ptusb_connected_device()) > 0:
+            return InterfaceNetworkData("ptusb0").ip.exploded
 
         return ""
 
@@ -205,20 +204,20 @@ def should_switch_network(request) -> Dict:
         client_ip = client_ip.ipv4_mapped
 
     pi_top_non_ap_ip = get_non_ap_ip()
-    should_switch_network = (
-        client_ip in InterfaceNetworkData("wlan_ap0").network
-        and len(pi_top_non_ap_ip) != 0
-    )
+    wlan_ap0_iface = InterfaceNetworkData("wlan_ap0")
+    client_is_in_ap_network = client_ip in wlan_ap0_iface.network
+    is_connected_only_through_ap = len(pi_top_non_ap_ip) == 0
 
     pi_top_ip = pi_top_non_ap_ip
     if len(pi_top_ip) == 0:
-        pi_top_ip = get_internal_ip("wlan_ap0")
+        pi_top_ip = wlan_ap0_iface.ip.exploded
 
     response = {
         "clientIp": client_ip.exploded,
         "piTopIp": pi_top_ip,
-        "shouldSwitchNetwork": should_switch_network,
-        "shouldDisplayDialog": device_type() != DeviceName.pi_top_4.value,
+        "shouldSwitchNetwork": not is_connected_only_through_ap,
+        "shouldDisplayDialog": device_type() == DeviceName.pi_top_4.value
+        and client_is_in_ap_network,
     }
     logger.info(f"should_switch_network: {response}")
     return response
