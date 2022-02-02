@@ -34,9 +34,12 @@ class PageManager:
         def guide_overlay(image):
             show_up_arrow = self.active_viewport.page_index != 0
             # down arrow when not on last page and next page visible
-            show_down_arrow = self.active_viewport.page_index + 1 < len(
-                self.active_viewport.pages
-            ) and self.active_viewport.pages[self.active_viewport.page_index + 1].visible
+            show_down_arrow = (
+                self.active_viewport.page_index + 1 < len(self.active_viewport.pages)
+                and self.active_viewport.pages[
+                    self.active_viewport.page_index + 1
+                ].visible
+            )
 
             if show_up_arrow:
                 ImageDraw.Draw(image).regular_polygon(((3, 3), 4), 3, fill=1)
