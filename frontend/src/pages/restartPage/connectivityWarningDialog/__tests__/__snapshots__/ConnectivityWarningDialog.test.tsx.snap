@@ -27,7 +27,7 @@ exports[`ConnectivityWarningDialog when user should switch networks renders the 
   This probably means that your computer is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.
   <br />
   <br />
-  Please, make sure you connect your computer to your home Wi-Fi network and refresh this page.
+  Please, make sure you connect your computer to your home Wi-Fi network and click refresh below.
 </React.Fragment>
 `;
 
