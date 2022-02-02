@@ -43,11 +43,11 @@ export default ({
 
   const getMessage = () => {
     if (isConnected) {
-      return <>Great, you are connected!</>;
+      return <>Great, your pi-top is connected to '{ssid}'!</>;
     }
 
     if (isConnecting) {
-      return <>Connecting to {ssid}...</>;
+      return <>Connecting to '{ssid}''...</>;
     }
 
     return (

@@ -92,7 +92,7 @@ describe("ConnectDialogContainer", () => {
 
     await wait();
 
-    expect(queryByText("Great, you are connected!")).toBeInTheDocument();
+    expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
   });
 
   describe("when network with password is passed", () => {
@@ -143,7 +143,7 @@ describe("ConnectDialogContainer", () => {
       });
 
       it("renders connected message", async () => {
-        expect(queryByText("Great, you are connected!")).toBeInTheDocument();
+        expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
       });
 
       describe("when new network is passed", () => {
