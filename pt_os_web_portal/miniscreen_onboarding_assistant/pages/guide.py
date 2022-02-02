@@ -26,6 +26,7 @@ class GuidePage(Enum):
     GET_DEVICE = auto()
     HELP_URL = auto()
     CONNECT_PITOP_WIFI_NETWORK = auto()
+    WAIT_CONNECTION = auto()
     OPEN_BROWSER = auto()
     CARRY_ON = auto()
 
@@ -39,6 +40,7 @@ class GuidePageGenerator:
             GuidePage.GET_DEVICE: GetDevicePage,
             GuidePage.HELP_URL: HelpURLPage,
             GuidePage.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
+            GuidePage.WAIT_CONNECTION: WaitConnectionPage,
             GuidePage.OPEN_BROWSER: OpenBrowserPage,
             GuidePage.CARRY_ON: CarryOnPage,
         }
@@ -110,12 +112,14 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
         return f"Connect to\nWi-Fi network:\n'{self.ssid}'\n'{self.passphrase}'"
 
 
-class OpenBrowserPage(GuidePageBase):
+class WaitConnectionPage(GuidePageBase):
     def __init__(self, size, mode, interval):
         super().__init__(
-            type=GuidePage.OPEN_BROWSER, size=size, mode=mode, interval=interval
+            type=GuidePage.WAIT_CONNECTION,
+            size=size,
+            mode=mode,
+            interval=interval,
         )
-        self.wrap = False
 
         self.has_connected_device = False
 
@@ -131,6 +135,25 @@ class OpenBrowserPage(GuidePageBase):
 
         subscribe(AppEvents.IS_CONNECTED_TO_INTERNET, update_is_connected)
 
+        self.wrap = False
+
+    @property
+    def text(self):
+        text = "Waiting for\nconnection..."
+
+        # page should transition, this text only shown if you return to it
+        if self.has_connected_device or self.is_connected_to_internet:
+            text = "You're connected!\nPress DOWN to continue..."
+        return text
+
+
+class OpenBrowserPage(GuidePageBase):
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=GuidePage.OPEN_BROWSER, size=size, mode=mode, interval=interval
+        )
+        self.wrap = False
+
     # TODO: cycle through alternative IP addresses (e.g. Ethernet)
     # ip -4 addr [show eth0] | grep --only-matching --perl-regexp '(?<=inet\s)\d+(\.\d+){3}' | grep --invert-match 127.0.0.1
 
@@ -145,12 +168,9 @@ class OpenBrowserPage(GuidePageBase):
 
     @property
     def text(self):
-        txt = "Waiting for\nconnection..."
-
-        if self.has_connected_device or self.is_connected_to_internet:
-            hostname = run("hostname", encoding="utf-8", capture_output=True)
-            hostname = hostname.stdout.strip()
-            txt = f"Open browser to\nhttp://{hostname}.local\nor\nhttp://192.168.64.1"
+        hostname = run("hostname", encoding="utf-8", capture_output=True)
+        hostname = hostname.stdout.strip()
+        txt = f"Open browser to\nhttp://{hostname}.local\nor\nhttp://192.168.64.1"
 
         return txt
 

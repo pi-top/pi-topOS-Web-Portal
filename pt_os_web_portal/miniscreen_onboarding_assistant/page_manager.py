@@ -33,6 +33,7 @@ class PageManager:
 
         def guide_overlay(image):
             show_up_arrow = self.active_viewport.page_index != 0
+            # no down arrow on last 2 pages - final page is auto transition
             show_down_arrow = self.active_viewport.page_index + 2 < len(
                 self.active_viewport.pages
             )
@@ -96,6 +97,20 @@ class PageManager:
         self.setup_event_triggers()
 
     def setup_event_triggers(self):
+        def soft_transition_to_open_browser_page(connected):
+            if not connected or self.active_viewport != self.guide_viewport:
+                return
+
+            open_browser_page_index = len(self.active_viewport.pages) - 2
+            # Only do automatic update if on previous two pages
+            if 3 > open_browser_page_index - self.guide_viewport.page_index > 0:
+                self.guide_viewport.page_index = open_browser_page_index
+
+        subscribe(AppEvents.HAS_CONNECTED_DEVICE, soft_transition_to_open_browser_page)
+        subscribe(
+            AppEvents.IS_CONNECTED_TO_INTERNET, soft_transition_to_open_browser_page
+        )
+
         def soft_transition_to_last_page(_):
             if self.active_viewport != self.guide_viewport:
                 return
