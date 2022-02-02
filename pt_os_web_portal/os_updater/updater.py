@@ -1,7 +1,6 @@
 import logging
 from datetime import date, datetime
 from enum import Enum, auto
-from threading import Thread
 from time import sleep
 
 from pitop.common.sys_info import is_connected_to_internet
@@ -30,20 +29,15 @@ class OSUpdater:
         }
         self.active_backend = self.backends[UpdaterBackend.PY_APT]
         self.message_handler = OSUpdaterFrontendMessageHandler()
-        self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
 
     def start(self):
-        self.thread = Thread(target=self.do_update_check, args=(), daemon=True)
-        self.thread.start()
+        pass
 
     def stop(self):
         while self.active_backend.lock:
             # TODO: lower to debug
             logger.info("Waiting: OS updater backend lock")
             sleep(0.2)
-
-        if self.thread.is_alive():
-            self.thread.join()
 
         logger.info("Stopped: OS updater")
 
