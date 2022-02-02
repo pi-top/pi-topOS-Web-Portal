@@ -70,7 +70,7 @@ class GetDevicePage(GuidePageBase):
         super().__init__(
             type=GuidePage.GET_DEVICE, size=size, mode=mode, interval=interval
         )
-        self.text = "You will need a\nlaptop/computer\nto connect with..."
+        self.text = "You will need a\nlaptop/computer\nto connect..."
         self.wrap = False
 
 
@@ -139,11 +139,11 @@ class WaitConnectionPage(GuidePageBase):
 
     @property
     def text(self):
-        text = "Waiting for\nconnection..."
+        text = "No connection\ndetected,\nwaiting..."
 
         # page should transition, this text only shown if you return to it
         if self.has_connected_device or self.is_connected_to_internet:
-            text = "You're connected!\nPress DOWN to continue..."
+            text = "You're connected!\nPress DOWN to\ncontinue..."
         return text
 
 
@@ -180,7 +180,8 @@ class CarryOnPage(GuidePageBase):
         super().__init__(
             type=GuidePage.CARRY_ON, size=size, mode=mode, interval=interval
         )
-        self.text = "You've started the onboarding!\nContinue in your browser..."
+        self.wrap = False
+        self.text = "You've started\nthe onboarding!\nContinue in\nyour browser..."
         self.visible = False
 
         def update_visible(visible):
