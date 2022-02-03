@@ -1,0 +1,53 @@
+.btn:hover {
+  --hover-colour: var(--mediumGreen);
+}
+
+.textWrapper {
+  composes: fontSub from '../../globalStyles/Typography.module.css';
+  color: var(--piTopGreen);
+  font-weight: 800;
+  white-space: nowrap;
+  background-color: var(--hover-colour);
+  font-size: 14px;
+}
+
+.border {
+  stroke: var(--piTopGreen);
+  stroke-width: 1.5px;
+}
+
+.rolloverFill {
+  fill: var(--hover-colour);
+}
+
+.rolloverBG {
+  background-color: var(--hover-colour);
+}
+
+button[disabled]:hover {
+  --hover-colour: transparent;
+}
+
+/* structural stuff */
+.primaryButtonSVGContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.btn {
+  position: relative;
+  display: inline-grid;
+  --hover-colour: transparent;
+  color: var(--btnColour, var(--piTopGreen));
+  padding: 4.7px 25px;
+  min-height: 20px;
+  min-width: 128px;
+}
+
+.textWrapper {
+  position: relative;
+  display: inline-block;
+}

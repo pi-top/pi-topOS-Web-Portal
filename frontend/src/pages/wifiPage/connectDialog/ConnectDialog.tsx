@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
 import Button from "../../../components/atoms/button/Button";
+import PrimaryButton from "../../../components/primaryButton/PrimaryButton";
 import Input from "../../../components/atoms/input/Input";
 import Image from "../../../components/atoms/image/Image";
 import CheckBox from "../../../components/atoms/checkBox/CheckBox";
@@ -116,14 +117,14 @@ export default ({
           </Button>
 
           {isConnected ? (
-            <Button onClick={() => onDone()}>OK</Button>
+            <PrimaryButton onClick={() => onDone()}>OK</PrimaryButton>
           ) : (
-            <Button
+            <PrimaryButton
               disabled={isConnecting}
               onClick={() => network && connect(network, password)}
             >
               {connectError ? "Retry" : "Join"}
-            </Button>
+            </PrimaryButton>
           )}
         </div>
       </div>
