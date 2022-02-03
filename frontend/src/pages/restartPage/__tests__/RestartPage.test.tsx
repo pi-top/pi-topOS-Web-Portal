@@ -103,7 +103,7 @@ describe("RestartPage", () => {
     });
 
     it("disables the restart button", () => {
-      expect(getByText("Restart")).toBeDisabled();
+      expect(getByText("Restart").parentElement).toBeDisabled();
     });
   });
 
@@ -122,7 +122,7 @@ describe("RestartPage", () => {
     });
 
     it("disables restart button", () => {
-      expect(queryByText("Restart")).toBeDisabled();
+      expect(queryByText("Restart")?.parentElement).toBeDisabled();
     });
   });
 

@@ -98,7 +98,7 @@ describe("ConnectDialog", () => {
     });
 
     it("disables the Join button", () => {
-      expect(getByText("Join")).toHaveProperty("disabled");
+      expect(getByText("Join").parentElement).toHaveProperty("disabled");
     });
 
     it("disables the Cancel button", () => {
