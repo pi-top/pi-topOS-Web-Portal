@@ -1,12 +1,11 @@
 import logging
 from enum import Enum
 from json import dumps as jdumps
-from os import path
 from threading import Thread
 
 from flask import abort
 from flask import current_app as app
-from flask import redirect, request, send_from_directory
+from flask import redirect, request
 from further_link.start_further import get_further_url
 from pitop.common.sys_info import is_connected_to_internet
 
@@ -478,13 +477,6 @@ def post_restart_web_portal_service():
     post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
     return "OK"
-
-
-@app.route("/FSMePro/<filename>", methods=["GET"])
-def FSMePro(filename):
-    logger.debug(f"Route '/FSMePro/{filename}'")
-    current_dir = path.dirname(path.realpath(__file__))
-    return send_from_directory(str(current_dir) + "/../resources/fonts", filename)
 
 
 @app.route("/os-updates", methods=["GET"])
