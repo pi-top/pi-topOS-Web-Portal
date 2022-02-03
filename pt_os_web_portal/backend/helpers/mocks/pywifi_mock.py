@@ -195,7 +195,7 @@ class PyWiFiInterfaceMock:
     def remove_all_network_profiles(self):
         self.state = PyWiFiConstant.IFACE_INACTIVE
 
-    def ssid_connected(self):
+    def bssid_connected(self):
         return ""
 
     def add_network_profile(self, profile):

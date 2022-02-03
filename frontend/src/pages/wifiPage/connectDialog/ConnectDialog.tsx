@@ -20,6 +20,7 @@ export type Props = {
   onCancel: () => void;
   onDone: () => void;
   network?: Network;
+  disconnectedFromAp: boolean;
 };
 
 export default ({
@@ -31,6 +32,7 @@ export default ({
   connectError,
   connect,
   network,
+  disconnectedFromAp,
 }: Props) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -102,6 +104,12 @@ export default ({
           <span className={styles.error}>
             There was an error connecting to {ssid}... please check your
             password and try again
+          </span>
+        )}
+
+        {disconnectedFromAp && (
+          <span className={styles.error}>
+            Your computer has disconnected from the wifi network 'pi-top'. Please reconnect to it.
           </span>
         )}
 
