@@ -133,7 +133,11 @@ class WifiManager:
         network_profile = None
 
         # don't rescan if we've already done one
-        results = hasattr(self, 'scan_results') and self.scan_results or self.scan_and_get_results()
+        results = (
+            hasattr(self, "scan_results")
+            and self.scan_results
+            or self.scan_and_get_results()
+        )
 
         for r in results:
             if r.bssid == bssid:
