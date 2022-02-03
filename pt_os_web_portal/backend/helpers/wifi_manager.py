@@ -126,11 +126,16 @@ class WifiManager:
                 continue
             networks[ssid_to_display] = network
         logger.info(f"Found SSIDs: {tuple(networks.keys())}")
-        return [networks[ssid_to_display] for ssid_to_display in networks]
+        self.scan_results = [networks[ssid_to_display] for ssid_to_display in networks]
+        return self.scan_results
 
     def connect(self, bssid: str, password: str) -> None:
         network_profile = None
-        for r in self.scan_and_get_results():
+
+        # don't rescan if we've already done one
+        results = hasattr(self, 'scan_results') and self.scan_results or self.scan_and_get_results()
+
+        for r in results:
             if r.bssid == bssid:
                 network_profile = r
                 break
