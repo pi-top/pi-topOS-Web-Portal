@@ -22,7 +22,6 @@ class GuidePageBase(PageBase):
 
 class GuidePage(Enum):
     START = auto()
-    START_WIRELESS_CONNECTION = auto()
     GET_DEVICE = auto()
     HELP_URL = auto()
     CONNECT_PITOP_WIFI_NETWORK = auto()
@@ -36,7 +35,6 @@ class GuidePageGenerator:
     def get_page(page_type: GuidePage):
         pages = {
             GuidePage.START: StartPage,
-            GuidePage.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
             GuidePage.GET_DEVICE: GetDevicePage,
             GuidePage.HELP_URL: HelpURLPage,
             GuidePage.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
@@ -51,18 +49,7 @@ class GuidePageGenerator:
 class StartPage(GuidePageBase):
     def __init__(self, size, mode, interval):
         super().__init__(type=GuidePage.START, size=size, mode=mode, interval=interval)
-        self.text = "Welcome to your pi-top! Press DOWN to get started..."
-
-
-class StartWirelessConnectionPage(GuidePageBase):
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=GuidePage.START_WIRELESS_CONNECTION,
-            size=size,
-            mode=mode,
-            interval=interval,
-        )
-        self.text = "Awesome! Press DOWN to continue through pi-top connection setup..."
+        self.text = "Welcome to your pi-top! Press DOWN to continue..."
 
 
 class GetDevicePage(GuidePageBase):
