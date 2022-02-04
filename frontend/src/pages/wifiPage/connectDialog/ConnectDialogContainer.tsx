@@ -21,14 +21,14 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
   const [connectError, setConnectError] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
-  const [isConnectedViaAp, setIsConnectedViaAp] = useState(false);
+  const [isUsingAp, setIsUsingAp] = useState(false);
   const [disconnectedFromAp, setDisconnectedFromAp] = useState(false);
 
   useEffect(() => {
     isConnectedThroughAp()
-      .then((connectedViaAp) => setIsConnectedViaAp(connectedViaAp))
+      .then((connectedViaAp) => setIsUsingAp(connectedViaAp))
       .catch(() => null);
-  }, [setIsConnectedViaAp]);
+  }, [setIsUsingAp]);
 
   const connect = useCallback(
     (network: Network, password: string) => {
@@ -51,7 +51,7 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
               })
 
             clearInterval(connectivityCheckInterval);
-            isConnectedViaAp && setDisconnectedFromAp(false);
+            isUsingAp && setDisconnectedFromAp(false);
           } catch (_) {}
         }, requestIntervalMs);
       }
@@ -64,14 +64,14 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
         .catch(() => {
           setConnectError(true);
           // keep checking in the background if connection succeeded
-          isConnectedViaAp && setDisconnectedFromAp(true);
+          isUsingAp && setDisconnectedFromAp(true);
           checkConnection(network);
         })
         .finally(() => {
           setIsConnecting(false);
         });
     },
-    [setConnectedNetwork, isConnectedViaAp]
+    [setConnectedNetwork, isUsingAp]
   );
 
   useEffect(() => {
