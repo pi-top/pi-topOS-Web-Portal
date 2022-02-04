@@ -66,7 +66,8 @@ class HelpURLPage(GuidePageBase):
         super().__init__(
             type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
         )
-        self.text = "Need more guidance: pi-top.com/start-4..."
+        self.wrap = False
+        self.text = "Need more\nguidance?\npi-top.com/start-4\n..."
 
 
 class ConnectPitopWifiNetworkPage(GuidePageBase):
