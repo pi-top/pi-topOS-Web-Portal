@@ -215,7 +215,18 @@ export default ({
             )
           )
           .finally(() =>
-            shouldMoveAwayFromAp && safelyRunService(
+            // shouldDisplayConnectivityDialog = client using AP network
+            // shouldMoveAwayFromAp = pi-top has networks other than AP
+            //
+            // so turn off AP if !shouldDisplayConnectivityDialog || shouldMoveAwayFromAp
+            // = client not using AP or they are but there is an alternative
+            //
+            // ...except if there is an alternative they should have already been
+            // prompted to switch to it before tiggering these actions...
+            // if they didn't follow that prompt, we need to keep AP on despite alternatives
+            //
+            // so actually only turn AP off if they are not using it currently... !shouldDisplayConnectivityDialog
+            !shouldDisplayConnectivityDialog && safelyRunService(
               disableApMode,
               "Disabling my access point..."
             )
