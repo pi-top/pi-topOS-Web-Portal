@@ -64,3 +64,39 @@ body {
   padding: 0;
   font-family: var(--fontFamily);
 }
+
+@font-face {
+  font-display: swap;
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/Roboto/Roboto-Regular.ttf') format('truetype'),
+       local('Roboto');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-style: italic;
+  src: url('/Roboto/Roboto-Italic.ttf') format('truetype'),
+       local('Roboto');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Roboto';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/Roboto/Roboto-Bold.ttf') format('truetype'),
+       local('Roboto');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Roboto';
+  font-weight: 700;
+  font-style: italic;
+  src: url('/Roboto/Roboto-BoldItalic.ttf') format('truetype'),
+       local('Roboto');
+}

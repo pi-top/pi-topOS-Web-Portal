@@ -5,7 +5,7 @@ from threading import Thread
 
 from flask import abort
 from flask import current_app as app
-from flask import redirect, request
+from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.sys_info import is_connected_to_internet
 
@@ -104,6 +104,12 @@ def not_found(e):
     ):
         return redirect("/")
     return app.send_static_file("index.html")
+
+
+@app.route('/Roboto/<filename>', methods=['GET'])
+def roboto(filename):
+    logger.debug(f"Route '/Roboto/{filename}'")
+    return send_from_directory('/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/', filename)
 
 
 # Startup
