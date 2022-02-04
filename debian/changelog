@@ -1,3 +1,29 @@
+pi-top-os-web-portal (0.9.0-3) bullseye; urgency=medium
+
+  * Bump actions/checkout from 2.3.5 to 2.4.0 (#305)
+  * [pre-commit.ci] pre-commit autoupdate (#311)
+  * [pre-commit.ci] pre-commit autoupdate (#312)
+  * Fix input on safari (#293)
+  * [pre-commit.ci] pre-commit autoupdate (#313)
+  * Update landing application (#309)
+  * Updated master workflow files
+  * [pre-commit.ci] pre-commit autoupdate (#315)
+  * Add signing key and passphrase to deb_release workflow
+  * [pre-commit.ci] pre-commit autoupdate (#316)
+  * Bump follow-redirects from 1.14.3 to 1.14.7 in /frontend (#319)
+  * Add close button to Landing app (#321)
+  * Stop landing page from displaying on each boot (#318)
+  * Don't hang when stopping systemd service  (#320)
+  * feat: confirm users want to leave during restart
+  * feat: add warning when skipping wifi page (#324)
+  * Fix duplicate SSIDs showing up in onboarding Wi-Fi menu (#322)
+  * Don't run wpa 'reconfigure' step when connecting to wifi (#325)
+  * Bump actions/setup-python from 2.2.2 to 2.3.1 (#326)
+  * [pre-commit.ci] pre-commit autoupdate (#328)
+  * Add pull request template
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Feb 2022 12:10:14 +0000
+
 pi-top-os-web-portal (0.9.0-2) bullseye; urgency=medium
 
   * Handle any number of unrequired arguments in signal handler
