@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectivityWarningDialog when user only connection mode is through AP renders the correct content 1`] = `
+<React.Fragment>
+  <br />
+  <br />
+  After your pi-top restarts, make sure to reconnect your computer to the 'pi-top' Wi-Fi network to finish onboarding.
+</React.Fragment>
+`;
+
+exports[`ConnectivityWarningDialog when user only connection mode is through AP renders the correct message 1`] = `
+<React.Fragment>
+  <span
+    className="dialogTitle"
+  >
+    Reconnect to the 'pi-top' network
+     
+  </span>
+</React.Fragment>
+`;
+
+exports[`ConnectivityWarningDialog when user should switch networks renders the correct content 1`] = `
+<React.Fragment>
+  Your pi-top is not connected to the same network as your device.
+  <br />
+  <br />
+  This probably means that your computer is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.
+  <br />
+  <br />
+  Please, make sure you connect your computer to your home Wi-Fi network and click refresh below.
+</React.Fragment>
+`;
+
+exports[`ConnectivityWarningDialog when user should switch networks renders the correct message 1`] = `
+<React.Fragment>
+  <span
+    className="dialogTitle"
+  >
+    Reconnect to your Wi-Fi
+     
+  </span>
+</React.Fragment>
+`;

@@ -20,6 +20,7 @@ from .helpers.finalise import (
     available_space,
     configure_landing,
     deprioritise_openbox_session,
+    disable_ap_mode,
     do_firmware_update,
     enable_firmware_updater_service,
     enable_further_link_service,
@@ -28,6 +29,7 @@ from .helpers.finalise import (
     onboarding_completed,
     reboot,
     restore_files,
+    should_switch_network,
     stop_onboarding_autostart,
     update_eeprom,
 )
@@ -498,3 +500,16 @@ def post_onboarding_ready_to_be_a_maker():
     logger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"
+
+
+@app.route("/disable-ap-mode", methods=["POST"])
+def post_disable_ap_mode():
+    logger.debug("Route '/disable-ap-mode'")
+    disable_ap_mode()
+    return "OK"
+
+
+@app.route("/should-switch-networks", methods=["GET"])
+def get_client_should_switch_network():
+    logger.debug("Route '/should-switch-networks'")
+    return jdumps(should_switch_network(request))
