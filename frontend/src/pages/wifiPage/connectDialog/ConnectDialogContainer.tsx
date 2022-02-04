@@ -28,7 +28,7 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
     isConnectedThroughAp()
       .then((connectedViaAp) => setIsConnectedViaAp(connectedViaAp))
       .catch(() => null);
-  }, []);
+  }, [setIsConnectedViaAp]);
 
   const connect = useCallback(
     (network: Network, password: string) => {
@@ -42,10 +42,10 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
         const connectivityCheckInterval = setInterval(async () => {
           try {
             await connectedBSSID(requestTimeoutMs)
-              .then((ssid) => {
-                const connectedToSsid = ssid === network.ssid;
-                setIsConnected(connectedToSsid)
-                if (connectedToSsid) {
+              .then((bssid) => {
+                const connectedToBssid = bssid === network.bssid;
+                setIsConnected(connectedToBssid)
+                if (connectedToBssid) {
                   setConnectedNetwork(network);
                 }
               })

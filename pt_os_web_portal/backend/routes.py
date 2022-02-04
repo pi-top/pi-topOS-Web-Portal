@@ -273,7 +273,7 @@ def get_is_connected_through_ap():
         client_ip = client_ip.ipv4_mapped
     throughAp = client_ip in InterfaceNetworkData("wlan_ap0").network
     logger.info(f"Client is{'' if throughAp else 'not'} connected through AP")
-    return jdumps(throughAp)
+    return jdumps({"isUsingAp": throughAp})
 
 
 # OS Upgrade
