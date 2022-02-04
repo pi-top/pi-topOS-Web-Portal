@@ -66,7 +66,7 @@ class HelpURLPage(GuidePageBase):
         super().__init__(
             type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
         )
-        self.text = "Detailed setup instructions: pi-top.com/start-4"
+        self.text = "Need more guidance: pi-top.com/start-4..."
 
 
 class ConnectPitopWifiNetworkPage(GuidePageBase):
@@ -96,7 +96,7 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
     @property
     def text(self):
-        return f"Connect to\nWi-Fi network:\n'{self.ssid}'\n'{self.passphrase}'"
+        return f"Connect to\nWi-Fi network:\n'{self.ssid}'\npass: '{self.passphrase}'"
 
 
 class WaitConnectionPage(GuidePageBase):
