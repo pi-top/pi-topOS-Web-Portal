@@ -82,7 +82,11 @@ export default ({
           onClick: onNextClick,
           disabled: !isConnected,
         }}
-        skipButton={{ onClick: () => setIsSkipWarningDialogActive(true) }}
+        skipButton={{ onClick: () => {
+          if (!isConnected) {
+            setIsSkipWarningDialogActive(true)
+          }
+        }}}
         backButton={{ onClick: onBackClick }}
       >
         <div className={styles.wifiSelectContainer}>
