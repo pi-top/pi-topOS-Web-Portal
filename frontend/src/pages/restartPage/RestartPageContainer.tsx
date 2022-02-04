@@ -53,7 +53,6 @@ export default ({
   const [shouldMoveAwayFromAp, setShouldMoveAwayFromAp] = useState(false);
   const [shouldDisplayConnectivityDialog, setShouldDisplayConnectivityDialog] = useState(false);
   const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
-  const [turnOffAp, setTurnOffAp] = useState(true);
 
   useEffect(() => {
     verifyDeviceNetwork()
@@ -159,7 +158,6 @@ export default ({
       checkingOnSameNetwork={checkingOnSameNetwork}
       shouldMoveAwayFromAp={shouldMoveAwayFromAp}
       shouldDisplayConnectivityDialog={shouldDisplayConnectivityDialog}
-      onConnectivityDialogSkip={() => setTurnOffAp(false)}
       piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);

@@ -42,7 +42,6 @@ export type Props = {
   piTopIpAddress: string;
   onManualPowerOnDialogClose: () => void;
   shouldDisplayConnectivityDialog: boolean,
-  onConnectivityDialogSkip: () => void;
   setupDevice: () => void;
   onBackClick?: () => void;
 };
@@ -58,7 +57,6 @@ export default ({
   displayManualPowerOnDialog,
   shouldMoveAwayFromAp,
   shouldDisplayConnectivityDialog,
-  onConnectivityDialogSkip,
   checkingOnSameNetwork,
   piTopIpAddress,
   onManualPowerOnDialogClose,
@@ -137,7 +135,6 @@ export default ({
         active={connectivityDialogActive}
         onSkip={() => {
           setConnectivityDialogActive(!connectivityDialogActive);
-          onConnectivityDialogSkip();
         }}
         onContinue={() => {
           setConnectivityDialogActive(!connectivityDialogActive);
