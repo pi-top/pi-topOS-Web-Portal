@@ -36,27 +36,29 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
       setIsConnected(false);
       setConnectError(false);
 
-      const requestTimeoutMs = 500;
-      const requestIntervalMs = 600;
+      const requestTimeoutMs = 1500;
+      const requestIntervalMs = 2000;
       const checkConnection = (network: Network) => {
         const connectivityCheckInterval = setInterval(async () => {
           try {
+            let connectedToBssid = false;
             await connectedBSSID(requestTimeoutMs)
               .then((bssid) => {
-                const connectedToBssid = bssid === network.bssid;
+                connectedToBssid = bssid === network.bssid;
                 setIsConnected(connectedToBssid)
                 if (connectedToBssid) {
+                  setConnectError(false);
                   setConnectedNetwork(network);
                 }
               })
 
-            clearInterval(connectivityCheckInterval);
+            connectedToBssid && clearInterval(connectivityCheckInterval);
             isUsingAp && setDisconnectedFromAp(false);
           } catch (_) {}
         }, requestIntervalMs);
       }
 
-      connectToNetwork({ bssid: network.bssid, password: password }, 15000)
+      connectToNetwork({ bssid: network.bssid, password: password }, 1000)
         .then(() => {
           setIsConnected(true);
           setConnectedNetwork(network);

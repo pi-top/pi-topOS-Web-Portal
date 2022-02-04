@@ -174,11 +174,6 @@ class WifiManager:
             if self.get_status() != IfaceStatus.CONNECTED:
                 return ""
 
-            network_profiles = self.wifi_interface.network_profiles()
-            if len(network_profiles) == 1:
-                # it's the only profile if recently connected using 'connect()'
-                return network_profiles[0].bssid
-
             # query the network to wpa_cli
             response = self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
                 self.RPI_WLAN_INTERFACE, "STATUS", True
