@@ -29,6 +29,26 @@ class PageManager:
         self._ms.select_button.when_released = self.handle_select_btn
         self._ms.cancel_button.when_released = self.handle_cancel_btn
 
+        def guide_overlay(image):
+            show_up_arrow = self.active_viewport.page_index != 0
+            # down arrow when not on last page and next page visible
+            show_down_arrow = (
+                self.active_viewport.page_index + 1 < len(self.active_viewport.pages)
+                and self.active_viewport.pages[
+                    self.active_viewport.page_index + 1
+                ].visible
+            )
+
+            if show_up_arrow:
+                ImageDraw.Draw(image).regular_polygon(((3, 3), 4), 3, fill=1)
+            if show_down_arrow:
+                ImageDraw.Draw(image).regular_polygon(
+                    ((3, image.size[1] - 4), 4),
+                    3,
+                    fill=1,
+                    rotation=180,
+                )
+
         self.guide_viewport = ViewportManager(
             "guide",
             miniscreen,
@@ -38,6 +58,7 @@ class PageManager:
                 )
                 for guide_page_type in GuidePage
             ],
+            overlay_render_func=guide_overlay,
         )
 
         def menu_overlay(image):
@@ -76,6 +97,20 @@ class PageManager:
         self.setup_event_triggers()
 
     def setup_event_triggers(self):
+        def soft_transition_to_open_browser_page(connected):
+            if not connected or self.active_viewport != self.guide_viewport:
+                return
+
+            open_browser_page_index = len(self.active_viewport.pages) - 2
+            # Only do automatic update if on previous two pages
+            if 3 > open_browser_page_index - self.guide_viewport.page_index > 0:
+                self.guide_viewport.page_index = open_browser_page_index
+
+        subscribe(AppEvents.HAS_CONNECTED_DEVICE, soft_transition_to_open_browser_page)
+        subscribe(
+            AppEvents.IS_CONNECTED_TO_INTERNET, soft_transition_to_open_browser_page
+        )
+
         def soft_transition_to_last_page(_):
             if self.active_viewport != self.guide_viewport:
                 return
