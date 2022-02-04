@@ -217,7 +217,7 @@ export default ({
             )
           )
           .finally(() =>
-            turnOffAp && safelyRunService(
+            shouldMoveAwayFromAp && safelyRunService(
               disableApMode,
               "Disabling my access point..."
             )
