@@ -67,7 +67,7 @@ class HelpURLPage(GuidePageBase):
             type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
         )
         self.wrap = False
-        self.text = "Need more\nguidance?\npi-top.com/start-4\n..."
+        self.text = "Need more\nguidance?\npi-top.com/start-4"
 
 
 class ConnectPitopWifiNetworkPage(GuidePageBase):
@@ -97,7 +97,7 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
     @property
     def text(self):
-        return f"Connect to\nWi-Fi network:\n'{self.ssid}'\npass: '{self.passphrase}'"
+        return f"Connect to Wi-Fi\nnet:'{self.ssid}'\npass: '{self.passphrase}'"
 
 
 class WaitConnectionPage(GuidePageBase):
@@ -158,7 +158,7 @@ class OpenBrowserPage(GuidePageBase):
     def text(self):
         hostname = run("hostname", encoding="utf-8", capture_output=True)
         hostname = hostname.stdout.strip()
-        txt = f"Open browser to\nhttp://{hostname}.local\nor\nhttp://192.168.64.1"
+        txt = f"Open browser to\n{hostname}.local\nor\nhttp://192.168.64.1"
 
         return txt
 
