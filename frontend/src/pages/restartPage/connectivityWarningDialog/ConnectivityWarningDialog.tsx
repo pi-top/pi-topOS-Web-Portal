@@ -16,7 +16,7 @@ export type Props = {
 export const getMessage = (shouldMoveAwayFromAp: boolean) => {
   return (
     <>
-      <span className={styles.dialogTitle}>{shouldMoveAwayFromAp ? "Reconnect to your Wi-Fi" : "Reconnect to the 'pi-top' network"} </span>
+      <span className={styles.dialogTitle}>{shouldMoveAwayFromAp ? "Reconnect to your Wi-Fi" : "Reconnect to the pi-top network"} </span>
     </>
   );
 };
@@ -25,21 +25,19 @@ export const getContent = (shouldMoveAwayFromAp: boolean) => {
   if (shouldMoveAwayFromAp) {
     return (
       <>
-        Your pi-top is not connected to the same network as your device.
+        Your pi-top is now connected to the Wi-Fi network you configured in a previous step, but your computer is still on the 'pi-top-XXXX' network.
         <br></br>
         <br></br>
-        This probably means that your computer is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.
-        <br></br>
-        <br></br>
-        Please, make sure you connect your computer to your home Wi-Fi network and click refresh below.
+        To complete onboarding, please switch your computer back to your regular Wi-Fi network and click refresh below.
       </>
     )
   }
   return (
     <>
+      After your pi-top restarts, you will need to reconnect your computer to the 'pi-top-XXXX' Wi-Fi network to finish onboarding.
       <br></br>
       <br></br>
-      After your pi-top restarts, make sure to reconnect your computer to the 'pi-top' Wi-Fi network to finish onboarding.
+      This page may not update until you have reconnected to the network.
     </>
   )
 }
