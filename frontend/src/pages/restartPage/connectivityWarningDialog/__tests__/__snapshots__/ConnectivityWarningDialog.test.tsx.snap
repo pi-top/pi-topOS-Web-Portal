@@ -2,9 +2,10 @@
 
 exports[`ConnectivityWarningDialog when user only connection mode is through AP renders the correct content 1`] = `
 <React.Fragment>
+  After your pi-top restarts, you will need to reconnect your computer to the 'pi-top-XXXX' Wi-Fi network to finish onboarding.
   <br />
   <br />
-  After your pi-top restarts, make sure to reconnect your computer to the 'pi-top' Wi-Fi network to finish onboarding.
+  This page may not update until you have reconnected to the network.
 </React.Fragment>
 `;
 
@@ -13,7 +14,7 @@ exports[`ConnectivityWarningDialog when user only connection mode is through AP 
   <span
     className="dialogTitle"
   >
-    Reconnect to the 'pi-top' network
+    Reconnect to the pi-top network
      
   </span>
 </React.Fragment>
@@ -21,13 +22,10 @@ exports[`ConnectivityWarningDialog when user only connection mode is through AP 
 
 exports[`ConnectivityWarningDialog when user should switch networks renders the correct content 1`] = `
 <React.Fragment>
-  Your pi-top is not connected to the same network as your device.
+  Your pi-top is now connected to the Wi-Fi network you configured in a previous step, but your computer is still on the 'pi-top-XXXX' network.
   <br />
   <br />
-  This probably means that your computer is connected to the 'pi-top' network and your pi-top was configured to connect to your Wi-Fi network in one of the previous steps.
-  <br />
-  <br />
-  Please, make sure you connect your computer to your home Wi-Fi network and click refresh below.
+  To complete onboarding, please switch your computer back to your regular Wi-Fi network and click refresh below.
 </React.Fragment>
 `;
 
