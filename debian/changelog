@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.10.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.10.1-1) bullseye; urgency=medium
 
   * Cache scan results so we can connect wifi without rescan (#331)
   * Bump actions/setup-python from 2.3.1 to 2.3.2 (#336)
