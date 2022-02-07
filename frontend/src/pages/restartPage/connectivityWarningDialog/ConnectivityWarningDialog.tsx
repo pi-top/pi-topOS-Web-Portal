@@ -28,7 +28,7 @@ export const getContent = (shouldMoveAwayFromAp: boolean) => {
         Your pi-top is now connected to the Wi-Fi network you configured in a previous step, but your computer is still on the 'pi-top-XXXX' network.
         <br></br>
         <br></br>
-        To complete onboarding, please switch your computer back to your regular Wi-Fi network and click refresh below.
+        To complete onboarding, please switch your computer to the same Wi-Fi network as your pi-top and click refresh below.
       </>
     )
   }
