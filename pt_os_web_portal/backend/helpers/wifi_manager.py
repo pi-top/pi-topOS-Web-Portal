@@ -169,15 +169,18 @@ class WifiManager:
             self.RPI_WLAN_INTERFACE, "SAVE_CONFIG", False
         )
 
-    def ssid_connected(self) -> str:
+    def bssid_connected(self) -> str:
         try:
-            if self.get_status() == IfaceStatus.CONNECTED:
-                response = self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                    self.RPI_WLAN_INTERFACE, "STATUS", True
-                )
-                for line in response.split("\n"):
-                    if line.startswith("ssid="):
-                        return line.replace("ssid=", "")
+            if self.get_status() != IfaceStatus.CONNECTED:
+                return ""
+
+            # query the network to wpa_cli
+            response = self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
+                self.RPI_WLAN_INTERFACE, "STATUS", True
+            )
+            for line in response.split("\n"):
+                if line.startswith("bssid="):
+                    return line.replace("bssid=", "")
         except Exception:
             pass
         return ""
@@ -218,7 +221,7 @@ def attempt_connection(bssid: str, password: str, on_connection=None) -> None:
         on_connection()
 
 
-def current_wifi_ssid() -> str:
-    logger.info("Attempting to determine to which SSID we're connected to")
+def current_wifi_bssid() -> str:
+    logger.info("Attempting to determine to which bSSID we're connected to")
     wm = get_wifi_manager_instance()
-    return wm.ssid_connected()
+    return wm.bssid_connected()

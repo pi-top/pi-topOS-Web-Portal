@@ -16,10 +16,17 @@ import ConnectDialogContainer, { Props } from "../ConnectDialogContainer";
 import { NetworkCredentials } from "../../../../types/Network";
 import querySpinner from "../../../../../test/helpers/querySpinner";
 import connectToNetwork from "../../../../services/connectToNetwork";
+import isConnectedThroughAp from "../../../../services/isConnectedThroughAp";
+import connectedBSSID from "../../../../services/connectedBSSID";
+import { act } from "react-dom/test-utils";
 
 jest.mock("../../../../services/connectToNetwork");
+jest.mock("../../../../services/isConnectedThroughAp");
+jest.mock("../../../../services/connectedBSSID");
 
 const connectToNetworkMock = connectToNetwork as jest.Mock;
+const isConnectedThroughApMock = isConnectedThroughAp as jest.Mock;
+const connectedBSSIDMock = connectedBSSID as jest.Mock;
 const originalCreatePortal = ReactDom.createPortal;
 
 describe("ConnectDialogContainer", () => {
@@ -29,7 +36,9 @@ describe("ConnectDialogContainer", () => {
   let getByText: BoundFunction<GetByText>;
   let getByLabelText: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
+
   beforeEach(async () => {
+    isConnectedThroughApMock.mockResolvedValue(false)
     connectToNetworkMock.mockImplementation(
       (creds: NetworkCredentials) =>
         new Promise((res, rej) => {
@@ -92,7 +101,32 @@ describe("ConnectDialogContainer", () => {
 
     await wait();
 
-    expect(queryByText("Great, you are connected!")).toBeInTheDocument();
+    expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
+  });
+
+  describe("when there's an error connecting to a network", ()  => {
+    beforeEach(async () => {
+      connectToNetworkMock.mockRejectedValue(new Error(`oh oh`));
+      rerender(<ConnectDialogContainer {...defaultProps} />);
+      fireEvent.click(getByText("Join"));
+      await wait();
+    })
+
+    it("renders an error message", async () => {
+      expect(
+        queryByText(
+          "There was an error connecting to unsecured-ssid... please check your password and try again"
+        )
+      ).toBeInTheDocument();
+    });
+
+    it("doesn't tell user to reconnect to AP", async () => {
+      expect(
+        queryByText(
+          "Your computer has disconnected from the wifi network 'pi-top'. Please reconnect to it."
+        )
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("when network with password is passed", () => {
@@ -117,18 +151,6 @@ describe("ConnectDialogContainer", () => {
       await wait();
     });
 
-    it("renders error message when unable to join", async () => {
-      fireEvent.click(getByText("Join"));
-
-      await wait();
-
-      expect(
-        queryByText(
-          `There was an error connecting to password-protected-ssid... please check your password and try again`
-        )
-      );
-    });
-
     describe("after joining successfully", () => {
       beforeEach(async () => {
         fireEvent.change(getByLabelText("Enter password below"), {
@@ -143,7 +165,7 @@ describe("ConnectDialogContainer", () => {
       });
 
       it("renders connected message", async () => {
-        expect(queryByText("Great, you are connected!")).toBeInTheDocument();
+        expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
       });
 
       describe("when new network is passed", () => {
@@ -168,4 +190,75 @@ describe("ConnectDialogContainer", () => {
       });
     });
   });
+
+  describe("when user is onboarding using AP mode", () => {
+    beforeEach(() => {
+      isConnectedThroughApMock.mockResolvedValue(true)
+    });
+
+    describe("and the connect-to-wifi request times outs", () => {
+      beforeEach(async () => {
+        connectToNetworkMock.mockRejectedValue(new Error(`Timeout`));
+
+        defaultProps = {
+          ...defaultProps,
+          network: {
+            ssid: "unsecured-ssid",
+            bssid: "unsecured-bssid",
+            passwordRequired: false,
+          },
+        };
+        jest.useFakeTimers();
+
+        rerender(<ConnectDialogContainer {...defaultProps} />);
+        fireEvent.click(getByText("Join"));
+        await wait();
+      });
+      afterEach(() => {
+        jest.useRealTimers();
+      })
+
+      it("tells user to reconnect to AP", () => {
+        expect(
+          queryByText(
+            "Your computer has disconnected from the wifi network 'pi-top'. Please reconnect to it."
+          )
+        );
+      });
+
+      it("renders error message", () => {
+        expect(
+          queryByText(
+            "`There was an error connecting to password-protected-ssid... please check your password and try again`"
+          )
+        );
+      });
+
+      it("keeps checking if connected to network", () => {
+        expect(connectedBSSIDMock).toHaveBeenCalledTimes(0);
+        jest.runOnlyPendingTimers();
+        expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(1);
+      });
+
+      it("updates message if consecuential checks determine that connection was successful", async () => {
+        jest.runOnlyPendingTimers();
+        expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(1);
+
+        connectedBSSIDMock.mockResolvedValue("unsecured-bssid")
+        connectToNetworkMock.mockImplementation(
+          (creds: NetworkCredentials) =>
+            new Promise((res) => {
+              return res();
+            })
+        );
+
+        jest.runOnlyPendingTimers();
+        await wait()
+
+        expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
+      });
+
+    });
+  });
+
 });

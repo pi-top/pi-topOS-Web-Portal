@@ -53,6 +53,7 @@ class PyWiFiProfile:
 class PyWiFiInterfaceMock:
     state = PyWiFiConstant.IFACE_INACTIVE
     results: List[PyWiFiProfile] = []
+    profiles: List[PyWiFiProfile] = []
 
     def __init__(self):
         self._wifi_ctrl = PyWiFiUtil()
@@ -72,7 +73,7 @@ class PyWiFiInterfaceMock:
     def scan(self):
         self.state = PyWiFiConstant.IFACE_SCANNING
 
-        profiles = [
+        self.profiles = [
             {
                 "id": 0,
                 "auth": 0,
@@ -185,7 +186,7 @@ class PyWiFiInterfaceMock:
             },
         ]
 
-        self.results = [PyWiFiProfile(profile) for profile in profiles]
+        self.results = [PyWiFiProfile(profile) for profile in self.profiles]
 
         self.state = PyWiFiConstant.IFACE_INACTIVE
 
@@ -194,12 +195,16 @@ class PyWiFiInterfaceMock:
 
     def remove_all_network_profiles(self):
         self.state = PyWiFiConstant.IFACE_INACTIVE
+        self.profiles = []
 
-    def ssid_connected(self):
+    def bssid_connected(self):
         return ""
 
     def add_network_profile(self, profile):
-        pass
+        self.profiles.append(profile)
+
+    def network_profiles(self):
+        return self.profiles
 
 
 class PyWiFiInstanceMock:
