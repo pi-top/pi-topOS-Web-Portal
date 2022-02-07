@@ -47,7 +47,7 @@
   --rounded: 5px;
 
   /* Fonts */
-  --fontFamily: 'FS Me', 'Roboto', sans-serif;
+  --fontFamily: 'Roboto', sans-serif;
 
   /* React Toolbox */
   --preferred-font: var(--fontFamily);
@@ -67,50 +67,36 @@ body {
 
 @font-face {
   font-display: swap;
-  font-family: 'FS Me';
-  font-weight: 200;
-  font-style: normal;
-  src: url('/FSMePro/FSMePro-Regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-display: swap;
-  font-family: 'FS Me';
-  font-weight: 200;
-  font-style: italic;
-  src: url('/FSMePro/FSMePro-Italic.ttf') format('truetype');
-}
-
-@font-face {
-  font-display: swap;
-  font-family: 'FS Me';
+  font-family: 'Roboto';
   font-weight: 400;
   font-style: normal;
-  src: url('/FSMePro/FSMePro-Regular.ttf')
-    format('truetype');
+  src: url('/Roboto/Roboto-Regular.ttf') format('truetype'),
+       local('Roboto');
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'FS Me';
+  font-family: 'Roboto';
   font-weight: 400;
   font-style: italic;
-  src: url('/FSMePro/FSMePro-Italic.ttf')
-    format('truetype');
+  src: url('/Roboto/Roboto-Italic.ttf') format('truetype'),
+       local('Roboto');
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'FS Me';
+  font-family: 'Roboto';
   font-weight: 700;
   font-style: normal;
-  src: url('/FSMePro/FSMePro-Bold.ttf') format('truetype');
+  src: url('/Roboto/Roboto-Bold.ttf') format('truetype'),
+       local('Roboto');
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'FS Me';
+  font-family: 'Roboto';
   font-weight: 700;
   font-style: italic;
-  src: url('/FSMePro/FSMePro-BoldItalic.ttf') format('truetype');
+  src: url('/Roboto/Roboto-BoldItalic.ttf') format('truetype'),
+       local('Roboto');
 }
