@@ -100,7 +100,7 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
     @property
     def text(self):
-        icon_spacer = ' ' * 6
+        icon_spacer = " " * 6
         return f"Connect to Wi-Fi:\n{icon_spacer}{self.ssid}\n{icon_spacer}{self.passphrase}"
 
     def render(self, image):
@@ -121,7 +121,7 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
         image.paste(Image.open(wifi_icon_path), (wifi_icon_x, wifi_icon_y))
 
         padlock_icon_path = path.join(image_dir_path, "padlock.png")
-        padlock_icon_x = (2 * self.font_size)
+        padlock_icon_x = 2 * self.font_size
         padlock_icon_y = (3 * self.font_size) + 1
         image.paste(Image.open(padlock_icon_path), (padlock_icon_x, padlock_icon_y))
 
