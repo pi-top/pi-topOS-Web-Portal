@@ -22,26 +22,23 @@ class GuidePageBase(PageBase):
 
 class GuidePage(Enum):
     START = auto()
-    WELCOME = auto()
-    START_WIRELESS_CONNECTION = auto()
-    HELP_URL = auto()
     GET_DEVICE = auto()
+    HELP_URL = auto()
     CONNECT_PITOP_WIFI_NETWORK = auto()
+    WAIT_CONNECTION = auto()
     OPEN_BROWSER = auto()
     CARRY_ON = auto()
 
 
-# TODO: replace with factory
 class GuidePageGenerator:
     @staticmethod
     def get_page(page_type: GuidePage):
         pages = {
             GuidePage.START: StartPage,
-            GuidePage.WELCOME: WelcomePage,
-            GuidePage.START_WIRELESS_CONNECTION: StartWirelessConnectionPage,
-            GuidePage.HELP_URL: HelpURLPage,
             GuidePage.GET_DEVICE: GetDevicePage,
+            GuidePage.HELP_URL: HelpURLPage,
             GuidePage.CONNECT_PITOP_WIFI_NETWORK: ConnectPitopWifiNetworkPage,
+            GuidePage.WAIT_CONNECTION: WaitConnectionPage,
             GuidePage.OPEN_BROWSER: OpenBrowserPage,
             GuidePage.CARRY_ON: CarryOnPage,
         }
@@ -50,77 +47,30 @@ class GuidePageGenerator:
 
 
 class StartPage(GuidePageBase):
-    """
-    Welcome! Let's get you set up, press any button to get started!
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(type=GuidePage.START, size=size, mode=mode, interval=interval)
-        self.text = "Welcome to your pi-top! Press any button to get started..."
-
-
-class WelcomePage(GuidePageBase):
-    """
-    That's it!
-    Now press DOWN to scroll...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=GuidePage.WELCOME, size=size, mode=mode, interval=interval
-        )
-        self.text = "That's it!\nNow press DOWN to scroll..."
-
-
-class StartWirelessConnectionPage(GuidePageBase):
-    """
-    Awesome! Press DOWN to continue through pi-top connection setup...
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=GuidePage.START_WIRELESS_CONNECTION,
-            size=size,
-            mode=mode,
-            interval=interval,
-        )
-        self.text = "Awesome! Press DOWN to continue through pi-top connection setup..."
-
-
-class HelpURLPage(GuidePageBase):
-    """
-    Detailed setup instructions: pi-top.com/start-4
-
-    Press SELECT to continue
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
-        )
-        self.text = "Detailed setup instructions: pi-top.com/start-4"
+        self.text = "Welcome to your pi-top! Press DOWN to continue..."
 
 
 class GetDevicePage(GuidePageBase):
-    """
-    Let's get started! You will need a laptop/computer to connect with...
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.GET_DEVICE, size=size, mode=mode, interval=interval
         )
-        self.text = (
-            "Let's get started!\nYou will need a\nlaptop/computer\nto connect with..."
-        )
+        self.text = "You will need a\nlaptop/computer\nto connect..."
         self.wrap = False
 
 
-class ConnectPitopWifiNetworkPage(GuidePageBase):
-    """
-    Connect to Wi-Fi network '{ssid}' using password '{passphrase}'
-    """
+class HelpURLPage(GuidePageBase):
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=GuidePage.HELP_URL, size=size, mode=mode, interval=interval
+        )
+        self.wrap = False
+        self.text = "Need more\nguidance?\npi-top.com/start-4"
 
+
+class ConnectPitopWifiNetworkPage(GuidePageBase):
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.CONNECT_PITOP_WIFI_NETWORK,
@@ -147,23 +97,17 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
     @property
     def text(self):
-        return f"Connect to\nWi-Fi network:\n'{self.ssid}'\n'{self.passphrase}'"
+        return f"Connect to Wi-Fi\nnet: {self.ssid}\npass: {self.passphrase}"
 
 
-class OpenBrowserPage(GuidePageBase):
-    # Default: "Waiting for connection...", then:
-    """
-    Open browser to
-    http://pi-top.local
-    or
-    http://192.168.64.1
-    """
-
+class WaitConnectionPage(GuidePageBase):
     def __init__(self, size, mode, interval):
         super().__init__(
-            type=GuidePage.OPEN_BROWSER, size=size, mode=mode, interval=interval
+            type=GuidePage.WAIT_CONNECTION,
+            size=size,
+            mode=mode,
+            interval=interval,
         )
-        self.wrap = False
 
         self.has_connected_device = False
 
@@ -179,6 +123,25 @@ class OpenBrowserPage(GuidePageBase):
 
         subscribe(AppEvents.IS_CONNECTED_TO_INTERNET, update_is_connected)
 
+        self.wrap = False
+
+    @property
+    def text(self):
+        text = "No connection\ndetected,\nwaiting..."
+
+        # page should transition, this text only shown if you return to it
+        if self.has_connected_device or self.is_connected_to_internet:
+            text = "You're connected!\nPress DOWN to\ncontinue..."
+        return text
+
+
+class OpenBrowserPage(GuidePageBase):
+    def __init__(self, size, mode, interval):
+        super().__init__(
+            type=GuidePage.OPEN_BROWSER, size=size, mode=mode, interval=interval
+        )
+        self.wrap = False
+
     # TODO: cycle through alternative IP addresses (e.g. Ethernet)
     # ip -4 addr [show eth0] | grep --only-matching --perl-regexp '(?<=inet\s)\d+(\.\d+){3}' | grep --invert-match 127.0.0.1
 
@@ -193,27 +156,20 @@ class OpenBrowserPage(GuidePageBase):
 
     @property
     def text(self):
-        txt = "Waiting for\nconnection..."
-
-        if self.has_connected_device or self.is_connected_to_internet:
-            hostname = run("hostname", encoding="utf-8", capture_output=True)
-            hostname = hostname.stdout.strip()
-            txt = f"Open browser to\nhttp://{hostname}.local\nor\nhttp://192.168.64.1"
+        hostname = run("hostname", encoding="utf-8", capture_output=True)
+        hostname = hostname.stdout.strip()
+        txt = f"Open browser to\n{hostname}.local\nor\nhttp://192.168.64.1"
 
         return txt
 
 
 class CarryOnPage(GuidePageBase):
-    """
-    You've started the onboarding!
-    Continue in your browser...
-    """
-
     def __init__(self, size, mode, interval):
         super().__init__(
             type=GuidePage.CARRY_ON, size=size, mode=mode, interval=interval
         )
-        self.text = "You've started the onboarding!\nContinue in your browser..."
+        self.wrap = False
+        self.text = "You've started\nthe onboarding!\nContinue in\nyour browser..."
         self.visible = False
 
         def update_visible(visible):
