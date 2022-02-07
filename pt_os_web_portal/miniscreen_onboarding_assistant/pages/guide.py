@@ -97,7 +97,7 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
     @property
     def text(self):
-        return f"Connect to Wi-Fi\nnet:'{self.ssid}'\npass: '{self.passphrase}'"
+        return f"Connect to Wi-Fi\nnet: {self.ssid}\npass: {self.passphrase}"
 
 
 class WaitConnectionPage(GuidePageBase):
