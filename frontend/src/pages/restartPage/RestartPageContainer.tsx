@@ -14,10 +14,12 @@ import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../services/updateHubFirmware";
+import disableApMode from "../../services/disableApMode";
 import getBuildInfo from "../../services/getBuildInfo";
+import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
+import verifyDeviceNetwork from "../../services/verifyDeviceNetwork";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
-import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
 
 const maxProgress = 11; // this is the number of services for setting up
 
@@ -47,6 +49,21 @@ export default ({
   const [serverRebooted, setServerRebooted] = useState(false);
   const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
   const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
+  const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
+  const [shouldMoveAwayFromAp, setShouldMoveAwayFromAp] = useState(false);
+  const [shouldDisplayConnectivityDialog, setShouldDisplayConnectivityDialog] = useState(false);
+  const [piTopIpAddress, setPiTopIpAddress] = useState<string>("pi-top.local");
+
+  useEffect(() => {
+    verifyDeviceNetwork()
+      .then((data) => {
+        setShouldMoveAwayFromAp(data.shouldSwitchNetwork);
+        data.piTopIp && setPiTopIpAddress(data.piTopIp);
+        setShouldDisplayConnectivityDialog(data.shouldDisplayDialog);
+      })
+      .catch(() => null)
+      .finally(() => setCheckingOnSameNetwork(false));
+  }, []);
 
   useEffect(() => {
     getBuildInfo()
@@ -138,6 +155,10 @@ export default ({
       progressPercentage={calculatePercentageProgress(progress, maxProgress)}
       progressMessage={progressMessage}
       onBackClick={goToPreviousPage}
+      checkingOnSameNetwork={checkingOnSameNetwork}
+      shouldMoveAwayFromAp={shouldMoveAwayFromAp}
+      shouldDisplayConnectivityDialog={shouldDisplayConnectivityDialog}
+      piTopIpAddress={piTopIpAddress}
       setupDevice={() => {
         setIsSettingUpDevice(true);
 
@@ -191,6 +212,23 @@ export default ({
             safelyRunService(
               enablePtMiniscreen,
               "Reminded myself to tell the miniscreen to do its thing in the morning..."
+            )
+          )
+          .finally(() =>
+            // shouldDisplayConnectivityDialog = client using AP network
+            // shouldMoveAwayFromAp = pi-top has networks other than AP
+            //
+            // so turn off AP if !shouldDisplayConnectivityDialog || shouldMoveAwayFromAp
+            // = client not using AP or they are but there is an alternative
+            //
+            // ...except if there is an alternative they should have already been
+            // prompted to switch to it before tiggering these actions...
+            // if they didn't follow that prompt, we need to keep AP on despite alternatives
+            //
+            // so actually only turn AP off if they are not using it currently... !shouldDisplayConnectivityDialog
+            !shouldDisplayConnectivityDialog && safelyRunService(
+              disableApMode,
+              "Disabling my access point..."
             )
           )
           .catch(console.error)
