@@ -102,12 +102,15 @@ export default ({
 
         {!isConnecting && connectError && (
           <span className={styles.error}>
-            There was an error connecting to {ssid}... please check your
-            password and try again
-            {disconnectedFromAp && (
+            {disconnectedFromAp ? (
               <>
-              <br></br>
-              Your computer has disconnected from the wifi network 'pi-top'. Please reconnect to it.
+                Your computer has disconnected from the wifi network
+                'pi-top'. Please reconnect to it.
+              </>
+            ) : (
+              <>
+                There was an error connecting to {ssid}... please check your
+                password and try again
               </>
             )}
           </span>
