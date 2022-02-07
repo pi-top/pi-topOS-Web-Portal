@@ -1,5 +1,8 @@
 from enum import Enum, auto
 from subprocess import run
+from PIL import Image
+from os import path
+from pathlib import Path
 
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
@@ -97,7 +100,27 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
 
     @property
     def text(self):
-        return f"Connect to Wi-Fi\nnet:'{self.ssid}'\npass: '{self.passphrase}'"
+        return f"Connect to Wi-Fi\n  '{self.ssid}'\n  '{self.passphrase}'"
+
+    def render(self, image):
+        MiniscreenAssistant(self.mode, self.size).render_text(
+            image,
+            text=self.text,
+            wrap=self.wrap,
+            font_size=self.font_size,
+        )
+
+        image_dir_path = path.abspath(path.join(Path(__file__).parent.resolve().parent.resolve(), 'images'))
+
+        wifi_icon_x = 5 * self.font_size
+        wifi_icon_y = 3 * self.font_size
+        wifi_icon_path = path.join(image_dir_path, 'wifi.png')
+        image.paste(Image.open(wifi_icon_path), (wifi_icon_x, wifi_icon_y))
+
+        padlock_icon_path = path.join(image_dir_path, 'padlock.png')
+        padlock_icon_x = 7 * self.font_size
+        padlock_icon_y = 3 * self.font_size
+        image.paste(Image.open(padlock_icon_path), (padlock_icon_x, padlock_icon_y))
 
 
 class WaitConnectionPage(GuidePageBase):
