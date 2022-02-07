@@ -23,6 +23,19 @@ exports[`RestartPage renders prompt correctly 1`] = `
 </h1>
 `;
 
+exports[`RestartPage when checkingOnSameNetwork is true renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Right, I need a quick 
+  <span
+    class="green"
+  >
+    nap
+  </span>
+</h1>
+`;
+
 exports[`RestartPage when isSettingUpDevice is true and progress info is passed renders progress bar correctly 1`] = `
 <div
   class="progress"

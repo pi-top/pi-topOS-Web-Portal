@@ -9,6 +9,8 @@ import {
   fireEvent,
   getByLabelText,
   waitForElement,
+  GetByBoundAttribute,
+  QueryByBoundAttribute,
 } from "@testing-library/react";
 
 import RestartPageContainer, { Props } from "../RestartPageContainer";
@@ -26,6 +28,9 @@ import serverStatus from "../../../services/serverStatus";
 import updateEeprom from "../../../services/updateEeprom";
 import enablePtMiniscreen from "../../../services/enablePtMiniscreen";
 import updateHubFirmware from "../../../services/updateHubFirmware";
+import verifyDeviceNetwork from "../../../services/verifyDeviceNetwork";
+import disableApMode from "../../../services/disableApMode";
+
 
 import { act } from "react-dom/test-utils";
 
@@ -40,6 +45,8 @@ jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/updateEeprom");
 jest.mock("../../../services/enablePtMiniscreen");
 jest.mock("../../../services/updateHubFirmware");
+jest.mock("../../../services/verifyDeviceNetwork");
+jest.mock("../../../services/disableApMode");
 
 
 const configureLandingMock = configureLanding as jest.Mock;
@@ -53,19 +60,22 @@ const serverStatusMock = serverStatus as jest.Mock;
 const updateEepromMock = updateEeprom as jest.Mock;
 const enablePtMiniscreenMock = enablePtMiniscreen as jest.Mock;
 const updateHubFirmwareMock = updateHubFirmware as jest.Mock;
+const verifyDeviceNetworkMock = verifyDeviceNetwork as jest.Mock;
+const disableApModeMock = disableApMode as jest.Mock;
 
 
 const mockServices = [
-  configureLandingMock,
-  deprioritiseOpenboxSessionMock,
-  enableFurtherLinkServiceMock,
   enableFirmwareUpdaterServiceMock,
+  enableFurtherLinkServiceMock,
+  deprioritiseOpenboxSessionMock,
   restoreFilesMock,
+  configureLandingMock,
   stopOnboardingAutostartMock,
-  updateEepromMock,
   updateHubFirmwareMock,
-  rebootMock,
+  updateEepromMock,
   enablePtMiniscreenMock,
+  disableApModeMock,
+  rebootMock,
 ];
 
 
@@ -114,10 +124,19 @@ describe("RestartPageContainer", () => {
   let restartPageContainer: HTMLElement;
   let queryByText: BoundFunction<QueryByText>;
   let getByText: BoundFunction<GetByText>;
+  let queryByTestId: BoundFunction<QueryByBoundAttribute>;
+  let getByTestId: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
+
   beforeEach(async () => {
     resolveMocks();
     serverStatusMock.mockResolvedValue("OK");
+    verifyDeviceNetworkMock.mockResolvedValue({
+      shouldSwitchNetwork: false,
+      shouldDisplayDialog: false,
+      piTopIp: "192.168.64.1",
+      clientIp: "192.168.64.10",
+    });
     mockUserAgent = "web-renderer";
     defaultProps = {};
 
@@ -126,6 +145,8 @@ describe("RestartPageContainer", () => {
       queryByText,
       getByText,
       rerender,
+      queryByTestId,
+      getByTestId,
     } = render(<RestartPageContainer {...defaultProps} />));
   });
   afterEach(() => {
@@ -148,19 +169,16 @@ describe("RestartPageContainer", () => {
     expect(userMustConfirmBeforeLeaving()).toBeFalsy();
   });
 
-  describe("when globalError is true", () => {
-    beforeEach(() => {
-      defaultProps = {
-        ...defaultProps,
-        globalError: true,
-      };
+  it("renders prompt correctly", async () => {
+    expect(restartPageContainer.querySelector(".prompt")).toMatchSnapshot();
+  });
 
-      rerender(<RestartPageContainer {...defaultProps} />);
-    });
+  it("calls verifyDeviceNetwork service", async () => {
+    expect(verifyDeviceNetworkMock).toHaveBeenCalled()
+  });
 
-    it("renders correct error message", () => {
-      expect(getByText(ErrorMessage.GlobalError)).toBeInTheDocument();
-    });
+  it("doesn't render connectivity dialog", async () => {
+    expect(queryByTestId("connectivity-dialog")).not.toBeInTheDocument();
   });
 
   describe("when goToPreviousPage is passed", () => {
@@ -311,6 +329,22 @@ describe("RestartPageContainer", () => {
       });
     });
 
+    describe('when disabling access point fails', () => {
+      beforeEach(() => {
+        disableApModeMock.mockRejectedValue(new Error());
+      });
+
+      it('calls remaining services', async () => {
+        fireEvent.click(getByText("Restart"));
+
+        await wait();
+
+        mockServices.forEach((mock) => {
+          expect(mock).toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('when reboot fails', () => {
       beforeEach(async () => {
         rebootMock.mockRejectedValue(new Error());
@@ -408,6 +442,21 @@ describe("RestartPageContainer", () => {
           expect(userMustConfirmBeforeLeaving()).toBeFalsy();
         });
       });
+    });
+  });
+
+  describe("when globalError is true", () => {
+    beforeEach(() => {
+      defaultProps = {
+        ...defaultProps,
+        globalError: true,
+      };
+
+      rerender(<RestartPageContainer {...defaultProps} />);
+    });
+
+    it("renders correct error message", () => {
+      expect(getByText(ErrorMessage.GlobalError)).toBeInTheDocument();
     });
   });
 });

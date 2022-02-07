@@ -9,11 +9,12 @@ import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
 import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
+import ConnectivityWarningDialog from "./connectivityWarningDialog/ConnectivityWarningDialog";
 
 export enum ErrorMessage {
   GlobalError = "Something went wrong while setting me up! Please click 'Restart' and contact support@pi-top.com if you experience any problems",
   RebootError = "I can't get to sleep! Please hold my power button down - that always makes me sleepy",
-  TimeoutError = "It seems as though this is taking longer than expected. Try refreshing this webpage in your browser. Otherwise, try checking your connection and restarting your pi-top device."
+  TimeoutError = "It seems as though this is taking longer than expected. Ensure you are on the correct network and try refreshing this webpage in your browser. Otherwise, try restarting your pi-top device."
 }
 
 export enum ServerStatusMessages {
@@ -23,7 +24,8 @@ export enum ServerStatusMessages {
 
 export enum ExplanationMessages {
   OnWebRenderer = "Press 'restart' and I'll set some stuff up before rebooting. This might take up to a couple of minutes.",
-  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere"
+  OnBrowser = "Press 'restart' to apply some final changes to your pi-top device and restart it.\n\nThis page will automatically update when the device is ready - this might take up to a couple of minutes, so don't go anywhere",
+  CheckingConnectivity = "Please wait - we're performing some checks before continuing...",
 }
 
 export type Props = {
@@ -35,7 +37,11 @@ export type Props = {
   progressPercentage: number;
   progressMessage: string;
   displayManualPowerOnDialog: boolean;
+  checkingOnSameNetwork: boolean;
+  shouldMoveAwayFromAp: boolean;
+  piTopIpAddress: string;
   onManualPowerOnDialogClose: () => void;
+  shouldDisplayConnectivityDialog: boolean,
   setupDevice: () => void;
   onBackClick?: () => void;
 };
@@ -49,15 +55,24 @@ export default ({
   progressPercentage,
   progressMessage,
   displayManualPowerOnDialog,
+  shouldMoveAwayFromAp,
+  shouldDisplayConnectivityDialog,
+  checkingOnSameNetwork,
+  piTopIpAddress,
   onManualPowerOnDialogClose,
   setupDevice,
   onBackClick,
 }: Props) => {
   const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
+  const [connectivityDialogActive, setConnectivityDialogActive] = useState(false);
 
   useEffect(() => {
     setManualPowerOnDialogActive(displayManualPowerOnDialog);
   }, [displayManualPowerOnDialog])
+
+  useEffect(() => {
+    !checkingOnSameNetwork && shouldDisplayConnectivityDialog && setConnectivityDialogActive(true);
+  }, [checkingOnSameNetwork, shouldDisplayConnectivityDialog])
 
   let errorMessage = "";
   if (globalError) {
@@ -68,7 +83,15 @@ export default ({
     errorMessage = isWaitingForServer ? ErrorMessage.TimeoutError : ErrorMessage.RebootError;
   }
 
-  let explanationMessage = runningOnWebRenderer() ? ExplanationMessages.OnWebRenderer : ExplanationMessages.OnBrowser;
+  const getExplanationMessage = () => {
+    if (checkingOnSameNetwork) {
+      return ExplanationMessages.CheckingConnectivity;
+    }
+    if (runningOnWebRenderer()) {
+      return ExplanationMessages.OnWebRenderer
+    }
+    return ExplanationMessages.OnBrowser;
+  }
 
   return (
     <Layout
@@ -81,11 +104,11 @@ export default ({
           Right, I need a quick <span className="green">nap</span>
         </>
       }
-      explanation={explanationMessage}
+      explanation={getExplanationMessage()}
       nextButton={{
         onClick: setupDevice,
         label: "Restart",
-        disabled: isSettingUpDevice || rebootError || isWaitingForServer,
+        disabled: isSettingUpDevice || rebootError || isWaitingForServer || checkingOnSameNetwork || connectivityDialogActive,
         hidden: isWaitingForServer || serverRebooted
       }}
       backButton={
@@ -93,20 +116,31 @@ export default ({
           ? undefined
           : {
               onClick: onBackClick,
-              disabled: isSettingUpDevice || isWaitingForServer,
-              hidden: isWaitingForServer || serverRebooted
+              disabled: isSettingUpDevice || isWaitingForServer || connectivityDialogActive,
+              hidden: isWaitingForServer || serverRebooted || checkingOnSameNetwork
             }
       }
       className={styles.root}
     >
-
-      <ManualPowerOnDialogContainer
+      {displayManualPowerOnDialog && <ManualPowerOnDialogContainer
         active={manualPowerOnDialogActive}
         onClose={() => {
           setManualPowerOnDialogActive(!manualPowerOnDialogActive);
           onManualPowerOnDialogClose();
         }}
-      />
+      />}
+
+      {!checkingOnSameNetwork && shouldDisplayConnectivityDialog && <ConnectivityWarningDialog
+        shouldMoveAwayFromAp={shouldMoveAwayFromAp}
+        active={connectivityDialogActive}
+        onSkip={() => {
+          setConnectivityDialogActive(!connectivityDialogActive);
+        }}
+        onContinue={() => {
+          setConnectivityDialogActive(!connectivityDialogActive);
+        }}
+        piTopIpAddress={piTopIpAddress}
+      />}
 
       {isSettingUpDevice && (
         <div className={styles.progress}>
@@ -118,6 +152,7 @@ export default ({
           <span className={styles.message}>{progressMessage}</span>
         </div>
       )}
+
       {isWaitingForServer ? (
         <>
           <span className={styles.message}>{ServerStatusMessages.Waiting}</span>
