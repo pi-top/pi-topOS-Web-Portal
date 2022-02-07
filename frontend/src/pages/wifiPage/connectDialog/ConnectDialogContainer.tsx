@@ -58,7 +58,7 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
         }, requestIntervalMs);
       }
 
-      connectToNetwork({ bssid: network.bssid, password: password }, 15000)
+      connectToNetwork({ bssid: network.bssid, password: password }, 30000)
         .then(() => {
           setIsConnected(true);
           setConnectedNetwork(network);
