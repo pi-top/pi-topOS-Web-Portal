@@ -2,7 +2,6 @@ import logging
 from enum import Enum
 from ipaddress import ip_address
 from json import dumps as jdumps
-from os import path
 from threading import Thread
 
 from flask import abort
@@ -106,6 +105,14 @@ def not_found(e):
     ):
         return redirect("/")
     return app.send_static_file("index.html")
+
+
+@app.route("/Roboto/<filename>", methods=["GET"])
+def roboto(filename):
+    logger.debug(f"Route '/Roboto/{filename}'")
+    return send_from_directory(
+        "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/", filename
+    )
 
 
 # Startup
@@ -491,13 +498,6 @@ def post_restart_web_portal_service():
     post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
     restart_web_portal_service()
     return "OK"
-
-
-@app.route("/FSMePro/<filename>", methods=["GET"])
-def FSMePro(filename):
-    logger.debug(f"Route '/FSMePro/{filename}'")
-    current_dir = path.dirname(path.realpath(__file__))
-    return send_from_directory(str(current_dir) + "/../resources/fonts", filename)
 
 
 @app.route("/os-updates", methods=["GET"])
