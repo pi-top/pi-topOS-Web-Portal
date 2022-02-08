@@ -12,6 +12,8 @@ from .app import App
 logger = logging.getLogger()
 click_logging.basic_config(logger)
 
+logging.getLogger("pitop").setLevel(logging.INFO)
+
 
 def is_root() -> bool:
     return geteuid() == 0

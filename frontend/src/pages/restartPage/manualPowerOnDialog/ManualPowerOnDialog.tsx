@@ -24,7 +24,7 @@ export default ({
 }: Props) => {
 
   return (
-    <Dialog active={active} message={getMessage()} className={styles.manualPowerOffDialog}>
+    <Dialog active={active} message={getMessage()} className={styles.dialog}>
       <div className={styles.content}>
         <div className={styles.message}>
           When you click the "Continue" button, your pi-top will turn off!
