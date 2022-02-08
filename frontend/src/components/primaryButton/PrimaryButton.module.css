@@ -13,7 +13,7 @@
 
 .border {
   stroke: var(--piTopGreen);
-  stroke-width: 1.5px;
+  stroke-width: 2px;
 }
 
 .rolloverFill {
@@ -42,12 +42,26 @@ button[disabled]:hover {
   display: inline-grid;
   --hover-colour: transparent;
   color: var(--btnColour, var(--piTopGreen));
-  padding: 4.7px 25px;
-  min-height: 20px;
+  padding: 3px 25px;
+  min-height: 34px;
   min-width: 128px;
 }
 
 .textWrapper {
   position: relative;
   display: inline-block;
+  box-sizing: border-box;
+  min-height: 20px;
+  line-height: 2;
+}
+
+@supports (-moz-osx-font-smoothing: auto) {
+  .fix {
+    transform: translateY(1px)
+  }
+}
+@-moz-document url-prefix('') {
+  .fix2 {
+    x: 0;
+  }
 }
