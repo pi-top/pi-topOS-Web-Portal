@@ -81,7 +81,7 @@ const PrimaryButton = ({
           style={{ overflow: 'visible' }}
           width="40"
           height="17"
-          x="0"
+          x="-0.2"
           y="-100%"
         />
 
@@ -138,7 +138,6 @@ const PrimaryButton = ({
         >
           <span
             style={{ display: 'flex', lineHeight: 0, margin: '0 35px 0 35px' }}
-            className={styles.rolloverBG}
           >
             <svg
               width="100%"
