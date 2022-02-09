@@ -55,13 +55,8 @@ button[disabled]:hover {
   line-height: 2;
 }
 
-@supports (-moz-osx-font-smoothing: auto) {
-  .fix {
-    transform: translateY(1px)
-  }
-}
 @-moz-document url-prefix('') {
-  .fix2 {
+  .fix {
     x: 0;
   }
 }

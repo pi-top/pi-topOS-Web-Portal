@@ -137,20 +137,20 @@ const PrimaryButton = ({
           transform="scale(1, -1)"
         >
           <span
-            style={{ display: 'block', lineHeight: 0, margin: '0 35px 0 35px' }}
+            style={{ display: 'flex', lineHeight: 0, margin: '0 35px 0 35px' }}
             className={styles.rolloverBG}
           >
             <svg
               width="100%"
-              height="4"
+              height="6"
               preserveAspectRatio="none"
               version="1.1"
             >
               <use
                 href="#topBottom"
-                className={cx(styles.border, styles.fix)}
+                className={cx(styles.border)}
                 width="100%"
-                height="2"
+                height="4"
                 x="0"
                 y="0"
               />
@@ -180,7 +180,7 @@ const PrimaryButton = ({
             >
               <use
                 href="#leftRight"
-                className={cx(styles.border, styles.fix2)}
+                className={cx(styles.border, styles.fix)}
                 width="4"
                 height="50"
                 x="1"
