@@ -138,7 +138,6 @@ const PrimaryButton = ({
         >
           <span
             style={{ display: 'flex', lineHeight: 0, margin: '0 35px 0 35px' }}
-            className={styles.rolloverBG}
           >
             <svg
               width="100%"

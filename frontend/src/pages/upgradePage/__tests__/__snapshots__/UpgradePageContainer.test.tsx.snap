@@ -360,7 +360,6 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               y="-100%"
             >
               <span
-                class="rolloverBG"
                 style="display: flex; line-height: 0; margin: 0px 35px 0px 35px;"
               >
                 <svg
@@ -619,7 +618,6 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               y="-100%"
             >
               <span
-                class="rolloverBG"
                 style="display: flex; line-height: 0; margin: 0px 35px 0px 35px;"
               >
                 <svg
