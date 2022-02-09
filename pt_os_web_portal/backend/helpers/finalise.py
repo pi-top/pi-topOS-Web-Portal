@@ -12,6 +12,7 @@ from pitop.common.sys_info import (
     get_internal_ip,
 )
 from pitop.system import device_type
+from pt_fw_updater.core.firmware_updater import PTInvalidFirmwareFile
 from pt_fw_updater.update import main as update_firmware
 
 from ... import state
@@ -159,6 +160,9 @@ def do_firmware_update():
 
     try:
         update_firmware(fw_dev_id_str, force=False, notify_user=False)
+    except PTInvalidFirmwareFile as e:
+        logger.warning(f"do_firmware_update: {e}")
+        return
     except Exception as e:
         logger.warning(f"do_firmware_update: {e}")
 

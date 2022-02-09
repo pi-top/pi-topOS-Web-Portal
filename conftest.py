@@ -26,6 +26,7 @@ def patch_modules():
         "pitop.miniscreen.oled.assistant",
         "pitop.system",
         "pt_fw_updater.update",
+        "pt_fw_updater.core.firmware_updater",
     ]
     for module in modules_to_patch:
         modules[module] = Mock()
