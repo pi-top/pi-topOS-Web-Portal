@@ -313,7 +313,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               style="overflow: visible;"
               transform="scale(1, -1)"
               width="40"
-              x="0"
+              x="-0.2"
               y="-100%"
             />
             <use
@@ -571,7 +571,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               style="overflow: visible;"
               transform="scale(1, -1)"
               width="40"
-              x="0"
+              x="-0.2"
               y="-100%"
             />
             <use
