@@ -81,7 +81,7 @@ const PrimaryButton = ({
           style={{ overflow: 'visible' }}
           width="40"
           height="17"
-          x="0"
+          x="-0.2"
           y="-100%"
         />
 
