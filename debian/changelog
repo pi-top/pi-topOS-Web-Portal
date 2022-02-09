@@ -1,3 +1,14 @@
+pi-top-os-web-portal (0.10.1-1) bullseye; urgency=medium
+
+  * Cache scan results so we can connect wifi without rescan (#331)
+  * Bump actions/setup-python from 2.3.1 to 2.3.2 (#336)
+  * Remove FSMe font. Reverts 0f5009056a78a43ca48756e6e56613ba27b6d1d6 (#330)
+  * Onboarding minscreen copy changes (#329)
+  * Switch away from and disable AP mode on reboot page (#314)
+  * Prompt reconnect to AP when timeout during Wi-Fi setup (#333)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 07 Feb 2022 18:51:19 +0000
+
 pi-top-os-web-portal (0.10.0-1) bullseye; urgency=medium
 
   * Fix input on safari (#293)

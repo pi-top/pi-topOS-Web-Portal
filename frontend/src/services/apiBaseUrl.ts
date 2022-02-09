@@ -1,6 +1,6 @@
 const apiBaseUrl =
-  window.location.origin === "http://localhost:3000"
-    ? "http://localhost:80"
+  window.location.port === "3000"
+    ? "http://" + window.location.hostname + ":80"
     : ""; // use relative urls in prod
 
 export default apiBaseUrl;
