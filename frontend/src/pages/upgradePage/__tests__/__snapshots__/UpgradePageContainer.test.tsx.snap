@@ -255,6 +255,15 @@ exports[`UpgradePageContainer when there are major OS updates available and user
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
+              <clippath
+                id="myClip"
+              >
+                <rect
+                  height="17"
+                  width="38"
+                  y="1"
+                />
+              </clippath>
               <symbol
                 class="rolloverFill"
                 id="corner"
@@ -263,6 +272,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               >
                 <path
                   class="border"
+                  clip-path="url(#myClip)"
                   d=" M38 32 30.192 32 C17.754 31.543 11.604 30.481 7.442 26.797 1.285 21.415 1.568 12.167 8.047 7.128 13.231 3.034 21.653 1.962 30.192 2.001 L38 2"
                   shape-rendering="geometricPrecision"
                   vector-effect="non-scaling-stroke"
@@ -272,25 +282,32 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                 class="rolloverFill"
                 id="topBottom"
                 preserveAspectRatio="none"
-                viewBox="0 0 100 2"
+                viewBox="0 0 100 3"
               >
                 <path
                   class="border"
-                  d="m 0 1 l 100 0"
+                  d="m 0 2 l 100 0"
                   shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+                <path
+                  class="border"
+                  d="m 0 3 l 100 0"
+                  shape-rendering="crispEdges"
+                  stroke-width="1"
                   vector-effect="non-scaling-stroke"
                 />
               </symbol>
               <symbol
                 id="leftRight"
-                preserveAspectRatio="xMinYMax slice"
-                viewBox="0 0 100 2"
+                preserveAspectRatio="none"
+                viewBox="0 0 2 100"
               >
-                <use
-                  href="#topBottom"
-                  transform="rotate(90)"
-                  x="0"
-                  y="-55%"
+                <path
+                  class="border"
+                  d="M 1 0 l 0 100"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
                 />
               </symbol>
             </defs>
@@ -325,52 +342,50 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               y="-100%"
             />
             <foreignobject
-              height="2px"
+              height="4px"
               width="100%"
               x="0"
               y="1"
             >
               <span
                 class="rolloverBG"
-                style="display: flex; line-height: 0; margin: 0px 35px 0px 35px;"
+                style="display: flex; line-height: 0; margin: 0px 38px 0px 37px;"
               >
                 <svg
-                  height="2"
+                  height="4"
                   preserveAspectRatio="none"
                   version="1.1"
                   width="100%"
                 >
                   <use
-                    height="2"
+                    height="3"
                     href="#topBottom"
-                    stroke="green"
-                    stroke-width="2"
                     width="100%"
                     x="0"
-                    y="0"
+                    y="-1"
                   />
                 </svg>
               </span>
             </foreignobject>
             <foreignobject
-              height="4px"
+              height="3px"
               transform="scale(1, -1)"
               width="100%"
               x="0"
               y="-100%"
             >
               <span
-                style="display: flex; line-height: 0; margin: 0px 35px 0px 35px;"
+                style="display: flex; line-height: 0; margin: 0px 39px;"
               >
                 <svg
-                  height="6"
+                  height="3"
                   preserveAspectRatio="none"
                   version="1.1"
                   width="100%"
                 >
                   <use
                     class="border"
-                    height="4"
+                    height="3"
                     href="#topBottom"
                     width="100%"
                     x="0"
@@ -382,12 +397,12 @@ exports[`UpgradePageContainer when there are major OS updates available and user
             <foreignobject
               height="100%"
               width="50px"
-              x="0"
+              x="2"
               y="0"
             >
               <span
                 class="rolloverBG"
-                style="display: flex; position: absolute; left: 0px; top: 17px; bottom: 17px; width: 40px;"
+                style="display: flex; position: absolute; left: -1px; top: 16px; bottom: 17px; width: 40px;"
               >
                 <svg
                   height="100%"
@@ -399,8 +414,8 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                     class="border fix"
                     height="50"
                     href="#leftRight"
-                    width="4"
-                    x="1"
+                    width="3"
+                    x="0.5"
                     y="0"
                   />
                 </svg>
@@ -414,11 +429,11 @@ exports[`UpgradePageContainer when there are major OS updates available and user
             >
               <span
                 class="rolloverBG"
-                style="display: flex; position: absolute; left: 20px; right: 1px; top: 17px; bottom: 17px;"
+                style="display: flex; position: absolute; left: 20px; right: 1.2px; top: 17px; bottom: 17px;"
               >
                 <svg
                   height="100%"
-                  preserveAspectRatio="xMaxYMin meet"
+                  preserveAspectRatio="xMaxYMid slice"
                   version="1.1"
                   width="100%"
                 >
@@ -427,7 +442,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                     height="100%"
                     href="#leftRight"
                     transform="scale(-1, 1)"
-                    width="140"
+                    width="3"
                     x="-100%"
                     y="0"
                   />
@@ -513,6 +528,15 @@ exports[`UpgradePageContainer when there are major OS updates available and user
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
+              <clippath
+                id="myClip"
+              >
+                <rect
+                  height="17"
+                  width="38"
+                  y="1"
+                />
+              </clippath>
               <symbol
                 class="rolloverFill"
                 id="corner"
@@ -521,6 +545,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               >
                 <path
                   class="border"
+                  clip-path="url(#myClip)"
                   d=" M38 32 30.192 32 C17.754 31.543 11.604 30.481 7.442 26.797 1.285 21.415 1.568 12.167 8.047 7.128 13.231 3.034 21.653 1.962 30.192 2.001 L38 2"
                   shape-rendering="geometricPrecision"
                   vector-effect="non-scaling-stroke"
@@ -530,25 +555,32 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                 class="rolloverFill"
                 id="topBottom"
                 preserveAspectRatio="none"
-                viewBox="0 0 100 2"
+                viewBox="0 0 100 3"
               >
                 <path
                   class="border"
-                  d="m 0 1 l 100 0"
+                  d="m 0 2 l 100 0"
                   shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+                <path
+                  class="border"
+                  d="m 0 3 l 100 0"
+                  shape-rendering="crispEdges"
+                  stroke-width="1"
                   vector-effect="non-scaling-stroke"
                 />
               </symbol>
               <symbol
                 id="leftRight"
-                preserveAspectRatio="xMinYMax slice"
-                viewBox="0 0 100 2"
+                preserveAspectRatio="none"
+                viewBox="0 0 2 100"
               >
-                <use
-                  href="#topBottom"
-                  transform="rotate(90)"
-                  x="0"
-                  y="-55%"
+                <path
+                  class="border"
+                  d="M 1 0 l 0 100"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
                 />
               </symbol>
             </defs>
@@ -583,52 +615,50 @@ exports[`UpgradePageContainer when there are major OS updates available and user
               y="-100%"
             />
             <foreignobject
-              height="2px"
+              height="4px"
               width="100%"
               x="0"
               y="1"
             >
               <span
                 class="rolloverBG"
-                style="display: flex; line-height: 0; margin: 0px 35px 0px 35px;"
+                style="display: flex; line-height: 0; margin: 0px 38px 0px 37px;"
               >
                 <svg
-                  height="2"
+                  height="4"
                   preserveAspectRatio="none"
                   version="1.1"
                   width="100%"
                 >
                   <use
-                    height="2"
+                    height="3"
                     href="#topBottom"
-                    stroke="green"
-                    stroke-width="2"
                     width="100%"
                     x="0"
-                    y="0"
+                    y="-1"
                   />
                 </svg>
               </span>
             </foreignobject>
             <foreignobject
-              height="4px"
+              height="3px"
               transform="scale(1, -1)"
               width="100%"
               x="0"
               y="-100%"
             >
               <span
-                style="display: flex; line-height: 0; margin: 0px 35px 0px 35px;"
+                style="display: flex; line-height: 0; margin: 0px 39px;"
               >
                 <svg
-                  height="6"
+                  height="3"
                   preserveAspectRatio="none"
                   version="1.1"
                   width="100%"
                 >
                   <use
                     class="border"
-                    height="4"
+                    height="3"
                     href="#topBottom"
                     width="100%"
                     x="0"
@@ -640,12 +670,12 @@ exports[`UpgradePageContainer when there are major OS updates available and user
             <foreignobject
               height="100%"
               width="50px"
-              x="0"
+              x="2"
               y="0"
             >
               <span
                 class="rolloverBG"
-                style="display: flex; position: absolute; left: 0px; top: 17px; bottom: 17px; width: 40px;"
+                style="display: flex; position: absolute; left: -1px; top: 16px; bottom: 17px; width: 40px;"
               >
                 <svg
                   height="100%"
@@ -657,8 +687,8 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                     class="border fix"
                     height="50"
                     href="#leftRight"
-                    width="4"
-                    x="1"
+                    width="3"
+                    x="0.5"
                     y="0"
                   />
                 </svg>
@@ -672,11 +702,11 @@ exports[`UpgradePageContainer when there are major OS updates available and user
             >
               <span
                 class="rolloverBG"
-                style="display: flex; position: absolute; left: 20px; right: 1px; top: 17px; bottom: 17px;"
+                style="display: flex; position: absolute; left: 20px; right: 1.2px; top: 17px; bottom: 17px;"
               >
                 <svg
                   height="100%"
-                  preserveAspectRatio="xMaxYMin meet"
+                  preserveAspectRatio="xMaxYMid slice"
                   version="1.1"
                   width="100%"
                 >
@@ -685,7 +715,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                     height="100%"
                     href="#leftRight"
                     transform="scale(-1, 1)"
-                    width="140"
+                    width="3"
                     x="-100%"
                     y="0"
                   />
