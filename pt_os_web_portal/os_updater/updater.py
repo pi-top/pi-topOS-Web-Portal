@@ -1,11 +1,7 @@
 import logging
-from datetime import date, datetime
 from enum import Enum, auto
 from time import sleep
 
-from pitop.common.sys_info import is_connected_to_internet
-
-from .. import state
 from ..event import AppEvents, post_event
 from .legacy import LegacyOSUpdateManager
 from .manager import OSUpdateManager
@@ -46,30 +42,6 @@ class OSUpdater:
         self.stage_packages()
         return self.active_backend.install_count > 0
 
-    @property
-    def last_checked_date(self):
-        return datetime.strptime(
-            state.get("os_updater", "last_checked_date", fallback="2000-01-01"),
-            "%Y-%m-%d",
-        ).date()
-
-    def update_last_check_config(self) -> None:
-        state.set(
-            "os_updater", "last_checked_date", f"{date.today().strftime('%Y-%m-%d')}"
-        )
-
-    def do_update_check(self, ws=None):
-        should_check_for_updates = (
-            state.get("app", "onboarded", fallback="false") == "true"
-            and is_connected_to_internet()
-            and self.last_checked_date != date.today()
-        )
-        post_event(AppEvents.OS_ALREADY_CHECKED_UPDATES, should_check_for_updates)
-
-        if should_check_for_updates:
-            logger.info("OSUpdater: Checking for updates...")
-            post_event(AppEvents.OS_HAS_UPDATES, self.updates_available())
-
     def update_sources(self, ws=None):
         if not is_system_clock_synchronized():
             synchronize_system_clock()
@@ -91,11 +63,6 @@ class OSUpdater:
         try:
             callback(MessageType.START, "Preparing OS upgrade", 0.0)
             self.active_backend.stage_upgrade(callback, packages)
-            state.set(
-                "os_updater",
-                "last_checked_date",
-                date.today().strftime("%Y-%m-%d"),
-            )
 
             callback(MessageType.FINISH, "Finished preparing", 100.0)
             post_event(AppEvents.OS_UPDATER_PREPARE, "success")
