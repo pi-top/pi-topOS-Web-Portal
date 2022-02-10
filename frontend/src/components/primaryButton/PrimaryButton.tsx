@@ -238,7 +238,7 @@ const PrimaryButton = ({
 
       </svg>
       <span className={cx(styles.textWrapper, styles.rolloverFill)}>
-        {children} kjakjkjkjkjkj and so on
+        {children}
       </span>
     </Button>
   );
