@@ -294,7 +294,6 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                   class="border"
                   d="m 0 3 l 100 0"
                   shape-rendering="crispEdges"
-                  stroke-width="1"
                   vector-effect="non-scaling-stroke"
                 />
               </symbol>
@@ -567,7 +566,6 @@ exports[`UpgradePageContainer when there are major OS updates available and user
                   class="border"
                   d="m 0 3 l 100 0"
                   shape-rendering="crispEdges"
-                  stroke-width="1"
                   vector-effect="non-scaling-stroke"
                 />
               </symbol>
