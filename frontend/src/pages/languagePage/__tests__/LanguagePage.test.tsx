@@ -99,7 +99,7 @@ describe("LanguagePage", () => {
     });
 
     it('disables the next button', () => {
-      expect(getByText("Next")).toBeDisabled();
+      expect(getByText("Next").parentElement).toBeDisabled();
     })
   })
 

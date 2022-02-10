@@ -160,7 +160,7 @@ describe("UpgradePageContainer", () => {
   it("Update button is disabled", async () => {
     const { getByText } = mount();
 
-    expect(getByText("Update")).toHaveProperty("disabled", true);
+    expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
   });
 
   it("Back button isn't present", async () => {
@@ -252,7 +252,7 @@ describe("UpgradePageContainer", () => {
       const { getByText } = mount();
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
     });
 
     it("Back button isn't present", async () => {
@@ -330,7 +330,7 @@ describe("UpgradePageContainer", () => {
         const { getByText } = mount();
         await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
 
-        expect(getByText("Update")).toHaveProperty("disabled", true);
+        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
       });
     });
 
@@ -384,7 +384,7 @@ describe("UpgradePageContainer", () => {
         const { getByText } = mount();
         await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
 
-        expect(getByText("Update")).toHaveProperty("disabled", true);
+        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
       });
     });
   });
@@ -480,7 +480,7 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError();
 
       expect(queryByText("Retry")).toBeInTheDocument();
-      expect(getByText("Retry")).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
     });
 
 
@@ -615,7 +615,7 @@ describe("UpgradePageContainer", () => {
         await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
 
         await waitForElement(() => getByText("Update"));
-        expect(getByText("Update")).toHaveProperty("disabled", true);
+        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
       });
     })
   });
@@ -694,7 +694,7 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
     });
 
     it("Skip button is not present", async () => {
@@ -772,7 +772,7 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
     });
 
     it("requests to restart the pt-os-web-portal systemd service", async () => {
@@ -936,7 +936,7 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError();
 
       expect(queryByText("Retry")).toBeInTheDocument();
-      expect(getByText("Retry")).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
     });
 
     it("renders the textarea component", async () => {
@@ -1036,7 +1036,7 @@ describe("UpgradePageContainer", () => {
         fireEvent.click(getByText("Retry"));
 
         await waitForElement(() => getByText("Update"));
-        expect(getByText("Update")).toHaveProperty("disabled", true);
+        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
       });
     })
 
@@ -1135,7 +1135,7 @@ describe("UpgradePageContainer", () => {
       await waitForInstallingPackages();
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
     });
 
     it("Back button is not rendered", async () => {
@@ -1305,7 +1305,7 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError();
 
       await waitForElement(() => getByText("Retry"));
-      expect(getByText("Retry")).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
     });
 
     it("restarts the update process when Retry button is pressed", async () => {
@@ -1437,7 +1437,7 @@ describe("UpgradePageContainer", () => {
       await waitForUpgradeFinish();
 
       await waitForElement(() => getByText("Next"));
-      expect(getByText("Next")).toHaveProperty("disabled", false);
+      expect(getByText("Next").parentElement).toHaveProperty("disabled", false);
     });
 
     it("doesn't request to restart the pt-os-web-portal systemd service", async () => {
@@ -1547,7 +1547,7 @@ describe("UpgradePageContainer", () => {
       const { getByText } = mount();
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update")).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
     });
   });
 
@@ -1621,7 +1621,7 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError()
 
       expect(queryByText("Retry")).toBeInTheDocument();
-      expect(getByText("Retry")).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
     });
   });
 

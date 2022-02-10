@@ -76,11 +76,11 @@
 .backButton {
   color: var(--green);
   margin-right: auto;
-  height: 40px;
+  height: 28px;
 }
 
 .skipButton {
   color: var(--green);
   margin-left: auto;
-  height: 40px;
+  height: 28px;
 }

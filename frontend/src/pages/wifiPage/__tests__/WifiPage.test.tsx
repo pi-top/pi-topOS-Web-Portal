@@ -82,7 +82,7 @@ describe("WifiPage", () => {
   });
 
   it("Next button is disabled on no internet", () => {
-    expect(getByText("Next")).toHaveProperty("disabled");
+    expect(getByText("Next").parentElement).toHaveProperty("disabled");
   });
 
   it("renders skip button", () => {

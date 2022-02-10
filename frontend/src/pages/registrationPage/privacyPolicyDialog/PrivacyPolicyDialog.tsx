@@ -1,7 +1,7 @@
 import React from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
-import Button from "../../../components/atoms/button/Button";
+import PrimaryButton from "../../../components/primaryButton/PrimaryButton";
 import PrivacyPolicy from "../../../components/privacyPolicy/PrivacyPolicy";
 
 import styles from "./PrivacyPolicyDialog.module.css";
@@ -38,7 +38,7 @@ export default ({
         </div>
 
         <div className={styles.actions}>
-          <Button onClick={() => onClose()}>Close</Button>
+          <PrimaryButton onClick={() => onClose()}>Close</PrimaryButton>
         </div>
       </div>
     </Dialog>

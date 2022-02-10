@@ -68,7 +68,7 @@ describe("LanguagePageContainer", () => {
   it("disables the next button while loading", async () => {
     ({ queryByText } = render(<LanguagePageContainer {...defaultProps} />));
 
-    expect(queryByText("Next")).toBeDisabled();
+    expect(queryByText("Next")?.parentElement).toBeDisabled();
 
     await wait();
   });

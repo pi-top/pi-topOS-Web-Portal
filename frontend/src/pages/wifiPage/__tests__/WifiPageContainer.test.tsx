@@ -83,7 +83,7 @@ describe("WifiPageContainer", () => {
   it("disables the next button while loading", async () => {
     ({ getByText } = render(<WifiPageContainer {...defaultProps} />));
 
-    expect(getByText("Next")).toBeDisabled();
+    expect(getByText("Next").parentElement).toBeDisabled();
 
     await wait();
   });

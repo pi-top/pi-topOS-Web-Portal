@@ -1,6 +1,7 @@
 import React from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
+import PrimaryButton from "../../../components/primaryButton/PrimaryButton";
 import Button from "../../../components/atoms/button/Button";
 
 import styles from "./NewOsVersionDialog.module.css";
@@ -23,7 +24,7 @@ export enum OsBurnExplanation {
 
 const getFormattedLink = (url: string) => {
   return (
-    <Button className={styles.link} unstyled onClick= {() => !runningOnWebRenderer() && window.open(url)}>{url}</Button>
+    <Button className={styles.link} unstyled onClick={() => !runningOnWebRenderer() && window.open(url)}>{url}</Button>
   );
 };
 
@@ -31,7 +32,7 @@ const getMessage = (requireBurn: boolean) => {
   return (
     <>
       <span className={styles.dialogTitle}>
-        {requireBurn? "This version of pi-topOS is no longer supported": "Major OS update required"}
+        {requireBurn ? "This version of pi-topOS is no longer supported" : "Major OS update required"}
       </span>
     </>
   );
@@ -48,25 +49,25 @@ export default ({
     <Dialog active={active} message={getMessage(requireBurn)} className={styles.newOsVersionAvailableDialog}>
       <div className={styles.content}>
 
-          <span className={styles.osUpgradeWarning}>
-            {requireBurn && OsBurnExplanation.RequireBurn}
-            {shouldBurn && !requireBurn && OsBurnExplanation.ShouldBurn}
-          </span>
-          <br></br>
+        <span className={styles.osUpgradeWarning}>
+          {requireBurn && OsBurnExplanation.RequireBurn}
+          {shouldBurn && !requireBurn && OsBurnExplanation.ShouldBurn}
+        </span>
+        <br></br>
 
-          <span className={styles.osUpgradeWarning}>
-            {OsBurnExplanation.GoToWebsite}
-            {getFormattedLink("https://pi-top.com/help/out-of-date")}
-          </span>
-          <br></br>
+        <span className={styles.osUpgradeWarning}>
+          {OsBurnExplanation.GoToWebsite}
+          {getFormattedLink("https://pi-top.com/help/out-of-date")}
+        </span>
+        <br></br>
 
-          <span className={styles.osUpgradeWarning}>
-            {OsBurnExplanation.Recommendation}
-          </span>
-          <br></br>
+        <span className={styles.osUpgradeWarning}>
+          {OsBurnExplanation.Recommendation}
+        </span>
+        <br></br>
 
         <div className={styles.actions}>
-          <Button onClick={() => onClose()}>Close</Button>
+          <PrimaryButton onClick={() => onClose()}>Close</PrimaryButton>
         </div>
       </div>
     </Dialog>
