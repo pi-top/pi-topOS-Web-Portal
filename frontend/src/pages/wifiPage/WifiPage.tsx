@@ -85,6 +85,8 @@ export default ({
         skipButton={{ onClick: () => {
           if (!isConnected) {
             setIsSkipWarningDialogActive(true)
+          } else {
+            onSkipClick();
           }
         }}}
         backButton={{ onClick: onBackClick }}
