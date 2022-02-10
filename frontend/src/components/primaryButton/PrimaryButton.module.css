@@ -43,7 +43,7 @@ button[disabled]:hover {
   --hover-colour: transparent;
   color: var(--btnColour, var(--piTopGreen));
   padding: 4px 32px 3px 32px;
-  min-height: 34px;
+  min-height: 33px;
   min-width: 128px;
 }
 
@@ -52,7 +52,7 @@ button[disabled]:hover {
   display: inline-block;
   box-sizing: border-box;
   min-height: 20px;
-  line-height: 1.92;
+  line-height: 1.91;
 }
 
 @-moz-document url-prefix('') {

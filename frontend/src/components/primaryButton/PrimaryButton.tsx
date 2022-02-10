@@ -42,7 +42,7 @@ const PrimaryButton = ({
             <path d="
             M38 32 30.192 32
             C17.754 31.543 11.604 30.481 7.442 26.797 1.285 21.415 1.568 12.167 8.047 7.128 13.231 3.034 21.653 1.962 30.192 2.001
-            L38 2" className={styles.border} vectorEffect="non-scaling-stroke" shapeRendering="geometricPrecision" clip-path="url(#myClip)" />
+            L38 2" className={styles.border} vectorEffect="non-scaling-stroke" shapeRendering="geometricPrecision" clipPath="url(#myClip)" />
           </symbol>
 
           <symbol id="topBottom" viewBox="0 0 100 3" preserveAspectRatio="none" className={styles.rolloverFill}>
@@ -57,7 +57,6 @@ const PrimaryButton = ({
               shapeRendering="crispEdges"
               d="m 0 3 l 100 0"
               className={styles.border}
-              stroke-width="1"
             />
           </symbol>
 
