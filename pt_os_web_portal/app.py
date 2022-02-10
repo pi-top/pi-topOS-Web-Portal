@@ -6,6 +6,8 @@ from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
 from pitop.system import device_type
 
+from pt_os_web_portal.backend.helpers.finalise import disable_ap_mode
+
 from . import state
 from .backend import create_app
 from .connection_manager import ConnectionManager
@@ -37,15 +39,20 @@ class App:
     def start(self):
         self.os_updater.start()
 
-        if (
-            state.get("app", "onboarded", fallback="false") == "false"
-            and device_type() == DeviceName.pi_top_4.value
-        ):
-            logger.info(
-                "Onboarding not completed - starting miniscreen onboarding application"
-            )
-            self.miniscreen_onboarding = OnboardingAssistantApp()
-            self.miniscreen_onboarding.start()
+        try:
+            device = device_type()
+        except Exception:
+            device = ""
+
+        if state.get("app", "onboarded", fallback="false") == "false":
+            logger.info("Onboarding not completed ...")
+            if device == DeviceName.pi_top_4.value:
+                logger.info("Starting miniscreen onboarding application")
+                self.miniscreen_onboarding = OnboardingAssistantApp()
+                self.miniscreen_onboarding.start()
+            else:
+                logger.info("Not a pi-top[4] - disabling AP mode")
+                disable_ap_mode()
 
         self.listener_mgr.start()
 
