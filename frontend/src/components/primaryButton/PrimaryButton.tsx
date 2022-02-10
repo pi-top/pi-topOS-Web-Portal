@@ -33,28 +33,45 @@ const PrimaryButton = ({
     >
       <svg version="1.1" xmlns="http://www.w3.org/2000/svg" className={styles.primaryButtonSVGContainer}>
         <defs>
+
+          <clipPath id="myClip">
+            <rect width="38" height="17" y="1" />
+          </clipPath>
+
           <symbol id="corner" viewBox="0 0 38 17" preserveAspectRatio="xMaxYMin slice" className={styles.rolloverFill}>
             <path d="
             M38 32 30.192 32
             C17.754 31.543 11.604 30.481 7.442 26.797 1.285 21.415 1.568 12.167 8.047 7.128 13.231 3.034 21.653 1.962 30.192 2.001
-            L38 2" className={styles.border} vectorEffect="non-scaling-stroke" shapeRendering="geometricPrecision" />
+            L38 2" className={styles.border} vectorEffect="non-scaling-stroke" shapeRendering="geometricPrecision" clip-path="url(#myClip)" />
           </symbol>
 
-          <symbol id="topBottom" viewBox="0 0 100 2" preserveAspectRatio="none" className={styles.rolloverFill}>
+          <symbol id="topBottom" viewBox="0 0 100 3" preserveAspectRatio="none" className={styles.rolloverFill}>
             <path
               vectorEffect="non-scaling-stroke"
               shapeRendering="crispEdges"
-              d="m 0 1 l 100 0"
+              d="m 0 2 l 100 0"
               className={styles.border}
+            />
+            <path
+              vectorEffect="non-scaling-stroke"
+              shapeRendering="crispEdges"
+              d="m 0 3 l 100 0"
+              className={styles.border}
+              stroke-width="1"
             />
           </symbol>
 
           <symbol
             id="leftRight"
-            viewBox="0 0 100 2"
-            preserveAspectRatio='xMinYMax slice'
+            viewBox="0 0 2 100"
+            preserveAspectRatio="none"
           >
-            <use href="#topBottom" transform="rotate(90)" x="0" y="-55%" />
+            <path
+              vectorEffect="non-scaling-stroke"
+              shapeRendering="crispEdges"
+              d="M 1 0 l 0 100"
+              className={styles.border}
+            />
           </symbol>
 
         </defs>
@@ -99,29 +116,27 @@ const PrimaryButton = ({
 
         {/* 5 top: */}
 
-        <foreignObject x="0" y="1" width="100%" height="2px">
+        <foreignObject x="0" y="1" width="100%" height="4px">
           <span
             style={{
               display: 'flex',
               lineHeight: 0,
-              margin: '0px 35px 0 35px',
+              margin: '0px 38px 0 37px',
             }}
             className={styles.rolloverBG}
           >
             <svg
               width="100%"
-              height="2"
+              height="4"
               preserveAspectRatio="none"
               version="1.1"
             >
               <use
                 href="#topBottom"
-                strokeWidth={2}
-                stroke="green"
                 width="100%"
-                height="2"
+                height="3"
                 x="0"
-                y="0"
+                y="-1"
               />
             </svg>
           </span>
@@ -133,15 +148,15 @@ const PrimaryButton = ({
           x="0"
           y="-100%"
           width="100%"
-          height="4px"
+          height="3px"
           transform="scale(1, -1)"
         >
           <span
-            style={{ display: 'flex', lineHeight: 0, margin: '0 35px 0 35px' }}
+            style={{ display: 'flex', lineHeight: 0, margin: '0 39px' }}
           >
             <svg
               width="100%"
-              height="6"
+              height="3"
               preserveAspectRatio="none"
               version="1.1"
             >
@@ -149,7 +164,7 @@ const PrimaryButton = ({
                 href="#topBottom"
                 className={cx(styles.border)}
                 width="100%"
-                height="4"
+                height="3"
                 x="0"
                 y="0"
               />
@@ -159,13 +174,13 @@ const PrimaryButton = ({
 
 
         {/* 7 left: */}
-        <foreignObject x="0" y="0" width="50px" height="100%">
+        <foreignObject x="2" y="0" width="50px" height="100%">
           <span
             style={{
               display: 'flex',
               position: 'absolute',
-              left: '0',
-              top: '17px',
+              left: '-1px',
+              top: '16px',
               bottom: '17px',
               width: '40px',
             }}
@@ -180,9 +195,9 @@ const PrimaryButton = ({
               <use
                 href="#leftRight"
                 className={cx(styles.border, styles.fix)}
-                width="4"
+                width="3"
                 height="50"
-                x="1"
+                x="0.5"
                 y="0"
               />
             </svg>
@@ -196,7 +211,7 @@ const PrimaryButton = ({
               display: 'flex',
               position: 'absolute',
               left: '20px',
-              right: '1px',
+              right: '1.2px',
               top: '17px',
               bottom: '17px',
             }}
@@ -206,12 +221,12 @@ const PrimaryButton = ({
               width="100%"
               height="100%"
               version="1.1"
-              preserveAspectRatio="xMaxYMin meet"
+              preserveAspectRatio="xMaxYMid slice"
             >
               <use
                 href="#leftRight"
                 className={cx(styles.border)}
-                width="140"
+                width="3"
                 height="100%"
                 x="-100%"
                 y="0"
