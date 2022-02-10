@@ -1,6 +1,8 @@
 :root {
   /* Colours */
   --green: #00ad9f;
+  --piTopGreen: var(--green);
+  --mediumGreen: #ccefec;
   --green60: rgb(102,206,197);
   --green40: rgb(153,222,217);
   --green20: rgb(204,239,236);

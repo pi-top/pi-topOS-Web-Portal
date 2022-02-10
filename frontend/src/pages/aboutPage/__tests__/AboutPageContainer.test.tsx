@@ -65,7 +65,7 @@ describe("AboutPageContainer", () => {
   it("Next button is hidden", async () => {
     const { getByText } = mount();
 
-    expect(getByText("Next")).toHaveProperty("hidden", true);
+    expect(getByText("Next").parentElement).toHaveProperty("hidden", true);
 
     await wait();
   });

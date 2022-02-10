@@ -1,7 +1,8 @@
 import React, { ReactNode } from "react";
 import cx from "classnames";
 
-import Button, { Props as ButtonProps } from "../atoms/button/Button";
+import PrimaryButton, { Props as ButtonProps } from "../primaryButton/PrimaryButton";
+import Button from "../atoms/button/Button";
 import Spinner from "../atoms/spinner/Spinner";
 import styles from "./Layout.module.css";
 import Image from "../atoms/image/Image";
@@ -59,9 +60,9 @@ export default ({
     </div>
 
     <div className={styles.content}>
-      {explanation && <span className={styles.explanation}>{explanation.split('\n').map(function(item, key) {
-          return (<span key={key}>{item}<br/></span>)
-        })
+      {explanation && <span className={styles.explanation}>{explanation.split('\n').map(function (item, key) {
+        return (<span key={key}>{item}<br /></span>)
+      })
       }</span>}
 
       {children}
@@ -80,9 +81,9 @@ export default ({
         {isLoading ? (
           <Spinner size={60} />
         ) : (
-          <Button {...nextButton}>
+          <PrimaryButton {...nextButton}>
             {nextButton.label ? nextButton.label : "Next"}
-          </Button>
+          </PrimaryButton>
         )}
 
         <div className={styles.skipButtonContainer}>
