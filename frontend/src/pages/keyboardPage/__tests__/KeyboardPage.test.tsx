@@ -110,7 +110,7 @@ describe("KeyboardPage", () => {
     });
 
     it("disables the next button", () => {
-      expect(getByText("Next")).toBeDisabled();
+      expect(getByText("Next").parentElement).toBeDisabled();
     });
   });
 
@@ -126,8 +126,8 @@ describe("KeyboardPage", () => {
       rerender(<KeyboardPage {...defaultProps} />);
     });
 
-    it("disables next button", () => {
-      expect(queryByText("Next")).toBeDisabled();
+    it.only("disables next button", () => {
+      expect(queryByText("Next")?.parentElement).toBeDisabled();
     });
 
     it("sets settingKeyboard as selected option", () => {

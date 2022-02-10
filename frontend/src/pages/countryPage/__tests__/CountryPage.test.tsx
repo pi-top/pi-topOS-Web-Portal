@@ -97,7 +97,7 @@ describe("CountryPage", () => {
     });
 
     it("disables the next button", () => {
-      expect(getByText("Next")).toBeDisabled();
+      expect(getByText("Next").parentElement).toBeDisabled();
     });
   });
 
@@ -112,7 +112,7 @@ describe("CountryPage", () => {
     });
 
     it("disables next button", () => {
-      expect(queryByText("Next")).toBeDisabled();
+      expect(queryByText("Next")?.parentElement).toBeDisabled();
     });
   });
 

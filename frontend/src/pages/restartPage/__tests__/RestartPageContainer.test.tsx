@@ -202,7 +202,8 @@ describe("RestartPageContainer", () => {
     });
 
     it("disables back button on restart click", async () => {
-      fireEvent.click(getByText("Restart"));
+      const restartButton = getByText("Restart").parentElement
+      if(restartButton) fireEvent.click(restartButton);
 
       expect(queryByText("Back")).toBeDisabled();
 
@@ -212,7 +213,8 @@ describe("RestartPageContainer", () => {
 
   describe("on restart click", () => {
     it("renders progress", async () => {
-      fireEvent.click(getByText("Restart"));
+      const restartButton = getByText("Restart").parentElement
+      if(restartButton) fireEvent.click(restartButton);
 
       expect(
         restartPageContainer.querySelector(".progress")
@@ -222,16 +224,17 @@ describe("RestartPageContainer", () => {
     });
 
     it("disables restart button", async () => {
-      fireEvent.click(getByText("Restart"));
+      const restartButton = getByText("Restart").parentElement
+      if(restartButton) fireEvent.click(restartButton);
 
-      expect(queryByText("Restart")).toBeDisabled();
+      expect(queryByText("Restart")?.parentElement).toBeDisabled();
 
       await wait();
     });
 
     it("asks user for confirmation before they leave the page", async () => {
-      fireEvent.click(getByText("Restart"));
-
+      const restartButton = getByText("Restart").parentElement
+      if(restartButton) fireEvent.click(restartButton);
       await wait();
 
       expect(userMustConfirmBeforeLeaving()).toBeTruthy();
@@ -240,7 +243,8 @@ describe("RestartPageContainer", () => {
     });
 
     it("calls correct services", async () => {
-      fireEvent.click(getByText("Restart"));
+      const restartButton = getByText("Restart").parentElement
+      if(restartButton) fireEvent.click(restartButton);
 
       await wait();
 
@@ -355,7 +359,7 @@ describe("RestartPageContainer", () => {
       });
 
       it('disables restart button', async () => {
-        expect(queryByText('Restart')).toBeDisabled();
+        expect(queryByText('Restart')?.parentElement).toBeDisabled();
       });
 
       it('renders reboot error message', () => {
@@ -405,7 +409,9 @@ describe("RestartPageContainer", () => {
       });
 
       it("asks user for confirmation before they leave the page", async () => {
-        fireEvent.click(getByText("Restart"));
+
+        const restartButton = getByText("Restart").parentElement
+        if(restartButton) fireEvent.click(restartButton);
 
         await wait();
 

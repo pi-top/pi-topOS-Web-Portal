@@ -246,10 +246,214 @@ exports[`UpgradePageContainer when there are major OS updates available and user
         class="actions"
       >
         <button
-          class="styled"
+          class="unstyled btn"
           type="button"
         >
-          Close
+          <svg
+            class="primaryButtonSVGContainer"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <clippath
+                id="myClip"
+              >
+                <rect
+                  height="17"
+                  width="38"
+                  y="1"
+                />
+              </clippath>
+              <symbol
+                class="rolloverFill"
+                id="corner"
+                preserveAspectRatio="xMaxYMin slice"
+                viewBox="0 0 38 17"
+              >
+                <path
+                  class="border"
+                  clip-path="url(#myClip)"
+                  d=" M38 32 30.192 32 C17.754 31.543 11.604 30.481 7.442 26.797 1.285 21.415 1.568 12.167 8.047 7.128 13.231 3.034 21.653 1.962 30.192 2.001 L38 2"
+                  shape-rendering="geometricPrecision"
+                  vector-effect="non-scaling-stroke"
+                />
+              </symbol>
+              <symbol
+                class="rolloverFill"
+                id="topBottom"
+                preserveAspectRatio="none"
+                viewBox="0 0 100 3"
+              >
+                <path
+                  class="border"
+                  d="m 0 2 l 100 0"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+                <path
+                  class="border"
+                  d="m 0 3 l 100 0"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+              </symbol>
+              <symbol
+                id="leftRight"
+                preserveAspectRatio="none"
+                viewBox="0 0 2 100"
+              >
+                <path
+                  class="border"
+                  d="M 1 0 l 0 100"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+              </symbol>
+            </defs>
+            <use
+              height="17"
+              href="#corner"
+              width="38"
+            />
+            <use
+              height="17"
+              href="#corner"
+              transform="scale(-1, 1)"
+              width="40"
+              x="-100%"
+              y="0"
+            />
+            <use
+              height="17"
+              href="#corner"
+              style="overflow: visible;"
+              transform="scale(1, -1)"
+              width="40"
+              x="-0.2"
+              y="-100%"
+            />
+            <use
+              height="17"
+              href="#corner"
+              transform="scale(-1, -1)"
+              width="40"
+              x="-100%"
+              y="-100%"
+            />
+            <foreignobject
+              height="4px"
+              width="100%"
+              x="0"
+              y="1"
+            >
+              <span
+                class="rolloverBG"
+                style="display: flex; line-height: 0; margin: 0px 38px 0px 37px;"
+              >
+                <svg
+                  height="4"
+                  preserveAspectRatio="none"
+                  version="1.1"
+                  width="100%"
+                >
+                  <use
+                    height="3"
+                    href="#topBottom"
+                    width="100%"
+                    x="0"
+                    y="-1"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+            <foreignobject
+              height="3px"
+              transform="scale(1, -1)"
+              width="100%"
+              x="0"
+              y="-100%"
+            >
+              <span
+                style="display: flex; line-height: 0; margin: 0px 39px;"
+              >
+                <svg
+                  height="3"
+                  preserveAspectRatio="none"
+                  version="1.1"
+                  width="100%"
+                >
+                  <use
+                    class="border"
+                    height="3"
+                    href="#topBottom"
+                    width="100%"
+                    x="0"
+                    y="0"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+            <foreignobject
+              height="100%"
+              width="50px"
+              x="2"
+              y="0"
+            >
+              <span
+                class="rolloverBG"
+                style="display: flex; position: absolute; left: -1px; top: 16px; bottom: 17px; width: 40px;"
+              >
+                <svg
+                  height="100%"
+                  preserveAspectRatio="none"
+                  version="1.1"
+                  width="4"
+                >
+                  <use
+                    class="border fix"
+                    height="50"
+                    href="#leftRight"
+                    width="3"
+                    x="0.5"
+                    y="0"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+            <foreignobject
+              height="100%"
+              width="100%"
+              x="0"
+              y="0"
+            >
+              <span
+                class="rolloverBG"
+                style="display: flex; position: absolute; left: 20px; right: 1.2px; top: 17px; bottom: 17px;"
+              >
+                <svg
+                  height="100%"
+                  preserveAspectRatio="xMaxYMid slice"
+                  version="1.1"
+                  width="100%"
+                >
+                  <use
+                    class="border"
+                    height="100%"
+                    href="#leftRight"
+                    transform="scale(-1, 1)"
+                    width="3"
+                    x="-100%"
+                    y="0"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+          </svg>
+          <span
+            class="textWrapper rolloverFill"
+          >
+            Close
+          </span>
         </button>
       </div>
     </div>
@@ -314,10 +518,214 @@ exports[`UpgradePageContainer when there are major OS updates available and user
         class="actions"
       >
         <button
-          class="styled"
+          class="unstyled btn"
           type="button"
         >
-          Close
+          <svg
+            class="primaryButtonSVGContainer"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <clippath
+                id="myClip"
+              >
+                <rect
+                  height="17"
+                  width="38"
+                  y="1"
+                />
+              </clippath>
+              <symbol
+                class="rolloverFill"
+                id="corner"
+                preserveAspectRatio="xMaxYMin slice"
+                viewBox="0 0 38 17"
+              >
+                <path
+                  class="border"
+                  clip-path="url(#myClip)"
+                  d=" M38 32 30.192 32 C17.754 31.543 11.604 30.481 7.442 26.797 1.285 21.415 1.568 12.167 8.047 7.128 13.231 3.034 21.653 1.962 30.192 2.001 L38 2"
+                  shape-rendering="geometricPrecision"
+                  vector-effect="non-scaling-stroke"
+                />
+              </symbol>
+              <symbol
+                class="rolloverFill"
+                id="topBottom"
+                preserveAspectRatio="none"
+                viewBox="0 0 100 3"
+              >
+                <path
+                  class="border"
+                  d="m 0 2 l 100 0"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+                <path
+                  class="border"
+                  d="m 0 3 l 100 0"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+              </symbol>
+              <symbol
+                id="leftRight"
+                preserveAspectRatio="none"
+                viewBox="0 0 2 100"
+              >
+                <path
+                  class="border"
+                  d="M 1 0 l 0 100"
+                  shape-rendering="crispEdges"
+                  vector-effect="non-scaling-stroke"
+                />
+              </symbol>
+            </defs>
+            <use
+              height="17"
+              href="#corner"
+              width="38"
+            />
+            <use
+              height="17"
+              href="#corner"
+              transform="scale(-1, 1)"
+              width="40"
+              x="-100%"
+              y="0"
+            />
+            <use
+              height="17"
+              href="#corner"
+              style="overflow: visible;"
+              transform="scale(1, -1)"
+              width="40"
+              x="-0.2"
+              y="-100%"
+            />
+            <use
+              height="17"
+              href="#corner"
+              transform="scale(-1, -1)"
+              width="40"
+              x="-100%"
+              y="-100%"
+            />
+            <foreignobject
+              height="4px"
+              width="100%"
+              x="0"
+              y="1"
+            >
+              <span
+                class="rolloverBG"
+                style="display: flex; line-height: 0; margin: 0px 38px 0px 37px;"
+              >
+                <svg
+                  height="4"
+                  preserveAspectRatio="none"
+                  version="1.1"
+                  width="100%"
+                >
+                  <use
+                    height="3"
+                    href="#topBottom"
+                    width="100%"
+                    x="0"
+                    y="-1"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+            <foreignobject
+              height="3px"
+              transform="scale(1, -1)"
+              width="100%"
+              x="0"
+              y="-100%"
+            >
+              <span
+                style="display: flex; line-height: 0; margin: 0px 39px;"
+              >
+                <svg
+                  height="3"
+                  preserveAspectRatio="none"
+                  version="1.1"
+                  width="100%"
+                >
+                  <use
+                    class="border"
+                    height="3"
+                    href="#topBottom"
+                    width="100%"
+                    x="0"
+                    y="0"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+            <foreignobject
+              height="100%"
+              width="50px"
+              x="2"
+              y="0"
+            >
+              <span
+                class="rolloverBG"
+                style="display: flex; position: absolute; left: -1px; top: 16px; bottom: 17px; width: 40px;"
+              >
+                <svg
+                  height="100%"
+                  preserveAspectRatio="none"
+                  version="1.1"
+                  width="4"
+                >
+                  <use
+                    class="border fix"
+                    height="50"
+                    href="#leftRight"
+                    width="3"
+                    x="0.5"
+                    y="0"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+            <foreignobject
+              height="100%"
+              width="100%"
+              x="0"
+              y="0"
+            >
+              <span
+                class="rolloverBG"
+                style="display: flex; position: absolute; left: 20px; right: 1.2px; top: 17px; bottom: 17px;"
+              >
+                <svg
+                  height="100%"
+                  preserveAspectRatio="xMaxYMid slice"
+                  version="1.1"
+                  width="100%"
+                >
+                  <use
+                    class="border"
+                    height="100%"
+                    href="#leftRight"
+                    transform="scale(-1, 1)"
+                    width="3"
+                    x="-100%"
+                    y="0"
+                  />
+                </svg>
+              </span>
+            </foreignobject>
+          </svg>
+          <span
+            class="textWrapper rolloverFill"
+          >
+            Close
+          </span>
         </button>
       </div>
     </div>

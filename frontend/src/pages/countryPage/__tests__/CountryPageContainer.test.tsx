@@ -79,7 +79,7 @@ describe("CountryPageContainer", () => {
   it("disables the next button while loading", async () => {
     ({ queryByText } = render(<CountryPageContainer {...defaultProps} />));
 
-    expect(queryByText("Next")).toBeDisabled();
+    expect(queryByText("Next")?.parentElement).toBeDisabled();
 
     await wait();
   });

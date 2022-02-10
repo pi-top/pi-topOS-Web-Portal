@@ -118,7 +118,7 @@ describe("RegistrationPageContainer", () => {
         registrationPageContainer.querySelector("#registration-form")!
       );
 
-      expect(getByText("Next")).toBeDisabled();
+      expect(getByText("Next").parentElement).toBeDisabled();
 
       await wait();
     });

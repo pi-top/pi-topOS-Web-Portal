@@ -92,7 +92,7 @@ describe("RestartPage", () => {
   });
 
   it("Restart button isn't disabled", () => {
-    expect(getByText("Restart")).toHaveProperty("disabled", false);
+    expect(getByText("Restart").parentElement).toHaveProperty("disabled", false);
   });
 
   it("calls onBackClick on back button click", () => {
@@ -126,7 +126,7 @@ describe("RestartPage", () => {
     });
 
     it("disables the restart button", () => {
-      expect(getByText("Restart")).toBeDisabled();
+      expect(getByText("Restart").parentElement).toBeDisabled();
     });
   });
 
@@ -145,7 +145,7 @@ describe("RestartPage", () => {
     });
 
     it("disables restart button", () => {
-      expect(queryByText("Restart")).toBeDisabled();
+      expect(queryByText("Restart")?.parentElement).toBeDisabled();
     });
   });
 
@@ -202,7 +202,7 @@ describe("RestartPage", () => {
     });
 
     it("restart button is disabled", () => {
-      expect(queryByText("Restart")).toBeDisabled();
+      expect(queryByText("Restart")?.parentElement).toBeDisabled();
     });
 
     it("back button is hidden", () => {
@@ -231,7 +231,7 @@ describe("RestartPage", () => {
     });
 
     it("disables restart button", () => {
-      expect(queryByText("Restart")).toBeDisabled();
+      expect(queryByText("Restart")?.parentElement).toBeDisabled();
     });
 
     it("disables back button", () => {
@@ -260,7 +260,7 @@ describe("RestartPage", () => {
     });
 
     it("disables restart button", () => {
-      expect(queryByText("Restart")).toBeDisabled();
+      expect(queryByText("Restart")?.parentElement).toBeDisabled();
     });
 
     it("disables back button", () => {

@@ -1,7 +1,7 @@
 import React from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
-import Button from "../../../components/atoms/button/Button";
+import PrimaryButton from "../../../components/primaryButton/PrimaryButton";
 
 import styles from "./ManualPowerOnDialog.module.css";
 
@@ -37,7 +37,7 @@ export default ({
         </div>
 
         <div className={styles.actions}>
-          <Button onClick={() => onClose()}>Continue</Button>
+          <PrimaryButton onClick={() => onClose()}>Continue</PrimaryButton>
         </div>
       </div>
     </Dialog>

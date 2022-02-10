@@ -1,6 +1,7 @@
 import React from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
+import PrimaryButton from "../../../components/primaryButton/PrimaryButton";
 import Button from "../../../components/atoms/button/Button";
 import leftAlone from "../../../assets/images/left-alone.png";
 
@@ -22,7 +23,7 @@ export default ({ active, onConnectClick, onSkipClick }: Props) => {
       message="It’s very important I connect to the internet so I can update my software and security. We advise you connect to WiFi now."
     >
       <div className={styles.actions}>
-        <Button onClick={onConnectClick}>Connect</Button>
+        <PrimaryButton onClick={onConnectClick}>Connect</PrimaryButton>
 
         <Button onClick={onSkipClick} className={styles.cancel} unstyled>
           Skip
