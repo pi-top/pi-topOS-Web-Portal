@@ -168,7 +168,7 @@ def test_connect_excepts_on_failure(wifi_manager_module, mocker):
         )
 
 
-def test_ssid_connected_function_output(wifi_manager_module, mocker):
+def test_bssid_connected_function_output(wifi_manager_module, mocker):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas",
         return_value=wpa_cli_status,
@@ -179,10 +179,10 @@ def test_ssid_connected_function_output(wifi_manager_module, mocker):
     )
 
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.ssid_connected() == "Depto 606-5G"
+    assert wifi_manager.bssid_connected() == "e0:cc:7a:fd:84:50"
 
 
-def test_ssid_connected_function_returns_empty_string_if_disconnected(
+def test_bssid_connected_function_returns_empty_string_if_disconnected(
     wifi_manager_module, mocker
 ):
     mocker.patch(
@@ -192,10 +192,10 @@ def test_ssid_connected_function_returns_empty_string_if_disconnected(
 
     wifi_manager = wifi_manager_module.WifiManager()
     assert wifi_manager.is_inactive() is True
-    assert wifi_manager.ssid_connected() == ""
+    assert wifi_manager.bssid_connected() == ""
 
 
-def test_ssid_connected_function_returns_empty_string_on_exception(
+def test_bssid_connected_function_returns_empty_string_on_exception(
     wifi_manager_module, mocker
 ):
     mocker.patch(
@@ -204,7 +204,7 @@ def test_ssid_connected_function_returns_empty_string_on_exception(
     )
 
     wifi_manager = wifi_manager_module.WifiManager()
-    assert wifi_manager.ssid_connected() == ""
+    assert wifi_manager.bssid_connected() == ""
 
 
 def test_disconnect_waits_until_inactive_to_return(wifi_manager_module, mocker):

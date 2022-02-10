@@ -1,14 +1,14 @@
 import logging
 from enum import Enum
+from ipaddress import ip_address
 from json import dumps as jdumps
-from os import path
 from threading import Thread
 
 from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
-from pitop.common.sys_info import is_connected_to_internet
+from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
 
 from ..app_window import LandingAppWindow, OsUpdaterAppWindow
 from ..event import AppEvents, post_event
@@ -20,6 +20,7 @@ from .helpers.finalise import (
     available_space,
     configure_landing,
     deprioritise_openbox_session,
+    disable_ap_mode,
     do_firmware_update,
     enable_firmware_updater_service,
     enable_further_link_service,
@@ -28,6 +29,7 @@ from .helpers.finalise import (
     onboarding_completed,
     reboot,
     restore_files,
+    should_switch_network,
     stop_onboarding_autostart,
     update_eeprom,
 )
@@ -54,7 +56,7 @@ from .helpers.wifi_country import (
     list_wifi_countries,
     set_wifi_country,
 )
-from .helpers.wifi_manager import attempt_connection, current_wifi_ssid, get_ssids
+from .helpers.wifi_manager import attempt_connection, current_wifi_bssid, get_ssids
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +107,14 @@ def not_found(e):
     ):
         return redirect("/")
     return app.send_static_file("index.html")
+
+
+@app.route("/Roboto/<filename>", methods=["GET"])
+def roboto(filename):
+    logger.debug(f"Route '/Roboto/{filename}'")
+    return send_from_directory(
+        "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/", filename
+    )
 
 
 # Startup
@@ -257,10 +267,22 @@ def get_is_connected():
     return jdumps({"connected": is_connected})
 
 
-@app.route("/current-wifi-ssid", methods=["GET"])
-def get_is_connected_to_ssid():
-    logger.debug("Route '/current-wifi-ssid'")
-    return abort_on_no_data(current_wifi_ssid())
+@app.route("/current-wifi-bssid", methods=["GET"])
+def get_is_connected_to_bssid():
+    logger.debug("Route '/current-wifi-bssid'")
+    return jdumps(current_wifi_bssid())
+
+
+@app.route("/is-connected-through-ap", methods=["GET"])
+def get_is_connected_through_ap():
+    logger.debug("Route '/is-connected-through-ap'")
+
+    client_ip = ip_address(request.remote_addr)
+    if client_ip.ipv4_mapped:
+        client_ip = client_ip.ipv4_mapped
+    clientUsesAp = client_ip in InterfaceNetworkData("wlan_ap0").network
+    logger.info(f"Client is{'' if clientUsesAp else 'not'} connected through AP")
+    return jdumps({"isUsingAp": clientUsesAp})
 
 
 # OS Upgrade
@@ -480,13 +502,6 @@ def post_restart_web_portal_service():
     return "OK"
 
 
-@app.route("/FSMePro/<filename>", methods=["GET"])
-def FSMePro(filename):
-    logger.debug(f"Route '/FSMePro/{filename}'")
-    current_dir = path.dirname(path.realpath(__file__))
-    return send_from_directory(str(current_dir) + "/../resources/fonts", filename)
-
-
 @app.route("/os-updates", methods=["GET"])
 def get_os_check_update():
     logger.debug("Route '/os-updates'")
@@ -498,3 +513,16 @@ def post_onboarding_ready_to_be_a_maker():
     logger.debug("Route '/onboarding-miniscreen-ready-to-be-a-maker'")
     post_event(AppEvents.READY_TO_BE_A_MAKER, True)
     return "OK"
+
+
+@app.route("/disable-ap-mode", methods=["POST"])
+def post_disable_ap_mode():
+    logger.debug("Route '/disable-ap-mode'")
+    disable_ap_mode()
+    return "OK"
+
+
+@app.route("/should-switch-networks", methods=["GET"])
+def get_client_should_switch_network():
+    logger.debug("Route '/should-switch-networks'")
+    return jdumps(should_switch_network(request))

@@ -1,10 +1,18 @@
 import logging
+from ipaddress import ip_address
 from os import path, remove
+from typing import Dict
 
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
+from pitop.common.sys_info import (
+    InterfaceNetworkData,
+    get_address_for_ptusb_connected_device,
+    get_internal_ip,
+)
 from pitop.system import device_type
+from pt_fw_updater.core.firmware_updater import PTInvalidFirmwareFile
 from pt_fw_updater.update import main as update_firmware
 
 from ... import state
@@ -152,6 +160,9 @@ def do_firmware_update():
 
     try:
         update_firmware(fw_dev_id_str, force=False, notify_user=False)
+    except PTInvalidFirmwareFile as e:
+        logger.warning(f"do_firmware_update: {e}")
+        return
     except Exception as e:
         logger.warning(f"do_firmware_update: {e}")
 
@@ -164,3 +175,53 @@ def do_firmware_update():
         "touch /tmp/.com.pi-top.pi-topd.pt-poweroff.reboot-on-shutdown",
         timeout=10,
     )
+
+
+def disable_ap_mode() -> None:
+    logger.info("Function disable_ap_mode()")
+    try:
+        run_command("/usr/bin/wifi-ap-sta disable", check=False, timeout=20)
+    except Exception as e:
+        logger.error(f"disable_ap_mode(): {e}")
+
+
+def should_switch_network(request) -> Dict:
+    logger.info("Function should_switch_network()")
+
+    def get_non_ap_ip():
+        for iface in ("wlan0", "eth0"):
+            try:
+                ip = ip_address(get_internal_ip(iface))
+                return ip.exploded
+            except ValueError:
+                pass
+
+        # ptusb0 interface always has an IP address, so check is performed differently
+        if len(get_address_for_ptusb_connected_device()) > 0:
+            return InterfaceNetworkData("ptusb0").ip.exploded
+
+        return ""
+
+    client_ip = ip_address(request.remote_addr)
+    if client_ip.ipv4_mapped:
+        # request.remote_addr is always an ipv6 address
+        client_ip = client_ip.ipv4_mapped
+
+    pi_top_non_ap_ip = get_non_ap_ip()
+    wlan_ap0_iface = InterfaceNetworkData("wlan_ap0")
+    client_is_in_ap_network = client_ip in wlan_ap0_iface.network
+    is_connected_only_through_ap = len(pi_top_non_ap_ip) == 0
+
+    pi_top_ip = pi_top_non_ap_ip
+    if len(pi_top_ip) == 0:
+        pi_top_ip = wlan_ap0_iface.ip.exploded
+
+    response = {
+        "clientIp": client_ip.exploded,
+        "piTopIp": pi_top_ip,
+        "shouldSwitchNetwork": not is_connected_only_through_ap,
+        "shouldDisplayDialog": device_type() == DeviceName.pi_top_4.value
+        and client_is_in_ap_network,
+    }
+    logger.info(f"should_switch_network: {response}")
+    return response
