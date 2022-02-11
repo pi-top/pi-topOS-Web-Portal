@@ -11,7 +11,7 @@ from pt_os_web_portal.backend.helpers.finalise import disable_ap_mode
 from . import state
 from .backend import create_app
 from .connection_manager import ConnectionManager
-from .listener_manager import ListenerManager
+from .device_registration.listener import setup_device_registration_event_handlers
 from .miniscreen_onboarding_assistant.onboarding_assistant_app import (
     OnboardingAssistantApp,
 )
@@ -32,7 +32,6 @@ class App:
             handler_class=WebSocketHandler,
         )
 
-        self.listener_mgr = ListenerManager()
         self.miniscreen_onboarding = None
         self.connection_manager = ConnectionManager()
 
@@ -54,8 +53,7 @@ class App:
                 logger.info("Not a pi-top[4] - disabling AP mode")
                 disable_ap_mode()
 
-        self.listener_mgr.start()
-
+        setup_device_registration_event_handlers()
         self.connection_manager.start()
 
         self.wsgi_server.start()
