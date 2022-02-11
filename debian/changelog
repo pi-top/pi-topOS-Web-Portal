@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.10.1-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.11.0-1) bullseye; urgency=medium
 
   * Miniscreen wifi page icons (#338)
   * Check for firmware update errors on restart page (#339)
