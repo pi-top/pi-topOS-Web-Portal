@@ -1,3 +1,13 @@
+pi-top-os-web-portal (0.11.0-1) bullseye; urgency=medium
+
+  * Miniscreen wifi page icons (#338)
+  * Check for firmware update errors on restart page (#339)
+  * fix: make buttons look like further buttons (#332)
+  * Disable AP mode when onboarding on non pi-top[4] (#341)
+  * Don't check for updates on startup (#342)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 11 Feb 2022 11:47:54 +0000
+
 pi-top-os-web-portal (0.10.1-1) bullseye; urgency=medium
 
   * Cache scan results so we can connect wifi without rescan (#331)
