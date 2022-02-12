@@ -93,7 +93,6 @@ class OSUpdater:
         callback = self.message_handler.create_emit_os_upgrade_message(ws)
         try:
             self.active_backend.upgrade(callback)
-            self.update_last_check_config()
             post_event(AppEvents.OS_UPDATER_UPGRADE, "success")
         except Exception as e:
             callback(MessageType.ERROR, f"{e}", 0.0)
