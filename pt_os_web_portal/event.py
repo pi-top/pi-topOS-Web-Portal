@@ -7,8 +7,6 @@ class AppEvents(Enum):
     OS_UPDATE_SOURCES = auto()  # 'started'/'success'/'failed'
     OS_UPDATER_PREPARE = auto()  # 'started'/'success'/'failed'
     OS_UPDATER_UPGRADE = auto()  # 'started'/'success'/'failed'
-    OS_HAS_UPDATES = auto()  # bool
-    OS_ALREADY_CHECKED_UPDATES = auto()  # bool
     AP_HAS_SSID = auto()  # string
     AP_HAS_PASSPHRASE = auto()  # string
     HAS_CONNECTED_DEVICE = auto()  # bool
