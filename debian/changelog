@@ -1,3 +1,12 @@
+pi-top-os-web-portal (0.11.1-2) bullseye; urgency=medium
+
+  * Bump ajv from 6.12.0 to 6.12.6 in /frontend (#345)
+  * Fix landing page close button positioning (#350)
+  * Slightly reduce length of copy in 'Reconnect to Your WiFi' dialog (#348)
+  * Fix ConnectDialog copy (#349)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 14 Feb 2022 17:52:22 +0000
+
 pi-top-os-web-portal (0.11.1-1) bullseye; urgency=medium
 
   * Remove reference to 'update_last_check_config' (#343)
