@@ -25,10 +25,10 @@ export const getContent = (shouldMoveAwayFromAp: boolean) => {
   if (shouldMoveAwayFromAp) {
     return (
       <>
-        Your pi-top is now connected to the Wi-Fi network you configured in a previous step, but your computer is still on the 'pi-top-XXXX' network.
+        You've connected your pi-top to Wi-Fi now, but your computer's still on the pi-top's hotspot.
         <br></br>
         <br></br>
-        To complete onboarding, please switch your computer to the same Wi-Fi network as your pi-top and click refresh below.
+        Please switch this computer to the Wi-Fi you chose for your pi-top and click refresh below.
       </>
     )
   }
