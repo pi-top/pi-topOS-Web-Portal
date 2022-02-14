@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.11.1-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.11.2-1) bullseye; urgency=medium
 
   * Bump ajv from 6.12.0 to 6.12.6 in /frontend (#345)
   * Fix landing page close button positioning (#350)
