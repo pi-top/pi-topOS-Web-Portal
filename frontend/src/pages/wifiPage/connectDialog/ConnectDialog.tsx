@@ -46,11 +46,11 @@ export default ({
 
   const getMessage = () => {
     if (isConnected) {
-      return <>Great, your pi-top is connected to '{ssid}'!</>;
+      return <>Great, your pi-top is connected to <span className="green">{ssid}</span>!</>;
     }
 
     if (isConnecting) {
-      return <>Connecting to '{ssid}''...</>;
+      return <>Connecting to <span className="green">{ssid}</span>...</>;
     }
 
     return (
@@ -105,8 +105,8 @@ export default ({
           <span className={styles.error}>
             {disconnectedFromAp ? (
               <>
-                Your computer has disconnected from the wifi network
-                'pi-top'. Please reconnect to it.
+                Your computer has disconnected from the
+                'pi-top-XXXX' network. Please reconnect to it.
               </>
             ) : (
               <>
