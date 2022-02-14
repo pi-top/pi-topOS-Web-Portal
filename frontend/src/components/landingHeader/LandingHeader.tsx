@@ -3,7 +3,7 @@ import styles from './LandingHeader.module.css';
 import closeButtonImage from "../../assets/images/landing-close-button.svg";
 import { runningOnWebRenderer } from '../../helpers/utils';
 import MaskedDiv from '../atoms/masked/MaskedDiv';
-import PrimaryButton from "../primaryButton/PrimaryButton";
+import Button from '../atoms/button/Button';
 
 import closePtOsLandingWindow from '../../services/closePtOsLandingWindow';
 
@@ -21,12 +21,12 @@ export default () => {
           className={styles.closeButtonDiv}
           mask={`url(${closeButtonImage})`}
         >
-          <PrimaryButton
+          <Button
             className={styles.closeButton}
             onClick={() => closePtOsLandingWindow().catch(() => null)}
             aria-label="close-window"
           >
-          </PrimaryButton>
+          </Button>
         </MaskedDiv>
       }
     </header>
