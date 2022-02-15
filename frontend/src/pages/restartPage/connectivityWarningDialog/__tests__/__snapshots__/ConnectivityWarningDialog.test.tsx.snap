@@ -22,7 +22,7 @@ exports[`ConnectivityWarningDialog when user only connection mode is through AP 
 
 exports[`ConnectivityWarningDialog when user should switch networks renders the correct content 1`] = `
 <React.Fragment>
-  You've connected your pi-top to Wi-Fi now, but your computer's still on the pi-top's hotspot.
+  You've connected your pi-top to Wi-Fi but this computer is still on the pi-top's hotspot.
   <br />
   <br />
   Please switch this computer to the Wi-Fi you chose for your pi-top and click refresh below.

@@ -25,7 +25,7 @@ export const getContent = (shouldMoveAwayFromAp: boolean) => {
   if (shouldMoveAwayFromAp) {
     return (
       <>
-        You've connected your pi-top to Wi-Fi now, but your computer's still on the pi-top's hotspot.
+        You've connected your pi-top to Wi-Fi but this computer is still on the pi-top's hotspot.
         <br></br>
         <br></br>
         Please switch this computer to the Wi-Fi you chose for your pi-top and click refresh below.
