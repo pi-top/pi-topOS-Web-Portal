@@ -8,6 +8,8 @@ import {
   fireEvent,
   GetByBoundAttribute,
   RenderResult,
+  within,
+  screen,
 } from "@testing-library/react";
 import ReactDom from "react-dom";
 
@@ -101,7 +103,8 @@ describe("ConnectDialogContainer", () => {
 
     await wait();
 
-    expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
+    const message = screen.getByText(/Great, your pi-top is connected to/)
+    expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
   });
 
   describe("when there's an error connecting to a network", ()  => {
@@ -165,7 +168,8 @@ describe("ConnectDialogContainer", () => {
       });
 
       it("renders connected message", async () => {
-        expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
+        const message = screen.getByText(/Great, your pi-top is connected to/)
+        expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
       });
 
       describe("when new network is passed", () => {
@@ -255,7 +259,8 @@ describe("ConnectDialogContainer", () => {
         jest.runOnlyPendingTimers();
         await wait()
 
-        expect(queryByText(`Great, your pi-top is connected to '${defaultProps?.network?.ssid}'!`)).toBeInTheDocument();
+        const message = screen.getByText(/Great, your pi-top is connected to/)
+        expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
       });
 
     });
