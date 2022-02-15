@@ -87,14 +87,16 @@ class ConnectPitopWifiNetworkPage(GuidePageBase):
         self.ssid = ""
 
         def update_ssid(ssid):
-            self.ssid = ssid
+            if ssid:
+                self.ssid = ssid
 
         subscribe(AppEvents.AP_HAS_SSID, update_ssid)
 
         self.passphrase = ""
 
         def update_passphrase(passphrase):
-            self.passphrase = passphrase
+            if passphrase:
+                self.passphrase = passphrase
 
         subscribe(AppEvents.AP_HAS_PASSPHRASE, update_passphrase)
 
