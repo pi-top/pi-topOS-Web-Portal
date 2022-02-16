@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.11.2-2) bullseye; urgency=medium
+
+  * Tweaks (#351)
+  * Improve LandingPage copy (#353)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 16 Feb 2022 12:35:47 +0000
+
 pi-top-os-web-portal (0.11.2-1) bullseye; urgency=medium
 
   * Bump ajv from 6.12.0 to 6.12.6 in /frontend (#345)
