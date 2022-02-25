@@ -30,8 +30,11 @@ const landingPages = [
           defaultUrl: "http://further.pi-top.com",
           urlService: getFurtherUrl,
         }}
-        message="A community of pi-top owners who like hands on learning.  It's time to get you started and show you a bit about how Further works. Grab your pi-top and hit next to continue."
-        prompt={<>Learn by making on <span className="green">Further =)</span></>}
+        message={<>
+          Learn to code through guided, hands-on electronics challenges. Build a puzzle-box, a rover, a video game and much more!<br />
+          Click "Let's Go" to start your pi-top journey!
+        </>}
+        prompt={<>Learn by making on <span className="green">Further</span> - Start here!</>}
         image={introScreen}
       />
     ),
@@ -67,9 +70,13 @@ const landingPages = [
           defaultUrl: "http://docs.pi-top.com",
           onWebRenderer: openPythonSDKDocs,
         }}
-        message="Take adventures with your very own pi-top[4] Mars rover!"
+        message={<>
+          Have adventures with your very own pi-top[4] Mars rover!<br />
+          This functionality will be added here very soon. In the meantime, you'll have to discover it through Further or the Python SDK Docs!
+        </>}
         prompt={<>Rover <span className="green">Controller</span></>}
         image={upgradePage}
+        buttonLabel={"Coming Soon!"}
       />
     ),
   },
@@ -84,7 +91,10 @@ const landingPages = [
           defaultUrl: "https://knowledgebase.pi-top.com",
           onWebRenderer: openKnowledgeBase,
         }}
-        message="Do you have any questions or need help with your device? Go and checkout our Knowledge Base, a comprehensive technical guide for your pi-top products."
+        message={<>
+          Do you have any questions or need help with your device?<br />
+          Go and checkout our Knowledge Base, a comprehensive technical guide for your pi-top products.
+        </>}
         prompt={<>Knowledge <span className="green">Base</span></>}
         image={keyboardScreen}
       />
