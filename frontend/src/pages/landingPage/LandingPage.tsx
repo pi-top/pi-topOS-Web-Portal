@@ -8,7 +8,6 @@ import Landing from "../../components/landing/Landing";
 import LandingPageTemplate from "../../components/landingPageTemplate/LandingPageTemplate";
 import introScreen from "../../assets/images/intro-screen.png";
 import registrationScreen from "../../assets/images/registration-screen.png";
-import upgradePage from "../../assets/images/upgrade-page.png";
 import keyboardScreen from "../../assets/images/keyboard-screen.png";
 
 import getFurtherUrl from "../../services/getFurtherUrl";
@@ -16,6 +15,7 @@ import getPythonSDKDocsUrl from "../../services/getPythonSDKDocsUrl";
 import openKnowledgeBase from "../../services/openKnowledgeBase";
 import openFurther from "../../services/openFurther";
 import openPythonSDKDocs from "../../services/openPythonSDKDocs";
+import RoverControllerLanding from "../../components/roverControllerLanding/RoverControllerLanding";
 
 const landingPages = [
   {
@@ -63,21 +63,7 @@ const landingPages = [
     title: "Rover Controller",
     id: "rover",
     detail: (
-      <LandingPageTemplate
-        key="rover"
-        title="Rover Controller"
-        urlInfo={{
-          defaultUrl: "http://docs.pi-top.com",
-          onWebRenderer: openPythonSDKDocs,
-        }}
-        message={<>
-          Have adventures with your very own pi-top[4] Mars rover!<br />
-          This functionality will be added here very soon. In the meantime, you'll have to discover it through Further or the Python SDK Docs!
-        </>}
-        prompt={<>Rover <span className="green">Controller</span></>}
-        image={upgradePage}
-        buttonLabel={"Coming Soon!"}
-      />
+      <RoverControllerLanding />
     ),
   },
   {

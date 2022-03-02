@@ -3,6 +3,7 @@ from enum import Enum
 from ipaddress import ip_address
 from json import dumps as jdumps
 from threading import Thread
+from urllib.request import Request, urlopen
 
 from flask import abort
 from flask import current_app as app
@@ -49,7 +50,13 @@ from .helpers.landing import (
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
 from .helpers.registration import set_registration_email
-from .helpers.system import restart_web_portal_service
+from .helpers.system import (
+    SystemService,
+    service_is_active,
+    service_restart,
+    service_start,
+    service_stop,
+)
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.wifi_country import (
     current_wifi_country,
@@ -498,7 +505,38 @@ def post_update_eeprom():
 def post_restart_web_portal_service():
     logger.debug("Route '/restart-web-portal-service'")
     post_event(AppEvents.RESTARTING_WEB_PORTAL, True)
-    restart_web_portal_service()
+    service_restart(SystemService.WebPortal)
+    return "OK"
+
+
+@app.route("/rover-controller-start", methods=["POST"])
+def post_start_rover_controller_service():
+    logger.debug("Route '/rover-controller-start'")
+    service_start(SystemService.RoverController)
+    return "OK"
+
+
+@app.route("/rover-controller-status", methods=["GET"])
+def get_rover_controller_status():
+    logger.debug("Route '/rover-controller-status'")
+
+    status = service_is_active(SystemService.RoverController, timeout=1)
+    if status == "active":
+        try:
+            response = urlopen(Request("http://localhost:8070"))
+            if response.getcode() != 200:
+                status = "inactive"
+
+        except Exception:
+            status = "inactive"
+
+    return jdumps({"status": status})
+
+
+@app.route("/rover-controller-stop", methods=["POST"])
+def post_rover_controller_stop():
+    logger.debug("Route '/rover-controller-stop'")
+    service_stop(SystemService.RoverController)
     return "OK"
 
 
