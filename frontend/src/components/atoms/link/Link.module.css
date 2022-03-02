@@ -1,0 +1,14 @@
+.root {
+  color: var(--darkGrey);
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(to top, var(--green20) 100%, transparent);
+  background-size: 100% 0.4rem;
+  background-position: 0 90%;
+  background-repeat: repeat-x;
+  text-decoration: none;
+}
+
+.root:hover {
+  background-size: 100% 100%;
+}

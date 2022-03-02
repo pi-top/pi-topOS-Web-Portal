@@ -1,0 +1,14 @@
+[Unit]
+Description=pi-topOS Rover Controller
+Documentation=https://knowledgebase.pi-top.com/knowledge
+
+[Service]
+Type=simple
+Restart=no
+Environment="PYTHONUNBUFFERED=1"
+Environment="PYTHONDONTWRITEBYTECODE=1"
+ExecStart=/usr/bin/pt-os-web-portal-rover-controller
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
