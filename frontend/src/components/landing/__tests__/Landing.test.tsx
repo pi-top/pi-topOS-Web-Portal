@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, getAllByText, render, wait, waitForElement } from "@testing-library/react";
 
 import Landing, { Props } from "../Landing";
-import LandingPageTemplate from "../../../pages/landingPageTemplate/LandingPageTemplate";
+import LandingPageTemplate from "../../landingPageTemplate/LandingPageTemplate";
 import stopLandingAutostart from "../../../services/stopLandingAutostart";
 
 jest.mock("../../../services/stopLandingAutostart");

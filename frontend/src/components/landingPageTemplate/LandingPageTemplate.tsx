@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactElement } from "react";
 
-import Layout from "../../components/layout/Layout";
-import Spinner from "../../components/atoms/spinner/Spinner";
+import Layout from "../layout/Layout";
+import Spinner from "../atoms/spinner/Spinner";
 
 import styles from "./LandingPageTemplate.module.css";
 import { runningOnWebRenderer } from "../../helpers/utils";

@@ -5,7 +5,7 @@ import styles from "./LandingPage.module.css";
 
 import LandingHeader from "../../components/landingHeader/LandingHeader";
 import Landing from "../../components/landing/Landing";
-import LandingPageTemplate from "../../pages/landingPageTemplate/LandingPageTemplate";
+import LandingPageTemplate from "../../components/landingPageTemplate/LandingPageTemplate";
 import introScreen from "../../assets/images/intro-screen.png";
 import registrationScreen from "../../assets/images/registration-screen.png";
 import upgradePage from "../../assets/images/upgrade-page.png";
