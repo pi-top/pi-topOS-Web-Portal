@@ -6,7 +6,6 @@ from unittest.mock import Mock
 
 import pytest
 
-from tests.data.finalise_data import cmd_line_before
 from tests.data.keyboard_data import keyboard_file_before
 
 
@@ -70,7 +69,6 @@ def cleanup_files():
 def restore_files():
     yield
     file_data = [
-        ("tests/mocked_system_folder/cmdline.txt", cmd_line_before),
         ("tests/mocked_system_folder/keyboard", keyboard_file_before),
         ("tests/mocked_system_folder/registration.txt", ""),
     ]

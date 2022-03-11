@@ -56,7 +56,7 @@ def set_keyboard_layout(layout_code, variant):
 
     # This command only takes layout code, but it reconfigures based on state of
     # default_keyboard_conf()
-    command = "raspi-config nonint do_configure_keyboard %s" % layout_code
+    command = f"raspi-config nonint do_configure_keyboard {layout_code}"
     return run_command(command, timeout=30, capture_output=False)
 
 
