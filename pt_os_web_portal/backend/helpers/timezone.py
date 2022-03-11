@@ -52,5 +52,5 @@ def set_timezone(tz_string):
         logger.error("Unable to set timezone - Not available: %s" % tz_string)
         return None
 
-    command = "raspi-config nonint do_change_timezone %s" % tz_string
+    command = f"raspi-config nonint do_change_timezone {tz_string}"
     return run_command(command, timeout=5)
