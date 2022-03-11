@@ -1,4 +1,4 @@
-country_code_sample = b"en_US"
+country_code_sample = "en_US"
 
 wifi_country_list = {
     "AD": "Andorra",
