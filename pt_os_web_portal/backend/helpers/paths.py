@@ -66,12 +66,6 @@ def etc_pi_top():
     return "/etc/pi-top"
 
 
-def pi_top_registration_txt():
-    if use_test_path():
-        return get_test_file_path("registration.txt")
-    return "/etc/pi-top/registration.txt"
-
-
 def pt_issue():
     if use_test_path():
         return get_test_file_path("pt-issue")

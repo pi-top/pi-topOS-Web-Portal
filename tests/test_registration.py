@@ -1,10 +1,3 @@
-from os.path import isfile
-
-from helpers.registration import pi_top_registration_txt
-
-from tests.utils import assert_file_content
-
-
 def test_set_registration_failure_wrong_type(app):
     validation_error_response = app.post("/set-registration", json={"email": 0})
     assert validation_error_response.status_code == 422
@@ -16,15 +9,21 @@ def test_set_registration_failure_invalid_payload(app):
     assert response.status_code == 422
 
 
-def test_set_registration_success(app, restore_files):
+def test_set_registration_success(app):
     response = app.post("/set-registration", json={"email": "hey@yo.com"})
 
     assert response.status_code == 200
     assert response.data == b"OK"
 
 
-def test_set_registration_creates_a_file(app, restore_files):
+def test_set_registration_updates_state(app, mocker):
     email_str = "hey@yo.com"
+
+    state_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.registration.state.set",
+        return_value="",
+    )
+
     app.post("/set-registration", json={"email": email_str})
-    assert isfile(pi_top_registration_txt()) is True
-    assert_file_content("tests/mocked_system_folder/registration.txt", email_str)
+
+    state_mock.assert_called_once_with("registration", "email", email_str)

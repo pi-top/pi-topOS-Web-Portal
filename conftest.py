@@ -70,7 +70,6 @@ def restore_files():
     yield
     file_data = [
         ("tests/mocked_system_folder/keyboard", keyboard_file_before),
-        ("tests/mocked_system_folder/registration.txt", ""),
     ]
 
     for file_to_restore, original_data in file_data:
