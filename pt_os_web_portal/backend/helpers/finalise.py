@@ -39,9 +39,10 @@ def available_space() -> str:
 
 def configure_landing() -> None:
     logger.debug("Function: configure_landing()")
+
     try:
         run_command(
-            f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-landing.desktop /etc/xdg/autostart",
+            f"ln -s {path.abspath(path.dirname(path.realpath(__file__))+'/../../resources/pt-os-landing.desktop')} /etc/xdg/autostart",
             timeout=60,
             lower_priority=True,
         )
