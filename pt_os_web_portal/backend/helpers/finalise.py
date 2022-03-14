@@ -203,9 +203,9 @@ def should_switch_network(request) -> Dict:
         return ""
 
     client_ip = ip_address(request.remote_addr)
-    if client_ip.ipv4_mapped:
+    if hasattr(client_ip, "ipv4_mapped") and client_ip.ipv4_mapped:  # type: ignore
         # request.remote_addr is always an ipv6 address
-        client_ip = client_ip.ipv4_mapped
+        client_ip = client_ip.ipv4_mapped  # type: ignore
 
     pi_top_non_ap_ip = get_non_ap_ip()
     wlan_ap0_iface = InterfaceNetworkData("wlan_ap0")
