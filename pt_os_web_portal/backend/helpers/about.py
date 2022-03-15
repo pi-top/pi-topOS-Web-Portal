@@ -8,7 +8,7 @@ from .device import serial_number
 
 
 @dataclass
-class BuildInfo:
+class OSInfo:
     build_repo: str = ""
     build_date: str = ""
     build_number: str = ""
@@ -28,7 +28,7 @@ class BuildInfo:
 
 
 def about_device():
-    data = BuildInfo()
+    data = OSInfo()
     try:
         build_info = get_pitopOS_info()
         data.build_repo = (build_info.build_type,)
