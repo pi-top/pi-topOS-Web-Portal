@@ -1,4 +1,4 @@
-def test_systemctl_functions(app, mocker):
+def test_systemctl_functions(patch_modules, mocker):
     run_mock = mocker.patch(
         "pt_os_web_portal.backend.helpers.system.run_command",
         return_value="",
@@ -25,7 +25,7 @@ def test_systemctl_functions(app, mocker):
         run_mock.reset_mock()
 
 
-def test_systemctl_returns_command_output(app, mocker):
+def test_systemctl_returns_command_output(patch_modules, mocker):
     expected_output = "this is the output of a command"
     mocker.patch(
         "pt_os_web_portal.backend.helpers.system.run_command",
@@ -37,7 +37,7 @@ def test_systemctl_returns_command_output(app, mocker):
     assert systemctl("restart", SystemService.WebPortal) == expected_output
 
 
-def test_systemctl_catches_exception(app, mocker):
+def test_systemctl_catches_exception(patch_modules, mocker):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.system.run_command",
         side_effect=Exception("oh oh, there was an error"),

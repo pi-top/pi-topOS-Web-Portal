@@ -9,7 +9,7 @@ import pytest
 from tests.data.keyboard_data import keyboard_file_before
 
 
-def patch_modules():
+def _patch_modules():
     modules_to_patch = [
         "further_link.start_further",
         "pitop",
@@ -32,8 +32,13 @@ def patch_modules():
 
 
 @pytest.fixture(scope="session")
+def patch_modules():
+    _patch_modules()
+
+
+@pytest.fixture(scope="session")
 def app():
-    patch_modules()
+    _patch_modules()
     from pt_os_web_portal.backend import create_app
 
     app = create_app(test_mode=True, os_updater=None)

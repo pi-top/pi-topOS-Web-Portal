@@ -126,19 +126,6 @@ def restore_files():
         logger.error(f"restore_files: {e}")
 
 
-def disable_landing():
-    logger.debug("Function: disable_landing()")
-    try:
-        remove("/etc/xdg/autostart/pt-os-landing.desktop")
-    except FileNotFoundError:
-        logger.debug("Landing already disabled.")
-
-
-def python_sdk_docs_url():
-    logger.debug("Function: python_sdk_docs_url()")
-    return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
-
-
 def onboarding_completed():
     return state.get("app", "onboarded", fallback="false") == "true"
 
