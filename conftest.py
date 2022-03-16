@@ -94,16 +94,3 @@ def wifi_manager_module():
     if "pt_os_web_portal.backend.helpers.wifi_manager" in modules:
         del modules["pt_os_web_portal.backend.helpers.wifi_manager"]
     del pt_os_web_portal.backend.helpers.wifi_manager
-
-
-@pytest.fixture(scope="function")
-def os_updater_module():
-    import pt_os_web_portal.backend.helpers.os_updater
-    from pt_os_web_portal.backend import create_app
-
-    create_app(test_mode=True, os_updater=None)
-    yield pt_os_web_portal.backend.helpers.os_updater
-
-    if "pt_os_web_portal.backend.helpers.os_updater" in modules:
-        del modules["pt_os_web_portal.backend.helpers.os_updater"]
-    del pt_os_web_portal.backend.helpers.os_updater
