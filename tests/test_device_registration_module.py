@@ -189,7 +189,7 @@ def test_registers_if_onboarding_is_complete(app, mocker):
 
 def test_registration_retries_on_failure(app, mocker):
     mocker.patch(
-        "pt_os_web_portal.device_registration.functions._get_registration_data",
+        "pt_os_web_portal.device_registration.functions.get_registration_data",
         return_data="",
     )
     send_data_and_get_resp_mock = mocker.patch(
@@ -219,3 +219,50 @@ def test_registration_retries_on_failure(app, mocker):
 
     send_data_and_get_resp_mock.side_effect = lambda data: (200, {"success": True})
     assert sleep_patch.call_count == 2
+
+
+def test_register_request(app, mocker):
+    requests_mock = mocker.patch(
+        "pt_os_web_portal.device_registration.functions.requests"
+    )
+    requests_mock.post = Mock()
+    requests_mock.post.side_effect = lambda url, headers, data: (200, data)
+
+    from pt_os_web_portal.device_registration.functions import (
+        API_ENDPOINT,
+        send_data_and_get_resp,
+    )
+
+    registration_data = {"key": "value"}
+    send_data_and_get_resp(registration_data)
+
+    requests_mock.post.assert_called_once_with(
+        API_ENDPOINT,
+        headers={"Content-Type": "application/json", "Accept": "application/json"},
+        json=registration_data,
+    )
+
+
+def test_device_registration_is_retrieved_from_state(app, mocker):
+    state_mock = mocker.patch("pt_os_web_portal.device_registration.functions.state")
+    state_mock.get = Mock(side_effect=lambda section, name: "true")
+
+    from pt_os_web_portal.device_registration.functions import device_is_registered
+
+    assert device_is_registered() is True
+    state_mock.get.assert_called_once_with("registration", "is_registered")
+
+
+def test_registration_data_content(app, mocker):
+    from pt_os_web_portal.device_registration.functions import get_registration_data
+
+    assert set(
+        (
+            "serialNumber",
+            "email",
+            "privacyAgreement",
+            "device",
+            "osVersion",
+            "updateRepo",
+        )
+    ) == set(get_registration_data().keys())

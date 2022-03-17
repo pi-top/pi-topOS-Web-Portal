@@ -29,7 +29,7 @@ def device_is_registered() -> bool:
     return state.get("registration", "is_registered") == "true"
 
 
-def _get_registration_data() -> Dict:
+def get_registration_data() -> Dict:
     logger.debug("Getting device data to send...")
     build_info = get_pitopOS_info()
     data = {
@@ -46,7 +46,7 @@ def _get_registration_data() -> Dict:
 
 
 def send_register_device_request() -> None:
-    data = _get_registration_data()
+    data = get_registration_data()
 
     logger.debug("Attempting to send data to server...")
     successfully_sent_data = False
