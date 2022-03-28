@@ -6,7 +6,6 @@ from pitop.common.sys_info import get_internal_ip
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ...backend.helpers.device import firmware_version
-from ...event import AppEvents, post_event
 from .base import PageBase
 
 build_info = get_pitopOS_info()
@@ -37,7 +36,7 @@ class MenuPageBase(PageBase):
 
 
 class MenuPage(Enum):
-    SKIP = auto()
+    DETAILED_INSTRUCTIONS = auto()
     BATTERY = auto()
     BUILD_INFO = auto()
     ADDITIONAL_BUILD_INFO = auto()
@@ -48,7 +47,7 @@ class MenuPageGenerator:
     @staticmethod
     def get_page(page_type: MenuPage):
         pages = {
-            MenuPage.SKIP: SkipToEndPage,
+            MenuPage.DETAILED_INSTRUCTIONS: DetailedInstructionsPage,
             MenuPage.BATTERY: BatteryPage,
             MenuPage.BUILD_INFO: BuildInfoPage,
             MenuPage.ADDITIONAL_BUILD_INFO: AdditionalBuildInfoPage,
@@ -58,17 +57,17 @@ class MenuPageGenerator:
         return pages[page_type]
 
 
-class SkipToEndPage(MenuPageBase):
+class DetailedInstructionsPage(MenuPageBase):
     """
     Skip pi-top connection guide?
     """
 
     def __init__(self, size, mode, interval):
-        super().__init__(type=MenuPage.SKIP, size=size, mode=mode, interval=interval)
-        self.text = "Skip pi-top connection guide?"
-
-    def on_select_press(self):
-        post_event(AppEvents.USER_SKIPPED_CONNECTION_GUIDE, True)
+        super().__init__(
+            type=MenuPage.DETAILED_INSTRUCTIONS, size=size, mode=mode, interval=interval
+        )
+        self.wrap = False
+        self.text = "Are you stuck?\nGo to\npi-top.com/start-4"
 
 
 class BatteryPage(MenuPageBase):

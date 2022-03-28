@@ -122,15 +122,6 @@ class PageManager:
 
         subscribe(AppEvents.READY_TO_BE_A_MAKER, soft_transition_to_last_page)
 
-        def hard_transition_to_connect_page(_):
-            self.active_viewport = self.guide_viewport
-            self.active_viewport.page_index = len(self.active_viewport.pages) - 2
-            self.is_skipping = True
-
-        subscribe(
-            AppEvents.USER_SKIPPED_CONNECTION_GUIDE, hard_transition_to_connect_page
-        )
-
     def handle_select_btn(self):
         if self.active_viewport == self.guide_viewport:
             self.set_page_to_next_page()
