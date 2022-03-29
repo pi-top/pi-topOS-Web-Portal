@@ -8,7 +8,7 @@ def use_test_path():
 
 def get_test_file_path(filename):
     dirname = path.dirname(__file__)
-    return path.join(dirname, "../../tests/mocked_system_folder/", filename)
+    return path.join(dirname, "../../../tests/mocked_system_folder/", filename)
 
 
 def supported_locales():
@@ -64,12 +64,6 @@ def etc_pi_top():
     if use_test_path():
         return get_test_file_path("")
     return "/etc/pi-top"
-
-
-def pi_top_registration_txt():
-    if use_test_path():
-        return get_test_file_path("registration.txt")
-    return "/etc/pi-top/registration.txt"
 
 
 def pt_issue():

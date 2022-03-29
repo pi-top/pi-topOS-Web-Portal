@@ -72,7 +72,7 @@ export default ({
         setLegacyHubFirmware(versionArray.length >= 2 && parseInt(versionArray[0]) <= 3 && parseInt(versionArray[1]) === 0);
       })
       .catch(() => setLegacyHubFirmware(false))
-  }, [])
+  }, []);
 
   // stop users leaving page when setting up or waiting for reboot to finish.
   useEffect(() => {

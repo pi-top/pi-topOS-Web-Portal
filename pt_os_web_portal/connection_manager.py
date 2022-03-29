@@ -38,10 +38,12 @@ class ApConnection:
 
 
 class ConnectionManager:
+    SLEEP_TIME = 0.5
+
     def __init__(self):
         self.ap_connection = ApConnection()
         self.__thread = Thread(target=self._main, args=())
-        self.__stop = False
+        self._stop = False
         self._previous_connection_state = False
         self._previous_connected_device_ip = ""
 
@@ -51,13 +53,13 @@ class ConnectionManager:
         self.__thread.start()
 
     def stop(self):
-        self.__stop = True
+        self._stop = True
         if self.__thread and self.__thread.is_alive():
             self.__thread.join()
         logger.info("Stopped: Connection manager")
 
     def _main(self):
-        while not self.__stop:
+        while not self._stop:
             self.ap_connection.update()
             if self.ap_connection.has_changes:
                 post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
@@ -65,12 +67,13 @@ class ConnectionManager:
 
             connected_device_ip = get_address_for_connected_device()
             if connected_device_ip != self._previous_connected_device_ip:
+                print("((((((((((((")
                 post_event(AppEvents.HAS_CONNECTED_DEVICE, connected_device_ip != "")
-            self._previous_connected_device_ip = connected_device_ip
+                self._previous_connected_device_ip = connected_device_ip
 
             is_connected = is_connected_to_internet()
             if is_connected != self._previous_connection_state:
                 post_event(AppEvents.IS_CONNECTED_TO_INTERNET, is_connected)
             self._previous_connection_state = is_connected
 
-            sleep(0.5)
+            sleep(self.SLEEP_TIME)

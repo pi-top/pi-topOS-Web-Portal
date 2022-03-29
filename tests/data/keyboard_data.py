@@ -529,7 +529,7 @@ keyboard_variants_list = {
     },
 }
 
-keyboard_query_data = b"""
+keyboard_query_data = """
 rules:      evdev
 model:      pc105
 layout:     us,us
