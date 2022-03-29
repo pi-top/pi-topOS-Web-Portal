@@ -1,0 +1,17 @@
+[
+  {
+    "ssid": "Depto 606 [5G]",
+    "passwordRequired": true,
+    "bssid": "e0:cc:7a:fd:84:50"
+  },
+  {
+    "ssid": "Depto 606",
+    "passwordRequired": true,
+    "bssid": "e0:cc:7a:fd:84:4c"
+  },
+  {
+    "ssid": "Free Internet! [5G]",
+    "passwordRequired": false,
+    "bssid": "58:55:31:10:48:3a"
+  }
+]

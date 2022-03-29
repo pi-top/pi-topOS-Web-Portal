@@ -1,430 +1,463 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   render,
-  BoundFunction,
-  QueryByText,
-  GetByText,
-  wait,
   fireEvent,
-  GetByBoundAttribute,
-  AllByBoundAttribute,
-  QueryByBoundAttribute,
-  waitForElement,
-  AllByText,
   within,
+  screen,
+  waitForElementToBeRemoved,
 } from "@testing-library/react";
-import ReactDom from "react-dom";
 
 import WifiPageContainer, { Props } from "../WifiPageContainer";
 import { ErrorMessage, ExplanationMessage } from "../WifiPage";
 
-import { Network, NetworkCredentials } from "../../../types/Network";
 import queryReactSelect from "../../../../test/helpers/queryReactSelect";
 import querySpinner from "../../../../test/helpers/querySpinner";
 import { KeyCode } from "../../../../test/types/Keys";
-import getNetworks from "../../../services/getNetworks";
-import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
-import connectToNetwork from "../../../services/connectToNetwork";
+import { server } from "../../../msw/server";
+import { rest } from "msw";
+import networks from "../../../msw/data/networks.json";
+import textContentMatcher from "../../../../test/helpers/textContentMatcher";
 
-jest.mock("../../../services/getNetworks");
-jest.mock("../../../services/isConnectedToNetwork");
-jest.mock("../../../services/connectToNetwork");
+// increase timeout so failure messages are not timeout messages
+jest.setTimeout(10000)
 
-const getNetworksMock = getNetworks as jest.Mock;
-const isConnectedToNetworkMock = isConnectedToNetwork as jest.Mock;
-const connectToNetworkMock = connectToNetwork as jest.Mock;
+const fetchingNetworksMessage = "fetching networks...";
 
-const originalCreatePortal = ReactDom.createPortal;
+const defaultProps: Props = {
+  goToNextPage: () => {},
+  goToPreviousPage: () => {},
+  connectedNetwork: undefined,
+  setConnectedNetwork: () => {},
+};
+
+const mount = (props: Partial<Props> = {}) =>
+  render(<WifiPageContainer {...defaultProps} {...props} />);
 
 describe("WifiPageContainer", () => {
-  let defaultProps: Props;
-  let wifiPageContainer: HTMLElement;
-  let queryByText: BoundFunction<QueryByText>;
-  let getByTestId: BoundFunction<GetByBoundAttribute>;
-  let getByLabelText: BoundFunction<GetByBoundAttribute>;
-  let getByText: BoundFunction<GetByText>;
-  let getAllByText: BoundFunction<AllByText>;
-  let getByAltText: BoundFunction<GetByBoundAttribute>;
-  beforeEach(async () => {
-    getNetworksMock.mockResolvedValue([]);
-    isConnectedToNetworkMock.mockResolvedValue({ connected: false });
-    connectToNetworkMock.mockImplementation(
-      (creds: NetworkCredentials) =>
-        new Promise((res, rej) => {
-          if (
-            creds.bssid === "unsecured-bssid" ||
-            creds.password === "correct-password"
-          ) {
-            return res();
-          }
-
-          rej();
-        })
-    );
-
-    ReactDom.createPortal = jest.fn();
-    const createPortalMock = ReactDom.createPortal as jest.Mock;
-    createPortalMock.mockImplementation((element: ReactNode) => element);
-
-    defaultProps = {
-      goToNextPage: jest.fn(),
-      goToPreviousPage: jest.fn(),
-      connectedNetwork: undefined,
-      setConnectedNetwork: jest.fn(),
-    };
-  });
-  afterEach(() => {
-    getNetworksMock.mockRestore();
-    isConnectedToNetworkMock.mockRestore();
-    connectToNetworkMock.mockRestore();
-    ReactDom.createPortal = originalCreatePortal;
-  });
-
   it("disables the next button while loading", async () => {
-    ({ getByText } = render(<WifiPageContainer {...defaultProps} />));
+    mount();
 
-    expect(getByText("Next").parentElement).toBeDisabled();
+    expect(screen.getByText("Next").parentElement).toBeDisabled();
 
-    await wait();
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
   });
 
   it("renders spinner while loading", async () => {
-    ({ container: wifiPageContainer } = render(
-      <WifiPageContainer {...defaultProps} />
-    ));
+    mount();
 
-    expect(querySpinner(wifiPageContainer)).toBeInTheDocument();
+    expect(querySpinner(document.body)).toBeInTheDocument();
 
-    await wait();
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
   });
 
   it("renders correct message while loading", async () => {
-    ({ queryByText } = render(<WifiPageContainer {...defaultProps} />));
+    mount();
 
-    expect(queryByText("fetching networks...")).toBeInTheDocument();
+    expect(screen.queryByText(fetchingNetworksMessage)).toBeInTheDocument();
 
-    await wait();
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
   });
 
-  it("renders skip warning dialog when skip button pressed", () => {
-    ({ getAllByText, getByTestId } = render(
-      <WifiPageContainer {...defaultProps} />
-    ));
+  it("renders skip warning dialog when skip button pressed", async () => {
+    mount();
 
-    fireEvent.click(getAllByText("Skip")[0]);
-    expect(getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
-  });
-
-  it('hides skip warning dialog when "Connect" button clicked', () => {
-    ({ getAllByText, getByTestId } = render(
-      <WifiPageContainer {...defaultProps} />
-    ));
-
-    fireEvent.click(getAllByText("Skip")[0]);
-    expect(getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
-
-    fireEvent.click(getByText("Connect"));
-    expect(getByTestId("skip-warning-dialog")).toHaveClass("hidden");
-  });
-
-  it("skips to next page when warning dialog skip button clicked", () => {
-    ({ getByTestId } = render(<WifiPageContainer {...defaultProps} />));
-
-    fireEvent.click(
-      within(getByTestId("skip-warning-dialog")).getByText("Skip")
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
     );
 
-    expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    fireEvent.click(screen.getAllByText("Skip")[0]);
+
+    expect(screen.getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
   });
 
-  describe("when connected network is passed", () => {
-    const network = {
-      ssid: "password-protected-ssid",
-      bssid: "password-protected-bssid",
-      passwordRequired: true,
-    };
+  it('hides skip warning dialog when "Connect" button clicked', async () => {
+    mount();
 
-    beforeEach(() => {
-      defaultProps = {
-        ...defaultProps,
-        connectedNetwork: network,
-      };
-    });
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
 
-    it("renders correct explanation", async () => {
-      ({
-        container: wifiPageContainer,
-        getByText,
-        queryByText,
-      } = render(<WifiPageContainer {...defaultProps} />));
-      await wait();
-      expect(
-        queryByText(ExplanationMessage.WiFiConnection)
-      ).toBeInTheDocument();
-    });
+    fireEvent.click(screen.getAllByText("Skip")[0]);
+    expect(screen.getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
+
+    fireEvent.click(screen.getByText("Connect"));
+    expect(screen.getByTestId("skip-warning-dialog")).toHaveClass("hidden");
   });
 
-  describe("when is connected to network", () => {
-    beforeEach(async () => {
-      isConnectedToNetworkMock.mockResolvedValue({ connected: true });
-      ({
-        container: wifiPageContainer,
-        getByText,
-        queryByText,
-      } = render(<WifiPageContainer {...defaultProps} />));
+  it("skips to next page when warning dialog skip button clicked", async () => {
+    const goToNextPage = jest.fn();
+    mount({ goToNextPage });
 
-      await wait();
-    });
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
 
-    it("renders correct explanation", () => {
-      expect(
-        queryByText(ExplanationMessage.WiredConnection)
-      ).toBeInTheDocument();
-    });
+    fireEvent.click(
+      within(screen.getByTestId("skip-warning-dialog")).getByText("Skip")
+    );
+
+    expect(goToNextPage).toHaveBeenCalled();
   });
 
-  describe("when not connected to network", () => {
-    beforeEach(async () => {
-      isConnectedToNetworkMock.mockResolvedValue({ connected: false });
-      ({
-        container: wifiPageContainer,
-        queryByText,
-        getByText,
-      } = render(<WifiPageContainer {...defaultProps} />));
-
-      await wait();
+  it("renders correct explanation when connected network is passed", async () => {
+    mount({
+      connectedNetwork: {
+        ssid: "password-protected-ssid",
+        bssid: "password-protected-bssid",
+        passwordRequired: true,
+      },
     });
 
-    it("renders correct explanation", () => {
-      expect(queryByText(ExplanationMessage.NotConnected)).toBeInTheDocument();
-    });
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    expect(
+      screen.getByText(ExplanationMessage.WiFiConnection)
+    ).toBeInTheDocument();
   });
 
-  describe("when unable to determine if connected to network", () => {
-    beforeEach(async () => {
-      isConnectedToNetworkMock.mockRejectedValue(
-        new Error("unable to determine connection status")
-      );
+  it("renders correct explanation when connected to network", async () => {
+    server.use(
+      rest.get("/is-connected", (_, res, ctx) => {
+        return res(ctx.json({ connected: true }));
+      })
+    );
 
-      ({
-        container: wifiPageContainer,
-        queryByText,
-        getByText,
-      } = render(<WifiPageContainer {...defaultProps} />));
+    mount();
 
-      await wait();
-    });
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
 
-    it("renders correct explanation", () => {
-      expect(queryByText(ExplanationMessage.NotConnected)).toBeInTheDocument();
-    });
+    expect(
+      screen.getByText(ExplanationMessage.WiredConnection)
+    ).toBeInTheDocument();
   });
 
-  describe("when unable to get networks", () => {
-    beforeEach(async () => {
-      getNetworksMock.mockRejectedValue(new Error("unable to get networks"));
+  it("renders correct explanation when not connected to network", async () => {
+    server.use(
+      rest.get("/is-connected", (_, res, ctx) => {
+        return res(ctx.json({ connected: false }));
+      })
+    );
 
-      ({
-        container: wifiPageContainer,
-        queryByText,
-        getByText,
-        getByAltText,
-        getByTestId,
-        getAllByText,
-      } = render(<WifiPageContainer {...defaultProps} />));
+    mount();
 
-      await wait();
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    expect(
+      screen.queryByText(ExplanationMessage.NotConnected)
+    ).toBeInTheDocument();
+  });
+
+  it("renders correct explanation when unable to determine if connected to network", async () => {
+    server.use(
+      rest.get("/is-connected", (_, res, ctx) => {
+        return res(ctx.status(401));
+      })
+    );
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    expect(
+      screen.queryByText(ExplanationMessage.NotConnected)
+    ).toBeInTheDocument();
+  });
+
+  it("renders error message when unable to get network", async () => {
+    server.use(
+      rest.get("/wifi-ssids", (_, res, ctx) => {
+        return res(ctx.status(401));
+      })
+    );
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    expect(screen.queryByText(ErrorMessage.FetchNetworks)).toBeInTheDocument();
+  });
+
+  it("renders networks in select when they are loaded successfully", async () => {
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
     });
 
-    it("renders error message", () => {
-      expect(queryByText(ErrorMessage.FetchNetworks)).toBeInTheDocument();
-    });
-
-    describe("on refreshing networks", () => {
-      let networks: Network[];
-      beforeEach(() => {
-        networks = [
-          {
-            ssid: "network-found-on-refresh-ssid",
-            passwordRequired: true,
-            bssid: "network-found-on-refresh-bssid",
-          },
-        ];
-
-        getNetworksMock.mockResolvedValueOnce(networks);
-      });
-
-      it("renders correct loading message", async () => {
-        fireEvent.click(getByAltText("refresh-button"));
-
-        expect(queryByText("fetching networks...")).toBeInTheDocument();
-
-        await wait();
-      });
-
-      it("renders correct message while loading", async () => {
-        fireEvent.click(getByAltText("refresh-button"));
-
-        expect(queryByText("fetching networks...")).toBeInTheDocument();
-
-        await wait();
-      });
-
-      it("renders new select options when loaded", async () => {
-        fireEvent.click(getByAltText("refresh-button"));
-
-        await wait();
-
-        fireEvent.keyDown(queryReactSelect(wifiPageContainer)!, {
-          keyCode: KeyCode.DownArrow,
-        });
-
-        networks.forEach(({ ssid }) => {
-          expect(queryByText(ssid)).toBeInTheDocument();
-        });
-      });
+    networks.forEach(({ ssid }) => {
+      expect(screen.queryByText(ssid)).toBeInTheDocument();
     });
   });
 
-  describe("when networks are loaded successfully", () => {
-    let networks: Network[];
+  it("can refresh networks list when loading networks fails", async () => {
+    server.use(
+      rest.get("/wifi-ssids", (_, res, ctx) => {
+        return res(ctx.status(401));
+      })
+    );
 
-    beforeEach(async () => {
-      networks = [
-        {
-          ssid: "password-protected-ssid",
-          passwordRequired: true,
-          bssid: "password-protected-bssid",
-        },
-        {
-          ssid: "unsecured-ssid",
-          passwordRequired: false,
-          bssid: "unsecured-bssid",
-        },
-      ];
+    mount();
 
-      getNetworksMock.mockResolvedValue(networks);
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
 
-      ({
-        container: wifiPageContainer,
-        queryByText,
-        getByText,
-        getByTestId,
-        getByLabelText,
-      } = render(<WifiPageContainer {...defaultProps} />));
+    server.resetHandlers();
+    fireEvent.click(screen.getByAltText("refresh-button"));
 
-      await wait();
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
     });
 
-    it("renders correct select options", () => {
-      fireEvent.keyDown(queryReactSelect(wifiPageContainer)!, {
-        keyCode: KeyCode.DownArrow,
-      });
+    expect(screen.getByText("Depto 606")).toBeInTheDocument();
+  });
 
-      networks.forEach(({ ssid }) => {
-        expect(queryByText(ssid)).toBeInTheDocument();
-      });
+  it("shows the connect dialog when network option is clicked", async () => {
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
     });
 
-    describe("when option with password is selected", () => {
-      let network: Network;
-      beforeEach(() => {
-        // open the select
-        fireEvent.keyDown(queryReactSelect(wifiPageContainer)!, {
-          keyCode: KeyCode.DownArrow,
-        });
+    // click a network option
+    fireEvent.click(screen.getByText(networks[0].ssid));
 
-        network = networks.find(({ passwordRequired }) => passwordRequired)!;
+    expect(screen.getByTestId("connect-dialog")).not.toHaveClass("hidden");
+  });
 
-        // click the wifi option
-        fireEvent.click(getByText(network.ssid));
-      });
+  it("renders connect dialog message correctly when network requires password", async () => {
+    mount();
 
-      it("shows the connect dialog", () => {
-        expect(getByTestId("connect-dialog")).not.toHaveClass("hidden");
-      });
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
 
-      it("renders dialog message correctly", () => {
-        expect(
-          within(getByTestId("connect-dialog")).queryByTestId("dialog-message")
-        ).toMatchSnapshot();
-      });
-
-      it("renders error when incorrect password is used", async () => {
-        const passwordInputLabel = getByLabelText("Enter password below");
-        fireEvent.change(passwordInputLabel, {
-          target: { value: "incorrect-password" },
-        });
-        fireEvent.click(getByText("Join"));
-        await waitForElement(() =>
-          getByText(
-            `There was an error connecting to ${network.ssid}... please check your password and try again`
-          )
-        );
-      });
-
-      it("clears error when cancel is clicked", async () => {
-        const passwordInputLabel = getByLabelText("Enter password below");
-        fireEvent.change(passwordInputLabel, {
-          target: { value: "incorrect-password" },
-        });
-        fireEvent.click(getByText("Join"));
-        await waitForElement(() =>
-          getByText(
-            `There was an error connecting to ${network.ssid}... please check your password and try again`
-          )
-        );
-        fireEvent.click(getByText("Cancel"));
-        fireEvent.keyDown(queryReactSelect(wifiPageContainer)!, {
-          keyCode: KeyCode.DownArrow,
-        });
-        fireEvent.click(getByText(network.ssid));
-
-        expect(
-          queryByText(
-            `There was an error connecting to ${network.ssid}... please check your password and try again`
-          )
-        ).not.toBeInTheDocument();
-      });
-
-      it("clears error when retry is clicked", async () => {
-        const passwordInputLabel = getByLabelText("Enter password below");
-        fireEvent.change(passwordInputLabel, {
-          target: { value: "incorrect-password" },
-        });
-        fireEvent.click(getByText("Join"));
-        await waitForElement(() =>
-          getByText(
-            `There was an error connecting to ${network.ssid}... please check your password and try again`
-          )
-        );
-        fireEvent.click(getByText("Retry"));
-
-        expect(
-          queryByText(
-            `There was an error connecting to ${network.ssid}... please check your password and try again`
-          )
-        ).not.toBeInTheDocument();
-        waitForElement(() =>
-          getByText(
-            `There was an error connecting to ${network.ssid}... please check your password and try again`
-          )
-        );
-      });
-
-      describe("on cancel click", () => {
-        beforeEach(() => {
-          fireEvent.click(getByText("Cancel"));
-        });
-
-        it("hides the connect dialog on cancel click", () => {
-          expect(getByTestId("connect-dialog")).toHaveClass("hidden");
-        });
-
-        it("resets selected network", () => {
-          expect(queryByText(network.ssid)).not.toBeInTheDocument();
-        });
-      });
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
     });
+
+    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+
+    // click the wifi option
+    fireEvent.click(screen.getByText(network.ssid));
+
+    expect(
+      screen.getByText(
+        textContentMatcher(
+          `The WiFi network ${network.ssid} requires a password`
+        )
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("renders error when incorrect password is used to connect to network", async () => {
+    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
+    });
+
+
+    // click the wifi option
+    fireEvent.click(screen.getByText(network.ssid));
+
+    // enter incorrect password
+    const passwordInputLabel = screen.getByLabelText("Enter password below");
+    fireEvent.change(passwordInputLabel, {
+      target: { value: "incorrect-password" },
+    });
+
+    // join network
+    fireEvent.click(screen.getByText("Join"));
+
+    expect(
+      await screen.findByText(
+        `There was an error connecting to ${network.ssid}... please check your password and try again`
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("clears incorrect password error when cancel is clicked and new network selected", async () => {
+    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
+    });
+
+    // click the wifi option
+    fireEvent.click(screen.getByText(network.ssid));
+
+    // enter incorrect password
+    const passwordInputLabel = screen.getByLabelText("Enter password below");
+    fireEvent.change(passwordInputLabel, {
+      target: { value: "incorrect-password" },
+    });
+
+    // join network
+    fireEvent.click(screen.getByText("Join"));
+
+    expect(
+      await screen.findByText(
+        `There was an error connecting to ${network.ssid}... please check your password and try again`
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Cancel"));
+
+    // pick new network
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
+    });
+    fireEvent.click(screen.getByText(network.ssid));
+
+    // error should not be rendered
+    expect(
+      screen.queryByText(
+        `There was an error connecting to ${network.ssid}... please check your password and try again`
+      )
+    ).not.toBeInTheDocument();
+  });
+
+  it("clears incorrect password error when retry is clicked", async () => {
+    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
+    });
+
+    // click the wifi option
+    fireEvent.click(screen.getByText(network.ssid));
+
+    // enter incorrect password
+    const passwordInputLabel = screen.getByLabelText("Enter password below");
+    fireEvent.change(passwordInputLabel, {
+      target: { value: "incorrect-password" },
+    });
+
+    // join network
+    fireEvent.click(screen.getByText("Join"));
+
+    expect(
+      await screen.findByText(
+        `There was an error connecting to ${network.ssid}... please check your password and try again`
+      )
+    ).toBeInTheDocument();
+
+    // enter correct password and retry
+    fireEvent.change(passwordInputLabel, {
+      target: { value: "correct-password" },
+    });
+    fireEvent.click(screen.getByText("Retry"));
+
+    // it hides the error as soon as retry button is clicked
+    expect(
+      screen.queryByText(
+        `There was an error connecting to ${network.ssid}... please check your password and try again`
+      )
+    ).not.toBeInTheDocument();
+
+    // retried request succeeds
+    expect(
+      await screen.findByText(/Great, your pi-top is connected/)
+    ).toBeInTheDocument();
+  });
+
+  it("hides the connect dialog on connect dialog cancel click", async () => {
+    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
+    });
+
+    // click the wifi option
+    fireEvent.click(screen.getByText(network.ssid));
+
+    // cancel connecting to network
+    fireEvent.click(screen.getByText("Cancel"));
+
+    // connect dialog should not be visible
+    expect(screen.getByTestId("connect-dialog")).toHaveClass("hidden");
+  });
+
+  it("resets selected network in select on connect dialog cancel click", async () => {
+    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    // open the select
+    fireEvent.keyDown(queryReactSelect(document.body)!, {
+      keyCode: KeyCode.DownArrow,
+    });
+
+    // click the wifi option
+    fireEvent.click(screen.getByText(network.ssid));
+
+    // cancel connecting to network
+    fireEvent.click(screen.getByText("Cancel"));
+
+    // network should not be the selected option in the networks select
+    expect(screen.queryByText(network.ssid)).not.toBeInTheDocument();
   });
 });
