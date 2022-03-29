@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import Dict, List
+from typing import Callable, Dict, List
 
 
 class AppEvents(Enum):
@@ -18,7 +18,9 @@ class AppEvents(Enum):
 subscribers: Dict[AppEvents, List] = dict()
 
 
-def subscribe(event_type: AppEvents, fn):
+def subscribe(event_type: AppEvents, fn: Callable):
+    if not callable(fn):
+        return
     if event_type not in subscribers:
         subscribers[event_type] = []
     subscribers[event_type].append(fn)

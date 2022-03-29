@@ -1,7 +1,6 @@
 from flask import json
 
 from tests.data.wifi_country_data import country_code_sample, wifi_country_list
-from tests.utils import dotdict
 
 
 def test_list_wifi_countries_gets_correct_formats(app):
@@ -12,47 +11,36 @@ def test_list_wifi_countries_gets_correct_formats(app):
 
 
 def test_current_wifi_country_uses_raspi_config(app, mocker):
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
     run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict(
-            {"stdout": country_code_sample, "stderr": b"", "returncode": 0}
-        ),
+        "pt_os_web_portal.backend.helpers.wifi_country.run_command",
+        return_value=country_code_sample,
     )
 
     response = app.get("/current-wifi-country")
     body = json.loads(response.data)
 
     run_mock.assert_called_once_with(
-        ["raspi-config", "nonint", "get_wifi_country"],
-        capture_output=True,
-        check=False,
-        env={"DISPLAY": ":0"},
+        "raspi-config nonint get_wifi_country",
         timeout=5,
+        check=False,
     )
 
     assert response.status_code == 200
-    assert body == str(country_code_sample, "UTF8")
+    assert body == country_code_sample
 
 
 def test_set_wifi_country_success(app, mocker):
     valid_country_code = "CL"
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
     run_mock = mocker.patch(
-        "backend.helpers.command_runner.run",
-        return_value=dotdict({"stdout": b"", "stderr": b"", "returncode": 200}),
+        "pt_os_web_portal.backend.helpers.wifi_country.run_command",
+        return_value="",
     )
 
     successful_response = app.post(
         "/set-wifi-country", json={"wifi_country": valid_country_code}
     )
     run_mock.assert_called_once_with(
-        ["raspi-config", "nonint", "do_wifi_country", valid_country_code],
-        capture_output=True,
-        check=True,
-        env={"DISPLAY": ":0"},
+        f"raspi-config nonint do_wifi_country {valid_country_code}",
         timeout=5,
     )
     assert successful_response.status_code == 200

@@ -6,11 +6,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from tests.data.finalise_data import cmd_line_before
 from tests.data.keyboard_data import keyboard_file_before
 
 
-def patch_modules():
+def _patch_modules():
     modules_to_patch = [
         "further_link.start_further",
         "pitop",
@@ -33,8 +32,13 @@ def patch_modules():
 
 
 @pytest.fixture(scope="session")
+def patch_modules():
+    _patch_modules()
+
+
+@pytest.fixture(scope="session")
 def app():
-    patch_modules()
+    _patch_modules()
     from pt_os_web_portal.backend import create_app
 
     app = create_app(test_mode=True, os_updater=None)
@@ -70,9 +74,7 @@ def cleanup_files():
 def restore_files():
     yield
     file_data = [
-        ("tests/mocked_system_folder/cmdline.txt", cmd_line_before),
         ("tests/mocked_system_folder/keyboard", keyboard_file_before),
-        ("tests/mocked_system_folder/registration.txt", ""),
     ]
 
     for file_to_restore, original_data in file_data:
@@ -92,16 +94,3 @@ def wifi_manager_module():
     if "pt_os_web_portal.backend.helpers.wifi_manager" in modules:
         del modules["pt_os_web_portal.backend.helpers.wifi_manager"]
     del pt_os_web_portal.backend.helpers.wifi_manager
-
-
-@pytest.fixture(scope="function")
-def os_updater_module():
-    import pt_os_web_portal.backend.helpers.os_updater
-    from pt_os_web_portal.backend import create_app
-
-    create_app(test_mode=True, os_updater=None)
-    yield pt_os_web_portal.backend.helpers.os_updater
-
-    if "pt_os_web_portal.backend.helpers.os_updater" in modules:
-        del modules["pt_os_web_portal.backend.helpers.os_updater"]
-    del pt_os_web_portal.backend.helpers.os_updater

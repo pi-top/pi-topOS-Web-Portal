@@ -21,19 +21,15 @@ def test_current_locale(app):
 
 def test_set_locale_success(app, mocker):
     valid_locale_code = "en_US"
-    environ_mock = mocker.patch("backend.helpers.command_runner.environ")
-    environ_mock.copy = dict
-    run_mock = mocker.patch("backend.helpers.command_runner.run")
+    run_mock = mocker.patch("pt_os_web_portal.backend.helpers.language.run_command")
 
     successful_response = app.post(
         "/set-locale", json={"locale_code": valid_locale_code}
     )
     run_mock.assert_called_once_with(
-        ["raspi-config", "nonint", "do_change_locale", valid_locale_code + ".UTF-8"],
+        f"raspi-config nonint do_change_locale {valid_locale_code}.UTF-8",
         timeout=30,
         capture_output=False,
-        check=True,
-        env={"DISPLAY": ":0"},
     )
     assert successful_response.status_code == 200
     assert successful_response.data == b"OK"

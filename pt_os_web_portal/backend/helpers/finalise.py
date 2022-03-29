@@ -39,9 +39,10 @@ def available_space() -> str:
 
 def configure_landing() -> None:
     logger.debug("Function: configure_landing()")
+
     try:
         run_command(
-            f"ln -s {path.dirname(path.realpath(__file__))}/../../resources/pt-os-landing.desktop /etc/xdg/autostart",
+            f"ln -s {path.abspath(path.dirname(path.realpath(__file__))+'/../../resources/pt-os-landing.desktop')} /etc/xdg/autostart",
             timeout=60,
             lower_priority=True,
         )
@@ -123,19 +124,6 @@ def restore_files():
         logger.debug("restore_files: Files already restored")
     except Exception as e:
         logger.error(f"restore_files: {e}")
-
-
-def disable_landing():
-    logger.debug("Function: disable_landing()")
-    try:
-        remove("/etc/xdg/autostart/pt-os-landing.desktop")
-    except FileNotFoundError:
-        logger.debug("Landing already disabled.")
-
-
-def python_sdk_docs_url():
-    logger.debug("Function: python_sdk_docs_url()")
-    return run_command("pi-top support links docs -p", timeout=10, check=False).strip()
 
 
 def onboarding_completed():

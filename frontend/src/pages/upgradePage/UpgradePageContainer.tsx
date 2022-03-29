@@ -324,7 +324,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
         if (noUpdatesAvailable) {
           // no updates available - continue to system upgrade if was preparing web-portal, or finish page
           setState(state === UpdateState.PreparingWebPortal ? UpdateState.PreparingSystemUpgrade : UpdateState.Finished);
-          checkingWebPortalRef.current = false
+          checkingWebPortalRef.current = false;
           setCheckOsVersionUpdate(true);
         } else {
           // there's an update available - install if it's from web-portal or wait for user input
