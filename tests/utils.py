@@ -1,4 +1,6 @@
 from os.path import isfile
+from threading import Event
+from time import sleep
 
 
 class dotdict(dict):
@@ -22,3 +24,18 @@ def assert_file_content(path, expected_file_content):
         for expected_line_content in expected_file_content:
             line = f.readline()
             assert line.strip() == expected_line_content.strip()
+
+
+class SleepMocker:
+    def __init__(self) -> None:
+        self.sleep_event = Event()
+
+    def sleep(self, time):
+        self.sleep_event.clear()
+        self.sleep_event.wait()
+
+    def wait_until_next_iteration(self, sleep_mock):
+        current = sleep_mock.call_count
+        self.sleep_event.set()
+        while sleep_mock.call_count == current:
+            sleep(0.01)

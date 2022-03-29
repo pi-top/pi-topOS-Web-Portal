@@ -69,7 +69,7 @@ def set_locale(locale_code):
         logger.error("Unable to set locale - Not available: %s" % locale_code)
         return None
 
-    command = "raspi-config nonint do_change_locale %s.UTF-8" % locale_code
+    command = f"raspi-config nonint do_change_locale {locale_code}.UTF-8"
     run_command(command, timeout=30, capture_output=False)
 
     return True
