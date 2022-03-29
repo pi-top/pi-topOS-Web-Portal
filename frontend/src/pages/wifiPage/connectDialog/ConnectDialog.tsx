@@ -21,7 +21,6 @@ export type Props = {
   onCancel: () => void;
   onDone: () => void;
   network?: Network;
-  disconnectedFromAp: boolean;
 };
 
 export default ({
@@ -33,7 +32,6 @@ export default ({
   connectError,
   connect,
   network,
-  disconnectedFromAp,
 }: Props) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -103,17 +101,8 @@ export default ({
 
         {!isConnecting && connectError && (
           <span className={styles.error}>
-            {disconnectedFromAp ? (
-              <>
-                Your computer has disconnected from the
-                'pi-top-XXXX' network. Please reconnect to it.
-              </>
-            ) : (
-              <>
                 There was an error connecting to {ssid}... please check your
                 password and try again
-              </>
-            )}
           </span>
         )}
 

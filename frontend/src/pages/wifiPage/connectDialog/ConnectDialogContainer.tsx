@@ -1,12 +1,17 @@
 import React, { useState, useCallback, useEffect } from "react";
 
 import ConnectDialog from "./ConnectDialog";
+import Dialog from "../../../components/atoms/dialog/Dialog";
+import ImageComponent from "../../../components/atoms/image/Image";
 
 import connectToNetwork from "../../../services/connectToNetwork";
-
-import { Network } from "../../../types/Network";
 import isConnectedThroughAp from "../../../services/isConnectedThroughAp";
 import connectedBSSID from "../../../services/connectedBSSID";
+
+import { Network } from "../../../types/Network";
+import connectToWifiImage from "../../../assets/images/connect-to-wifi.png";
+
+import styles from "./ConnectDialog.module.css";
 
 export type Props = {
   active: boolean;
@@ -30,6 +35,12 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
       .catch(() => null);
   }, [setIsUsingAp]);
 
+  // preload 'connect-to-wifi' image since it can't be loaded when it is shown
+  useEffect(() => {
+    const image = new Image()
+    image.src = connectToWifiImage
+  }, [])
+
   const connect = useCallback(
     (network: Network, password: string) => {
       setIsConnecting(true);
@@ -42,21 +53,20 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
         const connectivityCheckInterval = setInterval(async () => {
           try {
             let connectedToBssid = false;
-            await connectedBSSID(requestTimeoutMs)
-              .then((bssid) => {
-                connectedToBssid = bssid === network.bssid;
-                setIsConnected(connectedToBssid)
-                if (connectedToBssid) {
-                  setConnectError(false);
-                  setConnectedNetwork(network);
-                }
-              })
+            await connectedBSSID(requestTimeoutMs).then((bssid) => {
+              connectedToBssid = bssid === network.bssid;
+              setIsConnected(connectedToBssid);
+              if (connectedToBssid) {
+                setConnectError(false);
+                setConnectedNetwork(network);
+              }
+            });
 
             connectedToBssid && clearInterval(connectivityCheckInterval);
             isUsingAp && setDisconnectedFromAp(false);
           } catch (_) {}
         }, requestIntervalMs);
-      }
+      };
 
       connectToNetwork({ bssid: network.bssid, password: password }, 30000)
         .then(() => {
@@ -80,13 +90,34 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
     setIsConnected(false);
   }, [props.network]);
 
+  if (disconnectedFromAp) {
+    return (
+      <Dialog
+        active
+        title="Reconnect to pi-top hotspot"
+        message={
+          <>
+            Your computer has disconnected from the{" "}
+            <span className="green">pi-top-XXXX</span> Wi-Fi hotspot. Please
+            reconnect to it to continue onboarding...
+          </>
+        }
+      >
+        <ImageComponent
+          src={connectToWifiImage}
+          alt="Reconnect to pitop hotspot"
+          className={styles.reconnectImage}
+        />
+      </Dialog>
+    );
+  }
+
   return (
     <ConnectDialog
       connect={connect}
       isConnecting={isConnecting}
       connectError={connectError}
       isConnected={isConnected}
-      disconnectedFromAp={disconnectedFromAp}
       {...props}
       onCancel={() => {
         setConnectError(false);
