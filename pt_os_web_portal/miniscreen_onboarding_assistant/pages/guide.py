@@ -1,9 +1,15 @@
 from enum import Enum, auto
+from ipaddress import ip_address
 from os import path
 from pathlib import Path
 from subprocess import run
 
 from PIL import Image
+from pitop.common.sys_info import (
+    InterfaceNetworkData,
+    get_address_for_ptusb_connected_device,
+    get_internal_ip,
+)
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ...event import AppEvents, subscribe
@@ -170,23 +176,32 @@ class OpenBrowserPage(GuidePageBase):
         )
         self.wrap = False
 
-    # TODO: cycle through alternative IP addresses (e.g. Ethernet)
-    # ip -4 addr [show eth0] | grep --only-matching --perl-regexp '(?<=inet\s)\d+(\.\d+){3}' | grep --invert-match 127.0.0.1
-
-    # ip -4 addr  | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
-
-    # Refresh before each pass of IP addresses?
-    # Refresh before showing an IP address in the list?
-
-    # Try and get IP from eth0, use that
-    # Try and get IP from wlan0, use that
-    # Else AP/display cable IP
-
     @property
     def text(self):
+        def get_pi_top_ip():
+            for iface in ("wlan0", "eth0"):
+                try:
+                    ip = ip_address(get_internal_ip(iface))
+                    return ip.exploded
+                except ValueError:
+                    pass
+
+            # ptusb0 always has an IP address; check is performed differently
+            try:
+                if len(get_address_for_ptusb_connected_device()) > 0:
+                    return InterfaceNetworkData("ptusb0").ip.exploded
+            except Exception:
+                pass
+
+            return "192.168.90.1"
+
         hostname = run("hostname", encoding="utf-8", capture_output=True)
         hostname = hostname.stdout.strip()
-        txt = f"Open browser to\n{hostname}.local\nor\nhttp://192.168.64.1"
+        ip = get_pi_top_ip()
+
+        txt = f"Open browser to\n{hostname}.local"
+        if len(ip) > 0:
+            txt += f"\nor\n{ip}"
 
         return txt
 
