@@ -1,15 +1,10 @@
 from enum import Enum, auto
-from ipaddress import ip_address
 from os import path
 from pathlib import Path
 from subprocess import run
 
 from PIL import Image
-from pitop.common.sys_info import (
-    InterfaceNetworkData,
-    get_address_for_ptusb_connected_device,
-    get_internal_ip,
-)
+from pitop.common.sys_info import get_pi_top_ip
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ...event import AppEvents, subscribe
@@ -178,23 +173,6 @@ class OpenBrowserPage(GuidePageBase):
 
     @property
     def text(self):
-        def get_pi_top_ip():
-            for iface in ("wlan0", "eth0"):
-                try:
-                    ip = ip_address(get_internal_ip(iface))
-                    return ip.exploded
-                except ValueError:
-                    pass
-
-            # ptusb0 always has an IP address; check is performed differently
-            try:
-                if len(get_address_for_ptusb_connected_device()) > 0:
-                    return InterfaceNetworkData("ptusb0").ip.exploded
-            except Exception:
-                pass
-
-            return "192.168.90.1"
-
         hostname = run("hostname", encoding="utf-8", capture_output=True)
         hostname = hostname.stdout.strip()
         ip = get_pi_top_ip()
