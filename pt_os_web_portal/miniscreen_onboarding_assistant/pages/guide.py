@@ -4,6 +4,7 @@ from pathlib import Path
 from subprocess import run
 
 from PIL import Image
+from pitop.common.sys_info import get_pi_top_ip
 from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
 from ...event import AppEvents, subscribe
@@ -170,23 +171,15 @@ class OpenBrowserPage(GuidePageBase):
         )
         self.wrap = False
 
-    # TODO: cycle through alternative IP addresses (e.g. Ethernet)
-    # ip -4 addr [show eth0] | grep --only-matching --perl-regexp '(?<=inet\s)\d+(\.\d+){3}' | grep --invert-match 127.0.0.1
-
-    # ip -4 addr  | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
-
-    # Refresh before each pass of IP addresses?
-    # Refresh before showing an IP address in the list?
-
-    # Try and get IP from eth0, use that
-    # Try and get IP from wlan0, use that
-    # Else AP/display cable IP
-
     @property
     def text(self):
         hostname = run("hostname", encoding="utf-8", capture_output=True)
         hostname = hostname.stdout.strip()
-        txt = f"Open browser to\n{hostname}.local\nor\nhttp://192.168.64.1"
+        ip = get_pi_top_ip()
+
+        txt = f"Open browser to\n{hostname}.local"
+        if len(ip) > 0:
+            txt += f"\nor\n{ip}"
 
         return txt
 
