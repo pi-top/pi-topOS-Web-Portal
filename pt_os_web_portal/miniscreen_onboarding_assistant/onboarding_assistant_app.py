@@ -1,45 +1,36 @@
 import logging
-from enum import Enum
-from threading import Thread
 
 from pitop import Pitop
+from pt_miniscreen.core import App as BaseApp
 
-from .page_manager import PageManager
+from .root import RootComponent
 
 logger = logging.getLogger(__name__)
 
 
-class Speeds(Enum):
-    DYNAMIC_PAGE_REDRAW = 1
-    SCROLL = 0.004
-    SKIP = 0.001
-
-
-class OnboardingAssistantApp:
+class OnboardingAssistantApp(BaseApp):
     def __init__(self):
-        self.__thread = Thread(target=self._main, args=())
-        self.__stop = False
-        self.miniscreen = Pitop().miniscreen
-        self.manager = PageManager(
-            self.miniscreen,
-            page_redraw_speed=Speeds.DYNAMIC_PAGE_REDRAW.value,
-            scroll_speed=Speeds.SCROLL.value,
-            skip_speed=Speeds.SKIP.value,
-        )
+        miniscreen = Pitop().miniscreen
 
-    def start(self):
-        self.__thread = Thread(target=self._main, args=())
-        self.__thread.daemon = True
-        self.__thread.start()
+        miniscreen.select_button.when_released = self.handle_select_button_release
+        miniscreen.cancel_button.when_released = self.handle_cancel_button_release
+        miniscreen.up_button.when_released = self.handle_up_button_release
+        miniscreen.down_button.when_released = self.handle_down_button_release
 
-    def stop(self):
-        self.__stop = True
-        if self.__thread and self.__thread.is_alive():
-            self.__thread.join()
-        logger.info("Stopped: miniscreen onboarding assistant")
+        super().__init__(miniscreen, Root=RootComponent)
 
-    def _main(self):
-        while not self.__stop:
-            self.manager.update_scroll_position()
-            self.manager.display_current_viewport_image()
-            self.manager.wait_until_timeout_or_page_has_changed()
+    def handle_select_button_release(self):
+        pass
+
+    def handle_cancel_button_release(self):
+        pass
+
+    def handle_up_button_release(self):
+        self.root.scroll_up()
+
+    def handle_down_button_release(self):
+        self.root.scroll_down()
+
+    @property
+    def user_has_control(self) -> bool:
+        return self.miniscreen.is_active
