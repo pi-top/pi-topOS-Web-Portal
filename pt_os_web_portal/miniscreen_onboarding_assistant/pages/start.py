@@ -7,7 +7,7 @@ from pt_miniscreen.core.utils import apply_layers, layer
 logger = logging.getLogger(__name__)
 
 
-FONT_SIZE = 14
+FONT_SIZE = 13
 SIZE = (120, 64)
 TEXT_POS = (0, 0)
 
@@ -18,10 +18,11 @@ class StartPage(Component):
 
         self.text_component = self.create_child(
             Text,
-            text="Welcome to your pi-top! Press DOWN to continue...",
+            text="Welcome to your\npi-top! Press DOWN\nto continue...",
             font_size=FONT_SIZE,
             align="center",
             vertical_align="center",
+            wrap=False,
         )
 
     def render(self, image):

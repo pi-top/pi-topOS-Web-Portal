@@ -18,10 +18,11 @@ class HelpURLPage(Component):
 
         self.text_component = self.create_child(
             Text,
-            text="Need more guidance? pi-top.com/start-4",
+            text="Need more\nguidance?\npi-top.com/start-4",
             font_size=FONT_SIZE,
             align="center",
             vertical_align="center",
+            wrap=False,
         )
 
     def render(self, image):

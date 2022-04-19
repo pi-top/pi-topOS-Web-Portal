@@ -9,7 +9,7 @@ from pt_miniscreen.core.utils import apply_layers, layer
 logger = logging.getLogger(__name__)
 
 
-FONT_SIZE = 14
+FONT_SIZE = 13
 SIZE = (120, 64)
 TEXT_POS = (0, 0)
 
