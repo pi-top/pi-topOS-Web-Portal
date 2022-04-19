@@ -15,8 +15,6 @@ TEXT_POS = (0, 0)
 class CarryOnPage(Component):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.has_connected_device = False
-        self.is_connected_to_internet = False
 
         self.text_component = self.create_child(
             Text,

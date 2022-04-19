@@ -7,7 +7,7 @@ from pt_miniscreen.core.utils import apply_layers, layer
 logger = logging.getLogger(__name__)
 
 
-FONT_SIZE = 14
+FONT_SIZE = 13
 SIZE = (120, 64)
 TEXT_POS = (0, 0)
 
@@ -16,7 +16,7 @@ class HelpURLPage(Component):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.text = self.create_child(
+        self.text_component = self.create_child(
             Text,
             text="Need more guidance? pi-top.com/start-4",
             font_size=FONT_SIZE,
@@ -29,7 +29,7 @@ class HelpURLPage(Component):
             image,
             [
                 layer(
-                    self.text.render,
+                    self.text_component.render,
                     size=SIZE,
                     pos=TEXT_POS,
                 ),

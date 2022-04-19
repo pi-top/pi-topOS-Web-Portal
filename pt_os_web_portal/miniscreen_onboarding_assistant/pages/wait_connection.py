@@ -13,10 +13,18 @@ TEXT_POS = (0, 0)
 
 
 class WaitConnectionPage(Component):
+
+    has_connected_device = False
+    is_connected_to_internet = False
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.has_connected_device = False
-        self.is_connected_to_internet = False
+        super().__init__(
+            initial_state={
+                "has_connected_device": self.has_connected_device,
+                "is_connected_to_internet": self.is_connected_to_internet,
+            },
+            **kwargs
+        )
 
         self.text_component = self.create_child(
             Text,
@@ -31,7 +39,7 @@ class WaitConnectionPage(Component):
         message = "No connection\ndetected,\nwaiting..."
 
         # page should transition, this text only shown if you return to it
-        if self.has_connected_device or self.is_connected_to_internet:
+        if self.state["has_connected_device"] or self.state["is_connected_to_internet"]:
             message = "You're connected!\nPress DOWN to\ncontinue..."
         return message
 

@@ -13,24 +13,17 @@ TEXT_POS = (0, 0)
 
 
 class ConnectPitopWifiNetworkPage(Component):
+    ssid = ""
+    passphrase = ""
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.ssid = "pi-top-EC900"
-
-        def update_ssid(ssid):
-            if ssid:
-                self.ssid = ssid
-
-        # subscribe(AppEvents.AP_HAS_SSID, update_ssid)
-
-        self.passphrase = "pi-top1234"
-
-        def update_passphrase(passphrase):
-            if passphrase:
-                self.passphrase = passphrase
-
-        # subscribe(AppEvents.AP_HAS_PASSPHRASE, update_passphrase)
+        super().__init__(
+            initial_state={
+                "ssid": self.ssid,
+                "passphrase": self.passphrase,
+            },
+            **kwargs,
+        )
 
         self.text_component = self.create_child(
             Text,
@@ -42,7 +35,7 @@ class ConnectPitopWifiNetworkPage(Component):
 
     @property
     def text(self):
-        return f"Connect to Wi-Fi:\n{self.ssid}\n{self.passphrase}"
+        return f"Connect to Wi-Fi:\n{self.state['ssid']}\n{self.state['passphrase']}"
 
     def render(self, image):
         return apply_layers(

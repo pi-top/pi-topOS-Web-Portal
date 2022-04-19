@@ -1,5 +1,7 @@
 import logging
+from subprocess import run
 
+from pitop.common.sys_info import get_pi_top_ip
 from pt_miniscreen.core import Component
 from pt_miniscreen.core.components.text import Text
 from pt_miniscreen.core.utils import apply_layers, layer
@@ -28,11 +30,10 @@ class OpenBrowserPage(Component):
 
     @property
     def text(self):
-        # hostname = run("hostname", encoding="utf-8", capture_output=True)
-        # hostname = hostname.stdout.strip()
+        hostname = run("hostname", encoding="utf-8", capture_output=True)
+        hostname = hostname.stdout.strip()
         hostname = "pi-top"
-        # ip = get_pi_top_ip()
-        ip = "192.168.64.1"
+        ip = get_pi_top_ip()
 
         txt = f"Open browser to\n{hostname}.local"
         if len(ip) > 0:

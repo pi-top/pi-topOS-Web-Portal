@@ -16,7 +16,7 @@ class GetDevicePage(Component):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.text = self.create_child(
+        self.text_component = self.create_child(
             Text,
             text="You will need a\nlaptop/computer\nto connect...",
             font_size=FONT_SIZE,
@@ -29,7 +29,7 @@ class GetDevicePage(Component):
             image,
             [
                 layer(
-                    self.text.render,
+                    self.text_component.render,
                     size=SIZE,
                     pos=TEXT_POS,
                 ),
