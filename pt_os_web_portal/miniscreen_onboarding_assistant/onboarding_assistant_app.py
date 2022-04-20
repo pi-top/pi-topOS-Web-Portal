@@ -20,10 +20,10 @@ class OnboardingAssistantApp(BaseApp):
         super().__init__(miniscreen, Root=RootComponent)
 
     def handle_select_button_release(self):
-        pass
+        self.root.handle_select_button()
 
     def handle_cancel_button_release(self):
-        pass
+        self.root.switch_menu()
 
     def handle_up_button_release(self):
         self.root.scroll_up()

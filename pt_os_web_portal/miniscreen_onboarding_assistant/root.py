@@ -1,18 +1,22 @@
 import logging
 
-from pt_miniscreen.components.arrow_navigation_indicator import ArrowNavigationIndicator
 from pt_miniscreen.core.component import Component
-from pt_miniscreen.core.components import PageList, Stack
+from pt_miniscreen.core.components import ArrowNavigationIndicator, PageList, Stack
 from pt_miniscreen.core.utils import apply_layers, layer
 
 from pt_os_web_portal.event import AppEvents, subscribe
 
 from .pages import (
+    BatteryInfoPage,
     CarryOnPage,
     ConnectPitopWifiNetworkPage,
+    FwInfoPage,
     GetDevicePage,
     HelpURLPage,
+    NetworksPage,
     OpenBrowserPage,
+    OsInfoPage,
+    SkipPage,
     StartPage,
     WaitConnectionPage,
 )
@@ -20,7 +24,7 @@ from .pages import (
 logger = logging.getLogger(__name__)
 
 
-class RootPageList(PageList):
+class GuidePageList(PageList):
     def __init__(self, **kwargs):
         super().__init__(
             **kwargs,
@@ -37,12 +41,27 @@ class RootPageList(PageList):
         self.visible_scrollbar = False
 
 
+class MenuPageList(PageList):
+    def __init__(self, **kwargs):
+        super().__init__(
+            **kwargs,
+            Pages=[
+                SkipPage,
+                BatteryInfoPage,
+                OsInfoPage,
+                FwInfoPage,
+                NetworksPage,
+            ],
+        )
+        self.visible_scrollbar = False
+
+
 class RootComponent(Component):
     arrow_navigation_indicator_width = 10
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.stack = self.create_child(Stack, initial_stack=[RootPageList])
+        self.stack = self.create_child(Stack, initial_stack=[GuidePageList])
         self.arrow_navigation_indicator = self.create_child(
             ArrowNavigationIndicator, top_arrow_visible=False, bottom_arrow_visible=True
         )
@@ -51,7 +70,7 @@ class RootComponent(Component):
     def setup_event_triggers(self):
         # Automatic transitions between pages during navigation
         def soft_transition_to_open_browser_page(connected):
-            if not connected or not isinstance(self.active_component, RootPageList):
+            if not connected or not isinstance(self.active_component, GuidePageList):
                 return
 
             # Only transition if on 'Connect to Network' or 'Waiting for Connection' pages
@@ -67,7 +86,7 @@ class RootComponent(Component):
         )
 
         def soft_transition_to_last_page(_):
-            if not isinstance(self.active_component, RootPageList):
+            if not isinstance(self.active_component, GuidePageList):
                 return
 
             # Only do automatic update if on 'Open Browser' page
@@ -146,6 +165,24 @@ class RootComponent(Component):
         if self.can_scroll_down:
             self.stack.active_component.scroll_down()
             self._update_navigation_component()
+
+    def switch_menu(self):
+        if isinstance(self.stack.active_component, GuidePageList):
+            self.stack.push(MenuPageList)
+            return
+        self.stack.pop()
+
+    def handle_select_button(self):
+        if isinstance(self.stack.active_component, MenuPageList) and isinstance(
+            self.active_page, SkipPage
+        ):
+            self.stack.pop()
+            # Scroll to OpenBrowserPage
+            pages_in_list = self.active_component.components_to_top_row
+            if pages_in_list > 1:
+                self.stack.active_component.scroll_to(
+                    direction="DOWN", distance=pages_in_list - 1
+                )
 
     def render(self, image):
         return apply_layers(

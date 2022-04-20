@@ -1,24 +1,22 @@
 import logging
-from subprocess import run
 
-from pitop.common.sys_info import get_pi_top_ip
+from pitop.battery import Battery
 from pt_miniscreen.core import Component
-from pt_miniscreen.core.components.text import Text
-from pt_miniscreen.core.utils import apply_layers, layer
+from pt_miniscreen.core.components import Text
+from pt_miniscreen.core.utils import apply_layers, layer, rectangle
 
 logger = logging.getLogger(__name__)
 
 
-FONT_SIZE = 13
-SIZE = (120, 64)
+FONT_SIZE = 14
+SIZE = (128, 64)
 TEXT_POS = (0, 0)
 
 
-class OpenBrowserPage(Component):
+class BatteryInfoPage(Component):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.has_connected_device = False
-        self.is_connected_to_internet = False
+        self.battery_instance = Battery()
 
         self.text_component = self.create_child(
             Text,
@@ -26,25 +24,26 @@ class OpenBrowserPage(Component):
             font_size=FONT_SIZE,
             align="center",
             vertical_align="center",
+            fill=0,
         )
 
     @property
     def text(self):
-        hostname = run("hostname", encoding="utf-8", capture_output=True)
-        hostname = hostname.stdout.strip()
-        hostname = "pi-top"
-        ip = get_pi_top_ip()
+        def _power_source_text():
+            if self.battery_instance.is_full or self.battery_instance.is_charging:
+                return "Power Adapter"
+            return "Battery"
 
-        txt = f"Open browser to\n{hostname}.local"
-        if len(ip) > 0:
-            txt += f"\nor\n{ip}"
-
-        return txt
+        return (
+            f"Battery: {self.battery_instance.capacity}%\n"
+            f"Power Source: {_power_source_text()}"
+        )
 
     def render(self, image):
         return apply_layers(
             image,
             [
+                layer(rectangle, size=SIZE, pos=(0, 0)),
                 layer(
                     self.text_component.render,
                     size=SIZE,
