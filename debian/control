@@ -20,9 +20,12 @@ Depends:
  fonts-roboto-unhinted,
 # Service enabling
  further-link,
+# For miniscreen onboarding guide
+ pt-miniscreen,
 # Needed to update the EEPROM
  pt-os-notify-services,
 # Get system information
+ python3-pitop,
  raspi-config,
 # Restore notification support
  rsync,
