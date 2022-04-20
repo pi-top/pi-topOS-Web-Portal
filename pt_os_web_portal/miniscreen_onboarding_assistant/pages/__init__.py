@@ -1,12 +1,10 @@
-from .guide.carry_on import CarryOnPage
-from .guide.connect_to_network import ConnectPitopWifiNetworkPage
-from .guide.get_device import GetDevicePage
-from .guide.help_url import HelpURLPage
-from .guide.open_browser import OpenBrowserPage
-from .guide.start import StartPage
-from .guide.wait_connection import WaitConnectionPage
-from .menu.battery import BatteryInfoPage
-from .menu.fw_info import FwInfoPage
-from .menu.networks import NetworksPage
-from .menu.os_info import OsInfoPage
-from .menu.skip import SkipPage
+from .guide import (
+    CarryOnPage,
+    ConnectPitopWifiNetworkPage,
+    GetDevicePage,
+    HelpURLPage,
+    OpenBrowserPage,
+    StartPage,
+    WaitConnectionPage,
+)
+from .menu import BatteryInfoPage, FwInfoPage, NetworksPage, OsInfoPage, SkipPage
