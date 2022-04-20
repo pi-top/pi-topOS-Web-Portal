@@ -183,6 +183,7 @@ class RootComponent(Component):
                 self.stack.active_component.scroll_to(
                     direction="DOWN", distance=pages_in_list - 1
                 )
+                self._update_navigation_component()
 
     def render(self, image):
         return apply_layers(

@@ -22,7 +22,7 @@ subscribers: Dict[AppEvents, List] = dict()
 
 
 def subscribe(event_type: AppEvents, fn: Callable):
-    logger.debug(f"Subscribed to event {event_type.name} with {fn}")
+    logger.debug(f"Subscribed to event '{event_type.name}' with {fn}")
     if not callable(fn):
         return
     if event_type not in subscribers:
@@ -31,10 +31,10 @@ def subscribe(event_type: AppEvents, fn: Callable):
 
 
 def post_event(event_type: AppEvents, data=None):
-    logger.debug(f"Posting event {event_type} with data '{data}'")
+    logger.debug(f"Posting event '{event_type.name}' with data '{data}'")
     if event_type not in subscribers:
         logger.debug(f"Event {event_type} has no subscribers, exiting...")
         return
     for fn in subscribers[event_type]:
-        logger.debug(f"Executing callback {fn} for event {event_type}")
+        logger.debug(f"Executing callback {fn} for event '{event_type.name}'")
         fn(data)
