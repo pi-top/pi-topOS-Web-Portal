@@ -147,7 +147,6 @@ class OpenBrowserPage(Component):
     def text(self):
         hostname = run("hostname", encoding="utf-8", capture_output=True)
         hostname = hostname.stdout.strip()
-        hostname = "pi-top"
         ip = get_pi_top_ip()
 
         txt = f"Open browser to\n{hostname}.local"

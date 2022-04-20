@@ -22,7 +22,7 @@ subscribers: Dict[AppEvents, List] = dict()
 
 
 def subscribe(event_type: AppEvents, fn: Callable):
-    logger.debug(f"Subscribed to event {event_type} with {fn}")
+    logger.debug(f"Subscribed to event {event_type.name} with {fn}")
     if not callable(fn):
         return
     if event_type not in subscribers:
