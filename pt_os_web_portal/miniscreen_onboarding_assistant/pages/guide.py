@@ -133,7 +133,7 @@ class ConnectPitopWifiNetworkPage(Component):
 
     def render(self, image):
         wifi_icon_pos = (10, 2 * FONT_SIZE)
-        passphrase_icon_pos = (14, 3 * FONT_SIZE) + 2
+        passphrase_icon_pos = (14, 3 * FONT_SIZE + 2)
         icon_size = (FONT_SIZE, FONT_SIZE)
 
         return apply_layers(

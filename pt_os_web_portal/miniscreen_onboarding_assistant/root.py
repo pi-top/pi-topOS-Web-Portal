@@ -28,6 +28,7 @@ class GuidePageList(PageList):
     def __init__(self, **kwargs):
         super().__init__(
             **kwargs,
+            visible_scrollbar=False,
             Pages=[
                 StartPage,
                 GetDevicePage,
@@ -38,13 +39,13 @@ class GuidePageList(PageList):
                 CarryOnPage,
             ],
         )
-        self.visible_scrollbar = False
 
 
 class MenuPageList(PageList):
     def __init__(self, **kwargs):
         super().__init__(
             **kwargs,
+            visible_scrollbar=False,
             Pages=[
                 SkipPage,
                 BatteryInfoPage,
@@ -53,7 +54,6 @@ class MenuPageList(PageList):
                 NetworksPage,
             ],
         )
-        self.visible_scrollbar = False
 
 
 class RootComponent(Component):
@@ -74,7 +74,7 @@ class RootComponent(Component):
                 return
 
             # Only transition if on 'Connect to Network' or 'Waiting for Connection' pages
-            pages_in_list = self.active_component.components_to_top_row
+            pages_in_list = self.active_component.distance_to_bottom
             if pages_in_list in (3, 2):
                 self.stack.active_component.scroll_to(
                     direction="DOWN", distance=pages_in_list - 1
@@ -178,7 +178,7 @@ class RootComponent(Component):
         ):
             self.stack.pop()
             # Scroll to OpenBrowserPage
-            pages_in_list = self.active_component.components_to_top_row
+            pages_in_list = self.active_component.distance_to_bottom
             if pages_in_list > 1:
                 self.stack.active_component.scroll_to(
                     direction="DOWN", distance=pages_in_list - 1
