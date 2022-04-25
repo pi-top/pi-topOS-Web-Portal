@@ -63,7 +63,9 @@ class RootComponent(Component):
         super().__init__(**kwargs)
         self.stack = self.create_child(Stack, initial_stack=[GuidePageList])
         self.arrow_navigation_indicator = self.create_child(
-            ArrowNavigationIndicator, top_arrow_visible=False, bottom_arrow_visible=True
+            ArrowNavigationIndicator,
+            upper_arrow_visible=False,
+            bottom_arrow_visible=True,
         )
         self.setup_event_triggers()
 
@@ -76,9 +78,7 @@ class RootComponent(Component):
             # Only transition if on 'Connect to Network' or 'Waiting for Connection' pages
             pages_in_list = self.active_component.distance_to_bottom
             if pages_in_list in (3, 2):
-                self.stack.active_component.scroll_to(
-                    direction="DOWN", distance=pages_in_list - 1
-                )
+                self.stack.active_component.scroll_down(distance=pages_in_list - 1)
 
         subscribe(AppEvents.HAS_CONNECTED_DEVICE, soft_transition_to_open_browser_page)
         subscribe(
@@ -142,19 +142,15 @@ class RootComponent(Component):
 
     @property
     def can_scroll_up(self):
-        return self.can_scroll and self.stack.active_component.can_scroll_up
+        return self.can_scroll and self.stack.active_component.can_scroll_up()
 
     @property
     def can_scroll_down(self):
-        return self.can_scroll and self.stack.active_component.can_scroll_down
+        return self.can_scroll and self.stack.active_component.can_scroll_down()
 
     def _update_navigation_component(self):
-        self.arrow_navigation_indicator.upper_arrow.state.update(
-            {"visible": self.can_scroll_up}
-        )
-        self.arrow_navigation_indicator.lower_arrow.state.update(
-            {"visible": self.can_scroll_down}
-        )
+        self.arrow_navigation_indicator.upper_arrow_visible = self.can_scroll_up
+        self.arrow_navigation_indicator.bottom_arrow_visible = self.can_scroll_down
 
     def scroll_up(self):
         if self.can_scroll_up:
@@ -180,9 +176,7 @@ class RootComponent(Component):
             # Scroll to OpenBrowserPage
             pages_in_list = self.active_component.distance_to_bottom
             if pages_in_list > 1:
-                self.stack.active_component.scroll_to(
-                    direction="DOWN", distance=pages_in_list - 1
-                )
+                self.stack.active_component.scroll_down(distance=pages_in_list - 1)
                 self._update_navigation_component()
 
     def render(self, image):
