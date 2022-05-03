@@ -229,7 +229,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       >
         For more information, go to 
         <button
-          class="unstyled link"
+          class="link unstyled"
           type="button"
         >
           https://pi-top.com/help/out-of-date
@@ -246,7 +246,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
         class="actions"
       >
         <button
-          class="unstyled btn"
+          class="btn unstyled"
           type="button"
         >
           <svg
@@ -501,7 +501,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
       >
         For more information, go to 
         <button
-          class="unstyled link"
+          class="link unstyled"
           type="button"
         >
           https://pi-top.com/help/out-of-date
@@ -518,7 +518,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
         class="actions"
       >
         <button
-          class="unstyled btn"
+          class="btn unstyled"
           type="button"
         >
           <svg

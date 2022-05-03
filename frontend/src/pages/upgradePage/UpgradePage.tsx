@@ -38,6 +38,7 @@ export type Props = {
   onNextClick?: () => void;
   onSkipClick?: () => void;
   onBackClick?: () => void;
+  skipButtonLabel?: string;
   onStartUpgradeClick: () => void;
   onRetry: (defaultBackend: boolean) => void;
   isCompleted?: boolean;
@@ -46,6 +47,7 @@ export type Props = {
   downloadSize: number,
   error: ErrorType,
   requireBurn: boolean,
+  hideSkip?: boolean,
   shouldBurn: boolean,
 };
 
@@ -53,6 +55,7 @@ export default ({
   onSkipClick,
   onBackClick,
   onNextClick,
+  skipButtonLabel,
   onStartUpgradeClick,
   onRetry,
   updateState,
@@ -61,6 +64,7 @@ export default ({
   downloadSize,
   requireBurn,
   shouldBurn,
+  hideSkip,
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
@@ -179,8 +183,8 @@ export default ({
           disabled: !hasError() && nextButtonDisabledStates.includes(updateState),
           hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && runsUpdaterStandaloneAppInBrowser)
         }}
-        skipButton={{ onClick: onSkipClick }}
-        showSkip={onSkipClick !== undefined && (hasError() || isCompleted === true)}
+        skipButton={{ onClick: onSkipClick, label: skipButtonLabel }}
+        showSkip={!hideSkip && onSkipClick !== undefined && (hasError() || isCompleted === true)}
         showBack={onBackClick !== undefined && (hasError() || showBackButtonStates.includes(updateState))}
         backButton={{
           onClick: onBackClick,

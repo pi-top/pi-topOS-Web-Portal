@@ -9,6 +9,7 @@ import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 import UpgradePageContainer from "./pages/upgradePage/UpgradePageContainer";
 import closeOsUpdaterWindow from "./services/closeOsUpdaterWindow";
 import LandingPage from "./pages/landingPage/LandingPage";
+import { runningOnWebRenderer } from "./helpers/utils";
 
 export default () => (
   <ErrorBoundary
@@ -26,9 +27,9 @@ export default () => (
         path="/updater"
         render={() => (
           <UpgradePageContainer
-            goToNextPage={() => {
-              closeOsUpdaterWindow();
-            }}
+            goToNextPage={closeOsUpdaterWindow}
+            skipButtonLabel="Close"
+            hideSkip={!runningOnWebRenderer()}
           />
         )}
       />

@@ -10,6 +10,7 @@ export type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string;
   type?: 'button'|'reset'|'submit';
   unstyled?: boolean;
+  hidden?: boolean;
 };
 
 export default ({
@@ -19,10 +20,15 @@ export default ({
   disabled = false,
   type = 'button',
   unstyled = false,
+  hidden,
   ...props
 }: Props) => (
   <button
-    className={cx(unstyled ? styles.unstyled : styles.styled, className)}
+    className={cx(className, {
+      [styles.unstyled]: unstyled,
+      [styles.styled]: !unstyled,
+      [styles.hidden]: hidden,
+    })}
     disabled={disabled}
     onClick={onClick}
     type={type}
