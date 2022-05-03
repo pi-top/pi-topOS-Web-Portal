@@ -11,6 +11,8 @@ from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
 
+from pt_os_web_portal.app_window.app_window import WifiAppWindow
+
 from ..app_window import LandingAppWindow, OsUpdaterAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
@@ -438,6 +440,13 @@ def post_disable_landing():
 def post_close_os_updater_window():
     logger.debug("Route '/close-os-updater-window'")
     OsUpdaterAppWindow().close()
+    return "OK"
+
+
+@app.route("/close-wifi-window", methods=["POST"])
+def post_close_wifi_window():
+    logger.debug("Route '/close-wifi-window'")
+    WifiAppWindow().close()
     return "OK"
 
 
