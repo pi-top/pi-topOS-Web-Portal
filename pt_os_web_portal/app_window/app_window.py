@@ -73,6 +73,16 @@ class OsUpdaterAppWindow(AppWindow):
 
 
 @dataclass
+class WifiAppWindow(AppWindow):
+    url: str = "http://localhost/wifi"
+    width_scalar: float = 0.65
+    height_scalar: float = 0.7
+    title: str = "pi-topOS Wi-Fi"
+    icon: str = "/usr/share/icons/hicolor/scalable/apps/pt-os-about.svg"
+    hide_frame: bool = False
+
+
+@dataclass
 class LandingAppWindow(AppWindow):
     url: str = "http://localhost/landing"
     width_scalar: float = 0.65

@@ -23,6 +23,7 @@ export type Props = {
   skipButton?: LayoutButtonProps;
   backButton?: LayoutButtonProps;
   showSkip?: boolean;
+  showNext?: boolean;
   showBack?: boolean;
   showHeader?: boolean;
   explanation?: string;
@@ -37,6 +38,7 @@ export default ({
   skipButton,
   backButton,
   showHeader = true,
+  showNext = true,
   showSkip = true,
   showBack = true,
   explanation,
@@ -81,7 +83,7 @@ export default ({
         {isLoading ? (
           <Spinner size={60} />
         ) : (
-          <PrimaryButton {...nextButton}>
+          showNext && <PrimaryButton {...nextButton}>
             {nextButton.label ? nextButton.label : "Next"}
           </PrimaryButton>
         )}
