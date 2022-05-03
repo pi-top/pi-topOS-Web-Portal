@@ -73,7 +73,7 @@ export default ({
         <div className={styles.backButtonContainer}>
           {backButton && showBack && (
             <Button {...backButton} className={styles.backButton} unstyled>
-              Back
+              {backButton.label ? backButton.label : "Back"}
             </Button>
           )}
         </div>
@@ -89,7 +89,7 @@ export default ({
         <div className={styles.skipButtonContainer}>
           {skipButton && showSkip && (
             <Button {...skipButton} className={styles.skipButton} unstyled>
-              Skip
+              {skipButton.label ? skipButton.label : "Skip"}
             </Button>
           )}
         </div>
