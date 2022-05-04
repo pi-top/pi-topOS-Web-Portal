@@ -1,5 +1,4 @@
 import logging
-from enum import Enum
 from ipaddress import ip_address
 from json import dumps as jdumps
 from threading import Thread
@@ -74,25 +73,6 @@ def get_os_updater():
     return app.config["OS_UPDATER"]
 
 
-class FrontendAppRoutes(Enum):
-    LANDING = "/landing"
-    ONBOARDING = "/onboarding"
-    ABOUT = "/about"
-    UPDATER = "/updater"
-
-    @classmethod
-    def is_valid(cls, route):
-        try:
-            path = route
-            path_delimiter = route.find("/", 1)
-            if path_delimiter > 0:
-                path = route[:path_delimiter]
-            cls(str(path))
-        except ValueError:
-            return False
-        return True
-
-
 def abort_on_no_data(data):
     if data is None or (isinstance(data, str) and len(data) == 0):
         abort(400)
@@ -104,17 +84,13 @@ def index():
     logger.debug("Route '/'")
     if not onboarding_completed():
         logger.info("Onboarding not completed yet. Redirecting...")
-        return redirect(FrontendAppRoutes.ONBOARDING.value)
-    return redirect(FrontendAppRoutes.LANDING.value)
+        return redirect("/onboarding")
+
+    return app.send_static_file("index.html")
 
 
 @app.errorhandler(404)
 def not_found(e):
-    if not FrontendAppRoutes.is_valid(request.path) or (
-        FrontendAppRoutes.ONBOARDING.value not in request.path
-        and not onboarding_completed()
-    ):
-        return redirect("/")
     return app.send_static_file("index.html")
 
 
