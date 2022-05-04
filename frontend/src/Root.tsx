@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import ErrorBoundary from "./components/errorBoundary/ErrorBoundary";
 import OnboardingApp from "./components/onboarding_app/App";
@@ -22,20 +22,22 @@ export default () => (
     }
   >
     <BrowserRouter>
-      <Route exact path="/landing" component={LandingPage} />
-      <Route path="/onboarding" component={OnboardingApp} />
-      <Route path="/about" component={AboutPageContainer} />
-      <Route path="/wifi" component={StandaloneWifiPageContainer} />
-      <Route
-        path="/updater"
-        render={() => (
-          <UpgradePageContainer
-            goToNextPage={closeOsUpdaterWindow}
-            skipButtonLabel="Close"
-            hideSkip={!runningOnWebRenderer()}
-          />
-        )}
-      />
+      <Switch>
+        <Route path="/onboarding" component={OnboardingApp} />
+        <Route path="/about" component={AboutPageContainer} />
+        <Route path="/wifi" component={StandaloneWifiPageContainer} />
+        <Route
+          path="/updater"
+          render={() => (
+            <UpgradePageContainer
+              goToNextPage={closeOsUpdaterWindow}
+              skipButtonLabel="Close"
+              hideSkip={!runningOnWebRenderer()}
+            />
+          )}
+        />
+        <Route component={LandingPage} />
+      </Switch>
     </BrowserRouter>
   </ErrorBoundary>
 );
