@@ -46,7 +46,10 @@ from .helpers.landing import (
     open_forum,
     open_further,
     open_knowledge_base,
+    open_os_download,
     open_python_sdk_docs,
+    open_updater,
+    open_wifi,
     python_sdk_docs_url,
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
@@ -437,6 +440,27 @@ def post_close_pt_os_landing_window():
 def post_open_further():
     logger.debug("Route '/open-further'")
     open_further()
+    return "OK"
+
+
+@app.route("/open-updater", methods=["POST"])
+def post_open_updater():
+    logger.debug("Route '/open-updater'")
+    open_updater()
+    return "OK"
+
+
+@app.route("/open-wifi", methods=["POST"])
+def post_open_wifi():
+    logger.debug("Route '/open-wifi'")
+    open_wifi()
+    return "OK"
+
+
+@app.route("/open-os-download", methods=["POST"])
+def post_open_os_download():
+    logger.debug("Route '/open-os-download'")
+    open_os_download()
     return "OK"
 
 
