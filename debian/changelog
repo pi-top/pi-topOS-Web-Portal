@@ -1,3 +1,23 @@
+pi-top-os-web-portal (0.12.0-2) bullseye; urgency=medium
+
+  * Bump peter-evans/create-pull-request from 3 to 4 (#367)
+  * [pre-commit.ci] pre-commit autoupdate (#366)
+  * Re-add python tests (#364)
+  * [pre-commit.ci] pre-commit autoupdate (#370)
+  * feat: replace skip page with instructions url
+  * refactor: flatten and use msw in WifiPageContainer tests
+  * feat: show error dialog when disconnected from AP
+  * [pre-commit.ci] pre-commit autoupdate (#373)
+  * Bump actions/upload-artifact from 2 to 3 (#375)
+  * Bump codecov/codecov-action from 2.1.0 to 3.0.0 (#376)
+  * Display correct IP address on miniscreen onboarding app (#372)
+  * fix: standalone upgrade skip text in web-renderer
+  * feat: add standalone wifi page
+  * chore: remove duplicated server and client routing
+  * feat: add updater, wifi and os download to landing (#384)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 04 May 2022 19:14:59 +0000
+
 pi-top-os-web-portal (0.12.0-1) bullseye; urgency=medium
 
   * chore: add msw
