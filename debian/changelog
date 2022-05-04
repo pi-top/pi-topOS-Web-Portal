@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.12.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.13.0-1) bullseye; urgency=medium
 
   * Bump peter-evans/create-pull-request from 3 to 4 (#367)
   * [pre-commit.ci] pre-commit autoupdate (#366)
