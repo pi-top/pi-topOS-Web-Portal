@@ -5,6 +5,7 @@ import {
   screen,
   waitForElementToBeRemoved,
   wait,
+  within,
 } from "@testing-library/react";
 import { rest } from "msw";
 
@@ -62,53 +63,31 @@ describe("StandaloneWifiPageContainer", () => {
   });
 
   it("does not render buttons when using browser", async () => {
-    // use container bound queries to avoid dialogs
-    const { queryByText } = mount();
+    const { getByTestId } = mount();
+    const layout = getByTestId('layout')
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)
     );
 
-    expect(queryByText("Back")).not.toBeInTheDocument();
-    expect(queryByText("Next")).not.toBeInTheDocument();
-    expect(queryByText("Done")).not.toBeInTheDocument();
+    expect(within(layout).queryByText("Back")).not.toBeInTheDocument();
+    expect(within(layout).queryByText("Next")).not.toBeInTheDocument();
+    expect(within(layout).queryByText('Skip')).not.toBeInTheDocument()
   });
 
   it("does not render navigation buttons when using web-renderer", async () => {
     setRunningOnWebRenderer(true)
 
-    // use container bound queries to avoid dialogs
-    const { queryByText } = mount();
+    const { getByTestId } = mount();
+    const layout = getByTestId('layout')
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)
     );
 
-    expect(queryByText("Back")).not.toBeInTheDocument();
-    expect(queryByText("Next")).not.toBeInTheDocument();
-  });
-
-  it("can close window by clicking Close button when using web-renderer", async () => {
-    setRunningOnWebRenderer(true)
-
-    const closeWifiWindow = jest.fn((_, res, ctx) => res(ctx.json("OK")));
-    server.use(rest.post("/close-wifi-window", closeWifiWindow));
-
-    mount();
-
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(fetchingNetworksMessage)
-    );
-
-    expect(closeWifiWindow).not.toHaveBeenCalled();
-
-    // close button is rendered and clickable
-    fireEvent.click(screen.getByText("Close"))
-
-    // posts to close-wifi-window on close button click
-    await wait(() => {
-      expect(closeWifiWindow).toHaveBeenCalled();
-    });
+    expect(within(layout).queryByText("Back")).not.toBeInTheDocument();
+    expect(within(layout).queryByText("Next")).not.toBeInTheDocument();
+    expect(within(layout).queryByText('Skip')).not.toBeInTheDocument()
   });
 
   it("renders correct explanation when not connected to network", async () => {
