@@ -35,7 +35,6 @@ export type Props = {
   isConnected: boolean;
   connectedNetwork?: Network;
   setConnectedNetwork: (network: Network) => void;
-  skipButtonLabel?: string;
   showSkipWarning?: boolean;
 };
 
@@ -50,7 +49,6 @@ export default ({
   isConnected,
   connectedNetwork,
   setConnectedNetwork,
-  skipButtonLabel,
   showSkipWarning = true,
 }: Props) => {
   const previousConnectedNetwork = usePrevious(connectedNetwork);
@@ -98,7 +96,6 @@ export default ({
           disabled: !isConnected,
         }}
         skipButton={{
-          label: skipButtonLabel,
           onClick: () => {
             if (!isConnected && showSkipWarning) {
               setIsSkipWarningDialogActive(true);

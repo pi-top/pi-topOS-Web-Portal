@@ -38,7 +38,6 @@ export type Props = {
   onNextClick?: () => void;
   onSkipClick?: () => void;
   onBackClick?: () => void;
-  skipButtonLabel?: string;
   onStartUpgradeClick: () => void;
   onRetry: (defaultBackend: boolean) => void;
   isCompleted?: boolean;
@@ -55,7 +54,6 @@ export default ({
   onSkipClick,
   onBackClick,
   onNextClick,
-  skipButtonLabel,
   onStartUpgradeClick,
   onRetry,
   updateState,
@@ -183,7 +181,7 @@ export default ({
           disabled: !hasError() && nextButtonDisabledStates.includes(updateState),
           hidden: error === ErrorType.UpdaterAlreadyRunning || (updateState === UpdateState.Finished && runsUpdaterStandaloneAppInBrowser)
         }}
-        skipButton={{ onClick: onSkipClick, label: skipButtonLabel }}
+        skipButton={{ onClick: onSkipClick }}
         showSkip={!hideSkip && onSkipClick !== undefined && (hasError() || isCompleted === true)}
         showBack={onBackClick !== undefined && (hasError() || showBackButtonStates.includes(updateState))}
         backButton={{

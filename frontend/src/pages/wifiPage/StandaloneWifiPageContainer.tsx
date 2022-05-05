@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import WifiPage from "./WifiPage";
 import { Network } from "../../types/Network";
-import closeWifiWindow from "../../services/closeWifiWindow";
-import { runningOnWebRenderer } from "../../helpers/utils";
 import getNetworks from "../../services/getNetworks";
 import connectedBSSID from "../../services/connectedBSSID";
 
@@ -45,8 +43,6 @@ export default () => {
       connectedNetwork={connectedNetwork}
       setConnectedNetwork={setConnectedNetwork}
       fetchNetworksError={fetchNetworksError}
-      onSkipClick={runningOnWebRenderer() ? closeWifiWindow : undefined}
-      skipButtonLabel="Close"
       showSkipWarning={false}
     />
   );

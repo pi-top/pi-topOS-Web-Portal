@@ -100,11 +100,10 @@ export type Props = {
   goToNextPage?: () => void;
   goToPreviousPage?: () => void;
   hideSkip?: boolean;
-  skipButtonLabel?: string;
   isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, hideSkip, skipButtonLabel, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -345,7 +344,6 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, skipButtonLabel, isC
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
       hideSkip={hideSkip}
-      skipButtonLabel={skipButtonLabel}
       onStartUpgradeClick={() => {
         if (isOpen) {
           setState(UpdateState.UpgradingSystem);

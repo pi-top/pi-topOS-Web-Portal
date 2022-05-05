@@ -11,8 +11,6 @@ import closeOsUpdaterWindow from "./services/closeOsUpdaterWindow";
 import LandingPage from "./pages/landingPage/LandingPage";
 import StandaloneWifiPageContainer from "./pages/wifiPage/StandaloneWifiPageContainer";
 
-import { runningOnWebRenderer } from "./helpers/utils";
-
 export default () => (
   <ErrorBoundary
     fallback={
@@ -31,8 +29,7 @@ export default () => (
           render={() => (
             <UpgradePageContainer
               goToNextPage={closeOsUpdaterWindow}
-              skipButtonLabel="Close"
-              hideSkip={!runningOnWebRenderer()}
+              hideSkip
             />
           )}
         />
