@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.13.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.14.0-1) bullseye; urgency=medium
 
   * fix: remove wifi and updater page close buttons
   * Continue to support AppWindow classes functionalities (#387)
