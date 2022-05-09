@@ -110,14 +110,14 @@ def test_updater_app_commands(patch_modules, mocker):
     run_mock.assert_has_calls(
         [
             call(
-                "/usr/bin/web-renderer --window-title='pi-topOS Updater Tool' "
+                "/usr/bin/web-renderer --window-title='pi-topOS Updater' "
                 "--icon='/usr/share/icons/Papirus/24x24/apps/system-software-update.svg' "
                 "--size=0.7x0.7 http://localhost/updater",
                 check=False,
                 timeout=None,
             ),
             call(
-                'wmctrl -v -c "pi-topOS Updater Tool"',
+                'wmctrl -v -c "pi-topOS Updater"',
                 timeout=5,
             ),
             call(
