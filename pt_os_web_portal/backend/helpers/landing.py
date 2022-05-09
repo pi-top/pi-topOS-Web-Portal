@@ -53,14 +53,14 @@ def open_os_download():
 def open_updater():
     logger.info("Function: open_updater()")
     run_command_background(
-        get_webrenderer_command("http://127.0.0.1/updater", "System Updater")
+        get_webrenderer_command("http://127.0.0.1/updater", "pi-topOS Updater Tool")
     )
 
 
 def open_wifi():
     logger.info("Function: open_wifi()")
     run_command_background(
-        get_webrenderer_command("http://127.0.0.1/wifi", "Wi-Fi Settings")
+        get_webrenderer_command("http://127.0.0.1/wifi", "pi-topOS Wi-Fi")
     )
 
 
