@@ -1,5 +1,4 @@
 import logging
-from enum import Enum
 from ipaddress import ip_address
 from json import dumps as jdumps
 from threading import Thread
@@ -11,7 +10,7 @@ from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
 
-from ..app_window import LandingAppWindow, OsUpdaterAppWindow
+from ..app_window import LandingAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -45,7 +44,10 @@ from .helpers.landing import (
     open_forum,
     open_further,
     open_knowledge_base,
+    open_os_download,
     open_python_sdk_docs,
+    open_updater,
+    open_wifi,
     python_sdk_docs_url,
 )
 from .helpers.language import current_locale, list_locales_supported, set_locale
@@ -72,25 +74,6 @@ def get_os_updater():
     return app.config["OS_UPDATER"]
 
 
-class FrontendAppRoutes(Enum):
-    LANDING = "/landing"
-    ONBOARDING = "/onboarding"
-    ABOUT = "/about"
-    UPDATER = "/updater"
-
-    @classmethod
-    def is_valid(cls, route):
-        try:
-            path = route
-            path_delimiter = route.find("/", 1)
-            if path_delimiter > 0:
-                path = route[:path_delimiter]
-            cls(str(path))
-        except ValueError:
-            return False
-        return True
-
-
 def abort_on_no_data(data):
     if data is None or (isinstance(data, str) and len(data) == 0):
         abort(400)
@@ -102,17 +85,13 @@ def index():
     logger.debug("Route '/'")
     if not onboarding_completed():
         logger.info("Onboarding not completed yet. Redirecting...")
-        return redirect(FrontendAppRoutes.ONBOARDING.value)
-    return redirect(FrontendAppRoutes.LANDING.value)
+        return redirect("/onboarding")
+
+    return app.send_static_file("index.html")
 
 
 @app.errorhandler(404)
 def not_found(e):
-    if not FrontendAppRoutes.is_valid(request.path) or (
-        FrontendAppRoutes.ONBOARDING.value not in request.path
-        and not onboarding_completed()
-    ):
-        return redirect("/")
     return app.send_static_file("index.html")
 
 
@@ -434,13 +413,6 @@ def post_disable_landing():
     return "OK"
 
 
-@app.route("/close-os-updater-window", methods=["POST"])
-def post_close_os_updater_window():
-    logger.debug("Route '/close-os-updater-window'")
-    OsUpdaterAppWindow().close()
-    return "OK"
-
-
 @app.route("/close-pt-os-landing-window", methods=["POST"])
 def post_close_pt_os_landing_window():
     logger.debug("Route '/close-pt-os-landing-window'")
@@ -452,6 +424,27 @@ def post_close_pt_os_landing_window():
 def post_open_further():
     logger.debug("Route '/open-further'")
     open_further()
+    return "OK"
+
+
+@app.route("/open-updater", methods=["POST"])
+def post_open_updater():
+    logger.debug("Route '/open-updater'")
+    open_updater()
+    return "OK"
+
+
+@app.route("/open-wifi", methods=["POST"])
+def post_open_wifi():
+    logger.debug("Route '/open-wifi'")
+    open_wifi()
+    return "OK"
+
+
+@app.route("/open-os-download", methods=["POST"])
+def post_open_os_download():
+    logger.debug("Route '/open-os-download'")
+    open_os_download()
     return "OK"
 
 

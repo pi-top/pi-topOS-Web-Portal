@@ -43,5 +43,30 @@ def open_forum():
     run_command_background(get_chromium_command("https://forum.pi-top.com"))
 
 
+def open_os_download():
+    logger.info("Function: open_os_download()")
+    run_command_background(
+        get_chromium_command("https://www.pi-top.com/resources/download-os")
+    )
+
+
+def open_updater():
+    logger.info("Function: open_updater()")
+    run_command_background(
+        get_webrenderer_command("http://127.0.0.1/updater", "System Updater")
+    )
+
+
+def open_wifi():
+    logger.info("Function: open_wifi()")
+    run_command_background(
+        get_webrenderer_command("http://127.0.0.1/wifi", "Wi-Fi Settings")
+    )
+
+
+def get_webrenderer_command(url, title):
+    return f"su {get_user_using_display(':0')} -c \"web-renderer --window-title=\\\"{title}\\\" {url}\""
+
+
 def get_chromium_command(url):
     return f"su {get_user_using_display(':0')} -c \"chromium-browser --new-window --start-maximized {url}\""

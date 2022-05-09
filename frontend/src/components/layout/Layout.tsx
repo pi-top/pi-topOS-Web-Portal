@@ -1,7 +1,9 @@
 import React, { ReactNode } from "react";
 import cx from "classnames";
 
-import PrimaryButton, { Props as ButtonProps } from "../primaryButton/PrimaryButton";
+import PrimaryButton, {
+  Props as ButtonProps,
+} from "../primaryButton/PrimaryButton";
 import Button from "../atoms/button/Button";
 import Spinner from "../atoms/spinner/Spinner";
 import styles from "./Layout.module.css";
@@ -23,6 +25,7 @@ export type Props = {
   skipButton?: LayoutButtonProps;
   backButton?: LayoutButtonProps;
   showSkip?: boolean;
+  showNext?: boolean;
   showBack?: boolean;
   showHeader?: boolean;
   explanation?: string;
@@ -37,6 +40,7 @@ export default ({
   skipButton,
   backButton,
   showHeader = true,
+  showNext = true,
   showSkip = true,
   showBack = true,
   explanation,
@@ -44,9 +48,7 @@ export default ({
   className,
   isLoading,
 }: Props) => (
-
-
-  <div className={cx(styles.layout, className)}>
+  <div data-testid="layout" className={cx(styles.layout, className)}>
     {showHeader && <Header />}
     <div className={styles.banner}>
       <Image
@@ -60,10 +62,18 @@ export default ({
     </div>
 
     <div className={styles.content}>
-      {explanation && <span className={styles.explanation}>{explanation.split('\n').map(function (item, key) {
-        return (<span key={key}>{item}<br /></span>)
-      })
-      }</span>}
+      {explanation && (
+        <span className={styles.explanation}>
+          {explanation.split("\n").map(function (item, key) {
+            return (
+              <span key={key}>
+                {item}
+                <br />
+              </span>
+            );
+          })}
+        </span>
+      )}
 
       {children}
 
@@ -73,7 +83,7 @@ export default ({
         <div className={styles.backButtonContainer}>
           {backButton && showBack && (
             <Button {...backButton} className={styles.backButton} unstyled>
-              Back
+              {backButton.label ? backButton.label : "Back"}
             </Button>
           )}
         </div>
@@ -81,15 +91,17 @@ export default ({
         {isLoading ? (
           <Spinner size={60} />
         ) : (
-          <PrimaryButton {...nextButton}>
-            {nextButton.label ? nextButton.label : "Next"}
-          </PrimaryButton>
+          showNext && (
+            <PrimaryButton {...nextButton}>
+              {nextButton.label ? nextButton.label : "Next"}
+            </PrimaryButton>
+          )
         )}
 
         <div className={styles.skipButtonContainer}>
           {skipButton && showSkip && (
             <Button {...skipButton} className={styles.skipButton} unstyled>
-              Skip
+              {skipButton.label ? skipButton.label : "Skip"}
             </Button>
           )}
         </div>

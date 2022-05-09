@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Layout from "../../components/layout/Layout";
 import Select from "../../components/atoms/select/Select";
@@ -12,6 +12,7 @@ import Button from "../../components/atoms/button/Button";
 import ConnectDialogContainer from "./connectDialog/ConnectDialogContainer";
 import SkipWarningDialog from "./skipWarningDialog/SkipWarningDialog";
 import { Network } from "../../types/Network";
+import usePrevious from "../../hooks/usePrevious";
 
 export enum ErrorMessage {
   FetchNetworks = "There was a problem getting networks, please refresh the networks list or skip",
@@ -24,9 +25,9 @@ export enum ExplanationMessage {
 }
 
 export type Props = {
-  onNextClick: () => void;
-  onSkipClick: () => void;
-  onBackClick: () => void;
+  onNextClick?: () => void;
+  onSkipClick?: () => void;
+  onBackClick?: () => void;
   onRefreshClick: () => void;
   networks: Network[];
   isFetchingNetworks: boolean;
@@ -34,6 +35,7 @@ export type Props = {
   isConnected: boolean;
   connectedNetwork?: Network;
   setConnectedNetwork: (network: Network) => void;
+  showSkipWarning?: boolean;
 };
 
 export default ({
@@ -47,7 +49,9 @@ export default ({
   isConnected,
   connectedNetwork,
   setConnectedNetwork,
+  showSkipWarning = true,
 }: Props) => {
+  const previousConnectedNetwork = usePrevious(connectedNetwork);
   const [selectedNetwork, setSelectedNetwork] = useState(connectedNetwork);
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
   const [isSkipWarningDialogActive, setIsSkipWarningDialogActive] =
@@ -64,6 +68,15 @@ export default ({
     }
     return ExplanationMessage.NotConnected;
   };
+
+  useEffect(() => {
+    if (
+      connectedNetwork &&
+      previousConnectedNetwork?.bssid !== connectedNetwork?.bssid
+    ) {
+      setSelectedNetwork(connectedNetwork);
+    }
+  }, [connectedNetwork, previousConnectedNetwork]);
 
   return (
     <>
@@ -82,21 +95,27 @@ export default ({
           onClick: onNextClick,
           disabled: !isConnected,
         }}
-        skipButton={{ onClick: () => {
-          if (!isConnected) {
-            setIsSkipWarningDialogActive(true)
-          } else {
-            onSkipClick();
-          }
-        }}}
+        skipButton={{
+          onClick: () => {
+            if (!isConnected && showSkipWarning) {
+              setIsSkipWarningDialogActive(true);
+            } else if (onSkipClick) {
+              onSkipClick();
+            }
+          },
+        }}
         backButton={{ onClick: onBackClick }}
+        showBack={!!onBackClick}
+        showNext={!!onNextClick}
+        showSkip={!!onSkipClick}
       >
         <div className={styles.wifiSelectContainer}>
           <Select
             // force rerender when selected ssid changes
             key={selectedBSSID}
             value={
-              selectedBSSID && selectedSSID && {
+              selectedBSSID &&
+              selectedSSID && {
                 value: selectedBSSID,
                 label: selectedSSID,
               }
@@ -148,7 +167,7 @@ export default ({
         }}
         onDone={() => {
           setIsConnectDialogActive(false);
-          if (isConnected) {
+          if (isConnected && onNextClick) {
             onNextClick();
           }
         }}
@@ -156,7 +175,7 @@ export default ({
       <SkipWarningDialog
         active={isSkipWarningDialogActive}
         onConnectClick={() => setIsSkipWarningDialogActive(false)}
-        onSkipClick={onSkipClick}
+        onSkipClick={onSkipClick || (() => {})}
       />
     </>
   );

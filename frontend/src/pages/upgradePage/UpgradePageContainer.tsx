@@ -99,10 +99,11 @@ export type OSUpdaterMessage = UpgradeMessage | SizeMessage | StateMessage;
 export type Props = {
   goToNextPage?: () => void;
   goToPreviousPage?: () => void;
+  hideSkip?: boolean;
   isCompleted?: boolean;
 };
 
-export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -342,6 +343,7 @@ export default ({ goToNextPage, goToPreviousPage, isCompleted }: Props) => {
       onNextClick={goToNextPage}
       onSkipClick={goToNextPage}
       onBackClick={goToPreviousPage}
+      hideSkip={hideSkip}
       onStartUpgradeClick={() => {
         if (isOpen) {
           setState(UpdateState.UpgradingSystem);

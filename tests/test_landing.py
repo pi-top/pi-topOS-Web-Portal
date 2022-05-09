@@ -35,6 +35,22 @@ def test_open_chromium_uses_current_user(patch_modules, mocker):
     assert command.startswith(f"su {user}")
 
 
+def test_open_webrenderer_uses_current_user(patch_modules, mocker):
+    user = "any_user"
+    url = "http://localhost/app"
+    get_user_using_display_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.get_user_using_display",
+        return_value=user,
+    )
+
+    from pt_os_web_portal.backend.helpers.landing import get_webrenderer_command
+
+    command = get_webrenderer_command(url, "")
+
+    get_user_using_display_mock.assert_called_once()
+    assert command.startswith(f"su {user}")
+
+
 def test_open_chromium_starts_a_maximized_new_window(patch_modules, mocker):
     user = "any_user"
     url = "http://docs.pi-top.com"
@@ -140,4 +156,65 @@ def test_open_forum(app, mocker):
 
     run_mock.assert_called_once_with(
         f'su {user} -c "chromium-browser --new-window --start-maximized {url}"'
+    )
+
+
+def test_open_os_download(app, mocker):
+    url = "https://www.pi-top.com/resources/download-os"
+    user = "any_user"
+    run_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.run_command_background",
+        return_value="",
+    )
+    mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.get_user_using_display",
+        return_value=user,
+    )
+
+    response = app.post("/open-os-download")
+    assert response.status_code == 200
+    assert response.data == b"OK"
+
+    run_mock.assert_called_once_with(
+        f'su {user} -c "chromium-browser --new-window --start-maximized {url}"'
+    )
+
+
+def test_open_updater(app, mocker):
+    user = "any_user"
+    run_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.run_command_background",
+        return_value="",
+    )
+    mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.get_user_using_display",
+        return_value=user,
+    )
+
+    response = app.post("/open-updater")
+    assert response.status_code == 200
+    assert response.data == b"OK"
+
+    run_mock.assert_called_once_with(
+        f'su {user} -c "web-renderer --window-title=\\"System Updater\\" http://127.0.0.1/updater"'
+    )
+
+
+def test_open_wifi(app, mocker):
+    user = "any_user"
+    run_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.run_command_background",
+        return_value="",
+    )
+    mocker.patch(
+        "pt_os_web_portal.backend.helpers.landing.get_user_using_display",
+        return_value=user,
+    )
+
+    response = app.post("/open-wifi")
+    assert response.status_code == 200
+    assert response.data == b"OK"
+
+    run_mock.assert_called_once_with(
+        f'su {user} -c "web-renderer --window-title=\\"Wi-Fi Settings\\" http://127.0.0.1/wifi"'
     )
