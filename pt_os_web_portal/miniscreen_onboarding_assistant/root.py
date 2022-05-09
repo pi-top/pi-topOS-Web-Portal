@@ -29,6 +29,7 @@ class GuidePageList(PageList):
         super().__init__(
             **kwargs,
             visible_scrollbar=False,
+            virtual=True,
             Pages=[
                 StartPage,
                 GetDevicePage,
