@@ -196,7 +196,7 @@ def test_open_updater(app, mocker):
     assert response.data == b"OK"
 
     run_mock.assert_called_once_with(
-        f'su {user} -c "web-renderer --window-title=\\"pi-topOS Updater Tool\\" http://127.0.0.1/updater"'
+        f'su {user} -c "web-renderer --window-title=\\"pi-topOS Updater\\" http://127.0.0.1/updater"'
     )
 
 
