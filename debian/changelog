@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.13.0-2) bullseye; urgency=medium
+
+  * fix: remove wifi and updater page close buttons
+  * Continue to support AppWindow classes functionalities (#387)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 09 May 2022 17:32:31 +0000
+
 pi-top-os-web-portal (0.13.0-1) bullseye; urgency=medium
 
   * Bump peter-evans/create-pull-request from 3 to 4 (#367)
