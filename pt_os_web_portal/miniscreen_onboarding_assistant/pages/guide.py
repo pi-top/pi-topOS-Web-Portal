@@ -94,14 +94,11 @@ class HelpURLPage(Component):
 
 
 class ConnectPitopWifiNetworkPage(Component):
-    ssid = ""
-    passphrase = ""
-
     def __init__(self, **kwargs):
         super().__init__(
             initial_state={
-                "ssid": self.ssid,
-                "passphrase": self.passphrase,
+                "ssid": "",
+                "passphrase": "",
             },
             **kwargs,
         )
@@ -126,6 +123,15 @@ class ConnectPitopWifiNetworkPage(Component):
             Image,
             image_path=path.join(image_dir_path, "padlock.png"),
         )
+
+    def on_state_change(self, prev_state):
+        if any(
+            [
+                prev_state.get("ssid") != self.state.get("ssid"),
+                prev_state.get("passphrase") != self.state.get("passphrase"),
+            ]
+        ):
+            self.text_component.state.update({"text": self.text})
 
     @property
     def text(self):
@@ -192,15 +198,11 @@ class OpenBrowserPage(Component):
 
 
 class WaitConnectionPage(Component):
-
-    has_connected_device = False
-    is_connected_to_internet = False
-
     def __init__(self, **kwargs):
         super().__init__(
             initial_state={
-                "has_connected_device": self.has_connected_device,
-                "is_connected_to_internet": self.is_connected_to_internet,
+                "has_connected_device": False,
+                "is_connected_to_internet": False,
             },
             **kwargs,
         )
@@ -212,6 +214,17 @@ class WaitConnectionPage(Component):
             align="center",
             vertical_align="center",
         )
+
+    def on_state_change(self, prev_state):
+        if any(
+            [
+                prev_state.get("has_connected_device")
+                != self.state.get("has_connected_device"),
+                prev_state.get("is_connected_to_internet")
+                != self.state.get("is_connected_to_internet"),
+            ]
+        ):
+            self.text_component.state.update({"text": self.text})
 
     @property
     def text(self):

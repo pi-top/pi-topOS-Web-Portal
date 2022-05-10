@@ -29,7 +29,7 @@ class GuidePageList(PageList):
         super().__init__(
             **kwargs,
             visible_scrollbar=False,
-            virtual=True,
+            virtual=False,
             Pages=[
                 StartPage,
                 GetDevicePage,
@@ -97,10 +97,10 @@ class RootComponent(Component):
         subscribe(AppEvents.READY_TO_BE_A_MAKER, soft_transition_to_last_page)
 
         def update_page_state(cls, attribute_name, attribute_value):
-            if isinstance(self.active_page, cls):
-                self.active_page.state.update({attribute_name: attribute_value})
-                return
-            setattr(cls, attribute_name, attribute_value)
+            for page in self.stack.active_component.rows:
+                if isinstance(page, cls):
+                    page.state.update({attribute_name: attribute_value})
+                    break
 
         # ConnectPitopWifiNetworkPage state update
         subscribe(
