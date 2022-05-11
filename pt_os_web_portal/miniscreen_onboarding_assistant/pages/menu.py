@@ -17,13 +17,14 @@ SIZE = (128, 64)
 TEXT_POS = (0, 0)
 
 
-class SkipPage(Component):
+class DetailedInstructionsPage(Component):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.text_component = self.create_child(
             Text,
-            text="Skip pi-top connection guide?",
+            text = "Are you stuck?\nGo to\npi-top.com/start-4",
+            wrap=False,
             font_size=FONT_SIZE,
             align="center",
             vertical_align="center",
