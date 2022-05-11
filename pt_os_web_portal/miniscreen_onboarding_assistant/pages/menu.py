@@ -1,91 +1,68 @@
-from enum import Enum, auto
+import logging
 
 from pitop.battery import Battery
 from pitop.common.pt_os import get_pitopOS_info
-from pitop.common.sys_info import get_internal_ip
-from pitop.miniscreen.oled.assistant import MiniscreenAssistant
+from pitop.common.sys_info import NetworkInterface, get_internal_ip
+from pt_miniscreen.core import Component
+from pt_miniscreen.core.components import Text
+from pt_miniscreen.core.utils import apply_layers, layer, rectangle
 
 from ...backend.helpers.device import firmware_version
-from .base import PageBase
 
-build_info = get_pitopOS_info()
+logger = logging.getLogger(__name__)
 
 
-class MenuPageBase(PageBase):
-    def __init__(self, type, size=(0, 0), mode=0, interval=1):
-        super().__init__(type, size, mode, interval)
-        self.invert = True
+FONT_SIZE = 14
+SIZE = (128, 64)
+TEXT_POS = (0, 0)
 
-    def on_select_press(self):
-        pass
+
+class SkipPage(Component):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.text_component = self.create_child(
+            Text,
+            text="Skip pi-top connection guide?",
+            font_size=FONT_SIZE,
+            align="center",
+            vertical_align="center",
+            fill=0,
+        )
 
     def render(self, image):
-        title_overlay_h = 19
-
-        center_x = self.size[0] / 2
-        offset_center_y = title_overlay_h + (self.size[1] - title_overlay_h) / 2
-        asst = MiniscreenAssistant(self.mode, self.size)
-        asst.render_text(
+        return apply_layers(
             image,
-            xy=(center_x, offset_center_y),
-            text=self.text,
-            wrap=self.wrap,
-            font=asst.get_mono_font_path(),
-            font_size=self.font_size - 2,
+            [
+                layer(rectangle, size=SIZE, pos=(0, 0)),
+                layer(
+                    self.text_component.render,
+                    size=SIZE,
+                    pos=TEXT_POS,
+                ),
+            ],
         )
 
 
-class MenuPage(Enum):
-    DETAILED_INSTRUCTIONS = auto()
-    BATTERY = auto()
-    BUILD_INFO = auto()
-    ADDITIONAL_BUILD_INFO = auto()
-    ADDITIONAL_IP_ADDR = auto()
-
-
-class MenuPageGenerator:
-    @staticmethod
-    def get_page(page_type: MenuPage):
-        pages = {
-            MenuPage.DETAILED_INSTRUCTIONS: DetailedInstructionsPage,
-            MenuPage.BATTERY: BatteryPage,
-            MenuPage.BUILD_INFO: BuildInfoPage,
-            MenuPage.ADDITIONAL_BUILD_INFO: AdditionalBuildInfoPage,
-            MenuPage.ADDITIONAL_IP_ADDR: AdditionalIPAddressesPage,
-        }
-
-        return pages[page_type]
-
-
-class DetailedInstructionsPage(MenuPageBase):
-    """
-    Skip pi-top connection guide?
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=MenuPage.DETAILED_INSTRUCTIONS, size=size, mode=mode, interval=interval
-        )
-        self.wrap = False
-        self.text = "Are you stuck?\nGo to\npi-top.com/start-4"
-
-
-class BatteryPage(MenuPageBase):
-    """
-    Battery: ?%
-    Charging? Yes
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(type=MenuPage.BATTERY, size=size, mode=mode, interval=interval)
+class BatteryInfoPage(Component):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.battery_instance = Battery()
+
+        self.text_component = self.create_child(
+            Text,
+            text=self.text,
+            font_size=FONT_SIZE,
+            align="center",
+            vertical_align="center",
+            fill=0,
+        )
 
     @property
     def text(self):
         def _power_source_text():
             if self.battery_instance.is_full or self.battery_instance.is_charging:
                 return "Power Adapter"
-
             return "Battery"
 
         return (
@@ -93,70 +70,121 @@ class BatteryPage(MenuPageBase):
             f"Power Source: {_power_source_text()}"
         )
 
-
-class BuildInfoPage(MenuPageBase):
-    """
-    pi-topOS v3.0
-    experimental
-    2021-09-29
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=MenuPage.BUILD_INFO, size=size, mode=mode, interval=interval
+    def render(self, image):
+        return apply_layers(
+            image,
+            [
+                layer(rectangle, size=SIZE, pos=(0, 0)),
+                layer(
+                    self.text_component.render,
+                    size=SIZE,
+                    pos=TEXT_POS,
+                ),
+            ],
         )
-        self.wrap = False
 
-        self.text = (
+
+class OsInfoPage(Component):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        build_info = get_pitopOS_info()
+        text = (
             f"pi-topOS v{build_info.build_os_version}\n"
             f"{build_info.build_type}\n" + f"{build_info.build_date}"
         )
 
-
-class AdditionalBuildInfoPage(MenuPageBase):
-    """
-    Schema: 1
-    Run: 554
-    #: b2da89ff
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=MenuPage.ADDITIONAL_BUILD_INFO, size=size, mode=mode, interval=interval
+        self.text_component = self.create_child(
+            Text,
+            text=text,
+            font_size=FONT_SIZE,
+            align="center",
+            vertical_align="center",
+            fill=0,
         )
-        self.wrap = False
-        self.font_size = 12
 
-        self.text = (
+    def render(self, image):
+        return apply_layers(
+            image,
+            [
+                layer(rectangle, size=SIZE, pos=(0, 0)),
+                layer(
+                    self.text_component.render,
+                    size=SIZE,
+                    pos=TEXT_POS,
+                ),
+            ],
+        )
+
+
+class FwInfoPage(Component):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        build_info = get_pitopOS_info()
+        text = (
             f"pi-top Firmware: {firmware_version()}\n"
             + f"Schema: {build_info.schema_version}\n"
             + f"Run: {build_info.build_run_number}\n"
             + f"#: {build_info.build_commit}"
         )
 
-
-class AdditionalIPAddressesPage(MenuPageBase):
-    """
-    Wi-Fi (Network): 192.168.1.104
-    Wired (Network): 192.168.1.197
-    Wi-Fi (Direct): 192.168.90.1
-    Wired (Direct): 192.168.64.1
-    """
-
-    def __init__(self, size, mode, interval):
-        super().__init__(
-            type=MenuPage.ADDITIONAL_IP_ADDR, size=size, mode=mode, interval=interval
+        self.text_component = self.create_child(
+            Text,
+            text=text,
+            font_size=FONT_SIZE,
+            align="center",
+            vertical_align="center",
+            fill=0,
         )
-        self.wrap = False
-        self.font_size = 12
+
+    def render(self, image):
+        return apply_layers(
+            image,
+            [
+                layer(rectangle, size=SIZE, pos=(0, 0)),
+                layer(
+                    self.text_component.render,
+                    size=SIZE,
+                    pos=TEXT_POS,
+                ),
+            ],
+        )
+
+
+class NetworksPage(Component):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.text_component = self.create_child(
+            Text,
+            text=self.text,
+            font_size=FONT_SIZE,
+            align="center",
+            vertical_align="center",
+            fill=0,
+        )
 
     @property
     def text(self):
         ips = list()
 
-        for iface in ["wlan0", "eth0", "wlan_ap0", "ptusb0"]:
-            ip = get_internal_ip(iface)
+        for iface in NetworkInterface:
+            ip = get_internal_ip(iface.name)
             if ip.replace("Internet Addresses Not Found", ""):
                 ips.append(ip)
 
         return "\n".join(ips)
+
+    def render(self, image):
+        return apply_layers(
+            image,
+            [
+                layer(rectangle, size=SIZE, pos=(0, 0)),
+                layer(
+                    self.text_component.render,
+                    size=SIZE,
+                    pos=TEXT_POS,
+                ),
+            ],
+        )

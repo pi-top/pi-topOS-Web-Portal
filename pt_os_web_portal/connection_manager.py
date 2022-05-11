@@ -67,7 +67,6 @@ class ConnectionManager:
 
             connected_device_ip = get_address_for_connected_device()
             if connected_device_ip != self._previous_connected_device_ip:
-                print("((((((((((((")
                 post_event(AppEvents.HAS_CONNECTED_DEVICE, connected_device_ip != "")
                 self._previous_connected_device_ip = connected_device_ip
 
