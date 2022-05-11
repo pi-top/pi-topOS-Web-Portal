@@ -2,7 +2,7 @@ import logging
 
 from pitop.battery import Battery
 from pitop.common.pt_os import get_pitopOS_info
-from pitop.common.sys_info import NetworkInterface, get_internal_ip
+from pitop.common.sys_info import get_pi_top_ip
 from pt_miniscreen.core import Component
 from pt_miniscreen.core.components import Text
 from pt_miniscreen.core.utils import apply_layers, layer, rectangle
@@ -23,7 +23,7 @@ class DetailedInstructionsPage(Component):
 
         self.text_component = self.create_child(
             Text,
-            text = "Are you stuck?\nGo to\npi-top.com/start-4",
+            text="Are you stuck?\nGo to\npi-top.com/start-4",
             wrap=False,
             font_size=FONT_SIZE,
             align="center",
@@ -159,23 +159,12 @@ class NetworksPage(Component):
 
         self.text_component = self.create_child(
             Text,
-            text=self.text,
+            text=f"IP address:\n{get_pi_top_ip()}",
             font_size=FONT_SIZE,
             align="center",
             vertical_align="center",
             fill=0,
         )
-
-    @property
-    def text(self):
-        ips = list()
-
-        for iface in NetworkInterface:
-            ip = get_internal_ip(iface.name)
-            if ip.replace("Internet Addresses Not Found", ""):
-                ips.append(ip)
-
-        return "\n".join(ips)
 
     def render(self, image):
         return apply_layers(
