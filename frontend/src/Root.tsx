@@ -7,7 +7,6 @@ import RestartPageContainer from "./pages/restartPage/RestartPageContainer";
 import ErrorPage from "./pages/errorPage/ErrorPage";
 import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 import UpgradePageContainer from "./pages/upgradePage/UpgradePageContainer";
-import closeOsUpdaterWindow from "./services/closeOsUpdaterWindow";
 import LandingPage from "./pages/landingPage/LandingPage";
 import StandaloneWifiPageContainer from "./pages/wifiPage/StandaloneWifiPageContainer";
 
@@ -26,12 +25,7 @@ export default () => (
         <Route path="/wifi" component={StandaloneWifiPageContainer} />
         <Route
           path="/updater"
-          render={() => (
-            <UpgradePageContainer
-              goToNextPage={closeOsUpdaterWindow}
-              hideSkip
-            />
-          )}
+          render={() => <UpgradePageContainer hideSkip />}
         />
         <Route component={LandingPage} />
       </Switch>
