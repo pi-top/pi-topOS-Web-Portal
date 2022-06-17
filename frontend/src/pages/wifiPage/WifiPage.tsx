@@ -11,6 +11,7 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import Button from "../../components/atoms/button/Button";
 import ConnectDialogContainer from "./connectDialog/ConnectDialogContainer";
 import SkipWarningDialog from "./skipWarningDialog/SkipWarningDialog";
+import VNCDialog from "./vncDialog/VNCDialog";
 import { Network } from "../../types/Network";
 import usePrevious from "../../hooks/usePrevious";
 
@@ -29,6 +30,7 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onRefreshClick: () => void;
+  onAdvancedConfigurationDialogClick: () => void;
   networks: Network[];
   isFetchingNetworks: boolean;
   fetchNetworksError: boolean;
@@ -43,6 +45,7 @@ export default ({
   onSkipClick,
   onBackClick,
   onRefreshClick,
+  onAdvancedConfigurationDialogClick,
   networks,
   isFetchingNetworks,
   fetchNetworksError,
@@ -54,6 +57,7 @@ export default ({
   const previousConnectedNetwork = usePrevious(connectedNetwork);
   const [selectedNetwork, setSelectedNetwork] = useState(connectedNetwork);
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
+  const [isAdvancedConfigurationDialogActive, setIsAdvancedConfigurationDialogActive] = useState(false);
   const [isSkipWarningDialogActive, setIsSkipWarningDialogActive] =
     useState(false);
 
@@ -68,6 +72,11 @@ export default ({
     }
     return ExplanationMessage.NotConnected;
   };
+
+  const onAdvancedConfigurationDialogButtonClick = () => {
+    onAdvancedConfigurationDialogClick();
+    setIsAdvancedConfigurationDialogActive(true);
+  }
 
   useEffect(() => {
     if (
@@ -154,6 +163,10 @@ export default ({
           </div>
         </div>
 
+        <span className={styles.advancedConfigButtonContainer}>
+          <Button className={styles.advancedConfigButton} unstyled onClick= {() => onAdvancedConfigurationDialogButtonClick()}>Advanced Configuration</Button>
+        </span>
+
         {errorMessage && <span className={styles.error}>{errorMessage}</span>}
       </Layout>
 
@@ -176,6 +189,10 @@ export default ({
         active={isSkipWarningDialogActive}
         onConnectClick={() => setIsSkipWarningDialogActive(false)}
         onSkipClick={onSkipClick || (() => {})}
+      />
+      <VNCDialog
+        active={isAdvancedConfigurationDialogActive}
+        onCancel={() => setIsAdvancedConfigurationDialogActive(false)}
       />
     </>
   );

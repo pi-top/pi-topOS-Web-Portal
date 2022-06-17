@@ -37,6 +37,7 @@ export default () => {
   return (
     <WifiPage
       onRefreshClick={fetchNetworks}
+      onAdvancedConfigurationDialogClick={() => {}}
       networks={networks}
       isFetchingNetworks={isFetchingNetworks}
       isConnected={!!connectedNetwork}

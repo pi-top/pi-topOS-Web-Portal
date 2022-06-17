@@ -42,6 +42,10 @@ export default ({
       .catch(() => setIsConnected(false));
   };
 
+  const startWpaGui = () => {
+    return ;
+  };
+
   useEffect(() => {
     Promise.all([fetchNetworks(), internetConnectionStatus()]);
   }, []);
@@ -59,6 +63,7 @@ export default ({
       onSkipClick={() => goToNextPage(isConnected)}
       onBackClick={goToPreviousPage}
       onRefreshClick={fetchNetworks}
+      onAdvancedConfigurationDialogClick={startWpaGui}
       networks={networks}
       isFetchingNetworks={isFetchingNetworks}
       isConnected={isConnected}
