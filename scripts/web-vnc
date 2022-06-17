@@ -1,0 +1,181 @@
+#!/bin/bash
+###############################################################
+#                Unofficial 'Bash strict mode'                #
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/  #
+###############################################################
+set -euo pipefail
+IFS=$'\n\t'
+###############################################################
+
+
+start_xvfb() {
+    if [ "${DISPLAY_ID}" == "000" ]; then
+      return
+    fi
+    echo "Starting virtual display ${DISPLAY_ID}..."
+    Xvfb ":${DISPLAY_ID}" -screen 0 1920x1080x16 &
+    echo "Xvfb PID is $!"
+    PIDS+=("$!")
+}
+
+
+start_x11vnc() {
+    x11vnc_command="x11vnc -rfbport '${VNC_PORT}' -forever -shared -display ':${DISPLAY_ID}' -nopw"
+
+    if [ -n "${WINDOW_TITLE}" ]; then
+        WINDOW_ID=$(DISPLAY=:${DISPLAY_ID} wmctrl -l | grep "${WINDOW_TITLE}" | awk '{print $1}')
+        if [ -z "${WINDOW_ID}" ]; then
+            echo "Couldn't find a window id for the provided window name '${WINDOW_TITLE}' in desktop '${DISPLAY_ID}'"
+            return 1
+        fi
+        x11vnc_command+=" -sid '${WINDOW_ID}'"
+    fi
+    x11vnc_command+=" &"
+    echo "Starting x11vnc using port ${VNC_PORT}..."
+    eval "${x11vnc_command}"
+
+    echo "x11vnc PID is $!"
+    PIDS+=("$!")
+}
+
+
+start_novnc() {
+    echo "Starting novnc server using http port ${HTTP_PORT}..."
+    novnc_command="/usr/share/novnc/utils/launch.sh  --listen ${HTTP_PORT} --vnc localhost:${VNC_PORT}"
+    if [ -f "${SSL_CERT}" ]; then
+        echo "Using certificate in ${SSL_CERT}"
+        novnc_command+=" --cert ${SSL_CERT}"
+    fi
+    novnc_command+=" &"
+    eval "${novnc_command}"
+
+    echo "novnc PID is $!"
+    PIDS+=("$!")
+}
+
+
+kill_pids() {
+    for PID in "${PIDS[@]}"; do
+        echo "Killing PID ${PID}..."
+        kill "${PID}" || true
+    done
+}
+
+
+store_pids() {
+    echo "Storing PIDs into ${PIDS_FILE}"
+    printf "%s\n" "${PIDS[@]}" > "${PIDS_FILE}"
+}
+
+do_start() {
+    start_xvfb || (kill_pids && exit 1)
+    start_x11vnc || (kill_pids && exit 1)
+    start_novnc || (kill_pids && exit 1)
+    store_pids
+}
+
+
+do_stop() {
+    if [ -f "${PIDS_FILE}" ]; then
+        # Kill PIDs of processes associated with DISPLAY_ID
+        echo "Found PIDs file ${PIDS_FILE}"
+        while read PID ; do
+            PIDS+=("$PID")
+        done < "${PIDS_FILE}"
+
+        kill_pids
+
+        echo "Removing ${PIDS_FILE}"
+        rm -r "${PIDS_FILE}"
+    else
+        echo "No PID file for display ${DISPLAY_ID}, skipping..."
+    fi
+}
+
+
+get_status() {
+  ls /tmp/.pt-os-web-portal-vnc.*.pid | grep -e [0-9][0-9][0-9] -o
+}
+
+
+get_url() {
+  echo "http://pi-top.local:${HTTP_PORT}/vnc.html?autoconnect=true"
+}
+
+
+usage() {
+  echo -e "Usage:\n\tpt-os-web-portal-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE>"
+  echo "where:"
+  echo -e "\tCOMMAND: start, stop, url."
+  echo -e "\tDISPLAY_ID: integer, id for the display to use/create."
+  echo -e "\tSSL_CERTIFICATE: path to combined SSL certificate & key file. Optional."
+  echo -e "\tWINDOW_TITLE: Title of a window in a display to share over VNC. Optional."
+}
+
+
+
+PIDS=""
+DISPLAY_ID="0"
+SSL_CERT=""
+WINDOW_TITLE=""
+
+# Parse options
+
+VALID_ARGS=$(getopt -o w:i:s:h --long window_title:,display_id:,ssl_certificate:,help -- "$@")
+if [[ $? -ne 0 ]]; then
+    exit 1;
+fi
+
+eval set -- "$VALID_ARGS"
+while [ : ]; do
+  case "$1" in
+    -w | --window_title)
+      WINDOW_TITLE="${2}"
+      shift 2
+      ;;
+    -i | --display_id)
+      DISPLAY_ID=$(printf "%03d" ${2})
+      VNC_PORT="41${DISPLAY_ID}"
+      HTTP_PORT="61${DISPLAY_ID}"
+      PIDS_FILE="/tmp/.pt-os-web-portal-vnc.${DISPLAY_ID}.pid"
+      shift 2
+      ;;
+    -s | --ssl_certificate)
+      SSL_CERT="${2}"
+      shift 2
+      ;;
+    -h | help)
+      usage
+      shift
+      ;;
+    --) shift;
+      break
+      ;;
+  esac
+done
+
+
+# Parse positional argument
+COMMAND=${@:$OPTIND:1}
+case "${COMMAND}" in
+    start)
+        [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        do_start
+        ;;
+    stop)
+        [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        do_stop
+        ;;
+    status)
+        get_status
+        ;;
+    url)
+        [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        get_url
+        ;;
+    *)
+        echo "Unknown command: \`${1}'" >&2
+        usage
+        exit 1
+        ;;
+esac
