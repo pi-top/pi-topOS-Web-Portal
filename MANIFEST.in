@@ -1,4 +1,5 @@
 recursive-include pt_os_web_portal *
+recursive-include scripts *
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
