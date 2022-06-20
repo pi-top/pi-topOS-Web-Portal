@@ -81,6 +81,11 @@ def abort_on_no_data(data):
     return jdumps(data)
 
 
+@app.route("/favicon.ico")
+def favicon():
+    return "", 200
+
+
 @app.route("/", methods=["GET"])
 def index():
     logger.debug("Route '/'")
