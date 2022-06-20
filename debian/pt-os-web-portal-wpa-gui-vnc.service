@@ -5,8 +5,7 @@ Documentation=https://knowledgebase.pi-top.com/knowledge
 [Service]
 Type=simple
 Restart=no
-ExecStart=DISPLAY=:0 wpa_gui
-ExecStart=/usr/bin/web-vnc start --display_id 0 --window_title 'wpa_gui'
+ExecStart=/usr/bin/web-vnc start --display_id 0 --window_title 'wpa_gui' --run 'wpa_gui'
 TimeoutStopSec=5
 
 [Install]
