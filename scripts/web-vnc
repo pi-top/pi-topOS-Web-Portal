@@ -57,7 +57,9 @@ start_novnc() {
 kill_pids() {
     for PID in "${PIDS[@]}"; do
         echo "Killing PID ${PID}..."
-        kill "${PID}" || true
+        if [ -n "${PID}" ]; then
+            kill "${PID}" || true
+        fi
     done
 }
 
@@ -118,10 +120,10 @@ PIDS=""
 DISPLAY_ID="0"
 SSL_CERT=""
 WINDOW_TITLE=""
-
+RUN_COMMAND=""
 # Parse options
 
-VALID_ARGS=$(getopt -o w:i:s:h --long window_title:,display_id:,ssl_certificate:,help -- "$@")
+VALID_ARGS=$(getopt -o w:i:s:r:h --long window_title:,display_id:,ssl_certificate:,run:,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
 fi
@@ -144,6 +146,10 @@ while [ : ]; do
       SSL_CERT="${2}"
       shift 2
       ;;
+    -r | --run)
+      RUN_COMMAND="${2}"
+      shift 2
+      ;;
     -h | help)
       usage
       shift
@@ -160,6 +166,11 @@ COMMAND=${@:$OPTIND:1}
 case "${COMMAND}" in
     start)
         [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        if [ -n "${RUN_COMMAND}" ]; then
+            eval "DISPLAY=:${DISPLAY_ID} ${RUN_COMMAND} &"
+            PIDS+=("$!")
+            sleep 2
+        fi
         do_start
         ;;
     stop)
