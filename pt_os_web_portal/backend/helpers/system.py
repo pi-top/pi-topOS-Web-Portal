@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class SystemService(Enum):
     WebPortal = "pt-os-web-portal"
     RoverController = "pt-os-web-portal-rover-controller"
+    VncWpaGui = "pt-os-web-portal-wpa-gui-vnc"
 
 
 def systemctl(command: str, name: SystemService, timeout=10) -> Optional[str]:
