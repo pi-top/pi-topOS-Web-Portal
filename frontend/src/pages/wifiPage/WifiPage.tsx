@@ -17,6 +17,7 @@ import usePrevious from "../../hooks/usePrevious";
 
 export enum ErrorMessage {
   FetchNetworks = "There was a problem getting networks, please refresh the networks list or skip",
+  AdvancedConfigError = "There was a problem opening the advanced network configuration.",
 }
 
 export enum ExplanationMessage {
@@ -34,6 +35,7 @@ export type Props = {
   networks: Network[];
   isFetchingNetworks: boolean;
   fetchNetworksError: boolean;
+  advancedConfigError: boolean;
   isConnected: boolean;
   connectedNetwork?: Network;
   setConnectedNetwork: (network: Network) => void;
@@ -49,6 +51,7 @@ export default ({
   networks,
   isFetchingNetworks,
   fetchNetworksError,
+  advancedConfigError,
   isConnected,
   connectedNetwork,
   setConnectedNetwork,
@@ -62,7 +65,14 @@ export default ({
     useState(false);
 
   const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
-  const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
+
+  const hasError = fetchNetworksError || advancedConfigError;
+  const getErrorMessage = () => {
+    if (fetchNetworksError)
+      return ErrorMessage.FetchNetworks;
+    if (advancedConfigError)
+      return ErrorMessage.AdvancedConfigError
+  };
   const getExplanation = () => {
     if (connectedNetwork) {
       return ExplanationMessage.WiFiConnection;
@@ -167,7 +177,7 @@ export default ({
           <Button className={styles.advancedConfigButton} unstyled onClick= {() => onAdvancedConfigurationDialogButtonClick()}>Advanced Configuration</Button>
         </span>
 
-        {errorMessage && <span className={styles.error}>{errorMessage}</span>}
+        {hasError && <span className={styles.error}>{getErrorMessage()}</span>}
       </Layout>
 
       <ConnectDialogContainer

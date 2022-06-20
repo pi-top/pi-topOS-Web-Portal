@@ -6,6 +6,7 @@ import getNetworks from "../../services/getNetworks";
 import isConnectedToNetwork from "../../services/isConnectedToNetwork";
 
 import { Network } from "../../types/Network";
+import startVncWpaGui from "../../services/startVncWpaGui";
 
 export type Props = {
   goToNextPage: (isConnected: boolean) => void;
@@ -22,6 +23,7 @@ export default ({
 }: Props) => {
   const [isFetchingNetworks, setIsFetchingNetworks] = useState(false);
   const [fetchNetworksError, setFetchNetworksError] = useState(false);
+  const [advancedConfigError, setAdvancedConfigError] = useState(false);
   const [networks, setNetworks] = useState<Network[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -43,7 +45,8 @@ export default ({
   };
 
   const startWpaGui = () => {
-    return ;
+    startVncWpaGui()
+      .catch(() => setAdvancedConfigError(true))
   };
 
   useEffect(() => {
@@ -70,6 +73,7 @@ export default ({
       connectedNetwork={connectedNetwork}
       setConnectedNetwork={setConnectedNetwork}
       fetchNetworksError={fetchNetworksError}
+      advancedConfigError={advancedConfigError}
     />
   );
 };
