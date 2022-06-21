@@ -31,7 +31,8 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onRefreshClick: () => void;
-  onAdvancedConfigurationDialogClick: () => void;
+  onAdvancedConfigurationDialogOpen: () => void;
+  onAdvancedConfigurationDialogClose: () => void;
   networks: Network[];
   isFetchingNetworks: boolean;
   fetchNetworksError: boolean;
@@ -39,6 +40,7 @@ export type Props = {
   isConnected: boolean;
   connectedNetwork?: Network;
   setConnectedNetwork: (network: Network) => void;
+  advancedConfigUrl: string;
   showSkipWarning?: boolean;
 };
 
@@ -47,7 +49,8 @@ export default ({
   onSkipClick,
   onBackClick,
   onRefreshClick,
-  onAdvancedConfigurationDialogClick,
+  onAdvancedConfigurationDialogOpen,
+  onAdvancedConfigurationDialogClose,
   networks,
   isFetchingNetworks,
   fetchNetworksError,
@@ -55,6 +58,7 @@ export default ({
   isConnected,
   connectedNetwork,
   setConnectedNetwork,
+  advancedConfigUrl,
   showSkipWarning = true,
 }: Props) => {
   const previousConnectedNetwork = usePrevious(connectedNetwork);
@@ -83,9 +87,14 @@ export default ({
     return ExplanationMessage.NotConnected;
   };
 
-  const onAdvancedConfigurationDialogButtonClick = () => {
-    onAdvancedConfigurationDialogClick();
+  const openAdvancedConfigurationDialog = () => {
+    onAdvancedConfigurationDialogOpen();
     setIsAdvancedConfigurationDialogActive(true);
+  }
+
+  const closeAdvancedConfigurationDialog = () => {
+    setIsAdvancedConfigurationDialogActive(false);
+    onAdvancedConfigurationDialogClose();
   }
 
   useEffect(() => {
@@ -96,6 +105,10 @@ export default ({
       setSelectedNetwork(connectedNetwork);
     }
   }, [connectedNetwork, previousConnectedNetwork]);
+
+  useEffect(() => {
+    console.log(advancedConfigUrl);
+  }, [advancedConfigUrl]);
 
   return (
     <>
@@ -174,7 +187,7 @@ export default ({
         </div>
 
         <span className={styles.advancedConfigButtonContainer}>
-          <Button className={styles.advancedConfigButton} unstyled onClick= {() => onAdvancedConfigurationDialogButtonClick()}>Advanced Configuration</Button>
+          <Button className={styles.advancedConfigButton} unstyled onClick= {() => openAdvancedConfigurationDialog()}>Advanced Configuration</Button>
         </span>
 
         {hasError && <span className={styles.error}>{getErrorMessage()}</span>}
@@ -202,7 +215,8 @@ export default ({
       />
       <VNCDialog
         active={isAdvancedConfigurationDialogActive}
-        onCancel={() => setIsAdvancedConfigurationDialogActive(false)}
+        url={advancedConfigUrl}
+        onClose={closeAdvancedConfigurationDialog}
       />
     </>
   );

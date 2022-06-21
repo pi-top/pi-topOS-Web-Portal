@@ -568,8 +568,7 @@ def get_client_should_switch_network():
 @app.route("/start-vnc-wpa-gui", methods=["POST"])
 def post_start_vnc_wpa_gui():
     logger.debug("Route '/start-vnc-wpa-gui'")
-    if service_is_active(SystemService.VncWpaGui) != "active":
-        service_start(SystemService.VncWpaGui)
+    service_restart(SystemService.VncWpaGui)
     return "OK"
 
 
@@ -583,4 +582,4 @@ def post_stop_vnc_wpa_gui():
 @app.route("/vnc-wpa-gui-url", methods=["GET"])
 def get_vnc_wpa_gui_url():
     logger.debug("Route '/vnc-wpa-gui-url'")
-    return vnc_wpa_gui_url()
+    return jdumps({"url": vnc_wpa_gui_url()})
