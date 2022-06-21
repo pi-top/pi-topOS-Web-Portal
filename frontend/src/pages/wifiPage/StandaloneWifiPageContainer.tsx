@@ -37,7 +37,8 @@ export default () => {
   return (
     <WifiPage
       onRefreshClick={fetchNetworks}
-      onAdvancedConfigurationDialogClick={() => {}}
+      onAdvancedConfigurationDialogOpen={() => {}}
+      onAdvancedConfigurationDialogClose={() => {}}
       networks={networks}
       isFetchingNetworks={isFetchingNetworks}
       isConnected={!!connectedNetwork}
@@ -45,6 +46,8 @@ export default () => {
       setConnectedNetwork={setConnectedNetwork}
       fetchNetworksError={fetchNetworksError}
       showSkipWarning={false}
+      advancedConfigError={false}
+      advancedConfigUrl=""
     />
   );
 };

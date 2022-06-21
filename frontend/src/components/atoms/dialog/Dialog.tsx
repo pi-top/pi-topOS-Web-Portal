@@ -50,9 +50,11 @@ const Dialog = ({
           {title && <h3 className={styles.title}>{title}</h3>}
         </header>
 
-        <div data-testid="dialog-message" className={styles.messageContainer}>
-          {message}
-        </div>
+        {message &&
+          <div data-testid="dialog-message" className={styles.messageContainer}>
+            {message}
+          </div>
+        }
 
         {children}
       </div>

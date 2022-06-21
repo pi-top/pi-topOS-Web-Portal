@@ -1,10 +1,29 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
 .frameContainer {
   position: relative;
-  width: 450px;
+  width: 100%;
   height: 100%;
   margin: 0 auto;
   margin-top: auto;
   display: flex;
   justify-content: center;
   align-items: flex-end;
+}
+
+.frameContent {
+  min-width: 400px;
+  min-height: 400px;
+}
+
+.actions {
+  position: relative;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
 }

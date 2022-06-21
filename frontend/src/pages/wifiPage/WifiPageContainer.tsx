@@ -7,6 +7,8 @@ import isConnectedToNetwork from "../../services/isConnectedToNetwork";
 
 import { Network } from "../../types/Network";
 import startVncWpaGui from "../../services/startVncWpaGui";
+import getVncWpaGuiUrl from "../../services/getVncWpaGuiUrl";
+import stopVncWpaGui from "../../services/stopVncWpaGui";
 
 export type Props = {
   goToNextPage: (isConnected: boolean) => void;
@@ -26,6 +28,8 @@ export default ({
   const [advancedConfigError, setAdvancedConfigError] = useState(false);
   const [networks, setNetworks] = useState<Network[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [advancedConfigUrl, setAdvancedConfigUrl] = useState("");
+
 
   const fetchNetworks = () => {
     setIsFetchingNetworks(true);
@@ -44,8 +48,15 @@ export default ({
       .catch(() => setIsConnected(false));
   };
 
-  const startWpaGui = () => {
+  const startAdvancedWifiConfig = () => {
     startVncWpaGui()
+      .then(() => getVncWpaGuiUrl())
+      .then((data: any) => setAdvancedConfigUrl(data.url))
+      .catch(() => setAdvancedConfigError(true))
+  };
+
+  const stopAdvancedWifiConfig = () => {
+    stopVncWpaGui()
       .catch(() => setAdvancedConfigError(true))
   };
 
@@ -66,7 +77,8 @@ export default ({
       onSkipClick={() => goToNextPage(isConnected)}
       onBackClick={goToPreviousPage}
       onRefreshClick={fetchNetworks}
-      onAdvancedConfigurationDialogClick={startWpaGui}
+      onAdvancedConfigurationDialogOpen={startAdvancedWifiConfig}
+      onAdvancedConfigurationDialogClose={stopAdvancedWifiConfig}
       networks={networks}
       isFetchingNetworks={isFetchingNetworks}
       isConnected={isConnected}
@@ -74,6 +86,7 @@ export default ({
       setConnectedNetwork={setConnectedNetwork}
       fetchNetworksError={fetchNetworksError}
       advancedConfigError={advancedConfigError}
+      advancedConfigUrl={advancedConfigUrl}
     />
   );
 };
