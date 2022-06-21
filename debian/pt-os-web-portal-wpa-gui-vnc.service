@@ -4,9 +4,10 @@ Documentation=https://knowledgebase.pi-top.com/knowledge
 
 [Service]
 Type=simple
+RemainAfterExit=yes
 Restart=no
-ExecStart=/usr/bin/web-vnc start --display_id 0 --window_title 'wpa_gui' --run 'wpa_gui'
-TimeoutStopSec=5
+ExecStart=/usr/bin/web-vnc start --display_id 0 --window_title 'wpa_gui' --run "wpa_gui"
+ExecStop=/usr/bin/web-vnc stop --display_id 0
 
 [Install]
 WantedBy=multi-user.target
