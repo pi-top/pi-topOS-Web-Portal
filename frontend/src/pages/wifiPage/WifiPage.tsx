@@ -106,10 +106,6 @@ export default ({
     }
   }, [connectedNetwork, previousConnectedNetwork]);
 
-  useEffect(() => {
-    console.log(advancedConfigUrl);
-  }, [advancedConfigUrl]);
-
   return (
     <>
       <Layout
