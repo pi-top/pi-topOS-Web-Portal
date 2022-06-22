@@ -2,6 +2,7 @@ import React from "react";
 
 import Dialog from "../../../components/atoms/dialog/Dialog";
 import PrimaryButton from "../../../components/primaryButton/PrimaryButton";
+import Spinner from "../../../components/atoms/spinner/Spinner";
 
 import styles from "./VNCDialog.module.css";
 
@@ -19,16 +20,20 @@ export default ({ active, url, onClose }: Props) => {
       title="Advanced Wifi Configuration"
     >
       <div className={styles.content}>
-        <div className={styles.frameContainer}>
-          { url &&
-            <iframe
-              src={url}
-              title="Advanced Wifi Configuration"
-              className={styles.frameContent}
-            >
-            </iframe>
+          { url === "" ?
+              <div className={styles.spinner}>
+                <Spinner size={80} />
+              </div>
+            :
+              <div className={styles.frameContainer}>
+                <iframe
+                  src={url}
+                  title="Advanced Wifi Configuration"
+                  className={styles.frame}
+                >
+                </iframe>
+              </div>
           }
-        </div>
 
         <div className={styles.actions}>
           <PrimaryButton onClick={() => onClose()}>Close</PrimaryButton>
