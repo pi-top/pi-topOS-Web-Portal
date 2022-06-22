@@ -48,14 +48,30 @@ export default ({
       .catch(() => setIsConnected(false));
   };
 
+  const waitForAdvancedConfigUrlTimeout = 700;
+
+  const waitForAdvancedConfigUrl = () => {
+    const interval = setInterval(async () => {
+      try {
+        getVncWpaGuiUrl()
+          .then((data: any) => {
+            if (data.url !== "") {
+              clearInterval(interval)
+              setAdvancedConfigUrl(data.url);
+            }
+          })
+      } catch (_) {}
+    }, waitForAdvancedConfigUrlTimeout);
+  }
+
   const startAdvancedWifiConfig = () => {
     startVncWpaGui()
-      .then(() => getVncWpaGuiUrl())
-      .then((data: any) => setAdvancedConfigUrl(data.url))
+      .then(() => setTimeout(waitForAdvancedConfigUrl, 300))
       .catch(() => setAdvancedConfigError(true))
   };
 
   const stopAdvancedWifiConfig = () => {
+    setAdvancedConfigUrl("")
     stopVncWpaGui()
       .catch(() => setAdvancedConfigError(true))
   };
