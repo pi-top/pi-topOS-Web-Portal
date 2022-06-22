@@ -22,9 +22,6 @@ start_xvfb() {
     Xvfb ":${DISPLAY_ID}" -screen 0 1920x1080x16 &
     echo "Xvfb PID is $!"
     PIDS+=("$!")
-
-    # wait
-    sleep 2
 }
 
 
@@ -45,9 +42,6 @@ start_x11vnc() {
 
     echo "x11vnc PID is $!"
     PIDS+=("$!")
-
-    # wait
-    sleep 2
 }
 
 
@@ -86,11 +80,11 @@ create_pid_file() {
 
 
 start_window_manager() {
-    eval "DISPLAY=:${DISPLAY_ID} startlxde-pt &"
+    eval "startlxde-pt &"
     PIDS+=("$!")
 
     # wait
-    sleep 2
+    sleep 5
 }
 
 
@@ -226,6 +220,7 @@ case "${COMMAND}" in
         ;;
     url)
         [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        [ ! -f "${PIDS_FILE}" ] && echo "No active session in display ${DISPLAY_ID}" && exit 1
         get_url
         ;;
     *)
