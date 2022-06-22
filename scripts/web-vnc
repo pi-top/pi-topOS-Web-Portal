@@ -10,12 +10,21 @@ IFS=$'\n\t'
 
 start_xvfb() {
     if [ "${DISPLAY_ID}" == "000" ]; then
-      return
+        return
     fi
+
+    if ps aux | grep "Xvfb :${DISPLAY_ID}" | grep -v grep -q; then
+        echo "Virtual display ${DISPLAY_ID} already exists"
+        return
+    fi
+
     echo "Starting virtual display ${DISPLAY_ID}..."
     Xvfb ":${DISPLAY_ID}" -screen 0 1920x1080x16 &
     echo "Xvfb PID is $!"
     PIDS+=("$!")
+
+    # wait
+    sleep 2
 }
 
 
@@ -36,6 +45,9 @@ start_x11vnc() {
 
     echo "x11vnc PID is $!"
     PIDS+=("$!")
+
+    # wait
+    sleep 2
 }
 
 
@@ -51,6 +63,9 @@ start_novnc() {
 
     echo "novnc PID is $!"
     PIDS+=("$!")
+
+    # wait
+    sleep 2
 }
 
 
@@ -64,16 +79,48 @@ kill_pids() {
 }
 
 
-store_pids() {
+create_pid_file() {
     echo "Storing PIDs into ${PIDS_FILE}"
     printf "%s\n" "${PIDS[@]}" > "${PIDS_FILE}"
 }
 
+
+start_window_manager() {
+    eval "DISPLAY=:${DISPLAY_ID} startlxde-pt &"
+    PIDS+=("$!")
+
+    # wait
+    sleep 2
+}
+
+
+run_on_start_command() {
+    if [ -n "${RUN_COMMAND}" ]; then
+        start_window_manager
+
+        eval "DISPLAY=:${DISPLAY_ID} ${RUN_COMMAND} &"
+        PIDS+=("$!")
+
+        # wait
+        sleep 2
+    fi
+}
+
+
 do_start() {
+    do_stop
+
+    # Create virtual display if necessary
     start_xvfb || (kill_pids && exit 1)
+
+    # Run provided command
+    run_on_start_command
+
+    # Start VNC & novnc
     start_x11vnc || (kill_pids && exit 1)
     start_novnc || (kill_pids && exit 1)
-    store_pids
+
+    create_pid_file
 }
 
 
@@ -96,24 +143,25 @@ do_stop() {
 
 
 get_status() {
-  ls /tmp/.pt-os-web-portal-vnc.*.pid | grep -e [0-9][0-9][0-9] -o
+    #ls /tmp/.pt-os-web-portal-vnc.*.pid | grep -e [0-9][0-9][0-9] -o
+    return
 }
 
 
 get_url() {
-  echo "http://pi-top.local:${HTTP_PORT}/vnc.html?autoconnect=true"
+    echo "http://pi-top.local:${HTTP_PORT}/vnc.html?autoconnect=true"
 }
 
 
 usage() {
-  echo -e "Usage:\n\tpt-os-web-portal-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE>"
+  echo -e "Usage:\n\tpt-os-web-portal-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE> --run <RUN_COMMAND>"
   echo "where:"
   echo -e "\tCOMMAND: start, stop, url."
   echo -e "\tDISPLAY_ID: integer, id for the display to use/create."
   echo -e "\tSSL_CERTIFICATE: path to combined SSL certificate & key file. Optional."
   echo -e "\tWINDOW_TITLE: Title of a window in a display to share over VNC. Optional."
+  echo -e "\tRUN_COMMAND: Command to run before starting VNC server."
 }
-
 
 
 PIDS=""
@@ -121,8 +169,9 @@ DISPLAY_ID="0"
 SSL_CERT=""
 WINDOW_TITLE=""
 RUN_COMMAND=""
-# Parse options
 
+
+# Parse options
 VALID_ARGS=$(getopt -o w:i:s:r:h --long window_title:,display_id:,ssl_certificate:,run:,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
@@ -130,34 +179,34 @@ fi
 
 eval set -- "$VALID_ARGS"
 while [ : ]; do
-  case "$1" in
-    -w | --window_title)
-      WINDOW_TITLE="${2}"
-      shift 2
-      ;;
-    -i | --display_id)
-      DISPLAY_ID=$(printf "%03d" ${2})
-      VNC_PORT="41${DISPLAY_ID}"
-      HTTP_PORT="61${DISPLAY_ID}"
-      PIDS_FILE="/tmp/.pt-os-web-portal-vnc.${DISPLAY_ID}.pid"
-      shift 2
-      ;;
-    -s | --ssl_certificate)
-      SSL_CERT="${2}"
-      shift 2
-      ;;
-    -r | --run)
-      RUN_COMMAND="${2}"
-      shift 2
-      ;;
-    -h | help)
-      usage
-      shift
-      ;;
-    --) shift;
-      break
-      ;;
-  esac
+    case "$1" in
+        -w | --window_title)
+            WINDOW_TITLE="${2}"
+            shift 2
+            ;;
+        -i | --display_id)
+            DISPLAY_ID=$(printf "%03d" ${2})
+            VNC_PORT="41${DISPLAY_ID}"
+            HTTP_PORT="61${DISPLAY_ID}"
+            PIDS_FILE="/tmp/.pt-os-web-portal-vnc.${DISPLAY_ID}.pid"
+            shift 2
+            ;;
+        -s | --ssl_certificate)
+            SSL_CERT="${2}"
+            shift 2
+            ;;
+        -r | --run)
+            RUN_COMMAND="${2}"
+            shift 2
+            ;;
+        -h | help)
+            usage
+            shift
+            ;;
+        --) shift;
+            break
+            ;;
+    esac
 done
 
 
@@ -166,11 +215,6 @@ COMMAND=${@:$OPTIND:1}
 case "${COMMAND}" in
     start)
         [ -z "${DISPLAY_ID}" ] && usage && exit 1
-        if [ -n "${RUN_COMMAND}" ]; then
-            eval "DISPLAY=:${DISPLAY_ID} ${RUN_COMMAND} &"
-            PIDS+=("$!")
-            sleep 2
-        fi
         do_start
         ;;
     stop)
