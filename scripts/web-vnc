@@ -29,11 +29,26 @@ start_x11vnc() {
     x11vnc_command="x11vnc -rfbport '${VNC_PORT}' -forever -shared -display ':${DISPLAY_ID}' -nopw"
 
     if [ -n "${WINDOW_TITLE}" ]; then
-        WINDOW_ID=$(DISPLAY=:${DISPLAY_ID} wmctrl -l | grep "${WINDOW_TITLE}" | awk '{print $1}')
+        WINDOW_ID=""
+        WAIT_COUNTER=0
+        SLEEP_TIME=1
+        MAX_WAIT_TIME=5
+
+        # Wait until window shows up or timeout
+        while [ -z "${WINDOW_ID}" ] && [ $WAIT_COUNTER -lt $MAX_WAIT_TIME ]; do
+            WINDOW_ID=$(DISPLAY=:${DISPLAY_ID} wmctrl -l | grep "${WINDOW_TITLE}" | awk '{print $1}')
+            if [ -z "${WINDOW_ID}" ]; then
+                echo "Window '${WINDOW_TITLE}' not found, sleeping for ${SLEEP_TIME}..."
+                sleep "${SLEEP_TIME}"
+                WAIT_COUNTER=$(( WAIT_COUNTER + 1 ))
+            fi
+        done
+
         if [ -z "${WINDOW_ID}" ]; then
             echo "Couldn't find a window id for the provided window name '${WINDOW_TITLE}' in desktop '${DISPLAY_ID}'"
             return 1
         fi
+
         x11vnc_command+=" -sid '${WINDOW_ID}'"
     fi
     x11vnc_command+=" &"
@@ -58,7 +73,6 @@ start_novnc() {
     echo "novnc PID is $!"
     PIDS+=("$!")
 
-    # wait
     sleep 2
 }
 
@@ -80,11 +94,8 @@ create_pid_file() {
 
 
 start_window_manager() {
-    eval "startlxde-pt &"
+    eval "DISPLAY=:${DISPLAY_ID} startlxde-pt &"
     PIDS+=("$!")
-
-    # wait
-    sleep 5
 }
 
 
@@ -94,9 +105,6 @@ run_on_start_command() {
 
         eval "DISPLAY=:${DISPLAY_ID} ${RUN_COMMAND} &"
         PIDS+=("$!")
-
-        # wait
-        sleep 2
     fi
 }
 
