@@ -10,7 +10,7 @@ jobs:
        uses: actions/checkout@v3
 
      - name: Setup Python
-       uses: actions/setup-python@v3
+       uses: actions/setup-python@v4
        with:
          python-version: 3.9
 
@@ -26,7 +26,7 @@ jobs:
          coverage xml
 
      - name: Upload Python test coverage reports to Codecov
-       uses: codecov/codecov-action@v3.0.0
+       uses: codecov/codecov-action@v3.1.0
        with:
          files: ./coverage.xml
          flags: python-tests
@@ -61,7 +61,7 @@ jobs:
           yarn test --coverage
 
       - name: Upload javascript test coverage reports to Codecov
-        uses: codecov/codecov-action@v3.0.0
+        uses: codecov/codecov-action@v3.1.0
         with:
           files: ./frontend/coverage/clover.xml
           flags: js-tests
