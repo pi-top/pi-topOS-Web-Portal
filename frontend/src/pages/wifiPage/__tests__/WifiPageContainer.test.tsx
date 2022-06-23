@@ -76,6 +76,42 @@ describe("WifiPageContainer", () => {
     );
   });
 
+  it("doesn't render advanced configuration dialog", async () => {
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    expect(screen.getByTestId("advanced-config-dialog")).toHaveClass("hidden");
+  });
+
+  it("renders advanced configuration dialog when 'advanced configuration' button is pressed", async () => {
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    fireEvent.click(screen.getByText("Advanced Configuration"));
+
+    expect(screen.getByTestId("advanced-config-dialog")).not.toHaveClass("hidden");
+  });
+
+  it('hides advanced configuration dialog when "Close" button clicked', async () => {
+    mount();
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(fetchingNetworksMessage)
+    );
+
+    fireEvent.click(screen.getByText("Advanced Configuration"));
+    expect(screen.getByTestId("advanced-config-dialog")).not.toHaveClass("hidden");
+
+    fireEvent.click(screen.getByText("Close"));
+    expect(screen.getByTestId("advanced-config-dialog")).toHaveClass("hidden");
+  });
+
   it("renders skip warning dialog when skip button pressed", async () => {
     mount();
 

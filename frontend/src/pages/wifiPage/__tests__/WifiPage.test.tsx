@@ -48,13 +48,15 @@ describe("WifiPage", () => {
       isFetchingNetworks: false,
       fetchNetworksError: false,
       isConnected: false,
-      isCompleted: false,
+      onAdvancedConfigurationDialogOpen: jest.fn(),
+      onAdvancedConfigurationDialogClose: jest.fn(),
+      advancedConfigUrl: "",
+      advancedConfigError: false,
     };
 
     connectToNetworkMock.mockResolvedValue("OK")(
       ({
         container: wifiPage,
-        getAllByText,
         getByAltText,
         queryByText,
         queryAllByText,
@@ -129,6 +131,10 @@ describe("WifiPage", () => {
     expect(getByTestId("skip-warning-dialog")).toHaveClass("hidden");
   });
 
+  it("renders a hidden advanced configuration dialog", () => {
+    expect(getByTestId("advanced-config-dialog")).toHaveClass("hidden");
+  });
+
   it("renders skip warning dialog when skip button pressed", () => {
     fireEvent.click(getAllByText("Skip")[0]);
     expect(getByTestId("skip-warning-dialog")).not.toHaveClass("hidden");
@@ -150,6 +156,18 @@ describe("WifiPage", () => {
     expect(defaultProps.onSkipClick).toHaveBeenCalled();
   });
 
+  it("renders advanced configuration dialog when 'advanced configuration' button pressed", () => {
+    fireEvent.click(getByText("Advanced Configuration"));
+    expect(getByTestId("advanced-config-dialog")).not.toHaveClass("hidden");
+  });
+
+  it("hides advanced configuration dialog when 'close' button clicked", () => {
+    fireEvent.click(getByText("Advanced Configuration"));
+    expect(getByTestId("advanced-config-dialog")).not.toHaveClass("hidden");
+
+    fireEvent.click(getByText("Close"));
+    expect(getByTestId("advanced-config-dialog")).toHaveClass("hidden");
+  });
 
   describe("when entering page with an internet connection", () => {
     beforeEach(() => {
