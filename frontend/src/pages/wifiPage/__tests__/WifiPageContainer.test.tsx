@@ -5,6 +5,9 @@ import {
   within,
   screen,
   waitForElementToBeRemoved,
+  RenderResult,
+  BoundFunction,
+  QueryByBoundAttribute,
 } from "@testing-library/react";
 
 import WifiPageContainer, { Props } from "../WifiPageContainer";
@@ -23,17 +26,26 @@ jest.setTimeout(10000)
 
 const fetchingNetworksMessage = "fetching networks...";
 
-const defaultProps: Props = {
-  goToNextPage: () => {},
-  goToPreviousPage: () => {},
-  connectedNetwork: undefined,
-  setConnectedNetwork: () => {},
+type ExtendedRenderResult = RenderResult & {
+  queryByTestId: BoundFunction<QueryByBoundAttribute>,
 };
 
-const mount = (props: Partial<Props> = {}) =>
-  render(<WifiPageContainer {...defaultProps} {...props} />);
-
 describe("WifiPageContainer", () => {
+  let defaultProps: Props;
+  let mount: (props?: Props) => ExtendedRenderResult;
+
+  beforeEach(async () => {
+    defaultProps = {
+      goToNextPage: jest.fn(),
+      goToPreviousPage: jest.fn(),
+      connectedNetwork: undefined,
+      setConnectedNetwork: jest.fn(),
+    };
+
+    mount = (props = defaultProps) => render(<WifiPageContainer {...props} />);
+
+  });
+
   it("disables the next button while loading", async () => {
     mount();
 
@@ -45,9 +57,9 @@ describe("WifiPageContainer", () => {
   });
 
   it("renders spinner while loading", async () => {
-    mount();
+    const { container: wifiPageContainer } = mount();
 
-    expect(querySpinner(document.body)).toBeInTheDocument();
+    expect(querySpinner(wifiPageContainer)).toBeInTheDocument();
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)
@@ -91,8 +103,7 @@ describe("WifiPageContainer", () => {
   });
 
   it("skips to next page when warning dialog skip button clicked", async () => {
-    const goToNextPage = jest.fn();
-    mount({ goToNextPage });
+    mount();
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)
@@ -102,11 +113,12 @@ describe("WifiPageContainer", () => {
       within(screen.getByTestId("skip-warning-dialog")).getByText("Skip")
     );
 
-    expect(goToNextPage).toHaveBeenCalled();
+    expect(defaultProps.goToNextPage).toHaveBeenCalled();
   });
 
   it("renders correct explanation when connected network is passed", async () => {
     mount({
+      ...defaultProps,
       connectedNetwork: {
         ssid: "password-protected-ssid",
         bssid: "password-protected-bssid",
