@@ -11,13 +11,12 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import Button from "../../components/atoms/button/Button";
 import ConnectDialogContainer from "./connectDialog/ConnectDialogContainer";
 import SkipWarningDialog from "./skipWarningDialog/SkipWarningDialog";
-import VNCDialog from "./vncDialog/VNCDialog";
+import AdvancedConfigDialog from "./advancedConfigurationDialog/AdvancedConfigDialog";
 import { Network } from "../../types/Network";
 import usePrevious from "../../hooks/usePrevious";
 
 export enum ErrorMessage {
   FetchNetworks = "There was a problem getting networks, please refresh the networks list or skip",
-  AdvancedConfigError = "There was a problem opening the advanced network configuration.",
 }
 
 export enum ExplanationMessage {
@@ -31,17 +30,17 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onRefreshClick: () => void;
-  onAdvancedConfigurationDialogOpen: () => void;
-  onAdvancedConfigurationDialogClose: () => void;
   networks: Network[];
   isFetchingNetworks: boolean;
   fetchNetworksError: boolean;
-  advancedConfigError: boolean;
   isConnected: boolean;
   connectedNetwork?: Network;
   setConnectedNetwork: (network: Network) => void;
-  advancedConfigUrl: string;
   showSkipWarning?: boolean;
+  onAdvancedConfigurationDialogOpen: () => void;
+  onAdvancedConfigurationDialogClose: () => void;
+  advancedConfigUrl: string;
+  advancedConfigError: boolean;
 };
 
 export default ({
@@ -69,14 +68,8 @@ export default ({
     useState(false);
 
   const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
+  const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
 
-  const hasError = fetchNetworksError || advancedConfigError;
-  const getErrorMessage = () => {
-    if (fetchNetworksError)
-      return ErrorMessage.FetchNetworks;
-    if (advancedConfigError)
-      return ErrorMessage.AdvancedConfigError
-  };
   const getExplanation = () => {
     if (connectedNetwork) {
       return ExplanationMessage.WiFiConnection;
@@ -186,7 +179,7 @@ export default ({
           <Button className={styles.advancedConfigButton} unstyled onClick= {() => openAdvancedConfigurationDialog()}>Advanced Configuration</Button>
         </span>
 
-        {hasError && <span className={styles.error}>{getErrorMessage()}</span>}
+        {errorMessage && <span className={styles.error}>{errorMessage}</span>}
       </Layout>
 
       <ConnectDialogContainer
@@ -209,10 +202,11 @@ export default ({
         onConnectClick={() => setIsSkipWarningDialogActive(false)}
         onSkipClick={onSkipClick || (() => {})}
       />
-      <VNCDialog
+      <AdvancedConfigDialog
         active={isAdvancedConfigurationDialogActive}
         url={advancedConfigUrl}
         onClose={closeAdvancedConfigurationDialog}
+        error={advancedConfigError}
       />
     </>
   );
