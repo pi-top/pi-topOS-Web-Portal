@@ -164,14 +164,14 @@ class OpenBrowserPage(Component):
 
         self.text_component = self.create_child(
             Text,
-            text=self.text,
+            text=self.get_text(),
+            get_text=self.get_text,
             font_size=FONT_SIZE,
             align="center",
             vertical_align="center",
         )
 
-    @property
-    def text(self):
+    def get_text(self):
         hostname = run("hostname", encoding="utf-8", capture_output=True)
         hostname = hostname.stdout.strip()
         ip = get_pi_top_ip()
