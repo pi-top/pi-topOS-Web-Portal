@@ -32,7 +32,7 @@ export default ({ ...props }: Props) => {
     if (props.active) {
       startAdvancedWifiConfig();
     };
-  }, [props.active]);
+  }, [props.active]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startAdvancedWifiConfig = () => {
     startVncWpaGui()

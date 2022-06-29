@@ -14,7 +14,7 @@ export type Props = {
 };
 
 export enum ErrorMessage {
-  AdvancedConfigError = "There was a problem opening the advanced network configuration.",
+  AdvancedConfigError = "There was a problem opening the advanced network configuration. Please, close this dialog and try again later.",
 }
 
 export default ({ active, url, onClose, error }: Props) => {
@@ -27,11 +27,12 @@ export default ({ active, url, onClose, error }: Props) => {
       title="Advanced Wifi Configuration"
     >
       <div className={styles.content}>
-          { url === "" ?
+          { !errorMessage && url === "" &&
               <div className={styles.spinner}>
                 <Spinner size={80} />
               </div>
-            :
+          }
+          { !errorMessage && url !== "" &&
               <div className={styles.frameContainer}>
                 <iframe
                   src={url}
@@ -42,7 +43,12 @@ export default ({ active, url, onClose, error }: Props) => {
                 </iframe>
               </div>
           }
-          {errorMessage && <span className={styles.error}>{errorMessage}</span>}
+          { errorMessage &&
+            <div className={styles.errorContainer}>
+              <span className={styles.error}>{errorMessage}</span>
+            </div>
+          }
+
         <div className={styles.actions}>
           <PrimaryButton onClick={() => onClose()}>Close</PrimaryButton>
         </div>
