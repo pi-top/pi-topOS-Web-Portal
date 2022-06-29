@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def vnc_wpa_gui_url():
     url = ""
     try:
-        # Raises when a vnc session isn't active
+        # 'run_command' raises when a vnc session isn't active
         url = run_command(
             "/usr/bin/pt-web-vnc url --display_id 99", check=True, timeout=10
         )
