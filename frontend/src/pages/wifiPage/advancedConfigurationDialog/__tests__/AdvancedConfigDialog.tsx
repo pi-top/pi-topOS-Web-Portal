@@ -82,31 +82,31 @@ describe("AdvancedConfigDialog", () => {
       expect(queryByText(ErrorMessage.AdvancedConfigError)).toBeInTheDocument();
     });
 
-    it("renders a spinner", () => {
-      expect(querySpinner(advancedConfigDialog)).toBeInTheDocument();
-    });
-  });
-
-  describe("on error while preparing", () => {
-    beforeEach(() => {
-      defaultProps = {
-        ...defaultProps,
-        error: true,
-        url: "http://pi-top.com",
-      };
-      rerender(<AdvancedConfigDialog {...defaultProps} />);
-    });
-
-    it("renders the 'close' button", () => {
-      expect(queryByText("Close")).toBeInTheDocument();
-    });
-
-    it("renders the error message", () => {
-      expect(queryByText(ErrorMessage.AdvancedConfigError)).toBeInTheDocument();
-    });
-
     it("doesn't render a spinner", () => {
       expect(querySpinner(advancedConfigDialog)).not.toBeInTheDocument();
+    });
+
+    describe("and an url is provided", () => {
+      beforeEach(() => {
+        defaultProps = {
+          ...defaultProps,
+          error: true,
+          url: "http://pi-top.com",
+        };
+        rerender(<AdvancedConfigDialog {...defaultProps} />);
+      });
+
+      it("renders the 'close' button", () => {
+        expect(queryByText("Close")).toBeInTheDocument();
+      });
+
+      it("renders the error message", () => {
+        expect(queryByText(ErrorMessage.AdvancedConfigError)).toBeInTheDocument();
+      });
+
+      it("doesn't render a spinner", () => {
+        expect(querySpinner(advancedConfigDialog)).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -161,8 +161,8 @@ describe("AdvancedConfigDialog", () => {
         expect(querySpinner(advancedConfigDialog)).not.toBeInTheDocument();
       });
 
-      it("renders an iframe", () => {
-        expect(queryByTestId("advanced-config-dialog-frame")).toBeInTheDocument();
+      it("doesn't render an iframe", () => {
+        expect(queryByTestId("advanced-config-dialog-frame")).not.toBeInTheDocument();
       });
     })
 
