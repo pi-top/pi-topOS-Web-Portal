@@ -27,7 +27,7 @@
 }
 
 .advancedConfigButton {
-  color: var(--greenHighlight);
+  color: var(--green);
   font-weight: 400;
   font-size: 14px;
   margin-top: 5px;
