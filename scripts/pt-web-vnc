@@ -168,8 +168,9 @@ RUN_COMMAND=""
 PIDS_FILE=""
 
 # Parse options
-VALID_ARGS=$(getopt -o w:i:s:r:h --long window_title:,display_id:,ssl_certificate:,run:,help -- "$@")
+VALID_ARGS="$(getopt -o w:i:s:r:h --long window_title:,display_id:,ssl_certificate:,run:,help --name pt-web-vnc -- "$@")"
 if [[ $? -ne 0 ]]; then
+    usage
     exit 1;
 fi
 
@@ -214,12 +215,12 @@ case "${COMMAND}" in
         do_start
         ;;
     stop)
-        [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        [ -z "${DISPLAY_ID}" ] && echo "No display id provided" && usage && exit 1
         [ ! -f "${PIDS_FILE}" ] && echo "No active session in display ${DISPLAY_ID}" && exit 1
         do_stop
         ;;
     url)
-        [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        [ -z "${DISPLAY_ID}" ] && echo "No display id provided" && usage && exit 1
         [ ! -f "${PIDS_FILE}" ] && echo "No active session in display ${DISPLAY_ID}" && exit 1
         get_url
         ;;
