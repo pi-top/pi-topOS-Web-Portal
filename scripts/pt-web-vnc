@@ -156,7 +156,7 @@ get_url() {
 
 
 usage() {
-  echo -e "Usage:\n\tpt-os-web-portal-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE> --run <RUN_COMMAND>"
+  echo -e "Usage:\n\pt-web-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE> --run <RUN_COMMAND>"
   echo "where:"
   echo -e "\tCOMMAND: start, stop, url."
   echo -e "\tDISPLAY_ID: integer, id for the display to use/create."
