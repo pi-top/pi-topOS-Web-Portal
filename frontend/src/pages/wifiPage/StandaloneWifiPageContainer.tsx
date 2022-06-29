@@ -44,13 +44,11 @@ export default () => {
   const waitForAdvancedConfigUrl = () => {
     const interval = setInterval(async () => {
       try {
-        getVncWpaGuiUrl()
-          .then((data: any) => {
-            if (data.url !== "") {
-              clearInterval(interval)
-              setAdvancedConfigUrl(data.url);
-            }
-          })
+        const data = await getVncWpaGuiUrl();
+        if (data.url !== "") {
+          clearInterval(interval);
+          setAdvancedConfigUrl(data.url);
+        }
       } catch (_) {}
     }, waitForAdvancedConfigUrlTimeout);
   }
