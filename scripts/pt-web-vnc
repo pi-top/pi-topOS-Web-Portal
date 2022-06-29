@@ -150,7 +150,7 @@ get_url() {
 
 
 usage() {
-  echo -e "Usage:\n\pt-web-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE> --run <RUN_COMMAND>"
+  echo -e "Usage:\n\tpt-web-vnc <COMMAND> --display_id <DISPLAY_ID> --ssl_certificate <SSL_CERTIFICATE> --window_title <WINDOW_TITLE> --run <RUN_COMMAND>"
   echo "where:"
   echo -e "\tCOMMAND: start, stop, url."
   echo -e "\tDISPLAY_ID: integer, id for the display to use/create."
@@ -161,11 +161,11 @@ usage() {
 
 
 PIDS=""
-DISPLAY_ID="0"
+DISPLAY_ID=""
 SSL_CERT=""
 WINDOW_TITLE=""
 RUN_COMMAND=""
-
+PIDS_FILE=""
 
 # Parse options
 VALID_ARGS=$(getopt -o w:i:s:r:h --long window_title:,display_id:,ssl_certificate:,run:,help -- "$@")
@@ -215,6 +215,7 @@ case "${COMMAND}" in
         ;;
     stop)
         [ -z "${DISPLAY_ID}" ] && usage && exit 1
+        [ ! -f "${PIDS_FILE}" ] && echo "No active session in display ${DISPLAY_ID}" && exit 1
         do_stop
         ;;
     url)
@@ -223,7 +224,6 @@ case "${COMMAND}" in
         get_url
         ;;
     *)
-        echo "Unknown command: \`${1}'" >&2
         usage
         exit 1
         ;;
