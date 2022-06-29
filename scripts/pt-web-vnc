@@ -144,12 +144,6 @@ do_stop() {
 }
 
 
-get_status() {
-    #ls /tmp/.pt-os-web-portal-vnc.*.pid | grep -e [0-9][0-9][0-9] -o
-    return
-}
-
-
 get_url() {
     echo "http://pi-top.local:${HTTP_PORT}/vnc.html?autoconnect=true"
 }
@@ -222,9 +216,6 @@ case "${COMMAND}" in
     stop)
         [ -z "${DISPLAY_ID}" ] && usage && exit 1
         do_stop
-        ;;
-    status)
-        get_status
         ;;
     url)
         [ -z "${DISPLAY_ID}" ] && usage && exit 1
