@@ -6,9 +6,6 @@ import getNetworks from "../../services/getNetworks";
 import isConnectedToNetwork from "../../services/isConnectedToNetwork";
 
 import { Network } from "../../types/Network";
-import startVncWpaGui from "../../services/startVncWpaGui";
-import getVncWpaGuiUrl from "../../services/getVncWpaGuiUrl";
-import stopVncWpaGui from "../../services/stopVncWpaGui";
 
 export type Props = {
   goToNextPage: (isConnected: boolean) => void;
@@ -25,10 +22,8 @@ export default ({
 }: Props) => {
   const [isFetchingNetworks, setIsFetchingNetworks] = useState(false);
   const [fetchNetworksError, setFetchNetworksError] = useState(false);
-  const [advancedConfigError, setAdvancedConfigError] = useState(false);
   const [networks, setNetworks] = useState<Network[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const [advancedConfigUrl, setAdvancedConfigUrl] = useState("");
 
 
   const fetchNetworks = () => {
@@ -48,34 +43,6 @@ export default ({
       .catch(() => setIsConnected(false));
   };
 
-  const waitForAdvancedConfigUrlTimeout = 700;
-
-  const waitForAdvancedConfigUrl = () => {
-    const interval = setInterval(async () => {
-      try {
-        getVncWpaGuiUrl()
-          .then((data: any) => {
-            if (data.url !== "") {
-              clearInterval(interval)
-              setAdvancedConfigUrl(data.url);
-            }
-          })
-      } catch (_) {}
-    }, waitForAdvancedConfigUrlTimeout);
-  }
-
-  const startAdvancedWifiConfig = () => {
-    startVncWpaGui()
-      .then(() => setTimeout(waitForAdvancedConfigUrl, 300))
-      .catch(() => setAdvancedConfigError(true))
-  };
-
-  const stopAdvancedWifiConfig = () => {
-    setAdvancedConfigUrl("")
-    stopVncWpaGui()
-      .catch(() => setAdvancedConfigError(true))
-  };
-
   useEffect(() => {
     Promise.all([fetchNetworks(), internetConnectionStatus()]);
   }, []);
@@ -93,16 +60,12 @@ export default ({
       onSkipClick={() => goToNextPage(isConnected)}
       onBackClick={goToPreviousPage}
       onRefreshClick={fetchNetworks}
-      onAdvancedConfigurationDialogOpen={startAdvancedWifiConfig}
-      onAdvancedConfigurationDialogClose={stopAdvancedWifiConfig}
       networks={networks}
       isFetchingNetworks={isFetchingNetworks}
       isConnected={isConnected}
       connectedNetwork={connectedNetwork}
       setConnectedNetwork={setConnectedNetwork}
       fetchNetworksError={fetchNetworksError}
-      advancedConfigError={advancedConfigError}
-      advancedConfigUrl={advancedConfigUrl}
     />
   );
 };

@@ -11,7 +11,7 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import Button from "../../components/atoms/button/Button";
 import ConnectDialogContainer from "./connectDialog/ConnectDialogContainer";
 import SkipWarningDialog from "./skipWarningDialog/SkipWarningDialog";
-import AdvancedConfigDialog from "./advancedConfigurationDialog/AdvancedConfigDialog";
+import AdvancedConfigDialogContainer from "./advancedConfigurationDialog/AdvancedConfigDialogContainer";
 import { Network } from "../../types/Network";
 import usePrevious from "../../hooks/usePrevious";
 
@@ -37,10 +37,6 @@ export type Props = {
   connectedNetwork?: Network;
   setConnectedNetwork: (network: Network) => void;
   showSkipWarning?: boolean;
-  onAdvancedConfigurationDialogOpen: () => void;
-  onAdvancedConfigurationDialogClose: () => void;
-  advancedConfigUrl: string;
-  advancedConfigError: boolean;
 };
 
 export default ({
@@ -48,25 +44,21 @@ export default ({
   onSkipClick,
   onBackClick,
   onRefreshClick,
-  onAdvancedConfigurationDialogOpen,
-  onAdvancedConfigurationDialogClose,
   networks,
   isFetchingNetworks,
   fetchNetworksError,
-  advancedConfigError,
   isConnected,
   connectedNetwork,
   setConnectedNetwork,
-  advancedConfigUrl,
   showSkipWarning = true,
 }: Props) => {
   const previousConnectedNetwork = usePrevious(connectedNetwork);
   const [selectedNetwork, setSelectedNetwork] = useState(connectedNetwork);
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
-  const [isAdvancedConfigurationDialogActive, setIsAdvancedConfigurationDialogActive] = useState(false);
   const [isSkipWarningDialogActive, setIsSkipWarningDialogActive] =
     useState(false);
-
+  const [isAdvancedConfigDialogActive, setIsAdvancedConfigDialogActive] =
+    useState(false);
   const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
   const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
 
@@ -79,16 +71,6 @@ export default ({
     }
     return ExplanationMessage.NotConnected;
   };
-
-  const openAdvancedConfigurationDialog = () => {
-    onAdvancedConfigurationDialogOpen();
-    setIsAdvancedConfigurationDialogActive(true);
-  }
-
-  const closeAdvancedConfigurationDialog = () => {
-    setIsAdvancedConfigurationDialogActive(false);
-    onAdvancedConfigurationDialogClose();
-  }
 
   useEffect(() => {
     if (
@@ -176,7 +158,7 @@ export default ({
         </div>
 
         <span className={styles.advancedConfigButtonContainer}>
-          <Button className={styles.advancedConfigButton} unstyled onClick= {() => openAdvancedConfigurationDialog()}>Advanced Configuration</Button>
+          <Button className={styles.advancedConfigButton} unstyled onClick= {() => setIsAdvancedConfigDialogActive(true)}>Advanced Configuration</Button>
         </span>
 
         {errorMessage && <span className={styles.error}>{errorMessage}</span>}
@@ -202,11 +184,9 @@ export default ({
         onConnectClick={() => setIsSkipWarningDialogActive(false)}
         onSkipClick={onSkipClick || (() => {})}
       />
-      <AdvancedConfigDialog
-        active={isAdvancedConfigurationDialogActive}
-        url={advancedConfigUrl}
-        onClose={closeAdvancedConfigurationDialog}
-        error={advancedConfigError}
+      <AdvancedConfigDialogContainer
+        active={isAdvancedConfigDialogActive}
+        onClose={() => {setIsAdvancedConfigDialogActive(false);}}
       />
     </>
   );
