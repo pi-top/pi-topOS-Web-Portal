@@ -1,4 +1,4 @@
 pt-os-web-portal: no-manual-page usr/bin/pt-os-web-portal
 pt-os-web-portal: no-manual-page usr/bin/pt-os-web-portal-rover-controller
 pt-os-web-portal: no-manual-page usr/bin/pt-os-web-portal-frontend
-pt-os-web-portal: no-manual-page usr/bin/web-vnc
+pt-os-web-portal: no-manual-page usr/bin/pt-web-vnc

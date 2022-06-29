@@ -6,8 +6,8 @@ Documentation=https://knowledgebase.pi-top.com/knowledge
 Type=simple
 RemainAfterExit=yes
 Restart=no
-ExecStart=/usr/bin/web-vnc start --display_id 99 --window_title "wpa_gui" --run "wpa_gui"
-ExecStop=/usr/bin/web-vnc stop --display_id 99
+ExecStart=/usr/bin/pt-web-vnc start --display_id 99 --window_title "wpa_gui" --run "wpa_gui"
+ExecStop=/usr/bin/pt-web-vnc stop --display_id 99
 
 [Install]
 WantedBy=multi-user.target

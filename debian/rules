@@ -31,3 +31,4 @@ override_dh_installsystemd:
 	dh_installsystemd --no-stop-on-upgrade --name=pt-os-web-portal
 	dh_installsystemd --no-enable --no-start --name=pt-os-web-portal-port-busy
 	dh_installsystemd --no-enable --no-start --name=pt-os-web-portal-rover-controller
+	dh_installsystemd --no-enable --no-start --name=pt-os-web-portal-wpa-gui-vnc
