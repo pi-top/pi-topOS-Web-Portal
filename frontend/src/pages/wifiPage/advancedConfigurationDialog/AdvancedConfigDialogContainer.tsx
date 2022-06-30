@@ -15,28 +15,38 @@ export default ({ active, onClose }: Props) => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
 
-  const waitForUrlTimeout = 700;
+  const startPollDelay = 300;
+  const pollTime = 700;
+  const stopPollTime = 10_000;
 
   useEffect(() => {
-    let startPollingTimeout: ReturnType<typeof setTimeout>;
-    let pollingInterval: ReturnType<typeof setInterval>;
+    let startPollTimeout: ReturnType<typeof setTimeout>;
+    let pollInterval: ReturnType<typeof setInterval>;
+    let stopPollTimeout: ReturnType<typeof setTimeout>;
 
     const waitForUrl = () => {
-      pollingInterval = setInterval(async () => {
+      stopPollTimeout = setTimeout(() => {
+        clearInterval(pollInterval);
+        setError(true);
+      }, stopPollTime);
+
+      pollInterval = setInterval(async () => {
         try {
           const data = await getVncWpaGuiUrl();
-          if (typeof data.url === 'string') {
-            clearInterval(pollingInterval);
+
+          if (data.url) {
+            clearTimeout(stopPollTimeout);
+            clearInterval(pollInterval);
             setUrl(data.url);
           }
         } catch (_) {}
-      }, waitForUrlTimeout);
+      }, pollTime);
     };
 
     const startAdvancedWifiConfig = async () => {
       try {
         await startVncWpaGui();
-        startPollingTimeout = setTimeout(waitForUrl, 300);
+        startPollTimeout = setTimeout(waitForUrl, startPollDelay);
       } catch (_) {
         setError(true);
       }
@@ -47,8 +57,9 @@ export default ({ active, onClose }: Props) => {
     };
 
     return () => {
-      clearTimeout(startPollingTimeout);
-      clearInterval(pollingInterval);
+      clearTimeout(startPollTimeout);
+      clearInterval(pollInterval);
+      clearTimeout(stopPollTimeout);
     };
   }, [active]);
 
