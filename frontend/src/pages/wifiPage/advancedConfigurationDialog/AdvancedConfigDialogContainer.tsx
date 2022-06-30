@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
-import usePrevious from "../../../hooks/usePrevious";
 import getVncWpaGuiUrl from "../../../services/getVncWpaGuiUrl";
 import startVncWpaGui from "../../../services/startVncWpaGui";
 import stopVncWpaGui from "../../../services/stopVncWpaGui";
@@ -15,36 +14,43 @@ export type Props = {
 export default ({ active, onClose }: Props) => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
-  const previousActive = usePrevious(active);
 
   const waitForUrlTimeout = 700;
 
-  const waitForUrl = useCallback(() => {
-    const interval = setInterval(async () => {
-      try {
-        const data = await getVncWpaGuiUrl();
-        if (typeof data.url === 'string') {
-          clearInterval(interval);
-          setUrl(data.url);
-        }
-      } catch (_) {}
-    }, waitForUrlTimeout);
-  }, []);
-
-  const startAdvancedWifiConfig = useCallback(async () => {
-    try {
-      await startVncWpaGui();
-      setTimeout(waitForUrl, 300);
-    } catch (_) {
-      setError(true);
-    }
-  }, [waitForUrl]);
-
   useEffect(() => {
-    if (active && !previousActive) {
+    let startPollingTimeout: ReturnType<typeof setTimeout>;
+    let pollingInterval: ReturnType<typeof setInterval>;
+
+    const waitForUrl = () => {
+      pollingInterval = setInterval(async () => {
+        try {
+          const data = await getVncWpaGuiUrl();
+          if (typeof data.url === 'string') {
+            clearInterval(pollingInterval);
+            setUrl(data.url);
+          }
+        } catch (_) {}
+      }, waitForUrlTimeout);
+    };
+
+    const startAdvancedWifiConfig = async () => {
+      try {
+        await startVncWpaGui();
+        startPollingTimeout = setTimeout(waitForUrl, 300);
+      } catch (_) {
+        setError(true);
+      }
+    };
+
+    if (active) {
       startAdvancedWifiConfig();
     };
-  }, [active, previousActive, startAdvancedWifiConfig]);
+
+    return () => {
+      clearTimeout(startPollingTimeout);
+      clearInterval(pollingInterval);
+    };
+  }, [active]);
 
   const stopAdvancedWifiConfig = async () => {
     setUrl("")
