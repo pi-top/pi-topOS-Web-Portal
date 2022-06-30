@@ -11,13 +11,13 @@ export type Props = {
   onClose: () => void;
 };
 
+export const startPollDelay = 300;
+export const pollTime = 700;
+export const stopPollTime = 10_000;
+
 export default ({ active, onClose }: Props) => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
-
-  const startPollDelay = 300;
-  const pollTime = 700;
-  const stopPollTime = 10_000;
 
   useEffect(() => {
     let startPollTimeout: ReturnType<typeof setTimeout>;
