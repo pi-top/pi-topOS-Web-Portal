@@ -5,6 +5,11 @@
   flex: 1;
 }
 
+.dialog {
+  min-width: 90vw;
+  min-height: 80vh;
+}
+
 .frameContainer {
   position: relative;
   display: flex;

@@ -25,6 +25,7 @@ export default ({ active, url, onClose, error }: Props) => {
       testId="advanced-config-dialog"
       active={active}
       title="Advanced Wifi Configuration"
+      className={styles.dialog}
     >
       <div className={styles.content}>
           { !errorMessage && url === "" &&
