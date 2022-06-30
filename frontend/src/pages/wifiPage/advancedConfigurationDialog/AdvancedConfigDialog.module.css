@@ -6,7 +6,7 @@
 }
 
 .dialog {
-  min-width: 90vw;
+  min-width: 60vw;
   min-height: 80vh;
 }
 
@@ -18,8 +18,8 @@
 }
 
 .frame {
-  min-width: 400px;
-  min-height: 400px;
+  min-width: 50vw;
+  min-height: 70vh;
 }
 
 .actions {
