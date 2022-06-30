@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+
+import usePrevious from "../../../hooks/usePrevious";
 import getVncWpaGuiUrl from "../../../services/getVncWpaGuiUrl";
 import startVncWpaGui from "../../../services/startVncWpaGui";
 import stopVncWpaGui from "../../../services/stopVncWpaGui";
@@ -10,49 +12,56 @@ export type Props = {
   onClose: () => void;
 };
 
-export default ({ ...props }: Props) => {
+export default ({ active, onClose }: Props) => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
+  const previousActive = usePrevious(active);
 
   const waitForUrlTimeout = 700;
 
-  const waitForUrl = () => {
+  const waitForUrl = useCallback(() => {
     const interval = setInterval(async () => {
       try {
         const data = await getVncWpaGuiUrl();
-        if (data.url !== "") {
+        if (typeof data.url === 'string') {
           clearInterval(interval);
           setUrl(data.url);
         }
       } catch (_) {}
     }, waitForUrlTimeout);
-  }
+  }, []);
+
+  const startAdvancedWifiConfig = useCallback(async () => {
+    try {
+      await startVncWpaGui();
+      setTimeout(waitForUrl, 300);
+    } catch (_) {
+      setError(true);
+    }
+  }, [waitForUrl]);
 
   useEffect(() => {
-    if (props.active) {
+    if (active && !previousActive) {
       startAdvancedWifiConfig();
     };
-  }, [props.active]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [active, previousActive, startAdvancedWifiConfig]);
 
-  const startAdvancedWifiConfig = () => {
-    startVncWpaGui()
-      .then(() => setTimeout(waitForUrl, 300))
-      .catch(() => setError(true))
-  };
-
-  const stopAdvancedWifiConfig = () => {
+  const stopAdvancedWifiConfig = async () => {
     setUrl("")
-    stopVncWpaGui()
-      .catch(() => setError(true))
+    try {
+      await stopVncWpaGui()
+    } catch (_) {
+      setError(true);
+    }
   };
 
   return (
     <AdvancedConfigDialog
-      active={props.active}
+      active={active}
       url={url}
       onClose={() => {
           stopAdvancedWifiConfig();
-          props.onClose();
+          onClose();
         }
       }
       error={error}
