@@ -10,49 +10,74 @@ export type Props = {
   onClose: () => void;
 };
 
-export default ({ ...props }: Props) => {
+export const startPollDelay = 300;
+export const pollTime = 700;
+export const stopPollTime = 10_000;
+
+export default ({ active, onClose }: Props) => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
 
-  const waitForUrlTimeout = 700;
-
-  const waitForUrl = () => {
-    const interval = setInterval(async () => {
-      try {
-        const data = await getVncWpaGuiUrl();
-        if (data.url !== "") {
-          clearInterval(interval);
-          setUrl(data.url);
-        }
-      } catch (_) {}
-    }, waitForUrlTimeout);
-  }
-
   useEffect(() => {
-    if (props.active) {
+    let startPollTimeout: ReturnType<typeof setTimeout>;
+    let pollInterval: ReturnType<typeof setInterval>;
+    let stopPollTimeout: ReturnType<typeof setTimeout>;
+
+    const waitForUrl = () => {
+      stopPollTimeout = setTimeout(() => {
+        clearInterval(pollInterval);
+        setError(true);
+      }, stopPollTime);
+
+      pollInterval = setInterval(async () => {
+        try {
+          const data = await getVncWpaGuiUrl();
+
+          if (data.url) {
+            clearTimeout(stopPollTimeout);
+            clearInterval(pollInterval);
+            setUrl(data.url);
+          }
+        } catch (_) {}
+      }, pollTime);
+    };
+
+    const startAdvancedWifiConfig = async () => {
+      try {
+        await startVncWpaGui();
+        startPollTimeout = setTimeout(waitForUrl, startPollDelay);
+      } catch (_) {
+        setError(true);
+      }
+    };
+
+    if (active) {
       startAdvancedWifiConfig();
     };
-  }, [props.active]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const startAdvancedWifiConfig = () => {
-    startVncWpaGui()
-      .then(() => setTimeout(waitForUrl, 300))
-      .catch(() => setError(true))
-  };
+    return () => {
+      clearTimeout(startPollTimeout);
+      clearInterval(pollInterval);
+      clearTimeout(stopPollTimeout);
+    };
+  }, [active]);
 
-  const stopAdvancedWifiConfig = () => {
+  const stopAdvancedWifiConfig = async () => {
     setUrl("")
-    stopVncWpaGui()
-      .catch(() => setError(true))
+    try {
+      await stopVncWpaGui()
+    } catch (_) {
+      setError(true);
+    }
   };
 
   return (
     <AdvancedConfigDialog
-      active={props.active}
+      active={active}
       url={url}
       onClose={() => {
           stopAdvancedWifiConfig();
-          props.onClose();
+          onClose();
         }
       }
       error={error}
