@@ -101,8 +101,6 @@ start_window_manager() {
 
 run_on_start_command() {
     if [ -n "${RUN_COMMAND}" ]; then
-        start_window_manager
-
         eval "DISPLAY=:${DISPLAY_ID} ${RUN_COMMAND} &"
         PIDS+=("$!")
     fi
@@ -114,6 +112,11 @@ do_start() {
 
     # Create virtual display if necessary
     start_xvfb || (kill_pids && exit 1)
+
+    # Load window manager if requested
+    if [ -n "${USE_WINDOW_MANAGER} "]; then
+        start_window_manager
+    fi
 
     # Run provided command
     run_on_start_command
@@ -170,9 +173,10 @@ RUN_COMMAND=""
 PIDS_FILE=""
 SCREEN_HEIGHT="1080"
 SCREEN_WIDTH="1920"
+USE_WINDOW_MANAGER=""
 
 # Parse options
-VALID_ARGS="$(getopt -o w:i:s:r:v:o:h --long window_title:,display_id:,ssl_certificate:,run:,height:,width:,help --name pt-web-vnc -- "$@")"
+VALID_ARGS="$(getopt -o w:i:s:r:v:o:mh --long window_title:,display_id:,ssl_certificate:,run:,height:,width:,with-window-manager,help --name pt-web-vnc -- "$@")"
 if [[ $? -ne 0 ]]; then
     usage
     exit 1;
@@ -207,6 +211,10 @@ while [ : ]; do
         -r | --run)
             RUN_COMMAND="${2}"
             shift 2
+            ;;
+        -m | --with-window-manager)
+            USE_WINDOW_MANAGER="1"
+            shift
             ;;
         -h | help)
             usage
