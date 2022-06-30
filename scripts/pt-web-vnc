@@ -114,7 +114,7 @@ do_start() {
     start_xvfb || (kill_pids && exit 1)
 
     # Load window manager if requested
-    if [ -n "${USE_WINDOW_MANAGER} "]; then
+    if [ -n "${USE_WINDOW_MANAGER}" ]; then
         start_window_manager
     fi
 
