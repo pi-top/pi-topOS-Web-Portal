@@ -1,17 +1,15 @@
-pi-top-os-web-portal (0.14.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.15.0-1) bullseye; urgency=medium
 
-  * Reimplement onboarding miniscreen guide with new core (#377)
-  * [pre-commit.ci] pre-commit autoupdate (#381)
-  * Bump eventsource from 1.0.7 to 1.1.1 in /frontend (#390)
+  * Reimplement onboarding miniscreen guide with new core (#377) (#389)
+  * fix: hide finish button in standalone updater
   * Updated master workflow files
-  * [pre-commit.ci] pre-commit autoupdate (#394)
+  * [pre-commit.ci] pre-commit autoupdate (#381) (#394)
+  * Bump eventsource from 1.0.7 to 1.1.1 in /frontend (#390)
   * Bump peter-evans/create-pull-request from 3 to 4 (#393)
   * Bump actions/setup-python from 3 to 4 (#391)
   * Bump async from 2.6.3 to 2.6.4 in /frontend (#380)
   * Bump github/codeql-action from 1 to 2 (#379)
   * Bump codecov/codecov-action from 3.0.0 to 3.1.0 (#378)
-  * fix: hide finish button in standalone updater
-  * Replace skip page with instructions url (#389)
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 04 Jul 2022 13:41:10 +0000
 
