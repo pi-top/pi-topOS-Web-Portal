@@ -31,11 +31,11 @@
 }
 
 .spinner {
+  margin: auto;
+  position: relative;
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 300px;
-  width: 100%;
+  align-items: flex-end;
 }
 
 .error {
