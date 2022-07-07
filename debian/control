@@ -16,6 +16,8 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+# Tiling window manager to handle windows in pt-web-vnc
+ bspwm,
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling

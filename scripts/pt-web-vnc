@@ -94,8 +94,13 @@ create_pid_file() {
 
 
 start_window_manager() {
-    eval "DISPLAY=:${DISPLAY_ID} startlxde-pt &"
+    sleep 2
+    eval "DISPLAY=:${DISPLAY_ID} bspwm &"
     PIDS+=("$!")
+    sleep 2
+
+    # Custom rule to handle 'wpa_gui'
+    DISPLAY=:"${DISPLAY_ID}" bspc rule -a wpa_gui state=pseudo_tiled
 }
 
 
