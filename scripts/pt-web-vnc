@@ -26,7 +26,7 @@ start_xvfb() {
 
 
 start_x11vnc() {
-    x11vnc_command="x11vnc -rfbport '${VNC_PORT}' -forever -shared -display ':${DISPLAY_ID}' -nopw"
+    x11vnc_command="x11vnc -rfbport '${VNC_PORT}' -forever -shared -display ':${DISPLAY_ID}' -nopw -nowf -xrefresh 0.1 -noxdamage -fixscreen V=0.1"
 
     if [ -n "${WINDOW_TITLE}" ]; then
         WINDOW_ID=""
@@ -100,7 +100,7 @@ start_window_manager() {
     sleep 2
 
     # Custom rule to handle 'wpa_gui'
-    DISPLAY=:"${DISPLAY_ID}" bspc rule -a wpa_gui state=pseudo_tiled
+    DISPLAY=:"${DISPLAY_ID}" bspc rule -a wpa_gui state=tiled
 }
 
 
@@ -153,7 +153,7 @@ do_stop() {
 
 
 get_url() {
-    echo "http://pi-top.local:${HTTP_PORT}/vnc.html?autoconnect=true"
+    echo "http://pi-top.local:${HTTP_PORT}/vnc.html?autoconnect=true&resize=scale"
 }
 
 
