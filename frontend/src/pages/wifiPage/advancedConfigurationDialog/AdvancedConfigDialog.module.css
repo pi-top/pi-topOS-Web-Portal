@@ -23,6 +23,7 @@
   height: 600px;
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
+  border-width: 0px;
 }
 
 .actions {
