@@ -35,9 +35,6 @@ Depends:
  wmctrl,
 # Advanced Wi-Fi configuration over VNC
  wpagui,
-Conflicts:
-# menu is recommended by wpa_gui and makes unwanted additions to the start menu
- menu,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
