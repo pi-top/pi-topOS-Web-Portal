@@ -16,18 +16,16 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
-# Tiling window manager to handle windows in pt-web-vnc
- bspwm,
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling
  further-link,
-# To serve VNC over http
- novnc,
 # For miniscreen onboarding guide
  pt-miniscreen,
 # Needed to update the EEPROM
  pt-os-notify-services,
+# To provide access to 'wpa_gui' via http
+ pt-web-vnc,
 # Get system information
  python3-pitop,
  raspi-config,
@@ -37,10 +35,6 @@ Depends:
  wmctrl,
 # Advanced Wi-Fi configuration over VNC
  wpagui,
-# To create virtual display
- xvfb,
-# VNC server
- x11vnc,
 Conflicts:
 # menu is recommended by wpa_gui and makes unwanted additions to the start menu
  menu,
