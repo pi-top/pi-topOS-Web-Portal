@@ -11,7 +11,7 @@ def vnc_wpa_gui_url():
     try:
         # 'run_command' raises when a vnc session isn't active
         url = run_command(
-            "/usr/bin/pt-web-vnc url --display_id 99", check=True, timeout=10
+            "/usr/bin/pt-web-vnc url --display-id 99", check=True, timeout=10
         )
     except CalledProcessError:
         pass
