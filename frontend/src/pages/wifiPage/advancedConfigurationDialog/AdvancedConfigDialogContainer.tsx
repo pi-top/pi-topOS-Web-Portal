@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import apiBaseUrl from "../../../services/apiBaseUrl";
 import getVncWpaGuiUrl from "../../../services/getVncWpaGuiUrl";
 import startVncWpaGui from "../../../services/startVncWpaGui";
 import stopVncWpaGui from "../../../services/stopVncWpaGui";
@@ -70,6 +71,18 @@ export default ({ active, onClose }: Props) => {
       setError(true);
     }
   };
+
+
+  // stop pt-web-vnc if user leaves page
+  useEffect(() => {
+    const handleClose = () => {
+      if (window.document.visibilityState === "hidden") {
+        navigator.sendBeacon(`${apiBaseUrl}/stop-vnc-wpa-gui`);
+      }
+    }
+    window.addEventListener("visibilitychange", handleClose);
+    return () => window.removeEventListener("visibilitychange", handleClose);
+  }, []);
 
   return (
     <AdvancedConfigDialog
