@@ -4,7 +4,6 @@ import {
   render,
   fireEvent,
   BoundFunction,
-  GetByBoundAttribute,
   QueryByText,
   GetByText,
   RenderResult,

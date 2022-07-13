@@ -53,6 +53,7 @@ export default ({ active, onClose }: Props) => {
     };
 
     if (active) {
+      setError(false);
       startAdvancedWifiConfig();
     };
 
