@@ -60,7 +60,7 @@ from .helpers.system import (
     service_stop,
 )
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
-from .helpers.vnc import vnc_wpa_gui_url
+from .helpers.vnc import vnc_wpa_gui_clients, vnc_wpa_gui_url
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -568,14 +568,24 @@ def get_client_should_switch_network():
 @app.route("/start-vnc-wpa-gui", methods=["POST"])
 def post_start_vnc_wpa_gui():
     logger.debug("Route '/start-vnc-wpa-gui'")
-    service_restart(SystemService.VncWpaGui)
+    status = service_is_active(SystemService.VncWpaGui, timeout=5)
+    if status != "active":
+        service_restart(SystemService.VncWpaGui)
     return "OK"
 
 
 @app.route("/stop-vnc-wpa-gui", methods=["POST"])
 def post_stop_vnc_wpa_gui():
     logger.debug("Route '/stop-vnc-wpa-gui'")
-    service_stop(SystemService.VncWpaGui)
+
+    clients = vnc_wpa_gui_clients()
+    should_stop_service = clients == 0
+
+    logger.info(
+        f"{'' if should_stop_service else 'Not'} stopping {SystemService.VncWpaGui.value} service, it has {clients} connected clients."
+    )
+    if should_stop_service:
+        service_stop(SystemService.VncWpaGui)
     return "OK"
 
 
