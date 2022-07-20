@@ -60,7 +60,7 @@ from .helpers.system import (
     service_stop,
 )
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
-from .helpers.vnc import vnc_wpa_gui_clients, vnc_wpa_gui_url
+from .helpers.vnc import vnc_desktop_url, vnc_wpa_gui_clients, vnc_wpa_gui_url
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -593,3 +593,9 @@ def post_stop_vnc_wpa_gui():
 def get_vnc_wpa_gui_url():
     logger.debug("Route '/vnc-wpa-gui-url'")
     return jdumps({"url": vnc_wpa_gui_url()})
+
+
+@app.route("/vnc-desktop-url", methods=["GET"])
+def get_vnc_desktop_url():
+    logger.debug("Route '/vnc-desktop-url'")
+    return jdumps({"url": vnc_desktop_url()})
