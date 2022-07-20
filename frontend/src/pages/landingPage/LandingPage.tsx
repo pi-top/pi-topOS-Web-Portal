@@ -55,6 +55,33 @@ const landingPages = [
     ),
   },
   {
+    title: "pi-top Desktop",
+    id: "vnc",
+    detail: (
+      <LandingPageTemplate
+        key="vnc"
+        title="pi-top Desktop"
+        urlInfo={{
+          defaultUrl: "/desktop",
+          onWebRenderer: openKnowledgeBase,
+        }}
+        message={
+          <>
+            Do you want to access your pi-top's desktop?
+            <br />
+            Make sure VNC is enabled in your device miniscreen menu.
+          </>
+        }
+        prompt={
+          <>
+            pi-top <span className="green">Desktop</span>
+          </>
+        }
+        image={keyboardScreen}
+      />
+    ),
+  },
+  {
     title: "pi-top System Update",
     id: "updater",
     detail: (

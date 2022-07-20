@@ -1,0 +1,36 @@
+.content {
+  width: 100vw;
+  height: 100vh;
+  margin: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.container {
+  margin: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.frame {
+  border-width: 0px;
+  width: 100vw;
+  height: 100vh;
+}
+
+.spinner {
+  margin: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+  font-size: 14px;
+}

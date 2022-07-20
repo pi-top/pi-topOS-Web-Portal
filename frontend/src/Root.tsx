@@ -8,6 +8,7 @@ import ErrorPage from "./pages/errorPage/ErrorPage";
 import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 import UpgradePageContainer from "./pages/upgradePage/UpgradePageContainer";
 import LandingPage from "./pages/landingPage/LandingPage";
+import DesktopPageContainer from "./pages/desktopPage/DesktopPageContainer";
 import StandaloneWifiPageContainer from "./pages/wifiPage/StandaloneWifiPageContainer";
 
 export default () => (
@@ -23,6 +24,7 @@ export default () => (
         <Route path="/onboarding" component={OnboardingApp} />
         <Route path="/about" component={AboutPageContainer} />
         <Route path="/wifi" component={StandaloneWifiPageContainer} />
+        <Route path="/desktop" component={DesktopPageContainer} />
         <Route
           path="/updater"
           render={() => <UpgradePageContainer hideSkip />}
