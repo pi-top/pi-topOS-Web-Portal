@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DesktopPage when an URL is received iframe opens the provided url 1`] = `
+<iframe
+  class="frame"
+  data-testid="vnc-desktop"
+  src="http://pi-top.com"
+  title="Desktop"
+/>
+`;

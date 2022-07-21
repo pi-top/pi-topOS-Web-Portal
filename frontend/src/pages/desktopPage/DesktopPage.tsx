@@ -10,15 +10,15 @@ export type Props = {
   error: boolean
 }
 
-const errorMessage = "There was an error opening the page. Make sure VNC is enabled in your device and refresh this page.";
+export const errorMessage = "There was an error opening the page. Make sure VNC is enabled in your device and refresh this page.";
 
 export default ({ url, error} : Props) => {
   return (
     <div className={cx(styles.content)}>
       <div className={styles.container}>
-        { error && <span className={styles.error}>{errorMessage}</span> }
-        { !error && url === "" && <Spinner size={80} /> }
-        { url &&
+        { url === "" && error && <span className={styles.error}>{errorMessage}</span> }
+        { url === "" && !error && <Spinner size={80} /> }
+        { url !== "" &&
           <iframe
             src={url}
             data-testid="vnc-desktop"
