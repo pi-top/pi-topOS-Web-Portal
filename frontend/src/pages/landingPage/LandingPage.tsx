@@ -22,6 +22,8 @@ import RoverControllerLanding from "../../components/roverControllerLanding/Rove
 import openWifi from "../../services/openWifi";
 import openUpdater from "../../services/openUpdater";
 import openOsDownload from "../../services/openOsDownload";
+import WebVncDesktopLanding from "../../components/webVncDesktopLanding/WebVncDesktopLanding";
+
 
 const landingPages = [
   {
@@ -55,31 +57,9 @@ const landingPages = [
     ),
   },
   {
-    title: "pi-top Desktop",
+    title: "Remote Desktop",
     id: "vnc",
-    detail: (
-      <LandingPageTemplate
-        key="vnc"
-        title="pi-top Desktop"
-        urlInfo={{
-          defaultUrl: "/desktop",
-          onWebRenderer: openKnowledgeBase,
-        }}
-        message={
-          <>
-            Do you want to access your pi-top's desktop?
-            <br />
-            Make sure VNC is enabled in your device miniscreen menu.
-          </>
-        }
-        prompt={
-          <>
-            pi-top <span className="green">Desktop</span>
-          </>
-        }
-        image={keyboardScreen}
-      />
-    ),
+    detail: <WebVncDesktopLanding />,
   },
   {
     title: "pi-top System Update",

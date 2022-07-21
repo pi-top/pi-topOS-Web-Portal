@@ -10,7 +10,7 @@ export type Props = {
   error: boolean
 }
 
-const errorMessage = "There was an error opening the page. Make sure VNC is enabled in your device and try again.";
+const errorMessage = "There was an error opening the page. Make sure VNC is enabled in your device and refresh this page.";
 
 export default ({ url, error} : Props) => {
   return (

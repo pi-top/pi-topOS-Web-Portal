@@ -5,7 +5,7 @@ import DesktopPage from "./DesktopPage";
 
 
 export default () => {
-  const [url, setUrl] = useState("");//http://pi-top.local:61000/vnc.html?autoconnect=true&resize=scale");
+  const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
 
   const getNovncUrl = async () => {
