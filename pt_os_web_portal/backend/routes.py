@@ -599,3 +599,17 @@ def get_vnc_wpa_gui_url():
 def get_vnc_desktop_url():
     logger.debug("Route '/vnc-desktop-url'")
     return jdumps({"url": vnc_desktop_url()})
+
+
+@app.route("/vnc-service-state", methods=["GET"])
+def get_vnc_service_state():
+    logger.debug("Route '/vnc-service-state'")
+
+    return jdumps(
+        {
+            "isRunning": all(
+                service_is_active(SystemService.Vnc) == "active",
+                service_is_active(SystemService.VncDesktop) == "active",
+            )
+        }
+    )
