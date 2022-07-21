@@ -41,3 +41,31 @@ def test_redirect_base_route_to_onboarding_if_not_completed(app, mocker):
     # No more redirections
     assert response.status_code == 200
     assert response.data == b"Mocked Content"
+
+
+@pytest.mark.parametrize(
+    "vnc_state,ptwebvnc_state,expected_reported_state",
+    [
+        ("active", "active", "true"),
+        ("inactive", "active", "false"),
+        ("active", "inactive", "false"),
+        ("inactive", "inactive", "false"),
+    ],
+)
+def test_vnc_service_state_response(
+    app, mocker, vnc_state, ptwebvnc_state, expected_reported_state
+):
+    def is_active_mock(service):
+        if service.value == "vncserver-x11-serviced":
+            return vnc_state
+        elif service.value == "pt-web-vnc-desktop":
+            return ptwebvnc_state
+        return "inactive"
+
+    mocker.patch(
+        "pt_os_web_portal.backend.routes.service_is_active", side_effect=is_active_mock
+    )
+
+    response = app.get("/vnc-service-state")
+    assert response.status_code == 200
+    assert response.data.decode() == f'{{"isRunning": {expected_reported_state}}}'

@@ -114,3 +114,37 @@ def test_wpa_gui_vnc_clients_command(mocker):
         timeout=10,
         log_errors=False,
     )
+
+
+def test_vnc_desktop_url_with_content(app, mocker):
+    run_command_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.vnc.run_command",
+        return_value="http://pi-top.com",
+    )
+
+    response = app.get("/vnc-desktop-url")
+
+    run_command_mock.assert_called_once_with(
+        "/usr/bin/pt-web-vnc url --display-id 0", check=True, timeout=10
+    )
+
+    assert response.status_code == 200
+    assert response.data == b'{"url": "http://pi-top.com"}'
+
+
+def test_vnc_desktop_clients_command(mocker):
+    run_command_mock = mocker.patch(
+        "pt_os_web_portal.backend.helpers.vnc.run_command",
+        return_value="",
+    )
+    from pt_os_web_portal.backend.helpers.vnc import vnc_desktop_clients
+
+    vnc_desktop_clients()
+
+    assert run_command_mock.call_count == 1
+    run_command_mock.assert_called_once_with(
+        "/usr/bin/pt-web-vnc clients --display-id 0",
+        check=True,
+        timeout=10,
+        log_errors=False,
+    )
