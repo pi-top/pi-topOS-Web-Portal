@@ -608,8 +608,10 @@ def get_vnc_service_state():
     return jdumps(
         {
             "isRunning": all(
-                service_is_active(SystemService.Vnc) == "active",
-                service_is_active(SystemService.VncDesktop) == "active",
+                [
+                    service_is_active(SystemService.Vnc) == "active",
+                    service_is_active(SystemService.VncDesktop) == "active",
+                ]
             )
         }
     )
