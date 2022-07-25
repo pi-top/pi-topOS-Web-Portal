@@ -11,12 +11,16 @@ import WebVncDesktopLanding from "../WebVncDesktopLanding";
 import textContentMatcher from "../../../../test/helpers/textContentMatcher";
 import { runningOnWebRenderer } from '../../../helpers/utils'
 import vncServiceStatus from "../../../services/vncServiceStatus";
+import getVncDesktopUrl from "../../../services/getVncDesktopUrl";
+import { act } from "react-dom/test-utils";
 
-jest.mock('../../../helpers/utils')
-jest.mock('../../../services/vncServiceStatus')
+jest.mock('../../../helpers/utils');
+jest.mock('../../../services/vncServiceStatus');
+jest.mock('../../../services/getVncDesktopUrl');
 
-const runningOnWebRendererMock = runningOnWebRenderer as jest.Mock
-const vncServiceStatusMock = vncServiceStatus as jest.Mock
+const runningOnWebRendererMock = runningOnWebRenderer as jest.Mock;
+const vncServiceStatusMock = vncServiceStatus as jest.Mock;
+const getVncDesktopUrlMock = getVncDesktopUrl as jest.Mock;
 
 window.open = jest.fn();
 
@@ -33,6 +37,8 @@ const mount = () => render(<WebVncDesktopLanding />);
 describe("WebVncDesktopLanding", () => {
   afterEach(() => {
     runningOnWebRendererMock.mockImplementation(() => false)
+    vncServiceStatusMock.mockRestore();
+    getVncDesktopUrlMock.mockRestore();
   })
 
   it('shows warning message when on web renderer', () => {
@@ -42,7 +48,7 @@ describe("WebVncDesktopLanding", () => {
     expect(screen.getByText(matchers.useDifferentDeviceWarning)).toBeInTheDocument();
   })
 
-  it("shows loading message while getting initial controller status", async () => {
+  it("shows loading message while getting VNC service status", async () => {
     mount();
 
     expect(screen.getByText(matchers.initialising)).toBeInTheDocument();
@@ -60,58 +66,98 @@ describe("WebVncDesktopLanding", () => {
     );
   });
 
-  it("shows correct message when VNC service is running", async () => {
-    vncServiceStatusMock.mockResolvedValue({isRunning: true});
-    mount();
+  describe("when VNC service is running and an URL is received", () =>{
+    beforeEach(async () => {
+      vncServiceStatusMock.mockResolvedValue({isRunning: true});
+      getVncDesktopUrlMock.mockResolvedValue({url: "http://pi-top.com"})
+      mount();
+      await wait();
+    })
 
-    expect(await screen.findByText(matchers.running)).toBeInTheDocument();
+    it("shows correct message", async () => {
+      expect(await screen.findByText(matchers.running)).toBeInTheDocument();
+    });
+
+    it("button is enabled", async () => {
+      expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", false);
+    });
+
+    it("clicking button opens desktop page in a new tab", async () => {
+      act(() => {
+        fireEvent.click(screen.getByText("Let\'s Go!").parentElement);
+      });
+
+      expect(window.open).toHaveBeenNthCalledWith(1, "http://pi-top.com");
+    });
   });
 
-  it("button is enabled when VNC service is running", async () => {
-    vncServiceStatusMock.mockResolvedValue({isRunning: true});
-    mount();
+  describe("when VNC service is stopped", () =>{
+    beforeEach(async () => {
+      vncServiceStatusMock.mockResolvedValue({isRunning: false});
+      mount();
+      await wait();
+    })
 
-    await wait();
-    expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", false);
+    it("shows correct message", async () => {
+      expect(await screen.findByText(matchers.stopped)).toBeInTheDocument();
+    });
+
+    it("button is disabled", () => {
+      expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", true);
+    });
+
+    it("doesn't try to get the URL", () => {
+      expect(getVncDesktopUrlMock).not.toHaveBeenCalled();
+    });
+  })
+
+  describe("when VNC service is running but an empty URL is received", () => {
+    beforeEach(async () => {
+      vncServiceStatusMock.mockResolvedValue({isRunning: true});
+      getVncDesktopUrlMock.mockResolvedValue({url: ""});
+      mount();
+      await wait();
+    });
+
+    it("shows correct message", async () => {
+      expect(await screen.findByText(matchers.stopped)).toBeInTheDocument();
+    });
+
+    it("button is disabled when URL is empty", () => {
+      expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", true);
+    });
   });
 
-  it("clicking button opens desktop page in a new tab when VNC service is running", async () => {
-    vncServiceStatusMock.mockResolvedValue({isRunning: true});
-    mount();
+  describe("when VNC-status request fails", () =>{
+    beforeEach(async () => {
+      vncServiceStatusMock.mockRejectedValue(new Error("oh oh..."));
+      mount();
+      await wait();
+    });
 
-    await wait();
-    fireEvent.click(screen.getByText("Let\'s Go!").parentElement);
-    expect(window.open).toHaveBeenNthCalledWith(
-      1,
-      "/desktop",
-    )
+    it("shows correct message", async () => {
+      expect(await screen.findByText(matchers.error)).toBeInTheDocument();
+    });
+
+    it("button is disabled", () => {
+      expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", true);
+    });
   });
 
-  it("shows correct message when VNC service is stopped", async () => {
-    vncServiceStatusMock.mockResolvedValue({isRunning: false});
-    mount();
+  describe("when URL request fails", () =>{
+    beforeEach(async () => {
+      vncServiceStatusMock.mockResolvedValue({isRunning: true});
+      getVncDesktopUrlMock.mockRejectedValue(new Error("oh oh..."));
+      mount();
+      await wait();
+    });
 
-    expect(await screen.findByText(matchers.stopped)).toBeInTheDocument();
-  });
+    it("shows correct message", async () => {
+      expect(await screen.findByText(matchers.error)).toBeInTheDocument();
+    });
 
-  it("button is disabled when VNC service is stopped", () => {
-    vncServiceStatusMock.mockResolvedValue({isRunning: false});
-    mount();
-
-    expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", true);
-  });
-
-  it("shows correct message when VNC request fails", async () => {
-    vncServiceStatusMock.mockRejectedValue(new Error("oh oh..."));
-    mount();
-
-    expect(await screen.findByText(matchers.error)).toBeInTheDocument();
-  });
-
-  it("button is disabled when VNC request fails", () => {
-    vncServiceStatusMock.mockRejectedValue(new Error("oh oh..."));
-    mount();
-
-    expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", true);
+    it("button is disabled", () => {
+      expect(screen.getByText("Let\'s Go\!").parentElement).toHaveProperty("disabled", true);
+    });
   });
 });

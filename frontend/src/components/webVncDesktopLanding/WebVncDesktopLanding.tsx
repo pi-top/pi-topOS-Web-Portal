@@ -5,25 +5,33 @@ import Layout from "../layout/Layout";
 import styles from "./WebVncDesktopLanding.module.css";
 import keyboardScreen from "../../assets/images/keyboard-screen.png";
 import Spinner from "../atoms/spinner/Spinner";
-import vncServiceStatus from "../../services/vncServiceStatus";
 import { runningOnWebRenderer } from "../../helpers/utils";
+import getVncDesktopUrl from "../../services/getVncDesktopUrl";
+import vncServiceStatus from "../../services/vncServiceStatus";
 
 
 enum VncServiceState {
   Stopped = "STOPPED",
   Running = "RUNNING",
   Error = "ERROR",
+  Unknown = "UNKNOWN",
 }
 
+
 const WebVncDesktopLanding = () => {
-  const [vncServiceState, setVncServiceState] = useState<VncServiceState>();
+  const [vncServiceState, setVncServiceState] = useState<VncServiceState>(VncServiceState.Unknown);
+  const [url, setUrl] = useState("");
 
   const initialiseVncServiceState = useCallback(async () => {
     try {
-      const data = await vncServiceStatus();
-      return setVncServiceState(
-        data.isRunning ? VncServiceState.Running : VncServiceState.Stopped
-      );
+      const serviceData = await vncServiceStatus();
+      if (serviceData.isRunning) {
+        const urlData = await getVncDesktopUrl();
+        setUrl(urlData.url);
+        setVncServiceState(urlData.url !== "" ? VncServiceState.Running: VncServiceState.Stopped);
+      } else {
+        setVncServiceState(VncServiceState.Stopped);
+      }
     } catch (_) {
       return setVncServiceState(VncServiceState.Error);
     }
@@ -33,16 +41,14 @@ const WebVncDesktopLanding = () => {
     useMemo(() => {
       switch (vncServiceState) {
         case VncServiceState.Running:
-          return {
-            buttonLabel: "Let's Go!",
-            onButtonClick: () => window.open("/desktop"),
-            content: (
-              <>
-                Access programs and resources on your pi-top as if you were actually working on it!
-              </>
-            ),
-          };
-
+        return {
+          buttonLabel: "Let's Go!",
+          onButtonClick: () => window.open(url),
+          content: (
+            <>
+              Access programs and resources on your pi-top as if you were actually working on it!
+            </>
+          ), };
         case VncServiceState.Stopped:
           return {
             buttonLabel: "Let's Go!",
@@ -67,7 +73,7 @@ const WebVncDesktopLanding = () => {
             ),
           };
 
-        default:
+        case VncServiceState.Unknown:
           return {
             content: (
               <>
@@ -79,7 +85,7 @@ const WebVncDesktopLanding = () => {
             buttonDisabled: true,
           };
       }
-    }, [vncServiceState]);
+    }, [vncServiceState, url]);
 
   // initialise state on mount
   useEffect(() => {
