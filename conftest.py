@@ -19,6 +19,7 @@ def _patch_modules():
         "pitop.common.common_names",
         "pitop.common.current_session_info",
         "pitop.common.firmware_device",
+        "pitop.common.formatting",
         "pitop.common.notifications",
         "pitop.common.pt_os",
         "pitop.common.sys_info",
@@ -26,6 +27,8 @@ def _patch_modules():
         "pitop.system",
         "pt_fw_updater.update",
         "pt_fw_updater.core.firmware_updater",
+        "pt_web_vnc",
+        "pt_web_vnc.vnc",
     ]
     for module in modules_to_patch:
         modules[module] = Mock()

@@ -8,7 +8,10 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
+from pitop.common.formatting import is_url
 from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
+from pt_web_vnc.vnc import clients as vnc_clients
+from pt_web_vnc.vnc import connection_details as vnc_connection_details
 
 from ..app_window import LandingAppWindow
 from ..event import AppEvents, post_event
@@ -60,7 +63,7 @@ from .helpers.system import (
     service_stop,
 )
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
-from .helpers.vnc import vnc_desktop_url, vnc_wpa_gui_clients, vnc_wpa_gui_url
+from .helpers.vnc import PtWebVncDisplayId
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -578,7 +581,7 @@ def post_start_vnc_wpa_gui():
 def post_stop_vnc_wpa_gui():
     logger.debug("Route '/stop-vnc-wpa-gui'")
 
-    clients = vnc_wpa_gui_clients()
+    clients = vnc_clients(PtWebVncDisplayId.WpaGui.value)
     should_stop_service = clients == 0
 
     logger.info(
@@ -592,13 +595,27 @@ def post_stop_vnc_wpa_gui():
 @app.route("/vnc-wpa-gui-url", methods=["GET"])
 def get_vnc_wpa_gui_url():
     logger.debug("Route '/vnc-wpa-gui-url'")
-    return jdumps({"url": vnc_wpa_gui_url()})
+    url = ""
+    try:
+        details = vnc_connection_details(PtWebVncDisplayId.WpaGui.value)
+        if is_url(details.url):
+            url = f"{details.scheme}://{request.host}:{details.port}{details.path}"
+    except Exception:
+        pass
+    return jdumps({"url": url})
 
 
 @app.route("/vnc-desktop-url", methods=["GET"])
 def get_vnc_desktop_url():
     logger.debug("Route '/vnc-desktop-url'")
-    return jdumps({"url": vnc_desktop_url()})
+    url = ""
+    try:
+        details = vnc_connection_details(PtWebVncDisplayId.Desktop.value)
+        if is_url(details.url):
+            url = f"{details.scheme}://{request.host}:{details.port}{details.path}"
+    except Exception:
+        pass
+    return jdumps({"url": url})
 
 
 @app.route("/vnc-service-state", methods=["GET"])
