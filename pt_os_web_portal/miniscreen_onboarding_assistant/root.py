@@ -10,13 +10,13 @@ from .pages import (
     BatteryInfoPage,
     CarryOnPage,
     ConnectPitopWifiNetworkPage,
+    DetailedInstructionsPage,
     FwInfoPage,
     GetDevicePage,
     HelpURLPage,
     NetworksPage,
     OpenBrowserPage,
     OsInfoPage,
-    SkipPage,
     StartPage,
     WaitConnectionPage,
 )
@@ -48,7 +48,7 @@ class MenuPageList(PageList):
             **kwargs,
             visible_scrollbar=False,
             Pages=[
-                SkipPage,
+                DetailedInstructionsPage,
                 BatteryInfoPage,
                 OsInfoPage,
                 FwInfoPage,
@@ -170,15 +170,7 @@ class RootComponent(Component):
         self.stack.pop()
 
     def handle_select_button(self):
-        if isinstance(self.stack.active_component, MenuPageList) and isinstance(
-            self.active_page, SkipPage
-        ):
-            self.stack.pop()
-            # Scroll to OpenBrowserPage
-            pages_in_list = self.active_component.distance_to_bottom
-            if pages_in_list > 1:
-                self.stack.active_component.scroll_down(distance=pages_in_list - 1)
-                self._update_navigation_component()
+        pass
 
     def render(self, image):
         return apply_layers(

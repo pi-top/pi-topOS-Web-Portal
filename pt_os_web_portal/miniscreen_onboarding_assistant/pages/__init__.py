@@ -7,4 +7,10 @@ from .guide import (
     StartPage,
     WaitConnectionPage,
 )
-from .menu import BatteryInfoPage, FwInfoPage, NetworksPage, OsInfoPage, SkipPage
+from .menu import (
+    BatteryInfoPage,
+    DetailedInstructionsPage,
+    FwInfoPage,
+    NetworksPage,
+    OsInfoPage,
+)

@@ -28,7 +28,7 @@ const getVncWpaGuiUrlMock = getVncWpaGuiUrl as jest.Mock;
 const stopVncWpaGuiMock = stopVncWpaGui as jest.Mock;
 const originalCreatePortal = ReactDom.createPortal;
 
-describe("ConnectDialogContainer", () => {
+describe("AdvancedConfigDialogContainer", () => {
   let defaultProps: Props;
   let advancedConfigDialogContainer: HTMLElement;
   let queryByText: BoundFunction<QueryByText>;
