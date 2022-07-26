@@ -11,7 +11,7 @@
 }
 
 .hidden {
-  visibility: hidden;
+  display: none;
 }
 
 .dialog {
