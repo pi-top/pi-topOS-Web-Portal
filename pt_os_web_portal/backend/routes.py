@@ -8,6 +8,7 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
+from pitop.common.formatting import is_url
 from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
 from pt_web_vnc.vnc import clients as vnc_clients
 from pt_web_vnc.vnc import connection_details as vnc_connection_details
@@ -594,9 +595,11 @@ def post_stop_vnc_wpa_gui():
 @app.route("/vnc-wpa-gui-url", methods=["GET"])
 def get_vnc_wpa_gui_url():
     logger.debug("Route '/vnc-wpa-gui-url'")
+    url = ""
     try:
         details = vnc_connection_details(PtWebVncDisplayId.WpaGui.value)
-        url = f"{request.remote_addr}:{details.port}/{details.path}"
+        if is_url(details.url):
+            url = f"{details.scheme}://{request.host}:{details.port}{details.path}"
     except Exception:
-        url = ""
+        pass
     return jdumps({"url": url})
