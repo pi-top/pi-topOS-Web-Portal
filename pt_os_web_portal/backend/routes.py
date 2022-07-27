@@ -612,7 +612,8 @@ def get_vnc_desktop_url():
     try:
         details = vnc_connection_details(PtWebVncDisplayId.Desktop.value)
         if is_url(details.url):
-            url = f"{details.scheme}://{request.host}:{details.port}{details.path}"
+            host_url = request.host.split(":")[0]
+            url = f"{details.scheme}://{host_url}:{details.port}{details.path}"
     except Exception:
         pass
     return jdumps({"url": url})
