@@ -81,8 +81,8 @@ export default ({ active, onClose }: Props) => {
         navigator.sendBeacon(`${apiBaseUrl}/stop-vnc-wpa-gui`);
       }
     }
-    window.addEventListener("visibilitychange", handleClose);
-    return () => window.removeEventListener("visibilitychange", handleClose);
+    window.addEventListener("unload", handleClose);
+    return () => window.removeEventListener("unload", handleClose);
   }, []);
 
   return (
