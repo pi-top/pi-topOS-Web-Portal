@@ -24,8 +24,6 @@ Depends:
  pt-miniscreen,
 # Needed to update the EEPROM
  pt-os-notify-services,
-# To provide access to 'wpa_gui' via http
- pt-web-vnc,
 # Get system information
  python3-pitop,
  raspi-config,
