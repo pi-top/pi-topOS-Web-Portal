@@ -278,14 +278,19 @@ def get_is_connected_through_ap():
     logger.debug("Route '/is-connected-through-ap'")
 
     client_ip = ip_address(request.remote_addr)
-    if client_ip.ipv4_mapped:
+    if hasattr(client_ip, "ipv4_mapped") and client_ip.ipv4_mapped:
         client_ip = client_ip.ipv4_mapped
 
     client_uses_ap = False
-    if interface_is_up(NetworkInterface.wlan_ap0.name):
-        client_uses_ap = (
-            client_ip in InterfaceNetworkData(NetworkInterface.wlan_ap0.name).network
-        )
+    try:
+        if interface_is_up(NetworkInterface.wlan_ap0.name):
+            client_uses_ap = (
+                client_ip
+                in InterfaceNetworkData(NetworkInterface.wlan_ap0.name).network
+            )
+    except Exception as e:
+        logger.error(f"{e}")
+
     logger.info(f"Client is{'' if client_uses_ap else 'not'} connected through AP")
     return jdumps({"isUsingAp": client_uses_ap})
 
