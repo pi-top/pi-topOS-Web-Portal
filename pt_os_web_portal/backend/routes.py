@@ -9,7 +9,12 @@ from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.formatting import is_url
-from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
+from pitop.common.sys_info import (
+    InterfaceNetworkData,
+    NetworkInterface,
+    interface_is_up,
+    is_connected_to_internet,
+)
 from pt_web_vnc.vnc import clients as vnc_clients
 from pt_web_vnc.vnc import connection_details as vnc_connection_details
 
@@ -275,9 +280,14 @@ def get_is_connected_through_ap():
     client_ip = ip_address(request.remote_addr)
     if client_ip.ipv4_mapped:
         client_ip = client_ip.ipv4_mapped
-    clientUsesAp = client_ip in InterfaceNetworkData("wlan_ap0").network
-    logger.info(f"Client is{'' if clientUsesAp else 'not'} connected through AP")
-    return jdumps({"isUsingAp": clientUsesAp})
+
+    client_uses_ap = False
+    if interface_is_up(NetworkInterface.wlan_ap0.name):
+        client_uses_ap = (
+            client_ip in InterfaceNetworkData(NetworkInterface.wlan_ap0.name).network
+        )
+    logger.info(f"Client is{'' if client_uses_ap else 'not'} connected through AP")
+    return jdumps({"isUsingAp": client_uses_ap})
 
 
 # OS Upgrade
