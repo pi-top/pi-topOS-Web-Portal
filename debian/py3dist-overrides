@@ -10,3 +10,4 @@ gevent-websocket python3-gevent-websocket; PEP386
 pitop python3-pitop
 requests python3-requests; PEP386
 websockets python3-websockets; PEP386
+pt-web-vnc pt-web-vnc; PEP386
