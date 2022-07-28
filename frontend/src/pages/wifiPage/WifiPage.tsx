@@ -11,6 +11,7 @@ import Spinner from "../../components/atoms/spinner/Spinner";
 import Button from "../../components/atoms/button/Button";
 import ConnectDialogContainer from "./connectDialog/ConnectDialogContainer";
 import SkipWarningDialog from "./skipWarningDialog/SkipWarningDialog";
+import AdvancedConfigDialogContainer from "./advancedConfigurationDialog/AdvancedConfigDialogContainer";
 import { Network } from "../../types/Network";
 import usePrevious from "../../hooks/usePrevious";
 
@@ -56,9 +57,11 @@ export default ({
   const [isConnectDialogActive, setIsConnectDialogActive] = useState(false);
   const [isSkipWarningDialogActive, setIsSkipWarningDialogActive] =
     useState(false);
-
+  const [isAdvancedConfigDialogActive, setIsAdvancedConfigDialogActive] =
+    useState(false);
   const { ssid: selectedSSID, bssid: selectedBSSID } = selectedNetwork || {};
   const errorMessage = fetchNetworksError && ErrorMessage.FetchNetworks;
+
   const getExplanation = () => {
     if (connectedNetwork) {
       return ExplanationMessage.WiFiConnection;
@@ -154,6 +157,10 @@ export default ({
           </div>
         </div>
 
+        <span className={styles.advancedConfigButtonContainer}>
+          <Button className={styles.advancedConfigButton} unstyled onClick= {() => setIsAdvancedConfigDialogActive(true)}>Advanced Configuration</Button>
+        </span>
+
         {errorMessage && <span className={styles.error}>{errorMessage}</span>}
       </Layout>
 
@@ -176,6 +183,10 @@ export default ({
         active={isSkipWarningDialogActive}
         onConnectClick={() => setIsSkipWarningDialogActive(false)}
         onSkipClick={onSkipClick || (() => {})}
+      />
+      <AdvancedConfigDialogContainer
+        active={isAdvancedConfigDialogActive}
+        onClose={() => {setIsAdvancedConfigDialogActive(false);}}
       />
     </>
   );

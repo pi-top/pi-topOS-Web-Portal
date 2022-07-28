@@ -8,7 +8,10 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
+from pitop.common.formatting import is_url
 from pitop.common.sys_info import InterfaceNetworkData, is_connected_to_internet
+from pt_web_vnc.vnc import clients as vnc_clients
+from pt_web_vnc.vnc import connection_details as vnc_connection_details
 
 from ..app_window import LandingAppWindow
 from ..event import AppEvents, post_event
@@ -60,6 +63,7 @@ from .helpers.system import (
     service_stop,
 )
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
+from .helpers.vnc import PtWebVncDisplayId
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -78,6 +82,11 @@ def abort_on_no_data(data):
     if data is None or (isinstance(data, str) and len(data) == 0):
         abort(400)
     return jdumps(data)
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return "", 200
 
 
 @app.route("/", methods=["GET"])
@@ -557,3 +566,41 @@ def post_disable_ap_mode():
 def get_client_should_switch_network():
     logger.debug("Route '/should-switch-networks'")
     return jdumps(should_switch_network(request))
+
+
+@app.route("/start-vnc-wpa-gui", methods=["POST"])
+def post_start_vnc_wpa_gui():
+    logger.debug("Route '/start-vnc-wpa-gui'")
+    status = service_is_active(SystemService.VncWpaGui, timeout=5)
+    if status != "active":
+        service_restart(SystemService.VncWpaGui)
+    return "OK"
+
+
+@app.route("/stop-vnc-wpa-gui", methods=["POST"])
+def post_stop_vnc_wpa_gui():
+    logger.debug("Route '/stop-vnc-wpa-gui'")
+
+    clients = vnc_clients(PtWebVncDisplayId.WpaGui.value)
+    should_stop_service = clients == 0
+
+    logger.info(
+        f"{'' if should_stop_service else 'Not'} stopping {SystemService.VncWpaGui.value} service, it has {clients} connected clients."
+    )
+    if should_stop_service:
+        service_stop(SystemService.VncWpaGui)
+    return "OK"
+
+
+@app.route("/vnc-wpa-gui-url", methods=["GET"])
+def get_vnc_wpa_gui_url():
+    logger.debug("Route '/vnc-wpa-gui-url'")
+    url = ""
+    try:
+        details = vnc_connection_details(PtWebVncDisplayId.WpaGui.value)
+        if is_url(details.url):
+            host_url = request.host.split(":")[0]
+            url = f"{details.scheme}://{host_url}:{details.port}{details.path}"
+    except Exception:
+        pass
+    return jdumps({"url": url})

@@ -21,6 +21,18 @@
   padding: 10px;
 }
 
+.advancedConfigButtonContainer {
+  composes: text from '../../globalStyles/Typography.module.css';
+  margin-right: auto;
+}
+
+.advancedConfigButton {
+  color: var(--green);
+  font-weight: 400;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
 .selectDetailsContainer {
   position: absolute;
   left: calc(100% + 10px);

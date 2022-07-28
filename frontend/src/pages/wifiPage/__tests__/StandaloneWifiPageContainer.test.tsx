@@ -4,8 +4,10 @@ import {
   fireEvent,
   screen,
   waitForElementToBeRemoved,
-  wait,
   within,
+  RenderResult,
+  BoundFunction,
+  QueryByBoundAttribute,
 } from "@testing-library/react";
 import { rest } from "msw";
 
@@ -35,17 +37,22 @@ jest.setTimeout(10000);
 
 const fetchingNetworksMessage = "fetching networks...";
 
-const mount = () => render(<StandaloneWifiPageContainer />);
+type ExtendedRenderResult = RenderResult & {
+  queryByTestId: BoundFunction<QueryByBoundAttribute>,
+};
 
 describe("StandaloneWifiPageContainer", () => {
-  beforeEach(() => {
+  let mount: () => ExtendedRenderResult;
+
+  beforeEach(async () => {
     setRunningOnWebRenderer(false)
-  })
+    mount = () => render(<StandaloneWifiPageContainer />);
+  });
 
   it("renders spinner while loading", async () => {
-    mount();
+    const { container: standaloneWifiPageContainer } = mount();
 
-    expect(querySpinner(document.body)).toBeInTheDocument();
+    expect(querySpinner(standaloneWifiPageContainer)).toBeInTheDocument();
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)

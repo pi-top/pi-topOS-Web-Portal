@@ -1,0 +1,56 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.dialog {
+  width: 1000px;
+  height: 800px;
+}
+
+.frameContainer {
+  margin: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.frame {
+  width: 750px;
+  height: 600px;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  border-width: 0px;
+}
+
+.actions {
+  position: relative;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.spinner {
+  margin: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.error {
+  composes: fontError from '../../../globalStyles/Typography.module.css';
+  font-size: 14px;
+}
+
+.errorContainer {
+  margin: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}

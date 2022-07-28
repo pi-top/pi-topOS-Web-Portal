@@ -1,0 +1,13 @@
+[Unit]
+Description=pi-topOS wpa_gui over VNC
+Documentation=https://knowledgebase.pi-top.com/knowledge
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+Restart=no
+ExecStart=/usr/bin/pt-web-vnc start --display-id 99 --run "wpa_gui" --height 800 --width 1000 --with-window-manager --background-colour white
+ExecStop=/usr/bin/pt-web-vnc stop --display-id 99
+
+[Install]
+WantedBy=multi-user.target

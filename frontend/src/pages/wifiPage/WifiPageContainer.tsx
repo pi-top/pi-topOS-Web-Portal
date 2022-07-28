@@ -25,6 +25,7 @@ export default ({
   const [networks, setNetworks] = useState<Network[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
+
   const fetchNetworks = () => {
     setIsFetchingNetworks(true);
 
