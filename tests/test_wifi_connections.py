@@ -1,3 +1,6 @@
+from ipaddress import ip_network
+
+import pytest
 from flask import json
 
 from tests.data.wifi_manager_data import wifi_ssids, wpa_cli_status
@@ -144,3 +147,39 @@ def get_is_connected_to_ssid_response_on_internal_failure(app, mocker):
 
     assert response.status_code == 200
     assert json.loads(response.data) == ""
+
+
+@pytest.mark.parametrize(
+    "iface_is_up,ip_in_network,result",
+    [
+        (False, False, False),
+        (True, False, False),
+        (True, True, True),
+    ],
+)
+def test_is_connected_through_ap_route(app, mocker, iface_is_up, ip_in_network, result):
+    class InterfaceNetworkDataMock:
+        network = ip_network("127.0.0.1/24", strict=False) if ip_in_network else []
+
+    mocker.patch(
+        "pt_os_web_portal.backend.routes.interface_is_up", return_value=iface_is_up
+    )
+    mocker.patch(
+        "pt_os_web_portal.backend.routes.InterfaceNetworkData",
+        return_value=InterfaceNetworkDataMock,
+    )
+    response = app.get("/is-connected-through-ap")
+
+    assert response.status_code == 200
+    assert json.loads(response.data) == {"isUsingAp": result}
+
+
+def test_is_connected_through_ap_route_on_error(app, mocker):
+    mocker.patch(
+        "pt_os_web_portal.backend.routes.interface_is_up",
+        side_effect=Exception("oh oh..."),
+    )
+    response = app.get("/is-connected-through-ap")
+
+    assert response.status_code == 200
+    assert json.loads(response.data) == {"isUsingAp": False}
