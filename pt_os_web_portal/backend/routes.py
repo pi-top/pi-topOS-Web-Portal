@@ -619,3 +619,33 @@ def get_vnc_wpa_gui_url():
     except Exception:
         pass
     return jdumps({"url": url})
+
+
+@app.route("/vnc-desktop-url", methods=["GET"])
+def get_vnc_desktop_url():
+    logger.debug("Route '/vnc-desktop-url'")
+    url = ""
+    try:
+        details = vnc_connection_details(PtWebVncDisplayId.Desktop.value)
+        if is_url(details.url):
+            host_url = request.host.split(":")[0]
+            url = f"{details.scheme}://{host_url}:{details.port}{details.path}"
+    except Exception:
+        pass
+    return jdumps({"url": url})
+
+
+@app.route("/vnc-service-state", methods=["GET"])
+def get_vnc_service_state():
+    logger.debug("Route '/vnc-service-state'")
+
+    return jdumps(
+        {
+            "isRunning": all(
+                [
+                    service_is_active(SystemService.Vnc) == "active",
+                    service_is_active(SystemService.VncDesktop) == "active",
+                ]
+            )
+        }
+    )

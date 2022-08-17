@@ -22,6 +22,8 @@ import RoverControllerLanding from "../../components/roverControllerLanding/Rove
 import openWifi from "../../services/openWifi";
 import openUpdater from "../../services/openUpdater";
 import openOsDownload from "../../services/openOsDownload";
+import WebVncDesktopLanding from "../../components/webVncDesktopLanding/WebVncDesktopLanding";
+
 
 const landingPages = [
   {
@@ -53,6 +55,11 @@ const landingPages = [
         image={introScreen}
       />
     ),
+  },
+  {
+    title: "Remote Desktop",
+    id: "vnc",
+    detail: <WebVncDesktopLanding />,
   },
   {
     title: "pi-top System Update",
