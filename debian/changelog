@@ -1,3 +1,16 @@
+pi-top-os-web-portal (0.15.0-2) bullseye; urgency=medium
+
+  * [pre-commit.ci] pre-commit autoupdate (#396)
+  * Add advanced network configuration to Wi-Fi page (#395)
+  * [pre-commit.ci] pre-commit autoupdate (#400)
+  * Bump terser from 4.6.6 to 4.8.1 in /frontend (#399)
+  * [pre-commit.ci] pre-commit autoupdate (#402)
+  * Fix detection of AP connection state (#401)
+  * Add remote-desktop to landing (#398)
+  * Set package version using environment variable (#404)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 18 Aug 2022 19:54:49 +0000
+
 pi-top-os-web-portal (0.15.0-1) bullseye; urgency=medium
 
   * Reimplement onboarding miniscreen guide with new core (#377) (#389)
