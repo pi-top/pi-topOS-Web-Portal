@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.16.0-2) bullseye; urgency=medium
+
+  * Fix workflow variable: PYTHON_PYTHON_PACKAGE_VERSION -> PYTHON_PACKAGE_VERSION
+  * Update SDK imports to use subpackages (#406)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Oct 2022 17:22:07 +0000
+
 pi-top-os-web-portal (0.16.0-1) bullseye; urgency=medium
 
   * Add advanced network configuration to Wi-Fi page (#395)
