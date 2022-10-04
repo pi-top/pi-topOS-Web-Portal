@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.16.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.16.1-1) bullseye; urgency=medium
 
   * Fix workflow variable: PYTHON_PYTHON_PACKAGE_VERSION -> PYTHON_PACKAGE_VERSION
   * Update SDK imports to use subpackages (#406)
