@@ -25,7 +25,6 @@ Depends:
 # Needed to update the EEPROM
  pt-os-notify-services,
 # Get system information
- python3-pitop,
  raspi-config,
 # Restore notification support
  rsync,

@@ -1,6 +1,6 @@
 import logging
 
-from pitop import Pitop
+from pitop.system.pitop import Pitop
 from pt_miniscreen.core import App as BaseApp
 
 from .root import RootComponent

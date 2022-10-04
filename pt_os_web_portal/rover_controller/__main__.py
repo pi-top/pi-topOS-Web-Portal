@@ -1,6 +1,7 @@
 import click
-from pitop import Camera, DriveController
+from pitop.camera import Camera
 from pitop.labs import RoverWebController
+from pitop.robotics import DriveController
 
 
 @click.command()
