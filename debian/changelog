@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.16.1-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.17.0-1) bullseye; urgency=medium
 
   * refactor: use new core in miniscreen onboarding
 
