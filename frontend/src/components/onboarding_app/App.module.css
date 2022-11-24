@@ -1,0 +1,10 @@
+.buildInfo {
+  z-index: -1;
+}
+
+/* Hide build info on portrait mobile up to the width of the One Plus 3 */
+@media screen and (max-width: 480px) {
+  .buildInfo {
+    display: none;
+  }
+}

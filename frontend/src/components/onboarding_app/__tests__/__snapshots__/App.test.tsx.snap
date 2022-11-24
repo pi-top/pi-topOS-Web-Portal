@@ -2,7 +2,7 @@
 
 exports[`App renders build information correctly when loaded 1`] = `
 <div
-  class="root"
+  class="root buildInfo"
   data-testid="build-info"
 >
   Build Number: 

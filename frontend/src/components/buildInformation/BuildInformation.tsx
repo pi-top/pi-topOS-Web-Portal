@@ -1,13 +1,15 @@
 import React from "react";
+import cx from 'classnames';
 
 import styles from "./BuildInformation.module.css";
 import { BuildInfo } from "../../types/Build";
 
 export type Props = {
   info?: BuildInfo;
+  className?: string;
 };
 
-export default ({ info }: Props) => {
+export default ({ info, className }: Props) => {
   if (!info) {
     return null;
   }
@@ -15,14 +17,14 @@ export default ({ info }: Props) => {
   // TODO: perform a similar check with latest OS
   if (info.finalRepo === "sirius") {
     return (
-      <div data-testid="build-info" className={styles.root}>
+      <div data-testid="build-info" className={cx(styles.root, className)}>
         pi-topOS Build Number: {info.buildNumber}<br />
         Release Date: {info.buildDate}
       </div>
     );
   }
   return (
-    <div data-testid="build-info" className={styles.root}>
+    <div data-testid="build-info" className={cx(styles.root, className)}>
       {info.buildOsVersion && <>Build OS Version: {info.buildOsVersion}<br /></>}
       {info.buildName && <>Build Name: {info.buildName}<br /></>}
       {info.buildNumber && <>Build Number: {info.buildNumber}<br /></>}

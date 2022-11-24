@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Route, Switch } from "react-router-dom";
 
+import styles from './App.module.css';
 import SplashPage from "../../pages/splashPage/SplashPage";
 import WifiPageContainer from "../../pages/wifiPage/WifiPageContainer";
 import UpgradePageContainer from "../../pages/upgradePage/UpgradePageContainer";
@@ -179,7 +180,7 @@ export default () => {
 
         <Route component={ErrorPage} />
       </Switch>
-      <BuildInformation info={buildInfo} />
+      <BuildInformation info={buildInfo} className={styles.buildInfo} />
     </>
   );
 };
