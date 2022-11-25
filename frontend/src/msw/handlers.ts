@@ -12,6 +12,23 @@ export default [
       })
     );
   }),
+  rest.get("/build-info", (_, res, ctx) => {
+    return res(
+      ctx.json({
+        buildDate: "2021-09-01T00:00:00Z",
+        buildNumber: "123",
+        buildCommit: "1234567890",
+        schemaVersion: "1.0.0",
+        buildOsVersion: "1.0.0",
+        buildType: "dev",
+        buildName: "dev",
+        buildRepo: "dev",
+        finalRepo: "dev",
+        ptOsWebPortalVersion: "1.0.0",
+        hubFirmwareVersion: "1.0.0",
+      })
+    );
+  }),
   rest.get("/further-url", (_, res, ctx) => {
     return res(ctx.json({ url: "https://further.pi-top.com" }));
   }),
