@@ -19,7 +19,7 @@ class ConnectionManager:
     def __init__(self):
         self.__thread = Thread(target=self._main, args=())
         self._stop = False
-        self._emmited_ap_credentials = False
+        self._emitted_ap_credentials = False
         self._previous_connection_state = False
         self._previous_connected_device_ip = ""
 
@@ -37,14 +37,14 @@ class ConnectionManager:
     def _main(self):
         while not self._stop:
 
-            if not self._emmited_ap_credentials:
+            if not self._emitted_ap_credentials:
                 ap_credentials = get_ap_mode_status()
                 ssid = ap_credentials.get("ssid", "")
                 passphrase = ap_credentials.get("passphrase", "")
                 if ssid != "" and passphrase != "":
                     post_event(AppEvents.AP_HAS_SSID, ssid)
                     post_event(AppEvents.AP_HAS_PASSPHRASE, passphrase)
-                    self._emmited_ap_credentials = True
+                    self._emitted_ap_credentials = True
 
             connected_device_ip = get_address_for_connected_device()
             if connected_device_ip != self._previous_connected_device_ip:
