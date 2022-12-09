@@ -18,19 +18,20 @@ import { UpgradePageExplanation, ErrorMessage } from "../UpgradePage";
 import Messages from "./data/socketMessages.json";
 import getAvailableSpace from "../../../services/getAvailableSpace";
 import wsBaseUrl from "../../../services/wsBaseUrl";
-import serverStatus from "../../../services/serverStatus";
+import axios from "axios";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 import getMajorOsUpdates from "../../../services/getMajorOsUpdates";
 import { OsVersionUpdate } from "../../../types/OsVersionUpdate";
 
 
+jest.mock("axios")
 jest.mock("../../../services/getAvailableSpace");
-jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
 jest.mock("../../../services/getMajorOsUpdates");
 
+
+const axiosGetMock = axios.get as jest.Mock;
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
-const serverStatusMock = serverStatus as jest.Mock;
 const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
 const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 
@@ -79,7 +80,7 @@ describe("UpgradePageContainer", () => {
       update: false,
     }
 
-    serverStatusMock.mockResolvedValue("OK");
+    axiosGetMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
     getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
 
@@ -133,7 +134,7 @@ describe("UpgradePageContainer", () => {
   afterEach(() => {
     jest.useRealTimers();
     getAvailableSpaceMock.mockRestore();
-    serverStatusMock.mockRestore();
+    axiosGetMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockRestore();
   });
 
@@ -709,7 +710,7 @@ describe("UpgradePageContainer", () => {
   describe("when updating web-portal succeeds", () => {
     beforeEach(async () => {
       restartWebPortalServiceMock.mockResolvedValue("OK");
-      serverStatusMock.mockResolvedValue("OK");
+      axiosGetMock.mockResolvedValue("OK");
 
       server = createServer();
       server.on("connection", (socket) => {
@@ -744,7 +745,7 @@ describe("UpgradePageContainer", () => {
     afterEach(() => {
       jest.useRealTimers();
       restartWebPortalServiceMock.mockRestore();
-      serverStatusMock.mockRestore();
+      axiosGetMock.mockResolvedValue("OK");
     })
 
     it("renders prompt correctly", async () => {
@@ -808,32 +809,33 @@ describe("UpgradePageContainer", () => {
       jest.runOnlyPendingTimers();
       jest.runOnlyPendingTimers();
 
-      expect(serverStatusMock).toHaveBeenCalled();
+      expect(axios.get).toHaveBeenCalledWith(window.location.pathname + "?all");
     });
 
     it.skip("probes backend server until its online", async () => {
-      serverStatusMock.mockRejectedValue(new Error("I'm offline, try again later"));
+      axiosGetMock.mockRejectedValue(new Error("I'm offline, try again later"));
+
       jest.useFakeTimers();
       const { getByText } = mount();
       jest.runAllTimers();
       await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
 
-      expect(serverStatusMock).not.toBeCalled();
+      expect(axios.get).not.toBeCalled();
       jest.runOnlyPendingTimers();
 
       // checks twice
       jest.runOnlyPendingTimers();
-      expect(serverStatusMock).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledTimes(1);
       jest.runOnlyPendingTimers();
-      expect(serverStatusMock).toHaveBeenCalledTimes(2);
+      expect(axios.get).toHaveBeenCalledTimes(2);
       // server is back online
-      serverStatusMock.mockResolvedValue("OK");
+      axiosGetMock.mockResolvedValue("OK");
       jest.runOnlyPendingTimers();
-      expect(serverStatusMock).toHaveBeenCalledTimes(3);
+      expect(axios.get).toHaveBeenCalledTimes(3);
       await wait();
       jest.runOnlyPendingTimers();
       // we don't check again
-      expect(serverStatusMock).toHaveBeenCalledTimes(3);
+      expect(axios.get).toHaveBeenCalledTimes(3);
     });
 
     it("doesn't render the textarea component", async () => {
@@ -1362,7 +1364,7 @@ describe("UpgradePageContainer", () => {
     afterEach(() => {
       jest.useRealTimers();
       restartWebPortalServiceMock.mockRestore();
-      serverStatusMock.mockRestore();
+      axiosGetMock.mockResolvedValue("OK");
     });
 
     it("renders prompt correctly", async () => {
@@ -1663,7 +1665,7 @@ describe("UpgradePageContainer", () => {
         latestOSVersion: "",
         update: false,
       }
-      serverStatusMock.mockResolvedValue("OK");
+      axiosGetMock.mockResolvedValue("OK");
       restartWebPortalServiceMock.mockResolvedValue("OK");
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
@@ -1730,7 +1732,7 @@ describe("UpgradePageContainer", () => {
         latestOSVersion: "",
         update: false,
       }
-      serverStatusMock.mockResolvedValue("OK");
+      axiosGetMock.mockResolvedValue("OK");
       restartWebPortalServiceMock.mockResolvedValue("OK");
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
@@ -1789,7 +1791,7 @@ describe("UpgradePageContainer", () => {
           }
         });
       });
-      serverStatusMock.mockResolvedValue("OK");
+      axiosGetMock.mockResolvedValue("OK");
       restartWebPortalServiceMock.mockResolvedValue("OK");
       getMajorOsUpdatesMock.mockRejectedValue(new Error("couldn't restart"));
     });
