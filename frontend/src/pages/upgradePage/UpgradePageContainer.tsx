@@ -1,3 +1,4 @@
+import axios from "axios"
 import React, { useCallback, useRef, useState, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
@@ -8,7 +9,6 @@ import usePrevious from "../../hooks/usePrevious";
 import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
 import restartWebPortalService from "../../services/restartWebPortalService";
-import serverStatus from "../../services/serverStatus"
 import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
@@ -226,10 +226,12 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
-        serverStatus({ timeout: timeoutServerStatusRequestMs })
-          .then(() => clearInterval(interval))
-          .catch(() => {})
-        window.location.replace(window.location.pathname + "?all")
+
+        axios.get(window.location.href + "?all")
+          .then(() => {
+            clearInterval(interval);
+            window.location.replace(window.location.pathname + "?all");
+          })
       } catch (_) {}
     }, serverStatusRequestIntervalMs);
   }
