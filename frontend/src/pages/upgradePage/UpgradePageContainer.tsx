@@ -108,7 +108,7 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
 
-  const socket = useSocket(`${wsBaseUrl}/os-upgrade`, );
+  const [socket, reconnectSocket] = useSocket(`${wsBaseUrl}/os-upgrade`, );
   socket.onmessage = (e: MessageEvent) => {
     try {
       const data = JSON.parse(e.data);
@@ -117,6 +117,9 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
   };
   socket.onopen = () => {
     setIsOpen(true);
+  }
+  socket.onerror = () => {
+    setTimeout(reconnectSocket, 1000);
   }
 
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
