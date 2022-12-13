@@ -213,11 +213,12 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
 
   useEffect(() => {
     socket.onclose = () => {
-      state !== UpdateState.Finished && setError(ErrorType.GenericError);
+      if (state !== UpdateState.Finished && state !== UpdateState.WaitingForServer) {
+        setError(ErrorType.GenericError);
+      }
       setIsOpen(false);
     };
   }, [socket, state]);
-
 
   const serviceRestartTimoutMs = 30000;
   const timeoutServerStatusRequestMs = 300;
@@ -230,7 +231,23 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
 
-        axios.get(window.location.href + "?all")
+        await axios.get(
+            window.location.href + "?all",
+            {
+              headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+              },
+            }
+          )
+          .then(() => {
+            return new Promise((res, rej) => {
+              const testSocket = new WebSocket(`${wsBaseUrl}/os-upgrade`);
+              testSocket.onopen = res;
+              testSocket.onerror = rej;
+            })
+          })
           .then(() => {
             clearInterval(interval);
             window.location.replace(window.location.pathname + "?all");

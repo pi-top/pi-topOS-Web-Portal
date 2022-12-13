@@ -809,7 +809,7 @@ describe("UpgradePageContainer", () => {
       jest.runOnlyPendingTimers();
       jest.runOnlyPendingTimers();
 
-      expect(axios.get).toHaveBeenCalledWith(window.location.pathname + "?all");
+      expect(axios.get).toHaveBeenCalledWith(window.location.pathname + "?all", {"headers": {"Cache-Control": "no-cache", "Expires": "0", "Pragma": "no-cache"}});
     });
 
     it.skip("probes backend server until its online", async () => {
