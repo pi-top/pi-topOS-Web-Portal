@@ -232,27 +232,23 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
 
         await axios.get(
-            window.location.href + "?all",
-            {
-              headers: {
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache',
-                'Expires': '0',
-              },
-            }
-          )
-          .then(() => {
-            return new Promise((res, rej) => {
-              const testSocket = new WebSocket(`${wsBaseUrl}/os-upgrade`);
-              testSocket.onopen = res;
-              testSocket.onerror = rej;
-            })
-          })
-          .then(() => {
-            clearInterval(interval);
-            window.location.replace(window.location.pathname + "?all");
-          })
-      } catch (_) {}
+          window.location.href + "?all",
+          {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            },
+          }
+        );
+        await new Promise((res, rej) => {
+          const testSocket = new WebSocket(`${wsBaseUrl}/os-upgrade`);
+          testSocket.onopen = res;
+          testSocket.onerror = () => rej(new Error('socket not ready'));
+        })
+        clearInterval(interval);
+        window.location.replace(window.location.pathname + "?all");
+      } catch (_) { };
     }, serverStatusRequestIntervalMs);
   }
 
