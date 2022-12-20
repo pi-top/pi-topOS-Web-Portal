@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.17.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.18.0-1) bullseye; urgency=medium
 
   * chore: show build info when developing
   * fix: onboarding on mobile devices
