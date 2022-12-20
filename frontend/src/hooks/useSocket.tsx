@@ -1,12 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function useSocket(url: string) {
-  const socketRef = useRef<WebSocket>(new WebSocket(url));
+  const [socket, setSocket] = useState<WebSocket>(() => new WebSocket(url));
 
   useEffect(() => {
-    const socket = socketRef.current;
     return () => socket.close();
-  }, []);
+  }, [socket]);
 
-  return socketRef.current;
+  return [socket, () => setSocket(new WebSocket(url))] as const;
 }
