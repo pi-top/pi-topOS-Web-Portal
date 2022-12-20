@@ -1,3 +1,12 @@
+pi-top-os-web-portal (0.18.0-1) bullseye; urgency=medium
+
+  * chore: show build info when developing
+  * fix: onboarding on mobile devices
+  * Stop polling for AP credentials once they're retrieved (#413)
+  * Ping next-page url to determine server status (#416)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 20 Dec 2022 17:36:53 +0000
+
 pi-top-os-web-portal (0.17.0-1) bullseye; urgency=medium
 
   * refactor: use new core in miniscreen onboarding
