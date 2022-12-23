@@ -13,37 +13,13 @@ from .event import AppEvents, post_event
 logger = logging.getLogger(__name__)
 
 
-class ApConnection:
-    def __init__(self):
-        self.metadata = get_ap_mode_status()
-        self._previous_metadata = None
-        self._has_changes = True
-
-    @property
-    def ssid(self):
-        return self.metadata.get("ssid", "")
-
-    @property
-    def passphrase(self):
-        return self.metadata.get("passphrase", "")
-
-    @property
-    def has_changes(self):
-        return self._has_changes
-
-    def update(self):
-        self.metadata = get_ap_mode_status()
-        self._has_changes = self.metadata != self._previous_metadata
-        self._previous_metadata = self.metadata
-
-
 class ConnectionManager:
     SLEEP_TIME = 0.5
 
     def __init__(self):
-        self.ap_connection = ApConnection()
         self.__thread = Thread(target=self._main, args=())
         self._stop = False
+        self._emitted_ap_credentials = False
         self._previous_connection_state = False
         self._previous_connected_device_ip = ""
 
@@ -60,10 +36,15 @@ class ConnectionManager:
 
     def _main(self):
         while not self._stop:
-            self.ap_connection.update()
-            if self.ap_connection.has_changes:
-                post_event(AppEvents.AP_HAS_SSID, self.ap_connection.ssid)
-                post_event(AppEvents.AP_HAS_PASSPHRASE, self.ap_connection.passphrase)
+
+            if not self._emitted_ap_credentials:
+                ap_credentials = get_ap_mode_status()
+                ssid = ap_credentials.get("ssid", "")
+                passphrase = ap_credentials.get("passphrase", "")
+                if ssid != "" and passphrase != "":
+                    post_event(AppEvents.AP_HAS_SSID, ssid)
+                    post_event(AppEvents.AP_HAS_PASSPHRASE, passphrase)
+                    self._emitted_ap_credentials = True
 
             connected_device_ip = get_address_for_connected_device()
             if connected_device_ip != self._previous_connected_device_ip:

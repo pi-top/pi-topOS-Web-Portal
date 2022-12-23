@@ -1,87 +1,9 @@
 from tests.utils import SleepMocker
 
 
-def test_ap_connection_constructor_fetches_metadata(patch_modules, mocker):
-    ap_metadata = {
-        "ssid": "ap-network-ssid",
-        "passphrase": "ap-network-password",
-    }
-
-    get_ap_mode_status_mock = mocker.patch(
-        "pt_os_web_portal.connection_manager.get_ap_mode_status",
-        return_value=ap_metadata,
-    )
-
-    from pt_os_web_portal.connection_manager import ApConnection
-
-    ap = ApConnection()
-
-    get_ap_mode_status_mock.assert_called_once()
-
-    assert ap.metadata == ap_metadata
-
-
-def test_ap_connection_properties_use_metadata(patch_modules, mocker):
-    ap_metadata = {
-        "ssid": "ap-network-ssid",
-        "passphrase": "ap-network-password",
-    }
-
-    mocker.patch(
-        "pt_os_web_portal.connection_manager.get_ap_mode_status",
-        return_value=ap_metadata,
-    )
-
-    from pt_os_web_portal.connection_manager import ApConnection
-
-    ap = ApConnection()
-
-    assert ap.ssid == ap_metadata.get("ssid")
-    assert ap.passphrase == ap_metadata.get("passphrase")
-
-
-def test_ap_connection_has_changes_property_on_update(patch_modules, mocker):
-    ap_metadata = {
-        "ssid": "ap-network-ssid",
-        "passphrase": "ap-network-password",
-    }
-    mocker.patch(
-        "pt_os_web_portal.connection_manager.get_ap_mode_status",
-        return_value=ap_metadata,
-    )
-
-    from pt_os_web_portal.connection_manager import ApConnection
-
-    ap = ApConnection()
-
-    assert ap.ssid == ap_metadata.get("ssid")
-    assert ap.passphrase == ap_metadata.get("passphrase")
-
-    mocker.patch(
-        "pt_os_web_portal.connection_manager.get_ap_mode_status",
-        return_value={},
-    )
-
-    ap.update()
-    assert ap.has_changes is True
-    assert ap.ssid == ""
-    assert ap.passphrase == ""
-
-    ap.update()
-    assert ap.has_changes is False
-
-    mocker.patch(
-        "pt_os_web_portal.connection_manager.get_ap_mode_status",
-        return_value=ap_metadata,
-    )
-
-    ap.update()
-    assert ap.has_changes is True
-    assert ap.ssid == ap_metadata.get("ssid")
-    assert ap.passphrase == ap_metadata.get("passphrase")
-
-
-def test_connection_manager_triggers_event_on_ap_changes(patch_modules, mocker):
+def test_connection_manager_triggers_event_when_getting_ap_credentials(
+    patch_modules, mocker
+):
     ap_metadata = {
         "ssid": "ap-network-ssid",
         "passphrase": "ap-network-password",
@@ -92,7 +14,7 @@ def test_connection_manager_triggers_event_on_ap_changes(patch_modules, mocker):
     )
     mocker.patch(
         "pt_os_web_portal.connection_manager.get_ap_mode_status",
-        return_value=ap_metadata,
+        return_value={},
     )
     mocker.patch(
         "pt_os_web_portal.connection_manager.is_connected_to_internet",
@@ -109,6 +31,16 @@ def test_connection_manager_triggers_event_on_ap_changes(patch_modules, mocker):
     cm = ConnectionManager()
     cm.start()
 
+    # Events are not triggered since AP credentials are not available yet
+    sleep_mocker.wait_until_next_iteration(sleep_patch)
+    assert post_event_mock.call_count == 0
+
+    # Events are triggered since AP credentials were retrieved successfuly
+    mocker.patch(
+        "pt_os_web_portal.connection_manager.get_ap_mode_status",
+        return_value=ap_metadata,
+    )
+    sleep_mocker.wait_until_next_iteration(sleep_patch)
     post_event_mock.assert_any_call(AppEvents.AP_HAS_SSID, ap_metadata.get("ssid"))
     post_event_mock.assert_any_call(
         AppEvents.AP_HAS_PASSPHRASE, ap_metadata.get("passphrase")
@@ -116,21 +48,17 @@ def test_connection_manager_triggers_event_on_ap_changes(patch_modules, mocker):
     assert post_event_mock.call_count == 2
     post_event_mock.reset_mock()
 
-    sleep_mocker.wait_until_next_iteration(sleep_patch)
-
     # no changes in AP data, no events posted
+    sleep_mocker.wait_until_next_iteration(sleep_patch)
     assert post_event_mock.call_count == 0
 
+    # If issues happen when retrieving credentials, event is not triggered
     mocker.patch(
         "pt_os_web_portal.connection_manager.get_ap_mode_status",
         return_value={},
     )
-
     sleep_mocker.wait_until_next_iteration(sleep_patch)
-
-    post_event_mock.assert_any_call(AppEvents.AP_HAS_SSID, "")
-    post_event_mock.assert_any_call(AppEvents.AP_HAS_PASSPHRASE, "")
-    assert post_event_mock.call_count == 2
+    assert post_event_mock.call_count == 0
 
     cm._stop = True
     sleep_mocker.sleep_event.set()
@@ -163,7 +91,6 @@ def test_connection_manager_triggers_event_on_connected_device_ip_changes(
     from pt_os_web_portal.connection_manager import AppEvents, ConnectionManager
 
     cm = ConnectionManager()
-    cm.ap_connection._previous_metadata = {}  # don't trigger AP events
     cm.start()
 
     sleep_mocker.wait_until_next_iteration(sleep_patch)
@@ -210,7 +137,6 @@ def test_connection_manager_triggers_event_on_connection_to_internet(
     from pt_os_web_portal.connection_manager import AppEvents, ConnectionManager
 
     cm = ConnectionManager()
-    cm.ap_connection._previous_metadata = {}  # don't trigger AP events
     cm.start()
 
     sleep_mocker.wait_until_next_iteration(sleep_patch)
