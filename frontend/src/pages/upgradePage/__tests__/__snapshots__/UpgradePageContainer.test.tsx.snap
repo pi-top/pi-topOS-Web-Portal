@@ -839,7 +839,7 @@ exports[`UpgradePageContainer when updating web-portal fails renders prompt corr
 </h1>
 `;
 
-exports[`UpgradePageContainer when updating web-portal succeeds renders prompt correctly 1`] = `
+exports[`UpgradePageContainer when updating web-portal succeeds probes backend server to determine if its online 1`] = `
 <h1
   class="prompt"
 >

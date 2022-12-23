@@ -16,12 +16,13 @@
 
 .dialog {
   --underlineColour: var(--primaryColour, var(--lightGreen));
+  position: relative;
   background-color: var(--white);
   padding: 15px;
   border: 1px solid var(--noteGrey);
   border-radius: 9px;
-  width: 618px;
-  min-height: 413px;
+  width: min(618px, 90vw);
+  min-height: min(413px, 80vh);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

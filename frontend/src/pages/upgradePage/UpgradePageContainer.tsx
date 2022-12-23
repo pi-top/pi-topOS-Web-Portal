@@ -1,3 +1,4 @@
+import axios from "axios"
 import React, { useCallback, useRef, useState, useEffect } from "react";
 
 import UpgradePage from "./UpgradePage";
@@ -8,7 +9,6 @@ import usePrevious from "../../hooks/usePrevious";
 import getAvailableSpace from "../../services/getAvailableSpace";
 import wsBaseUrl from "../../services/wsBaseUrl";
 import restartWebPortalService from "../../services/restartWebPortalService";
-import serverStatus from "../../services/serverStatus"
 import getMajorOsUpdates from "../../services/getMajorOsUpdates"
 
 export enum OSUpdaterMessageType {
@@ -108,7 +108,7 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
 
-  const socket = useSocket(`${wsBaseUrl}/os-upgrade`, );
+  const [socket, reconnectSocket] = useSocket(`${wsBaseUrl}/os-upgrade`, );
   socket.onmessage = (e: MessageEvent) => {
     try {
       const data = JSON.parse(e.data);
@@ -117,6 +117,9 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
   };
   socket.onopen = () => {
     setIsOpen(true);
+  }
+  socket.onerror = () => {
+    setTimeout(reconnectSocket, 1000);
   }
 
   const [updateSize, setUpdateSize] = useState({downloadSize: 0, requiredSpace: 0});
@@ -210,11 +213,12 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
 
   useEffect(() => {
     socket.onclose = () => {
-      state !== UpdateState.Finished && setError(ErrorType.GenericError);
+      if (state !== UpdateState.Finished && state !== UpdateState.WaitingForServer) {
+        setError(ErrorType.GenericError);
+      }
       setIsOpen(false);
     };
   }, [socket, state]);
-
 
   const serviceRestartTimoutMs = 30000;
   const timeoutServerStatusRequestMs = 300;
@@ -226,11 +230,25 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
       try {
         elapsedWaitingTimeMs += timeoutServerStatusRequestMs + serverStatusRequestIntervalMs;
         elapsedWaitingTimeMs >= serviceRestartTimoutMs && setError(ErrorType.GenericError);
-        serverStatus({ timeout: timeoutServerStatusRequestMs })
-          .then(() => clearInterval(interval))
-          .catch(() => {})
-        window.location.replace(window.location.pathname + "?all")
-      } catch (_) {}
+
+        await axios.get(
+          window.location.href + "?all",
+          {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            },
+          }
+        );
+        await new Promise((res, rej) => {
+          const testSocket = new WebSocket(`${wsBaseUrl}/os-upgrade`);
+          testSocket.onopen = res;
+          testSocket.onerror = () => rej(new Error('socket not ready'));
+        })
+        clearInterval(interval);
+        window.location.replace(window.location.pathname + "?all");
+      } catch (_) { };
     }, serverStatusRequestIntervalMs);
   }
 

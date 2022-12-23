@@ -35,7 +35,7 @@
 
 .actions {
   position: relative;
-  width: 450px;
+  width: min(calc(100% - 20px), 450px);
   margin-top: auto;
   display: flex;
   justify-content: center;

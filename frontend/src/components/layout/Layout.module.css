@@ -3,6 +3,7 @@
   top: 0;
   left: 0;
   width: 100vw;
+  max-height: -webkit-fill-available;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -83,4 +84,15 @@
   color: var(--green);
   margin-left: auto;
   height: 28px;
+}
+
+@media screen and (max-height: 480px) {
+  .bannerImage {
+    display: none !important;
+  }
+
+  .banner {
+    margin-top: 60px;
+    height: min-content;
+  }
 }
