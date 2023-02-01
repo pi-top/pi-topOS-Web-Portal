@@ -8,7 +8,6 @@ import rebootScreen from "../../assets/images/reboot-screen.png";
 import styles from "./RestartPage.module.css";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
-import ManualPowerOnDialogContainer from "./manualPowerOnDialog/ManualPowerOnDialogContainer";
 import ConnectivityWarningDialog from "./connectivityWarningDialog/ConnectivityWarningDialog";
 
 export enum ErrorMessage {
@@ -36,11 +35,9 @@ export type Props = {
   rebootError: boolean;
   progressPercentage: number;
   progressMessage: string;
-  displayManualPowerOnDialog: boolean;
   checkingOnSameNetwork: boolean;
   shouldMoveAwayFromAp: boolean;
   piTopIpAddress: string;
-  onManualPowerOnDialogClose: () => void;
   shouldDisplayConnectivityDialog: boolean,
   setupDevice: () => void;
   onBackClick?: () => void;
@@ -54,21 +51,14 @@ export default ({
   rebootError,
   progressPercentage,
   progressMessage,
-  displayManualPowerOnDialog,
   shouldMoveAwayFromAp,
   shouldDisplayConnectivityDialog,
   checkingOnSameNetwork,
   piTopIpAddress,
-  onManualPowerOnDialogClose,
   setupDevice,
   onBackClick,
 }: Props) => {
-  const [manualPowerOnDialogActive, setManualPowerOnDialogActive] = useState(false);
   const [connectivityDialogActive, setConnectivityDialogActive] = useState(false);
-
-  useEffect(() => {
-    setManualPowerOnDialogActive(displayManualPowerOnDialog);
-  }, [displayManualPowerOnDialog])
 
   useEffect(() => {
     !checkingOnSameNetwork && shouldDisplayConnectivityDialog && setConnectivityDialogActive(true);
@@ -122,14 +112,6 @@ export default ({
       }
       className={styles.root}
     >
-      {displayManualPowerOnDialog && <ManualPowerOnDialogContainer
-        active={manualPowerOnDialogActive}
-        onClose={() => {
-          setManualPowerOnDialogActive(!manualPowerOnDialogActive);
-          onManualPowerOnDialogClose();
-        }}
-      />}
-
       {!checkingOnSameNetwork && shouldDisplayConnectivityDialog && <ConnectivityWarningDialog
         shouldMoveAwayFromAp={shouldMoveAwayFromAp}
         active={connectivityDialogActive}
