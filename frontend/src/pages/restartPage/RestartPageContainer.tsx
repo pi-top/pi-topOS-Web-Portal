@@ -13,10 +13,7 @@ import restoreFiles from "../../services/restoreFiles";
 import serverStatus from "../../services/serverStatus"
 import updateEeprom from "../../services/updateEeprom"
 import enablePtMiniscreen from "../../services/enablePtMiniscreen";
-import updateHubFirmware from "../../services/updateHubFirmware";
 import disableApMode from "../../services/disableApMode";
-import getBuildInfo from "../../services/getBuildInfo";
-import getHubFirmwareUpdateIsDue from "../../services/getHubFirmwareUpdateIsDue";
 import verifyDeviceNetwork from "../../services/verifyDeviceNetwork";
 
 import { runningOnWebRenderer } from "../../helpers/utils";
@@ -47,8 +44,6 @@ export default ({
   const [progress, setProgress] = useState(0);
   const [isWaitingForServer, setIsWaitingForServer] = useState(false);
   const [serverRebooted, setServerRebooted] = useState(false);
-  const [legacyHubFirmware, setLegacyHubFirmware] = useState(false);
-  const [displayManualPowerOnDialog, setDisplayManualPowerOnDialog] = useState(false);
   const [checkingOnSameNetwork, setCheckingOnSameNetwork] = useState(true);
   const [shouldMoveAwayFromAp, setShouldMoveAwayFromAp] = useState(false);
   const [shouldDisplayConnectivityDialog, setShouldDisplayConnectivityDialog] = useState(false);
@@ -63,15 +58,6 @@ export default ({
       })
       .catch(() => null)
       .finally(() => setCheckingOnSameNetwork(false));
-  }, []);
-
-  useEffect(() => {
-    getBuildInfo()
-      .then((buildInfo) => {
-        const versionArray = buildInfo.hubFirmwareVersion.split(".");
-        setLegacyHubFirmware(versionArray.length >= 2 && parseInt(versionArray[0]) <= 3 && parseInt(versionArray[1]) === 0);
-      })
-      .catch(() => setLegacyHubFirmware(false))
   }, []);
 
   // stop users leaving page when setting up or waiting for reboot to finish.
@@ -145,8 +131,6 @@ export default ({
 
   return (
     <RestartPage
-      displayManualPowerOnDialog={displayManualPowerOnDialog}
-      onManualPowerOnDialogClose={rebootPiTop}
       isWaitingForServer={isWaitingForServer}
       serverRebooted={serverRebooted}
       globalError={globalError}
@@ -198,12 +182,6 @@ export default ({
           )
           .finally(() =>
             safelyRunService(
-              updateHubFirmware,
-              "Made things easier for me to go to sleep when you ask..."
-            )
-          )
-          .finally(() =>
-            safelyRunService(
               updateEeprom,
               "Made things easier for me to go to sleep when you ask..."
             )
@@ -233,16 +211,7 @@ export default ({
           )
           .catch(console.error)
           .finally(() => {
-            if (legacyHubFirmware) {
-              getHubFirmwareUpdateIsDue()
-                .then((dueUpdate) => {
-                  setDisplayManualPowerOnDialog(dueUpdate);
-                  !dueUpdate && rebootPiTop();
-                })
-                .catch(() => rebootPiTop())
-            } else {
               rebootPiTop();
-            }
           })
       }}
     />

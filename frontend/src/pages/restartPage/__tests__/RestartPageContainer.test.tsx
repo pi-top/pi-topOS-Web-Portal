@@ -27,7 +27,6 @@ import reboot from "../../../services/reboot";
 import serverStatus from "../../../services/serverStatus";
 import updateEeprom from "../../../services/updateEeprom";
 import enablePtMiniscreen from "../../../services/enablePtMiniscreen";
-import updateHubFirmware from "../../../services/updateHubFirmware";
 import verifyDeviceNetwork from "../../../services/verifyDeviceNetwork";
 import disableApMode from "../../../services/disableApMode";
 
@@ -44,7 +43,6 @@ jest.mock("../../../services/reboot");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/updateEeprom");
 jest.mock("../../../services/enablePtMiniscreen");
-jest.mock("../../../services/updateHubFirmware");
 jest.mock("../../../services/verifyDeviceNetwork");
 jest.mock("../../../services/disableApMode");
 
@@ -59,7 +57,6 @@ const rebootMock = reboot as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const updateEepromMock = updateEeprom as jest.Mock;
 const enablePtMiniscreenMock = enablePtMiniscreen as jest.Mock;
-const updateHubFirmwareMock = updateHubFirmware as jest.Mock;
 const verifyDeviceNetworkMock = verifyDeviceNetwork as jest.Mock;
 const disableApModeMock = disableApMode as jest.Mock;
 
@@ -71,7 +68,6 @@ const mockServices = [
   restoreFilesMock,
   configureLandingMock,
   stopOnboardingAutostartMock,
-  updateHubFirmwareMock,
   updateEepromMock,
   enablePtMiniscreenMock,
   disableApModeMock,
@@ -304,22 +300,6 @@ describe("RestartPageContainer", () => {
     describe('when update EEPROM fails', () => {
       beforeEach(() => {
         updateEepromMock.mockRejectedValue(new Error());
-      });
-
-      it('calls remaining services', async () => {
-        fireEvent.click(getByText("Restart"));
-
-        await wait();
-
-        mockServices.forEach((mock) => {
-          expect(mock).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('when update hub firmware fails', () => {
-      beforeEach(() => {
-        updateHubFirmwareMock.mockRejectedValue(new Error());
       });
 
       it('calls remaining services', async () => {
