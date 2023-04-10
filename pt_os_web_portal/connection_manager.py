@@ -36,7 +36,6 @@ class ConnectionManager:
 
     def _main(self):
         while not self._stop:
-
             if not self._emitted_ap_credentials:
                 ap_credentials = get_ap_mode_status()
                 ssid = ap_credentials.get("ssid", "")

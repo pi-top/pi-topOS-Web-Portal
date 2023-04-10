@@ -265,5 +265,5 @@ def displayed_ssid_for_network(wifi_manager_module):
         ({"ssid": "any ssid", "freq": 5400}, "any ssid [5G]"),
         ({"ssid": "any ssid", "freq": 2400}, "any ssid"),
     ]
-    for (profile, expected_ssid) in test_data:
+    for profile, expected_ssid in test_data:
         assert wifi_manager.ssid_to_display(PyWiFiProfile(profile)) == expected_ssid

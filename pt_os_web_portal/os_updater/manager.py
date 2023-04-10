@@ -72,7 +72,6 @@ class OSUpdateManager:
 
         for package_dependencies in package.candidate.dependencies:
             for dependency in package_dependencies:
-
                 if len(dependency.target_versions) == 0:
                     continue
 
