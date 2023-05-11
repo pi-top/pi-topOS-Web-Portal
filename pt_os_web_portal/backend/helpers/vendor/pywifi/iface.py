@@ -21,7 +21,6 @@ class Interface:
     _logger = None
 
     def __init__(self, raw_obj):
-
         self._raw_obj = raw_obj
         self._wifi_ctrl = wifiutil.WifiUtil()
         self._logger = logging.getLogger("pywifi")

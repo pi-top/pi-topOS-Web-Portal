@@ -15,7 +15,6 @@ from .wifi import PyWiFi
 
 
 def set_loglevel(level=logging.NOTSET):
-
     format_pattern = "%(name)s %(asctime)s %(levelname)s %(message)s"
     logging.basicConfig(format=format_pattern)
     logger = logging.getLogger("pywifi")

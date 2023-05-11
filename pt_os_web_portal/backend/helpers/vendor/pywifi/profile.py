@@ -7,7 +7,6 @@ from .const import AKM_TYPE_NONE, AUTH_ALG_OPEN, CIPHER_TYPE_NONE
 
 class Profile:
     def __init__(self):
-
         self.id = 0
         self.auth = AUTH_ALG_OPEN
         self.akm = [AKM_TYPE_NONE]
@@ -17,12 +16,10 @@ class Profile:
         self.key = None
 
     def process_akm(self):
-
         if len(self.akm) > 1:
             self.akm = self.akm[-1:]
 
     def __eq__(self, profile):
-
         if profile.ssid:
             if profile.ssid != self.ssid:
                 return False

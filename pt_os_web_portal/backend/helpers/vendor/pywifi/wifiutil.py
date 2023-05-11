@@ -286,7 +286,6 @@ class WifiUtil:
         return ifaces
 
     def _connect_to_wpa_s(self, iface):
-
         ctrl_iface = "/".join([CTRL_IFACE_DIR, iface])
         if ctrl_iface in self._connections:
             self._logger.info("Connection for iface '%s' aleady existed!", iface)
@@ -316,14 +315,12 @@ class WifiUtil:
             retry -= 1
 
     def _remove_existed_sock(self, sock_file):
-
         if os.path.exists(sock_file):
             mode = os.stat(sock_file).st_mode
             if stat.S_ISSOCK(mode):
                 os.remove(sock_file)
 
     def _send_cmd_to_wpas(self, iface, cmd, get_reply=False):
-
         if "psk" not in cmd:
             self._logger.info("Send cmd '%s' to wpa_s", cmd)
         sock = self._connections[iface]["sock"]

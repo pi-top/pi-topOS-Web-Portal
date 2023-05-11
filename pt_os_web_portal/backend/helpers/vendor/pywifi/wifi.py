@@ -22,7 +22,6 @@ class PyWiFi:
     _logger = None
 
     def __init__(self):
-
         self._logger = logging.getLogger("pywifi")
 
     def interfaces(self):
