@@ -1,5 +1,6 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from os import environ
 
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
@@ -46,6 +47,9 @@ class App:
         if state.get("app", "onboarded", fallback="false") == "false":
             logger.info("Onboarding not completed ...")
             if device == DeviceName.pi_top_4.value:
+                logger.debug("Setting ENV VAR to use miniscreen as system...")
+                environ["PT_MINISCREEN_SYSTEM"] = "1"
+
                 logger.info("Starting miniscreen onboarding application")
                 self.miniscreen_onboarding = OnboardingAssistantApp()
                 self.miniscreen_onboarding.start()
