@@ -63,8 +63,8 @@ def deprioritise_openbox_session() -> None:
 def stop_onboarding_autostart() -> None:
     logger.debug("Function: stop_onboarding_autostart()")
     try:
-        remove("/etc/xdg/autostart/pt-os-setup.desktop")
         state.set("app", "onboarded", "true")
+        remove("/etc/xdg/autostart/pt-os-setup.desktop")
     except FileNotFoundError:
         logger.debug("stop_onboarding_autostart: Onboarding already disabled")
     except Exception as e:
