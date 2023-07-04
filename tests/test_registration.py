@@ -1,3 +1,6 @@
+from unittest.mock import call
+
+
 def test_set_registration_failure_wrong_type(app):
     validation_error_response = app.post("/set-registration", json={"email": 0})
     assert validation_error_response.status_code == 422
@@ -26,4 +29,9 @@ def test_set_registration_updates_state(app, mocker):
 
     app.post("/set-registration", json={"email": email_str})
 
-    state_mock.assert_called_once_with("registration", "email", email_str)
+    state_mock.assert_has_calls(
+        [
+            call("registration", "email", email_str),
+            call("registration", "is_registered", "false"),
+        ]
+    )
