@@ -14,11 +14,11 @@ exports[`SplashPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  Are you ready to be a 
+  Are you ready to 
   <span
     class="green"
   >
-    maker
+    start
   </span>
   ?
 </h1>

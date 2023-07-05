@@ -20,6 +20,7 @@ import getBuildInfo from "../../services/getBuildInfo";
 import { BuildInfo } from "../../types/Build";
 import { Page, PageRoute } from "../../types/Page";
 import { Network } from "../../types/Network";
+import { UserType } from "../../types/UserType";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -48,7 +49,7 @@ export default () => {
           exact
           path={PageRoute.Splash}
           render={({ history }) => (
-            <SplashPage goToNextPage={() => history.push(PageRoute.Language)} />
+            <SplashPage goToNextPage={(userType: UserType) => history.push(userType === UserType.Home ? PageRoute.Language : PageRoute.School)} />
           )}
         />
 
