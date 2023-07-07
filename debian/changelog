@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.19.0-1) bullseye; urgency=medium
+
+  * Allow miniscreen takeover during onboarding (#428)
+  * Don't use app context when setting registration email (#429)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Jul 2023 17:56:43 +0000
+
 pi-top-os-web-portal (0.18.0-1) bullseye; urgency=medium
 
   * chore: show build info when developing
