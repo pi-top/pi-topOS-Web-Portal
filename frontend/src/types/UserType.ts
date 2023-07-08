@@ -1,4 +1,4 @@
 export enum UserType {
-  Home = "HOME",
-  School = "SCHOOL",
+  HOME = "HOME",
+  SCHOOL = "SCHOOL",
 }

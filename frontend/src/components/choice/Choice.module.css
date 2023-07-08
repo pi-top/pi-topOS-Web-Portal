@@ -1,0 +1,101 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.header {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.title {
+  composes: text from '../../globalStyles/Typography.module.css';
+  line-height: 1;
+  font-size: 42px;
+  font-weight: bold;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  padding: 10px 0px 10px 0px;
+  margin: 0;
+}
+
+.description {
+  /* composes: fontBody from '../../globalStyles/Typography.module.css';
+  font-size: 2rem;
+  color: var(--darkGrey);
+  margin: 1rem; */
+  composes: text from '../../globalStyles/Typography.module.css';
+  color: var(--font80);
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: center;
+  isolation: isolate;
+  flex-wrap: wrap;
+}
+
+.card {
+  margin: 1.5rem;
+  max-height: 32.3rem;
+  min-height: 22.8rem;
+  max-width: 43.7rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.buttons1 {
+  margin: 4rem auto;
+  padding-bottom: 2rem;
+  width: 100%;
+  max-width: 60rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.buttons {
+  flex: 1 1 auto;
+  width: 100%;
+  margin-top: auto;
+  padding-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+}
+
+.buttonContainer {
+  margin: 2rem 0;
+  display: flex;
+  position: relative;
+}
+
+.nextButton {
+  margin: 0 auto;
+}
+
+
+.backButton {
+  composes: fontSub from '../../globalStyles/Typography.module.css';
+  color: var(--piTopGreen);
+  font-weight: 800;
+  position: absolute;
+  left: 0;
+  top: 0.8rem;
+}

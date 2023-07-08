@@ -10,11 +10,37 @@ const getErrorMessage = (error: string) => {
   return `There was a problem with your bundle; please try again (${error}).`;
 };
 
-export default () => {
+export type Props = {
+  onBackButtonClick?: () => void;
+};
+
+export default ({
+  onBackButtonClick,
+}: Props) => {
   const [uploadSucceeded, setUploadSucceeded] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
   const [progress, setProgress] = useState(0);
+
+  const getPrompt = () => {
+    if (uploadSucceeded) {
+      return <>Bundle uploaded <span className="green">successfully</span>!</>;
+    }
+    return <>Let's upload your <span className="green">setup bundle</span>!</>;
+  }
+
+  const getExplanation = () => {
+    if (uploadSucceeded) {
+      return <>
+        <p>Please follow the instructions in the pi-top[4] miniscreen to complete the setup.</p>
+        <p>Once the process is complete, sign up on <a className={styles.link} href="https://further.pi-top.com">further.pi-top.com</a> to start teaching with your device.</p>
+      </>
+    }
+    return <>
+      <p>If you don't have a setup bundle, download one <a className={styles.link} href="https://further.pi-top.com/setup-devices">here</a>.</p>
+      <p>When configuring multiple devices, it may be faster to put this file on a USB and plug it into each pi-top[4].</p>
+    </>
+  }
 
   const onProgress = (progressEvent: ProgressEvent) => {
     const { loaded, total } = progressEvent;
@@ -28,21 +54,21 @@ export default () => {
         src: updateImage,
         alt: "school-banner",
       }}
-      prompt={
-        <>
-          Let's upload your <span className="green">setup bundle</span>!
-        </>
-      }
-      explanation="If you don't have one, download one here. You can also put the bundle file in a USB drive and plug it into your pi-top[4]."
+      prompt={getPrompt()}
+      explanation={getExplanation()}
       nextButton={{}}
       showNext={false}
+      showBack={onBackButtonClick !== undefined }
+      backButton={{
+        onClick: onBackButtonClick,
+        disabled: isUploading,
+      }}
       className={styles.root}
     >
       {!isUploading && !uploadSucceeded && (
         <Upload
           userInstruction="Click to upload your bundle or drag and drop it here"
           filenameRegex={/^pi-top-usb-setup\.tar\.gz$/}
-          className={styles.dropzone}
           onUploadStart={() => {
             setError("");
             setUploadSucceeded(false);
@@ -62,7 +88,7 @@ export default () => {
         />
       )}
 
-      { (isUploading || uploadSucceeded) && (
+      { isUploading && (
         <div data-testid="progress" className={styles.progress}>
           <ProgressBar
             percent={progress}
@@ -70,8 +96,7 @@ export default () => {
             strokeColor="#71c0b4"
           />
           <span data-testid="progress-message" className={styles.text}>
-            {isUploading && "Please wait while we upload your bundle; this could take a few minutes ..." }
-            {uploadSucceeded && "Bundle uploaded successfully! Please follow the instructions in the pi-top[4] miniscreen to complete the setup."}
+            Please wait while we upload your bundle; this could take a few minutes ...
           </span>
         </div>
       )}

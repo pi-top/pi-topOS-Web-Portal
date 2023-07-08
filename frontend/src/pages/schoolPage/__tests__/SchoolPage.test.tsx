@@ -9,6 +9,8 @@ import {
   QueryByBoundAttribute,
   GetByText,
   waitForElement,
+  getByTestId,
+  wait,
 } from "@testing-library/react";
 
 import SchoolPage from "../SchoolPage";
@@ -35,7 +37,7 @@ describe("SchoolPage", () => {
   let queryByTestId: BoundFunction<QueryByBoundAttribute>;
 
   beforeEach(() => {
-    postFileMock.mockResolvedValue("OK");
+    postFileMock.mockRestore();
     ({ container, getByAltText, queryByText, getByText, queryByTestId } =
       render(<SchoolPage />));
   });
@@ -50,9 +52,7 @@ describe("SchoolPage", () => {
   });
 
   it("renders explanation", () => {
-    const text =
-      "If you don't have one, download one here. You can also put the bundle file in a USB drive and plug it into your pi-top[4].";
-    expect(getByText(text)).toBeInTheDocument();
+    expect(queryByTestId("layout-explanation")).toMatchSnapshot();
   });
 
   it("doesn't render error message", () => {
@@ -114,9 +114,7 @@ describe("SchoolPage", () => {
         onUploadProgress: (progressEvent: ProgressEvent) => void = (_) => {}
       ) => {
         return new Promise(() => {
-          setTimeout(() => {
-            onUploadProgress({ loaded: 10, total: 100 });
-          }, 10);
+          onUploadProgress({ loaded: 10, total: 100 });
         });
       }
     );
@@ -132,10 +130,10 @@ describe("SchoolPage", () => {
     });
 
     await waitForElement(() => queryByTestId("progress"));
+    // dropzone isn't rendered anymore
     expect(container.querySelector("input")).not.toBeInTheDocument();
-
-    const progressBar = queryByTestId("progress");
-    expect(progressBar).toMatchSnapshot();
+    // progress bar is rendered
+    expect(queryByTestId("progress")).toMatchSnapshot();
   });
 
   it("displays a message when the transfer finishes", async () => {
@@ -145,13 +143,12 @@ describe("SchoolPage", () => {
         onUploadProgress: (progressEvent: ProgressEvent) => void = (_) => {}
       ) => {
         return new Promise((resolve) => {
-          setTimeout(() => {
-            onUploadProgress({ loaded: 100, total: 100 });
-            resolve("OK");
-          }, 10);
+          onUploadProgress({ loaded: 100, total: 100 });
+          resolve("OK")
         });
       }
     );
+
     act(() => {
       const dropzone = container.querySelector("input")!;
       fireEvent.change(dropzone, {
@@ -163,8 +160,9 @@ describe("SchoolPage", () => {
       });
     });
 
-    await waitForElement(() => queryByTestId("progress"));
-    const progressBar = queryByTestId("progress");
-    expect(progressBar).toMatchSnapshot();
+    await wait();
+    await wait();
+    // explanation message is updated
+    expect(queryByTestId("layout-explanation")).toMatchSnapshot();
   });
 });

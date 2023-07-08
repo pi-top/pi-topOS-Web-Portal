@@ -12,14 +12,12 @@ export type Props = {
   onUploadProgress?: (progressEvent: ProgressEvent) => void;
   userInstruction: string;
   supportedExtensions: Array<string>;
-  className: string;
-  disabled: false;
+  disabled: boolean;
   filenameRegex?: RegExp;
 };
 
 export default ({
   userInstruction,
-  className,
   onUploadStart,
   onUploadEnd,
   onUploadError,
@@ -56,16 +54,17 @@ export default ({
       {({ getRootProps, getInputProps }) => (
         <div
           data-testid="dropzone-input-wrapper"
+          className={styles.dropzone}
           {...getRootProps()}
-          className={className}
         >
           <input
+            className={styles.dropzoneInput}
             data-testid="dropzone-input"
             disabled={disabled}
             {...getInputProps()}
           />
           <img src={add} alt="add" className={styles.addIcon} />
-          <p>{userInstruction}</p>
+          <p data-testid="dropzone-instruction" className={styles.instruction}>{userInstruction}</p>
         </div>
       )}
     </DropZone>

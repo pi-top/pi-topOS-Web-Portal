@@ -140,7 +140,7 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     // queries
     queryReactSelect: () => queryReactSelect(result.container),
     // WaitFors
-    waitForSplashPage: () => waitForAltText("intro-screen"),
+    waitForSplashPage: () => waitForAltText("Teacher"),
     waitForLanguagePage: () => waitForAltText("language-screen-banner"),
     waitForCountryPage: () => waitForAltText("country-screen"),
     waitForKeyboardPage: () => waitForAltText("keyboard-screen"),
@@ -150,6 +150,8 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForUpgradePageBanner: () => waitForAltText("upgrade-page-banner"),
     waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
     waitForRestartPage: () => waitForAltText("reboot-screen"),
+    waitForSchoolPage: () => waitForAltText("school-banner"),
+
     // Actions
     upgrade: async () => {
       fireEvent.click(result.getByText("Update"));
@@ -279,18 +281,30 @@ describe("App", () => {
     const { queryByAltText, waitForSplashPage } = mount();
     await waitForSplashPage();
 
-    expect(queryByAltText("intro-screen")).toBeInTheDocument();
+    expect(queryByAltText("Teacher")).toBeInTheDocument();
   });
 
   describe("SplashPage", () => {
-    it("navigates to LanguagePage on next button click", async () => {
-      const { getByText, waitForSplashPage, waitForLanguagePage } = mount(
+    it("navigates to LanguagePage when Home user is selected and Next button is pressed", async () => {
+      const { getByLabelText, getByText, waitForSplashPage, waitForLanguagePage } = mount(
         PageRoute.Splash
       );
       await waitForSplashPage();
+      fireEvent.click(getByLabelText("Home"));
 
-      fireEvent.click(getByText("Yes"));
+      fireEvent.click(getByText("Next"));
       await waitForLanguagePage();
+    });
+
+    it("navigates to SchoolPage when Home user is selected and Next button is pressed", async () => {
+      const { getByLabelText, getByText, waitForSplashPage, waitForSchoolPage } = mount(
+        PageRoute.Splash
+      );
+      await waitForSplashPage();
+      fireEvent.click(getByLabelText("Teacher"));
+
+      fireEvent.click(getByText("Next"));
+      await waitForSchoolPage();
     });
   });
 

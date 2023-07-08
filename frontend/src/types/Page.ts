@@ -24,5 +24,5 @@ export enum PageRoute {
   Terms = "/onboarding/terms",
   Links = "/landing/links",
   LandingSplash = "/landing",
-  School = "/school",
+  School = "/onboarding/school",
 }

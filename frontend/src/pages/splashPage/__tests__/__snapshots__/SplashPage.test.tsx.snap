@@ -1,25 +1,64 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SplashPage renders correct image 1`] = `
-<img
-  alt="intro-screen"
-  class="image"
-  draggable="false"
-  src="intro-screen.png"
-  style="max-height: 100%; max-width: 100%;"
-/>
-`;
-
-exports[`SplashPage renders prompt correctly 1`] = `
+exports[`SplashPage renders correct title 1`] = `
 <h1
-  class="prompt"
+  class="title"
+  data-testid="choice-title"
 >
-  Are you ready to 
+  Welcome! What type of 
   <span
     class="green"
   >
-    start
+    user
   </span>
-  ?
+   are you?
 </h1>
+`;
+
+exports[`SplashPage renders user-type options for user to select 1`] = `
+<div
+  class="options"
+  data-testid="choice-options"
+>
+  <div
+    class="root card"
+  >
+    <h2
+      class="label"
+    >
+      Teacher
+    </h2>
+    <button
+      aria-label="Teacher"
+      class="card unstyled"
+      type="button"
+    >
+      <img
+        alt="Teacher"
+        class="image"
+        src="teacher.jpg"
+      />
+    </button>
+  </div>
+  <div
+    class="root card"
+  >
+    <h2
+      class="label"
+    >
+      Home
+    </h2>
+    <button
+      aria-label="Home"
+      class="card unstyled"
+      type="button"
+    >
+      <img
+        alt="Home"
+        class="image"
+        src="home.jpg"
+      />
+    </button>
+  </div>
+</div>
 `;

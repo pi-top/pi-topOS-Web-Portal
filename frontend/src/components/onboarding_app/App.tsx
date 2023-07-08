@@ -14,6 +14,7 @@ import RegistrationPageContainer from "../../pages/registrationPage/Registration
 import RestartPageContainer from "../../pages/restartPage/RestartPageContainer";
 import ErrorPage from "../../pages/errorPage/ErrorPage";
 import BuildInformation from "../buildInformation/BuildInformation";
+import SchoolPageContainer from "../../pages/schoolPage/SchoolPageContainer";
 
 import getBuildInfo from "../../services/getBuildInfo";
 
@@ -49,7 +50,16 @@ export default () => {
           exact
           path={PageRoute.Splash}
           render={({ history }) => (
-            <SplashPage goToNextPage={(userType: UserType) => history.push(userType === UserType.Home ? PageRoute.Language : PageRoute.School)} />
+            <SplashPage goToNextPage={(userType: UserType) => history.push(userType === UserType.HOME ? PageRoute.Language : PageRoute.School)} />
+          )}
+        />
+
+        <Route
+          exact
+          path={PageRoute.School}
+          render={({ history }) => (
+              <SchoolPageContainer goToPreviousPage={() => history.push(PageRoute.Splash)}
+              />
           )}
         />
 

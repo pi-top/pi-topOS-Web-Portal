@@ -1,6 +1,21 @@
-.addIcon {
-    height: 2.2rem;
-    width: 2.2rem;
+.dropzone {
+    align-items: center;
+    background-image: url('../../assets/images/dotted-border.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 95% 80%;
+    color: #7f7f7f;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    width: 50%;
+  }
+
+  .addIcon {
+    height: 1.5rem;
+    width: 1.5rem;
+    display: flex;
+    margin-right: 1.5rem;
   }
 
   .addIcon > path {
@@ -11,4 +26,15 @@
   .addIcon > g > path {
     stroke: white;
     stroke-width: 3;
+  }
+
+  .dropzoneInput {
+    width: 100%;
+  }
+
+  .instruction {
+    text-align: center;
+    composes: text from '../../globalStyles/Typography.module.css';
+    color: var(--font80);
+    font-size: 14px;
   }
