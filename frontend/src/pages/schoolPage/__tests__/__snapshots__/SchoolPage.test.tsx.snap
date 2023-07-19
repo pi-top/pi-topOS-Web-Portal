@@ -126,7 +126,7 @@ exports[`SchoolPage renders explanation 1`] = `
     If you don't have a setup bundle, download one 
     <a
       class="link"
-      href="https://further.pi-top.com/setup-devices"
+      href="https://further.pi-top.com/setup-devices?return_url=http://localhost/"
     >
       here
     </a>

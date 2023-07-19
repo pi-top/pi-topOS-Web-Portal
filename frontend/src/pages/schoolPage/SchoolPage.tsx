@@ -37,7 +37,7 @@ export default ({
       </>
     }
     return <>
-      <p>If you don't have a setup bundle, download one <a className={styles.link} href="https://further.pi-top.com/setup-devices">here</a>.</p>
+      <p>If you don't have a setup bundle, download one <a className={styles.link} href={`https://further.pi-top.com/setup-devices?return_url=${window.location.href}`}>here</a>.</p>
       <p>When configuring multiple devices, it may be faster to put this file on a USB and plug it into each pi-top[4].</p>
     </>
   }
