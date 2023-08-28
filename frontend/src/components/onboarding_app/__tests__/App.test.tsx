@@ -43,6 +43,8 @@ import connectToNetwork from "../../../services/connectToNetwork";
 
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
+import { runningOnWebRenderer } from '../../../helpers/utils'
+
 
 import wsBaseUrl from "../../../services/wsBaseUrl";
 
@@ -67,7 +69,9 @@ jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
+jest.mock('../../../helpers/utils')
 
+const runningOnWebRendererMock = runningOnWebRenderer as jest.Mock
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
 const currentLocaleMock = getCurrentLocale as jest.Mock;
@@ -224,6 +228,9 @@ describe("App", () => {
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
 
+    // utils
+    runningOnWebRendererMock.mockImplementation(() => false)
+
     let nextSizeMessage = Messages.NoSize;
     server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
@@ -277,11 +284,32 @@ describe("App", () => {
     expect(queryByTestId("build-info")).toMatchSnapshot();
   });
 
-  it("renders SpashPage by default", async () => {
+  it("renders SpashPage when onboarding ", async () => {
     const { queryByAltText, waitForSplashPage } = mount();
     await waitForSplashPage();
 
     expect(queryByAltText("Teacher")).toBeInTheDocument();
+  });
+
+  it("skips SpashPage and goes to LanguagePage when device isn't connected to internet", async () => {
+      isConnectedToNetworkMock.mockResolvedValue({ connected: false });
+      const { waitForLanguagePage } = mount();
+      await waitForLanguagePage();
+  });
+
+  it("skips SpashPage and goes to LanguagePage when onboarding in the device", async () => {
+    isConnectedToNetworkMock.mockResolvedValue({ connected: true });
+    runningOnWebRendererMock.mockImplementation(() => true)
+
+    const { waitForLanguagePage } = mount();
+    await waitForLanguagePage();
+  });
+
+  it("goes to SpashPage when device is connected to internet", async () => {
+    await isConnectedToNetworkMock.mockResolvedValue({ connected: true });
+
+    const { waitForSplashPage } = mount();
+    await waitForSplashPage();
   });
 
   describe("SplashPage", () => {

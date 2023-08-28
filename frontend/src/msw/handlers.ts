@@ -42,7 +42,7 @@ export default [
     return res(ctx.body("OK"));
   }),
   rest.get("/is-connected", (_, res, ctx) => {
-    return res(ctx.json({ connected: true }));
+    return res(ctx.json({ connected: false }));
   }),
   rest.get("/is-connected-through-ap", (_, res, ctx) => {
     return res(ctx.json({ isUsingAp: true }));
