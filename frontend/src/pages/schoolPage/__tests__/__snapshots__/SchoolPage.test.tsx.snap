@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SchoolPage displays a message when the transfer finishes 1`] = `
+<span
+  class="explanation"
+  data-testid="layout-explanation"
+>
+  <p>
+    Please follow the instructions in the pi-top[4] miniscreen to complete the setup.
+  </p>
+  <p>
+    Once the process is complete, sign up on 
+    <a
+      class="link"
+      href="https://further.pi-top.com"
+    >
+      further.pi-top.com
+    </a>
+     to start teaching with your device.
+  </p>
+</span>
+`;
+
+exports[`SchoolPage displays a progress bar while the file is being transfered 1`] = `
+<div
+  class="progress"
+  data-testid="progress"
+>
+  <svg
+    class="rc-progress-line "
+    preserveAspectRatio="none"
+    viewBox="0 0 100 3"
+  >
+    <path
+      class="rc-progress-line-trail"
+      d="M 1.5,1.5
+           L 98.5,1.5"
+      fill-opacity="0"
+      stroke="#D9D9D9"
+      stroke-linecap="round"
+      stroke-width="1"
+    />
+    <path
+      class="rc-progress-line-path"
+      d="M 1.5,1.5
+           L 98.5,1.5"
+      fill-opacity="0"
+      stroke="#71c0b4"
+      stroke-linecap="round"
+      stroke-width="3"
+      style="stroke-dasharray: 10px, 100px; stroke-dashoffset: -0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray .3s ease 0s, stroke 0.3s linear; transition-duration: .3s, .3s, .3s, .06s;"
+    />
+  </svg>
+  <span
+    class="text"
+    data-testid="progress-message"
+  >
+    Please wait while we upload your bundle; this could take a few minutes ...
+  </span>
+</div>
+`;
+
+exports[`SchoolPage displays an error message if user tries to upload a file with the wrong name or extension 1`] = `
+<span
+  class="error"
+  data-testid="error-message"
+>
+  There was a problem with your bundle; please try again (Invalid filename).
+</span>
+`;
+
+exports[`SchoolPage displays an error message if user tries to upload a large file 1`] = `
+<span
+  class="error"
+  data-testid="error-message"
+>
+  There was a problem with your bundle; please try again (Maximum upload file size exceeded).
+</span>
+`;
+
+exports[`SchoolPage renders a drop-zone to upload files 1`] = `
+<div
+  class="dropzone"
+  data-testid="dropzone-input-wrapper"
+  role="presentation"
+  tabindex="0"
+>
+  <input
+    class="dropzoneInput"
+    data-testid="dropzone-input"
+    multiple=""
+    style="display: none;"
+    tabindex="-1"
+    type="file"
+  />
+  <img
+    alt="add"
+    class="addIcon"
+    src="add.svg"
+  />
+  <p
+    class="instruction"
+    data-testid="dropzone-instruction"
+  >
+    Click to upload your bundle or drag and drop it here
+  </p>
+</div>
+`;
+
+exports[`SchoolPage renders correct image 1`] = `
+<img
+  alt="school-banner"
+  class="image"
+  draggable="false"
+  src="upgrade-page.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`SchoolPage renders explanation 1`] = `
+<span
+  class="explanation"
+  data-testid="layout-explanation"
+>
+  <p>
+    If you don't have a setup bundle, download one 
+    <a
+      class="link"
+      href="https://further.pi-top.com/setup-devices?return_url=http://localhost/"
+    >
+      here
+    </a>
+    .
+  </p>
+  <p>
+    When configuring multiple devices, it may be faster to put this file on a USB and plug it into each pi-top[4].
+  </p>
+</span>
+`;
+
+exports[`SchoolPage renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Let's upload your 
+  <span
+    class="green"
+  >
+    setup bundle
+  </span>
+  !
+</h1>
+`;

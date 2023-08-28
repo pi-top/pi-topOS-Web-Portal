@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Upload renders a drop-zone to upload files 1`] = `
+<div
+  class="dropzone"
+  data-testid="dropzone-input-wrapper"
+  role="presentation"
+  tabindex="0"
+>
+  <input
+    class="dropzoneInput"
+    data-testid="dropzone-input"
+    multiple=""
+    style="display: none;"
+    tabindex="-1"
+    type="file"
+  />
+  <img
+    alt="add"
+    class="addIcon"
+    src="add.svg"
+  />
+  <p
+    class="instruction"
+    data-testid="dropzone-instruction"
+  >
+    this is an instruction
+  </p>
+</div>
+`;
+
+exports[`Upload renders provided instruction 1`] = `
+<p
+  class="instruction"
+  data-testid="dropzone-instruction"
+>
+  this is an instruction
+</p>
+`;
