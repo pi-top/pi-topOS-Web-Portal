@@ -11,7 +11,6 @@ pitop python3-pitop
 requests python3-requests; PEP386
 websockets python3-websockets; PEP386
 pt-web-vnc pt-web-vnc; PEP386
-pitop python3-pitop
 pitop.battery python3-pitop-battery
 pitop.camera python3-pitop-camera
 pitop.common python3-pitop-common
