@@ -14,9 +14,11 @@ override_dh_auto_test:
 
 
 override_dh_auto_build:
-	cd frontend/ && \
+	export NODE_OPTIONS="--openssl-legacy-provider" && \
+		cd frontend/ && \
+		mkdir -p ~/.local && \
 		npm config set prefix ~/.local && \
-		npm install -g yarn && \
+		npm install -g yarn --prefix ~/.local && \
 		~/.local/bin/yarn install && \
 		node_modules/react-scripts/bin/react-scripts.js build && \
 		mv build ../pt_os_web_portal/backend/
