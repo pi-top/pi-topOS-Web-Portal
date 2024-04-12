@@ -8,15 +8,19 @@ export PYBUILD_DESTDIR_python3=debian/pt-os-web-portal/
 %:
 	dh $@ --buildsystem=pybuild
 
+distribution := $(shell (grep VERSION_CODENAME /etc/os-release | cut -d'=' -f2))
+ifeq ($(distribution),bookworm)
+export NODE_OPTIONS = "--openssl-legacy-provider"
+endif
 
 override_dh_auto_test:
 	# Don't run the tests!
 
-
 override_dh_auto_build:
 	cd frontend/ && \
+		mkdir -p ~/.local && \
 		npm config set prefix ~/.local && \
-		npm install -g yarn && \
+		npm install -g yarn --prefix ~/.local && \
 		~/.local/bin/yarn install && \
 		node_modules/react-scripts/bin/react-scripts.js build && \
 		mv build ../pt_os_web_portal/backend/
