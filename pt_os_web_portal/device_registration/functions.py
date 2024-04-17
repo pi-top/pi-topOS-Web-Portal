@@ -34,7 +34,7 @@ def get_registration_data() -> Dict:
     build_info = get_pitopOS_info()
     data = {
         "serialNumber": serial_number(),
-        "email": state.get("registration", "email"),
+        "email": state.get("registration", "email", ""),
         "privacyAgreement": True,
         "device": device_type(),
         "osVersion": f"{build_info.build_run_number}-{build_info.build_date}",

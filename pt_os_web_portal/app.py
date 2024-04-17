@@ -5,6 +5,7 @@ from os import environ
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
+from pitop.common.pt_os import is_pi_top_os
 from pitop.system import device_type
 
 from pt_os_web_portal.backend.helpers.finalise import disable_ap_mode
@@ -44,7 +45,10 @@ class App:
         except Exception:
             device = ""
 
-        if state.get("app", "onboarded", fallback="false") == "false":
+        if (
+            is_pi_top_os()
+            and state.get("app", "onboarded", fallback="false") == "false"
+        ):
             logger.info("Onboarding not completed ...")
             if device == DeviceName.pi_top_4.value:
                 logger.debug("Setting ENV VAR to use miniscreen as system...")
