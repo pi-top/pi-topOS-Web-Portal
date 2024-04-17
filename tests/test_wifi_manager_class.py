@@ -32,7 +32,7 @@ def test_scan_and_get_results_output(wifi_manager_module):
     networks = wifi_manager.scan_and_get_results()
 
     assert wifi_manager.is_inactive() is True
-    assert type(networks) == list
+    assert isinstance(networks, list)
     assert len(networks) == len(network_profiles)
 
     network_profile_keys = list(networks[0].__dict__.keys())

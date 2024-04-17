@@ -26,13 +26,14 @@ jobs:
          coverage xml
 
      - name: Upload Python test coverage reports to Codecov
-       uses: codecov/codecov-action@v3.1.4
+       uses: codecov/codecov-action@v4
        with:
          files: ./coverage.xml
          flags: python-tests
          env_vars: OS,PYTHON
          fail_ci_if_error: true
          verbose: true
+         token: ${{ secrets.CODECOV_TOKEN }}
 
   test-js-coverage-report:
     runs-on: ubuntu-20.04
@@ -61,9 +62,10 @@ jobs:
           yarn test --coverage
 
       - name: Upload javascript test coverage reports to Codecov
-        uses: codecov/codecov-action@v3.1.4
+        uses: codecov/codecov-action@v4
         with:
           files: ./frontend/coverage/clover.xml
           flags: js-tests
           fail_ci_if_error: true
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
