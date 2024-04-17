@@ -9,6 +9,7 @@ from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.formatting import is_url
+from pitop.common.pt_os import is_pi_top_os
 from pitop.common.sys_info import (
     InterfaceNetworkData,
     NetworkInterface,
@@ -97,7 +98,7 @@ def favicon():
 @app.route("/", methods=["GET"])
 def index():
     logger.debug("Route '/'")
-    if not onboarding_completed():
+    if is_pi_top_os() and not onboarding_completed():
         logger.info("Onboarding not completed yet. Redirecting...")
         return redirect("/onboarding")
 
