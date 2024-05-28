@@ -110,20 +110,17 @@ def enable_pt_miniscreen():
 
 def restore_files():
     logger.debug("Function: restore_files()")
-
-    try:
-        run_command(
-            "rsync -av /usr/lib/pt-os-web-portal/bak/ /",
-            timeout=30,
-            lower_priority=True,
-        )
-        run_command(
-            "rm -r /usr/lib/pt-os-web-portal/bak", timeout=30, lower_priority=True
-        )
-    except FileNotFoundError:
-        logger.debug("restore_files: Files already restored")
-    except Exception as e:
-        logger.error(f"restore_files: {e}")
+    for cmd in (
+        "rsync -av /usr/lib/pt-os-web-portal/bak/ /",
+        "rm -r /usr/lib/pt-os-web-portal/bak",
+        "rm -r /lib/systemd/system/lightdm.service.d/99-openbox-for-onboarding.conf",
+    ):
+        try:
+            run_command(cmd, timeout=30, lower_priority=True)
+        except FileNotFoundError:
+            logger.debug("restore_files: Files already restored")
+        except Exception as e:
+            logger.error(f"restore_files: {e}")
 
 
 def onboarding_completed():
