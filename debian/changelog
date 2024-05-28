@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.20.0-2) bullseye; urgency=medium
+
+  * Remove lightm drop-in when onboarding finishes (#441)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 28 May 2024 22:18:48 +0000
+
 pi-top-os-web-portal (0.20.0-1) bullseye; urgency=medium
 
   * Fix package dependencies for bookworm (#437)
