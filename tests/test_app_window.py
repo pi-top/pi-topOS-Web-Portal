@@ -51,11 +51,11 @@ def test_about_app_commands(patch_modules, mocker):
                 timeout=None,
             ),
             call(
-                'wmctrl -v -c "About pi-topOS"',
+                '/usr/bin/wmctrl -v -c "About pi-topOS"',
                 timeout=5,
             ),
             call(
-                "wmctrl -l",
+                "/usr/bin/wmctrl -l",
                 timeout=5,
             ),
         ]
@@ -83,11 +83,11 @@ def test_onboarding_app_commands(patch_modules, mocker):
                 timeout=None,
             ),
             call(
-                'wmctrl -v -c ""',
+                '/usr/bin/wmctrl -v -c ""',
                 timeout=5,
             ),
             call(
-                "wmctrl -l",
+                "/usr/bin/wmctrl -l",
                 timeout=5,
             ),
         ]
@@ -117,11 +117,11 @@ def test_updater_app_commands(patch_modules, mocker):
                 timeout=None,
             ),
             call(
-                'wmctrl -v -c "pi-topOS Updater"',
+                '/usr/bin/wmctrl -v -c "pi-topOS Updater"',
                 timeout=5,
             ),
             call(
-                "wmctrl -l",
+                "/usr/bin/wmctrl -l",
                 timeout=5,
             ),
         ]
@@ -151,11 +151,11 @@ def test_landing_app_commands(patch_modules, mocker):
                 timeout=None,
             ),
             call(
-                'wmctrl -v -c "pi-topOS Landing"',
+                '/usr/bin/wmctrl -v -c "pi-topOS Landing"',
                 timeout=5,
             ),
             call(
-                "wmctrl -l",
+                "/usr/bin/wmctrl -l",
                 timeout=5,
             ),
         ]

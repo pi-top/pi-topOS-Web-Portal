@@ -35,13 +35,13 @@ class AppWindow:
     def is_open(self):
         return self.title in [
             " ".join([x for x in line.split(" ") if x][3:])
-            for line in run_command("wmctrl -l", timeout=5).strip().split("\n")
+            for line in run_command("/usr/bin/wmctrl -l", timeout=5).strip().split("\n")
         ]
 
     def close(self):
         try:
             # Match full window title
-            run_command(f'wmctrl -v -c "{self.title}"', timeout=5)
+            run_command(f'/usr/bin/wmctrl -v -c "{self.title}"', timeout=5)
         except Exception as e:
             logger.error(f"Error closing '{self.title}' window: {e}")
 
