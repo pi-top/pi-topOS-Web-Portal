@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, List
 
-from .wifi.wifi_manager import WifiManager
+from .wifi_connection.manager import WifiManager
 
 logger = logging.getLogger(__name__)
 

@@ -70,12 +70,12 @@ from .helpers.system import (
 )
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.vnc import PtWebVncDisplayId
+from .helpers.wifi import attempt_connection, current_wifi_bssid, get_ssids
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
     set_wifi_country,
 )
-from .helpers.wifi_manager import attempt_connection, current_wifi_bssid, get_ssids
 
 logger = logging.getLogger(__name__)
 

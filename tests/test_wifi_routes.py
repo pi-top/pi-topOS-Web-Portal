@@ -3,7 +3,7 @@ from ipaddress import ip_network
 import pytest
 from flask import json
 
-from tests.data.wifi_manager_data import wifi_ssids, wpa_cli_status
+from tests.data.wpa_supplicant_handler_data import wifi_ssids, wpa_cli_status
 
 
 def test_get_wifi_ssids_response_on_success(app):
@@ -13,9 +13,7 @@ def test_get_wifi_ssids_response_on_success(app):
 
 
 def test_post_wifi_credentials_response_on_connection_success(mocker, app):
-    connect_mock = mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"
-    )
+    connect_mock = mocker.patch("pt_os_web_portal.backend.routes.attempt_connection")
 
     response = app.post(
         "/wifi-credentials", json={"bssid": "test-ssid", "password": "123"}
@@ -29,7 +27,7 @@ def test_post_wifi_credentials_response_on_connection_success(mocker, app):
 
 def test_post_wifi_credentials_aborts_on_connection_failure(app, mocker):
     connect_mock = mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect",
+        "pt_os_web_portal.backend.routes.attempt_connection",
         side_effect=Exception("Waited too long..."),
     )
 
@@ -44,7 +42,7 @@ def test_post_wifi_credentials_aborts_on_connection_failure(app, mocker):
 
 def test_post_wifi_credentials_aborts_on_unexistant_bssid(app, mocker):
     connect_mock = mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect",
+        "pt_os_web_portal.backend.routes.attempt_connection",
         side_effect=Exception("Waited too long..."),
     )
 
@@ -58,9 +56,7 @@ def test_post_wifi_credentials_aborts_on_unexistant_bssid(app, mocker):
 
 
 def test_post_wifi_credentials_failure_on_wrong_ssid_type(app, mocker):
-    connect_mock = mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"
-    )
+    connect_mock = mocker.patch("pt_os_web_portal.backend.routes.attempt_connection")
 
     response = app.post("/wifi-credentials", json={"bssid": True, "password": "123"})
 
@@ -69,9 +65,7 @@ def test_post_wifi_credentials_failure_on_wrong_ssid_type(app, mocker):
 
 
 def test_post_wifi_credentials_failure_on_wrong_password_type(app, mocker):
-    connect_mock = mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.wifi_manager.connect"
-    )
+    connect_mock = mocker.patch("pt_os_web_portal.backend.routes.attempt_connection")
 
     response = app.post(
         "/wifi-credentials", json={"bssid": "test-ssid", "password": True}
@@ -107,15 +101,15 @@ def test_get_is_connected_response_if_disconnected(app, mocker):
 
 
 def get_is_connected_to_ssid_response_when_connected_to_network(
-    app, mocker, wifi_manager_module
+    app, mocker, wpa_supplicant_handler
 ):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.mocks.pywifi_mock.PyWiFiUtil._send_cmd_to_wpas",
         return_value=wpa_cli_status,
     )
     mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
-        return_value=wifi_manager_module.IfaceStatus.CONNECTED,  # noqa: F821
+        "pt_os_web_portal.backend.helpers.wifi.WifiManager.get_status",
+        return_value=wpa_supplicant_handler.IfaceStatus.CONNECTED,  # noqa: F821
     )
 
     response = app.get("/current-wifi-ssid")
@@ -125,11 +119,11 @@ def get_is_connected_to_ssid_response_when_connected_to_network(
 
 
 def get_is_connected_to_ssid_response_when_not_connected_to_network(
-    app, mocker, wifi_manager_module
+    app, mocker, wpa_supplicant_handler
 ):
     mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
-        return_value=wifi_manager_module.IfaceStatus.INACTIVE,  # noqa: F821
+        "pt_os_web_portal.backend.helpers.wifi.WifiManager.get_status",
+        return_value=wpa_supplicant_handler.IfaceStatus.INACTIVE,  # noqa: F821
     )
 
     response = app.get("/current-wifi-ssid")
@@ -140,7 +134,7 @@ def get_is_connected_to_ssid_response_when_not_connected_to_network(
 
 def get_is_connected_to_ssid_response_on_internal_failure(app, mocker):
     mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi_manager.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi.WifiManager.get_status",
         side_effect=Exception("Internal failure..."),
     )
     response = app.get("/current-wifi-ssid")

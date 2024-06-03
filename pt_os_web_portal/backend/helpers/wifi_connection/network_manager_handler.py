@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class NetworkManagerHandler:
-    def __init__(self, ifname: str):
+    def __init__(self, ifname: str = "wlan0"):
         self.ifname = ifname
         self.wifi_device = None
         for device in nmcli.device():

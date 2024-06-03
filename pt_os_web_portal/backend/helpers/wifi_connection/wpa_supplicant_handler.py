@@ -18,8 +18,8 @@ class IfaceStatus(Enum):
     CONNECTED = 4
 
 
-class WpaSupplicantManager:
-    def __init__(self, ifname):
+class WpaSupplicantHandler:
+    def __init__(self, ifname: str = "wlan0"):
         self.ifname = ifname
         self.wifi_interface = self.get_interface(self.ifname)
 

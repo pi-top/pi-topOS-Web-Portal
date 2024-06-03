@@ -8,19 +8,24 @@ logger = logging.getLogger(__name__)
 class WifiManager:
     def __init__(self, ifname="wlan0"):
 
-        if self.is_managed_by_network_manager():
+        if self._is_managed_by_network_manager():
             from .network_manager_handler import NetworkManagerHandler
 
             self.handler = NetworkManagerHandler(ifname)
         else:
-            from .wpa_supplicant_handler import WpaSupplicantManager
+            from .wpa_supplicant_handler import WpaSupplicantHandler
 
-            self.handler = WpaSupplicantManager(ifname)
+            self.handler = WpaSupplicantHandler(ifname)
 
-    def is_managed_by_network_manager(self):
+    def _is_managed_by_network_manager(self):
+        from ..paths import use_test_path
+
+        if use_test_path():
+            return False
+
         return (
             run_command("systemctl -q is-active dhcpcd", check=False, timeout=5).strip()
-            == "active"
+            != "active"
         )
 
     def ssid_to_display(self):
@@ -37,3 +42,6 @@ class WifiManager:
 
     def bssid_connected(self):
         return self.handler.bssid_connected()
+
+    def get_formatted_ssids(self):
+        return self.handler.get_formatted_ssids()
