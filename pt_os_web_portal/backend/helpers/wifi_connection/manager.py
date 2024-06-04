@@ -24,7 +24,7 @@ class WifiManager:
             return False
 
         return (
-            run_command("systemctl -q is-active dhcpcd", check=False, timeout=5).strip()
+            run_command("systemctl is-active dhcpcd", check=False, timeout=5).strip()
             != "active"
         )
 

@@ -4,6 +4,7 @@ Flask python3-flask; PEP386
 Flask-Cors python3-flask-cors; PEP386
 gevent python3-gevent; PEP386
 gevent-websocket python3-gevent-websocket; PEP386
+nmcli python3-nmcli; PEP386
 # Package will always update in-step with SDK
 # So avoid version-locking
 pitop python3-pitop
