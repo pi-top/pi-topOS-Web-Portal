@@ -2,9 +2,9 @@ from os import environ
 
 from flask import Flask
 from flask_cors import CORS
-from flask_sockets import Sockets
+from flask_sock import Sock
 
-sockets: Sockets
+sockets: Sock
 
 
 def create_app(test_mode, os_updater):
@@ -12,7 +12,7 @@ def create_app(test_mode, os_updater):
         __name__, static_url_path="", static_folder="./build", template_folder="./build"
     )
     global sockets
-    sockets = Sockets(app)
+    sockets = Sock(app)
 
     CORS(app)
     if test_mode:

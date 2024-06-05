@@ -1,23 +1,27 @@
+from .os_updater import OSUpdater
+from .miniscreen_onboarding_assistant.onboarding_assistant_app import (
+    OnboardingAssistantApp,
+)
+from .device_registration.listener import setup_device_registration_event_handlers
+from .connection_manager import ConnectionManager
+from .backend import create_app
+from . import state
+from pt_os_web_portal.backend.helpers.finalise import disable_ap_mode
+from pitop.system import device_type
+from pitop.common.pt_os import is_pi_top_os
+from pitop.common.common_names import DeviceName
+from gevent.pywsgi import WSGIServer
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
 
-from gevent.pywsgi import WSGIServer
-from geventwebsocket.handler import WebSocketHandler
-from pitop.common.common_names import DeviceName
-from pitop.common.pt_os import is_pi_top_os
-from pitop.system import device_type
+from gevent import monkey
 
-from pt_os_web_portal.backend.helpers.finalise import disable_ap_mode
+monkey.patch_all()
 
-from . import state
-from .backend import create_app
-from .connection_manager import ConnectionManager
-from .device_registration.listener import setup_device_registration_event_handlers
-from .miniscreen_onboarding_assistant.onboarding_assistant_app import (
-    OnboardingAssistantApp,
-)
-from .os_updater import OSUpdater
+
+# from geventwebsocket.handler import WebSocketHandler
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +30,11 @@ class App:
     def __init__(self, test_mode):
         self.os_updater = OSUpdater()
         self.wsgi_server = WSGIServer(
-            ("", 80),
+            ("0.0.0.0", 80),
             create_app(
                 test_mode=test_mode,
                 os_updater=self.os_updater,
             ),
-            handler_class=WebSocketHandler,
         )
 
         self.miniscreen_onboarding = None

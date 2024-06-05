@@ -19,9 +19,9 @@ class OSUpdaterFrontendMessageHandler:
     def _send(self, message):
         failed_ws_clients = []
         for ws_client in self.ws_clients:
-            if not ws_client.closed:
+            try:
                 ws_client.send(message)
-            else:
+            except:
                 failed_ws_clients.append(ws_client)
 
         for ws_client in failed_ws_clients:
