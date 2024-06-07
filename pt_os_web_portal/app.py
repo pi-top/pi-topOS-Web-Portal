@@ -2,7 +2,6 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
 
-from gevent import monkey
 from gevent.pywsgi import WSGIServer
 from pitop.common.common_names import DeviceName
 from pitop.common.pt_os import is_pi_top_os
@@ -18,12 +17,6 @@ from .miniscreen_onboarding_assistant.onboarding_assistant_app import (
     OnboardingAssistantApp,
 )
 from .os_updater import OSUpdater
-
-monkey.patch_all()
-
-
-# from geventwebsocket.handler import WebSocketHandler
-
 
 logger = logging.getLogger(__name__)
 

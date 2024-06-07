@@ -1,3 +1,11 @@
+# flake8: noqa: E402
+
+# Need to monkey patch gevent before importing anything else
+# https://flask-sock.readthedocs.io/en/latest/web_servers.html#id3
+from gevent import monkey  # noqa: E402
+
+monkey.patch_all()  # noqa: E402
+
 import logging
 from os import geteuid
 from signal import SIGINT, SIGTERM
