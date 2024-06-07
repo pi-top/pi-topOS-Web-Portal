@@ -4,7 +4,10 @@ import pytest
 @pytest.fixture(autouse=True)
 def mock_send_static_file(app, mocker):
     mocker.patch.object(
-        app.application, "send_static_file", lambda _: "Mocked Content", 200
+        app.application,
+        "send_static_file",
+        lambda *args, **kwargs: "Mocked Content",
+        200,
     )
 
 
@@ -34,7 +37,7 @@ def test_redirect_base_route_to_onboarding_if_not_completed(app, mocker):
 
     # Request redirects to /onboarding
     assert response.status_code == 302
-    assert response.location == "http://localhost/onboarding"
+    assert response.location == "/onboarding"
 
     response = app.get(response.location, follow_redirects=False)
 
