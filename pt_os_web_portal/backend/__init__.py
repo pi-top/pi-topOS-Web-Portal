@@ -2,9 +2,9 @@ from os import environ
 
 from flask import Flask
 from flask_cors import CORS
-from flask_sock import Sock
+from pitop.common.flask_sockets import Sockets
 
-sockets: Sock
+sockets: Sockets
 
 
 def create_app(test_mode, os_updater):
@@ -12,7 +12,7 @@ def create_app(test_mode, os_updater):
         __name__, static_url_path="", static_folder="./build", template_folder="./build"
     )
     global sockets
-    sockets = Sock(app)
+    sockets = Sockets(app)
 
     CORS(app)
     if test_mode:

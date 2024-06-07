@@ -3,7 +3,7 @@ pytest-cov
 pytest-mock
 Flask>=1.1.2
 Flask-Cors>=3.0.9
-flask-sock>=0.7.0
+pitop.common
 requests>=2.25.1
 jinja2>=2.11.3
 markupsafe>=1.1.1

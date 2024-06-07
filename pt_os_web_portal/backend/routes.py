@@ -312,7 +312,7 @@ def os_upgrade(ws):
         "state": get_os_updater().state,
     }
 
-    while True:
+    while not ws.closed:
         message = ws.receive()
         if not message:
             continue

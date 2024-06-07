@@ -2,8 +2,8 @@ click python3-click; PEP386
 click-logging python3-click-logging; PEP386
 Flask python3-flask; PEP386
 Flask-Cors python3-flask-cors; PEP386
-flask-sock python3-flask-sock; PEP386
 gevent python3-gevent; PEP386
+gevent-websocket python3-gevent-websocket; PEP386
 # Package will always update in-step with SDK
 # So avoid version-locking
 pitop python3-pitop

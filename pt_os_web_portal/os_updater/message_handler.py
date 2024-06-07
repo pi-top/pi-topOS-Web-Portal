@@ -2,6 +2,9 @@ import logging
 from json import dumps as jdumps
 from typing import List
 
+from geventwebsocket.exceptions import WebSocketError
+from geventwebsocket.websocket import WebSocket
+
 from ..backend.helpers.modules import get_apt
 from .types import EventNames, MessageType
 
@@ -11,14 +14,14 @@ logger = logging.getLogger(__name__)
 
 
 class OSUpdaterFrontendMessageHandler:
-    ws_clients: List = []
+    ws_clients: List[WebSocket] = []
 
     def _send(self, message):
         failed_ws_clients = []
         for ws_client in self.ws_clients:
-            try:
+            if not ws_client.closed:
                 ws_client.send(message)
-            except Exception:
+            else:
                 failed_ws_clients.append(ws_client)
 
         for ws_client in failed_ws_clients:
@@ -127,6 +130,8 @@ class OSUpdaterFrontendMessageHandler:
             try:
                 ws_client.send("ping")
                 clients += 1
+            except WebSocketError:
+                pass
             except Exception as e:
                 logger.error(f"OSUpdaterFrontendMessageHandler.active_clients : {e}")
         return clients

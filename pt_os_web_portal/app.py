@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from os import environ
 
 from gevent.pywsgi import WSGIServer
+from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
 from pitop.common.pt_os import is_pi_top_os
 from pitop.system import device_type
@@ -25,11 +26,12 @@ class App:
     def __init__(self, test_mode):
         self.os_updater = OSUpdater()
         self.wsgi_server = WSGIServer(
-            ("0.0.0.0", 80),
+            ("", 80),
             create_app(
                 test_mode=test_mode,
                 os_updater=self.os_updater,
             ),
+            handler_class=WebSocketHandler,
         )
 
         self.miniscreen_onboarding = None
