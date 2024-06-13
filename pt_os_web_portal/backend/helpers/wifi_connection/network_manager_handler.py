@@ -3,6 +3,8 @@ from typing import Any, Dict, List
 
 import nmcli
 
+nmcli.set_lang("C.UTF-8")
+
 logger = logging.getLogger(__name__)
 
 
