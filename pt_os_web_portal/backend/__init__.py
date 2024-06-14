@@ -2,7 +2,7 @@ from os import environ
 
 from flask import Flask
 from flask_cors import CORS
-from flask_sockets import Sockets
+from pitop.common.flask_sockets import Sockets
 
 sockets: Sockets
 

@@ -1,9 +1,9 @@
 pytest
 pytest-cov
 pytest-mock
-Flask>=1.1.2,<1.2
-Flask-Cors>=3.0.9,<3.1
-Flask-Sockets>=0.2.1<0.3
-requests>=2.25.1,<2.26.0
-jinja2>=2.11.3,<3.0.0
-markupsafe>=1.1.1,<2.0.0
+Flask>=1.1.2
+Flask-Cors>=3.0.9
+pitop.common
+requests>=2.25.1
+jinja2>=2.11.3
+markupsafe>=1.1.1
