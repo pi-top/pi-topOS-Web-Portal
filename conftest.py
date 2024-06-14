@@ -12,7 +12,6 @@ from tests.data.keyboard_data import keyboard_file_before
 def _patch_modules():
     modules_to_patch = [
         "further_link.start_further",
-        "pitop",
         "pitop.battery",
         "pitop.common.command_runner",
         "pitop.common.common_ids",
