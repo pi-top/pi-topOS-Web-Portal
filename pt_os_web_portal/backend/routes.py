@@ -16,7 +16,6 @@ from pitop.common.sys_info import (
     interface_is_up,
     is_connected_to_internet,
 )
-from pt_web_vnc.vnc import clients as vnc_clients
 from pt_web_vnc.vnc import connection_details as vnc_connection_details
 
 from ..app_window import LandingAppWindow
@@ -70,6 +69,11 @@ from .helpers.system import (
 )
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.vnc import PtWebVncDisplayId
+from .helpers.vnc_advanced_wifi_gui import (
+    get_advanced_wifi_gui_url,
+    start_advanced_wifi_gui,
+    stop_advanced_wifi_gui,
+)
 from .helpers.wifi import attempt_connection, current_wifi_bssid, get_ssids
 from .helpers.wifi_country import (
     current_wifi_country,
@@ -584,42 +588,26 @@ def get_client_should_switch_network():
     return jdumps(should_switch_network(request))
 
 
-@app.route("/start-vnc-wpa-gui", methods=["POST"])
+@app.route("/start-vnc-wifi-advanced-connection", methods=["POST"])
 def post_start_vnc_wpa_gui():
-    logger.debug("Route '/start-vnc-wpa-gui'")
-    status = service_is_active(SystemService.VncWpaGui, timeout=5)
-    if status != "active":
-        service_restart(SystemService.VncWpaGui)
+    logger.debug("Route '/start-vnc-wifi-advanced-connection'")
+    start_advanced_wifi_gui()
     return "OK"
 
 
-@app.route("/stop-vnc-wpa-gui", methods=["POST"])
+@app.route("/stop-vnc-wifi-advanced-connection", methods=["POST"])
 def post_stop_vnc_wpa_gui():
-    logger.debug("Route '/stop-vnc-wpa-gui'")
-
-    clients = vnc_clients(PtWebVncDisplayId.WpaGui.value)
-    should_stop_service = clients == 0
-
-    logger.info(
-        f"{'' if should_stop_service else 'Not'} stopping {SystemService.VncWpaGui.value} service, it has {clients} connected clients."
-    )
-    if should_stop_service:
-        service_stop(SystemService.VncWpaGui)
+    logger.debug("Route '/stop-vnc-wifi-advanced-connection'")
+    stop_advanced_wifi_gui()
     return "OK"
 
 
-@app.route("/vnc-wpa-gui-url", methods=["GET"])
+@app.route("/vnc-wifi-advanced-connection-url", methods=["GET"])
 def get_vnc_wpa_gui_url():
-    logger.debug("Route '/vnc-wpa-gui-url'")
-    url = ""
-    try:
-        details = vnc_connection_details(PtWebVncDisplayId.WpaGui.value)
-        if is_url(details.url):
-            host_url = request.host.split(":")[0]
-            url = f"{details.scheme}://{host_url}:{details.port}{details.path}"
-    except Exception:
-        pass
-    return jdumps({"url": url})
+    logger.debug("Route '/vnc-wifi-advanced-connection-url'")
+    return jdumps(
+        {"url": get_advanced_wifi_gui_url(host_url=request.host.split(":")[0])}
+    )
 
 
 @app.route("/vnc-desktop-url", methods=["GET"])

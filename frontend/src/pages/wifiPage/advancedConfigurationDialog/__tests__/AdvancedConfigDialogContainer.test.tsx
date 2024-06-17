@@ -15,17 +15,17 @@ import AdvancedConfigDialogContainer, { Props, startPollDelay, pollTime, stopPol
 import { ErrorMessage } from "../AdvancedConfigDialog";
 
 import querySpinner from "../../../../../test/helpers/querySpinner";
-import getVncWpaGuiUrl from "../../../../services/getVncWpaGuiUrl";
-import startVncWpaGui from "../../../../services/startVncWpaGui";
-import stopVncWpaGui from "../../../../services/stopVncWpaGui";
+import getVncAdvancedWifiGuiUrl from "../../../../services/getVncAdvancedWifiGuiUrl";
+import startVncAdvancedWifiGui from "../../../../services/startVncAdvancedWifiGui";
+import stopVncAdvancedWifiGui from "../../../../services/stopVncAdvancedWifiGui";
 
-jest.mock("../../../../services/startVncWpaGui");
-jest.mock("../../../../services/getVncWpaGuiUrl");
-jest.mock("../../../../services/stopVncWpaGui");
+jest.mock("../../../../services/startVncAdvancedWifiGui");
+jest.mock("../../../../services/getVncAdvancedWifiGuiUrl");
+jest.mock("../../../../services/stopVncAdvancedWifiGui");
 
-const startVncWpaGuiMock = startVncWpaGui as jest.Mock;
-const getVncWpaGuiUrlMock = getVncWpaGuiUrl as jest.Mock;
-const stopVncWpaGuiMock = stopVncWpaGui as jest.Mock;
+const startVncAdvancedWifiGuiMock = startVncAdvancedWifiGui as jest.Mock;
+const getVncAdvancedWifiGuiUrlMock = getVncAdvancedWifiGuiUrl as jest.Mock;
+const stopVncAdvancedWifiGuiMock = stopVncAdvancedWifiGui as jest.Mock;
 const originalCreatePortal = ReactDom.createPortal;
 
 describe("AdvancedConfigDialogContainer", () => {
@@ -38,8 +38,8 @@ describe("AdvancedConfigDialogContainer", () => {
   describe("when active", ()  => {
     beforeEach(async () => {
       jest.useFakeTimers();
-      startVncWpaGuiMock.mockResolvedValue(true);
-      getVncWpaGuiUrlMock.mockResolvedValue("");
+      startVncAdvancedWifiGuiMock.mockResolvedValue(true);
+      getVncAdvancedWifiGuiUrlMock.mockResolvedValue("");
 
       ReactDom.createPortal = jest.fn();
       const createPortalMock = ReactDom.createPortal as jest.Mock;
@@ -60,31 +60,31 @@ describe("AdvancedConfigDialogContainer", () => {
 
     afterEach(() => {
       jest.useRealTimers();
-      getVncWpaGuiUrlMock.mockRestore();
-      startVncWpaGuiMock.mockRestore();
+      getVncAdvancedWifiGuiUrlMock.mockRestore();
+      startVncAdvancedWifiGuiMock.mockRestore();
       ReactDom.createPortal = originalCreatePortal;
     });
 
-    it("calls startVncWpaGuiMock", () => {
-      expect(startVncWpaGuiMock).toHaveBeenCalled();
+    it("calls startVncAdvancedWifiGuiMock", () => {
+      expect(startVncAdvancedWifiGuiMock).toHaveBeenCalled();
     });
 
-    it("polls getVncWpaGuiUrlMock and renders spinner", async () => {
+    it("polls getVncAdvancedWifiGuiUrlMock and renders spinner", async () => {
       // skip to first poll
       jest.advanceTimersByTime(startPollDelay + pollTime);
 
-      expect(getVncWpaGuiUrlMock).toHaveBeenCalled();
+      expect(getVncAdvancedWifiGuiUrlMock).toHaveBeenCalled();
 
       expect(querySpinner(advancedConfigDialogContainer)).toBeInTheDocument();
 
       // skip to next poll
       jest.advanceTimersByTime(pollTime);
 
-      expect(getVncWpaGuiUrlMock).toHaveBeenCalled();
+      expect(getVncAdvancedWifiGuiUrlMock).toHaveBeenCalled();
     });
 
-    it("shows an iframe when getVncWpaGuiUrlMock returns a url", async () => {
-      getVncWpaGuiUrlMock.mockResolvedValue({ url: "http://example.com" });
+    it("shows an iframe when getVncAdvancedWifiGuiUrlMock returns a url", async () => {
+      getVncAdvancedWifiGuiUrlMock.mockResolvedValue({ url: "http://example.com" });
 
       // skip to first poll
       jest.advanceTimersByTime(startPollDelay + pollTime);
@@ -103,9 +103,9 @@ describe("AdvancedConfigDialogContainer", () => {
       expect(queryByText(ErrorMessage.AdvancedConfigError)).toBeInTheDocument();
     });
 
-    it("when you click close, calls stopVncWpaGuiMock and onClose", async () => {
+    it("when you click close, calls stopVncAdvancedWifiGuiMock and onClose", async () => {
       fireEvent.click(getByText("Close"));
-      expect(stopVncWpaGuiMock).toHaveBeenCalled();
+      expect(stopVncAdvancedWifiGuiMock).toHaveBeenCalled();
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
   });

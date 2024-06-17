@@ -32,6 +32,7 @@ Depends:
  wmctrl,
 # Advanced Wi-Fi configuration over VNC
  wpagui,
+ network-manager-gnome,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
