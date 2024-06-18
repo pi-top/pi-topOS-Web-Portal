@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class SystemService(Enum):
     WebPortal = "pt-os-web-portal"
     RoverController = "pt-os-web-portal-rover-controller"
+    VncAdvancedWiFi = "pt-os-web-portal-vnc-advanced-wifi"
     Vnc = "vncserver-x11-serviced"
     VncDesktop = "pt-web-vnc-desktop"
 

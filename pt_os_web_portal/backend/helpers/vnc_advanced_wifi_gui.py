@@ -1,5 +1,6 @@
 import logging
 
+import click
 from pitop.common.command_runner import run_command
 from pitop.common.formatting import is_url
 from pt_web_vnc import clients, connection_details, start, stop
@@ -21,7 +22,8 @@ def stop_advanced_wifi_gui():
 
 
 def start_advanced_wifi_gui():
-    if is_url(_advanced_wifi_gui_vnc_details().url):
+    connection_details = _advanced_wifi_gui_vnc_details()
+    if connection_details and is_url(connection_details.url):
         logging.info("Advanced wifi GUI is already running, skipping start...")
         return
 
@@ -61,3 +63,16 @@ def get_advanced_wifi_gui_url(host_url: str):
     except Exception:
         pass
     return url
+
+
+@click.command()
+@click.argument("command", type=click.Choice(["start", "stop"]))
+def main(command):
+    if command == "start":
+        start_advanced_wifi_gui()
+    elif command == "stop":
+        stop_advanced_wifi_gui()
+
+
+if __name__ == "__main__":
+    main(prog_name="pt-os-web-portal-vnc-advanced-wifi")  # pragma: no cover
