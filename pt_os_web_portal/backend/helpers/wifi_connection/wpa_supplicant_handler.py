@@ -3,7 +3,7 @@ from enum import Enum
 from time import sleep
 from typing import Any, Dict, List
 
-from .modules import get_pywifi
+from ..modules import get_pywifi
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +18,10 @@ class IfaceStatus(Enum):
     CONNECTED = 4
 
 
-class WifiManager:
-    RPI_WLAN_INTERFACE = "wlan0"
-
-    def __init__(self):
-        self.wifi_interface = self.get_interface(self.RPI_WLAN_INTERFACE)
+class WpaSupplicantHandler:
+    def __init__(self, ifname: str = "wlan0"):
+        self.ifname = ifname
+        self.wifi_interface = self.get_interface(self.ifname)
 
     @staticmethod
     def get_interface(iface_name: str):
@@ -111,7 +110,7 @@ class WifiManager:
             logger.info("Starting networks scan")
             self.wifi_interface.scan()
 
-            WifiManager.wait_for(
+            self.wait_for(
                 self.is_scanning, "scan completion", condition_true=False, silent=True
             )
         logger.info("Scan completed")
@@ -155,18 +154,18 @@ class WifiManager:
         logger.info("Removing all network profiles")
         self.wifi_interface.remove_all_network_profiles()
 
-        WifiManager.wait_for(self.is_inactive, "interface to become inactive")
+        self.wait_for(self.is_inactive, "interface to become inactive")
 
         logger.info("Connecting to newly created profile")
         self.wifi_interface.connect(
             self.wifi_interface.add_network_profile(network_profile)
         )
 
-        WifiManager.wait_for(self.is_connected, "connection", silent=True)
+        self.wait_for(self.is_connected, "connection", silent=True)
 
         logger.info("Updating wpa_supplicant.conf with network data")
         self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-            self.RPI_WLAN_INTERFACE, "SAVE_CONFIG", False
+            self.ifname, "SAVE_CONFIG", False
         )
 
     def bssid_connected(self) -> str:
@@ -176,7 +175,7 @@ class WifiManager:
 
             # query the network to wpa_cli
             response = self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
-                self.RPI_WLAN_INTERFACE, "STATUS", True
+                self.ifname, "STATUS", True
             )
             for line in response.split("\n"):
                 if line.startswith("bssid="):
@@ -185,43 +184,14 @@ class WifiManager:
             pass
         return ""
 
-
-# Global instance
-wifi_manager = None
-
-
-def get_wifi_manager_instance():
-    global wifi_manager
-    if wifi_manager is None:
-        wifi_manager = WifiManager()
-    return wifi_manager
-
-
-def get_ssids() -> List[Dict]:
-    wm = get_wifi_manager_instance()
-    logger.info("GETTING LIST OF SSIDS")
-    return [
-        {
-            "ssid": wm.ssid_to_display(r),
-            "passwordRequired": len(r.akm) != 0
-            and pywifi.const.AKM_TYPE_NONE not in r.akm,
-            "bssid": r.bssid,
-        }
-        for r in wm.scan_and_get_results()
-    ]
-
-
-def attempt_connection(bssid: str, password: str, on_connection=None) -> None:
-    logger.info(f"Attempting to connect to network with bssid '{bssid}'")
-    wm = get_wifi_manager_instance()
-    wm.connect(bssid, password)
-
-    if wm.is_connected() and on_connection:
-        logger.info("Executing on_connection callback")
-        on_connection()
-
-
-def current_wifi_bssid() -> str:
-    logger.info("Attempting to determine to which bSSID we're connected to")
-    wm = get_wifi_manager_instance()
-    return wm.bssid_connected()
+    def get_formatted_ssids(self):
+        logger.info("GETTING LIST OF SSIDS")
+        return [
+            {
+                "ssid": self.ssid_to_display(r),
+                "passwordRequired": len(r.akm) != 0
+                and pywifi.const.AKM_TYPE_NONE not in r.akm,
+                "bssid": r.bssid,
+            }
+            for r in self.scan_and_get_results()
+        ]

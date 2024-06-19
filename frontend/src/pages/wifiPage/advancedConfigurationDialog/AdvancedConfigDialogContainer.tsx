@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import apiBaseUrl from "../../../services/apiBaseUrl";
-import getVncWpaGuiUrl from "../../../services/getVncWpaGuiUrl";
-import startVncWpaGui from "../../../services/startVncWpaGui";
-import stopVncWpaGui from "../../../services/stopVncWpaGui";
+import getVncAdvancedWifiGuiUrl from "../../../services/getVncAdvancedWifiGuiUrl";
+import startVncAdvancedWifiGui from "../../../services/startVncAdvancedWifiGui";
+import stopVncAdvancedWifiGui from "../../../services/stopVncAdvancedWifiGui";
 
 import AdvancedConfigDialog from "./AdvancedConfigDialog";
 
@@ -32,7 +32,7 @@ export default ({ active, onClose }: Props) => {
 
       pollInterval = setInterval(async () => {
         try {
-          const data = await getVncWpaGuiUrl();
+          const data = await getVncAdvancedWifiGuiUrl();
 
           if (data.url) {
             clearTimeout(stopPollTimeout);
@@ -45,7 +45,7 @@ export default ({ active, onClose }: Props) => {
 
     const startAdvancedWifiConfig = async () => {
       try {
-        await startVncWpaGui();
+        await startVncAdvancedWifiGui();
         startPollTimeout = setTimeout(waitForUrl, startPollDelay);
       } catch (_) {
         setError(true);
@@ -67,7 +67,7 @@ export default ({ active, onClose }: Props) => {
   const stopAdvancedWifiConfig = async () => {
     setUrl("")
     try {
-      await stopVncWpaGui()
+      await stopVncAdvancedWifiGui()
     } catch (_) {
       setError(true);
     }
@@ -78,7 +78,7 @@ export default ({ active, onClose }: Props) => {
   useEffect(() => {
     const handleClose = () => {
       if (window.document.visibilityState === "hidden") {
-        navigator.sendBeacon(`${apiBaseUrl}/stop-vnc-wpa-gui`);
+        navigator.sendBeacon(`${apiBaseUrl}/stop-vnc-wifi-advanced-connection`);
       }
     }
     window.addEventListener("unload", handleClose);

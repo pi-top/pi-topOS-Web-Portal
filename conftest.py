@@ -7,6 +7,7 @@ from unittest.mock import Mock
 import pytest
 
 from tests.data.keyboard_data import keyboard_file_before
+from tests.mocks import NmcliMock
 
 
 def _patch_modules():
@@ -28,6 +29,7 @@ def _patch_modules():
         "pt_fw_updater.core.firmware_updater",
         "pt_web_vnc",
         "pt_web_vnc.vnc",
+        "nmcli",
     ]
     for module in modules_to_patch:
         modules[module] = Mock()
@@ -86,13 +88,57 @@ def restore_files():
 
 
 @pytest.fixture(scope="function")
-def wifi_manager_module():
-    import pt_os_web_portal.backend.helpers.wifi_manager
+def wpa_supplicant_handler():
+    import pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler
     from pt_os_web_portal.backend import create_app
 
     create_app(test_mode=True, os_updater=None)
-    yield pt_os_web_portal.backend.helpers.wifi_manager
+    yield pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler
 
-    if "pt_os_web_portal.backend.helpers.wifi_manager" in modules:
-        del modules["pt_os_web_portal.backend.helpers.wifi_manager"]
-    del pt_os_web_portal.backend.helpers.wifi_manager
+    if (
+        "pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler"
+        in modules
+    ):
+        del modules[
+            "pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler"
+        ]
+    del pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler
+
+
+@pytest.fixture(scope="function")
+def nmcli_mock(mocker):
+    yield mocker.patch(
+        "pt_os_web_portal.backend.helpers.wifi_connection.network_manager_handler.nmcli",
+        NmcliMock(),
+    )
+
+
+@pytest.fixture(scope="function")
+def network_manager_handler(nmcli_mock):
+    from pt_os_web_portal.backend.helpers.wifi_connection.network_manager_handler import (
+        NetworkManagerHandler,
+    )
+
+    yield NetworkManagerHandler
+
+    if (
+        "pt_os_web_portal.backend.helpers.wifi_connection.network_manager_handler"
+        in modules
+    ):
+        del modules[
+            "pt_os_web_portal.backend.helpers.wifi_connection.network_manager_handler"
+        ]
+    del NetworkManagerHandler
+
+
+@pytest.fixture(scope="function")
+def wifi_manager():
+    import pt_os_web_portal.backend.helpers.wifi
+    from pt_os_web_portal.backend import create_app
+
+    create_app(test_mode=True, os_updater=None)
+    yield pt_os_web_portal.backend.helpers.wifi
+
+    if "pt_os_web_portal.backend.helpers.wifi" in modules:
+        del modules["pt_os_web_portal.backend.helpers.wifi"]
+    del pt_os_web_portal.backend.helpers.wifi
