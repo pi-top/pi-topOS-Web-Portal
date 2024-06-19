@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.20.0-3) bullseye; urgency=medium
+pi-top-os-web-portal (0.20.1-1) bullseye; urgency=medium
 
   * Use flask sockets from pitop.common (#445)
   * Support NetworkManager (#444)
