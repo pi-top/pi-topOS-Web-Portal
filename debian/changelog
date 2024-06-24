@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.20.1-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.20.2-1) bullseye; urgency=medium
 
   * Don't start nm-applet when installed by pt-os-web-portal (#447)
   * Add aptitude dependency
