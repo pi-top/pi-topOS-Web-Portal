@@ -16,6 +16,8 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+# Find pi-top packages in updater
+ aptitude,
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling
