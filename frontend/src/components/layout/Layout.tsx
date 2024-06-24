@@ -28,7 +28,7 @@ export type Props = {
   showNext?: boolean;
   showBack?: boolean;
   showHeader?: boolean;
-  explanation?: string;
+  explanation?: string | ReactNode;
   children?: ReactNode;
   className?: string;
 };
@@ -63,15 +63,19 @@ export default ({
 
     <div className={styles.content}>
       {explanation && (
-        <span className={styles.explanation}>
-          {explanation.split("\n").map(function (item, key) {
-            return (
-              <span key={key}>
-                {item}
-                <br />
-              </span>
-            );
-          })}
+        <span data-testid="layout-explanation" className={styles.explanation}>
+          { typeof(explanation) === "string" ?
+            explanation.split("\n").map(function (item, key) {
+              return (
+                <span key={key}>
+                  {item}
+                  <br />
+                </span>
+              );
+            })
+          :
+            explanation
+          }
         </span>
       )}
 

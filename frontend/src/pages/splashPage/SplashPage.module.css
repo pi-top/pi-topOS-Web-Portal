@@ -2,3 +2,7 @@
   --bannerHeight: calc(96vh - 100px);
   --promptFontSize: 50px;
 }
+
+.checkbox {
+  margin-top: 10px;
+}

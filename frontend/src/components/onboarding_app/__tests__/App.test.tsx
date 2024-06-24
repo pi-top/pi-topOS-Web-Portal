@@ -43,6 +43,8 @@ import connectToNetwork from "../../../services/connectToNetwork";
 
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
+import { runningOnWebRenderer } from '../../../helpers/utils'
+
 
 import wsBaseUrl from "../../../services/wsBaseUrl";
 
@@ -67,7 +69,9 @@ jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
+jest.mock('../../../helpers/utils')
 
+const runningOnWebRendererMock = runningOnWebRenderer as jest.Mock
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
 const currentLocaleMock = getCurrentLocale as jest.Mock;
@@ -140,7 +144,7 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     // queries
     queryReactSelect: () => queryReactSelect(result.container),
     // WaitFors
-    waitForSplashPage: () => waitForAltText("intro-screen"),
+    waitForSplashPage: () => waitForAltText("Teacher"),
     waitForLanguagePage: () => waitForAltText("language-screen-banner"),
     waitForCountryPage: () => waitForAltText("country-screen"),
     waitForKeyboardPage: () => waitForAltText("keyboard-screen"),
@@ -150,6 +154,8 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForUpgradePageBanner: () => waitForAltText("upgrade-page-banner"),
     waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
     waitForRestartPage: () => waitForAltText("reboot-screen"),
+    waitForSchoolPage: () => waitForAltText("school-banner"),
+
     // Actions
     upgrade: async () => {
       fireEvent.click(result.getByText("Update"));
@@ -222,6 +228,9 @@ describe("App", () => {
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
 
+    // utils
+    runningOnWebRendererMock.mockImplementation(() => false)
+
     let nextSizeMessage = Messages.NoSize;
     server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
@@ -275,22 +284,55 @@ describe("App", () => {
     expect(queryByTestId("build-info")).toMatchSnapshot();
   });
 
-  it("renders SpashPage by default", async () => {
+  it("renders SpashPage when onboarding ", async () => {
     const { queryByAltText, waitForSplashPage } = mount();
     await waitForSplashPage();
 
-    expect(queryByAltText("intro-screen")).toBeInTheDocument();
+    expect(queryByAltText("Teacher")).toBeInTheDocument();
+  });
+
+  it("skips SpashPage and goes to LanguagePage when device isn't connected to internet", async () => {
+      isConnectedToNetworkMock.mockResolvedValue({ connected: false });
+      const { waitForLanguagePage } = mount();
+      await waitForLanguagePage();
+  });
+
+  it("skips SpashPage and goes to LanguagePage when onboarding in the device", async () => {
+    isConnectedToNetworkMock.mockResolvedValue({ connected: true });
+    runningOnWebRendererMock.mockImplementation(() => true)
+
+    const { waitForLanguagePage } = mount();
+    await waitForLanguagePage();
+  });
+
+  it("goes to SpashPage when device is connected to internet", async () => {
+    await isConnectedToNetworkMock.mockResolvedValue({ connected: true });
+
+    const { waitForSplashPage } = mount();
+    await waitForSplashPage();
   });
 
   describe("SplashPage", () => {
-    it("navigates to LanguagePage on next button click", async () => {
-      const { getByText, waitForSplashPage, waitForLanguagePage } = mount(
+    it("navigates to LanguagePage when Home user is selected and Next button is pressed", async () => {
+      const { getByLabelText, getByText, waitForSplashPage, waitForLanguagePage } = mount(
         PageRoute.Splash
       );
       await waitForSplashPage();
+      fireEvent.click(getByLabelText("Home"));
 
-      fireEvent.click(getByText("Yes"));
+      fireEvent.click(getByText("Next"));
       await waitForLanguagePage();
+    });
+
+    it("navigates to SchoolPage when Home user is selected and Next button is pressed", async () => {
+      const { getByLabelText, getByText, waitForSplashPage, waitForSchoolPage } = mount(
+        PageRoute.Splash
+      );
+      await waitForSplashPage();
+      fireEvent.click(getByLabelText("Teacher"));
+
+      fireEvent.click(getByText("Next"));
+      await waitForSchoolPage();
     });
   });
 

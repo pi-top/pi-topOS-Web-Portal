@@ -93,7 +93,7 @@ export default ({
       }}
       prompt={
         <>
-          Me too! What <span className="green">language</span> shall we use?
+          What <span className="green">language</span> shall we use?
         </>
       }
       explanation="Choose your language"

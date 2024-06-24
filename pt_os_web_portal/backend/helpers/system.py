@@ -1,7 +1,7 @@
 import functools
 import logging
 from enum import Enum
-from typing import Optional
+from typing import Optional, Union
 
 from pitop.common.command_runner import run_command
 
@@ -16,11 +16,14 @@ class SystemService(Enum):
     VncDesktop = "pt-web-vnc-desktop"
 
 
-def systemctl(command: str, name: SystemService, timeout=10) -> Optional[str]:
+def systemctl(
+    command: str, name: Union[SystemService, str], timeout=10
+) -> Optional[str]:
     logger.info(f"Function systemctl(command={command}, name={name})")
     try:
+        service_name = name if isinstance(name, str) else name.value
         output = run_command(
-            f"systemctl {command} {name.value}.service",
+            f"systemctl {command} {service_name}.service",
             timeout=timeout,
             check=False,
         )

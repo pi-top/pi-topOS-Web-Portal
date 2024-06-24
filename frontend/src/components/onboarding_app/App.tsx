@@ -14,12 +14,14 @@ import RegistrationPageContainer from "../../pages/registrationPage/Registration
 import RestartPageContainer from "../../pages/restartPage/RestartPageContainer";
 import ErrorPage from "../../pages/errorPage/ErrorPage";
 import BuildInformation from "../buildInformation/BuildInformation";
+import SchoolPageContainer from "../../pages/schoolPage/SchoolPageContainer";
 
 import getBuildInfo from "../../services/getBuildInfo";
 
 import { BuildInfo } from "../../types/Build";
 import { Page, PageRoute } from "../../types/Page";
 import { Network } from "../../types/Network";
+import { UserType } from "../../types/UserType";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -48,7 +50,16 @@ export default () => {
           exact
           path={PageRoute.Splash}
           render={({ history }) => (
-            <SplashPage goToNextPage={() => history.push(PageRoute.Language)} />
+            <SplashPage goToNextPage={(userType: UserType) => history.push(userType === UserType.HOME ? PageRoute.Language : PageRoute.School)} />
+          )}
+        />
+
+        <Route
+          exact
+          path={PageRoute.School}
+          render={({ history }) => (
+              <SchoolPageContainer goToPreviousPage={() => history.push(PageRoute.Splash)}
+              />
           )}
         />
 
