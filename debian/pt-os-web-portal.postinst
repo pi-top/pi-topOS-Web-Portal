@@ -1,0 +1,39 @@
+#!/bin/bash
+###############################################################
+#                Unofficial 'Bash strict mode'                #
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/  #
+###############################################################
+set -euo pipefail
+IFS=$'\n\t'
+###############################################################
+
+get_reverse_dependencies() {
+	apt-cache rdepends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --installed $1 2>/dev/null | uniq | grep -v -E "Reverse Depends:|$1" | xargs
+}
+
+case "$1" in
+  configure)
+	# if network-manager-gnome was manually installed, skip
+	if [ $(apt show network-manager-gnome 2>/dev/null| grep APT-Manual-Installed | awk '{print $2}') = "no" ]; then
+		# prevent nm-applet from auto starting if pt-os-web-portal is the only package that has network-manager-gnome as a dependency
+		PACKAGES=$(get_reverse_dependencies network-manager-gnome)
+		if [[ $PACKAGES == "pt-os-web-portal" ]]; then
+			if grep -q -v "Hidden=true" /etc/xdg/autostart/nm-applet.desktop; then
+				echo "Hidden=true" >> /etc/xdg/autostart/nm-applet.desktop
+			fi
+		fi
+	fi
+
+  ;;
+
+\
+  abort-upgrade | abort-remove | abort-deconfigure | try-restart | triggered) ;;
+
+\
+	*)
+	echo "postinst called with unknown argument \`$1'" >&2
+	exit 1
+	;;
+esac
+
+#DEBHELPER#
