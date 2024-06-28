@@ -11,6 +11,7 @@ from .menu import (
     BatteryInfoPage,
     DetailedInstructionsPage,
     FwInfoPage,
+    MacAddressesPage,
     NetworksPage,
     OsInfoPage,
 )
