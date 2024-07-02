@@ -1,0 +1,4 @@
+# Create breadcrumb to indicate last-update date
+DPkg::Post-Invoke {
+    "mkdir -p /var/lib/pt-os-web-portal/ && rm -f /var/lib/pt-os-web-portal/last-update && touch /var/lib/pt-os-web-portal/last-update";
+};
