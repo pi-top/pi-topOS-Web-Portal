@@ -21,6 +21,9 @@ class APTUpgradeException(Exception):
 
 class OSUpdateManager:
     def __init__(self) -> None:
+        # Load apt system configuration
+        apt_pkg.init_config()
+
         self.cache = apt.Cache()
         self.lock = False
 
