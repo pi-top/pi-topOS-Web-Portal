@@ -125,3 +125,6 @@ class AptProgressMock:
 class AptPkgMock:
     def size_to_str(self, size):
         return f"{size} " if size < 1e6 else f"{int(size*1e-6)} k"
+
+    def init_config(self):
+        pass
