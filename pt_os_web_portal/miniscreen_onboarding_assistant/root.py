@@ -14,6 +14,7 @@ from .pages import (
     FwInfoPage,
     GetDevicePage,
     HelpURLPage,
+    MacAddressesPage,
     NetworksPage,
     OpenBrowserPage,
     OsInfoPage,
@@ -53,6 +54,7 @@ class MenuPageList(PageList):
                 OsInfoPage,
                 FwInfoPage,
                 NetworksPage,
+                MacAddressesPage,
             ],
         )
 
