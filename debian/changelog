@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.21.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.21.1-1) bullseye; urgency=medium
 
   * Fix transition to last page in miniscreen app (#452)
   * [pre-commit.ci] pre-commit autoupdate (#440)
