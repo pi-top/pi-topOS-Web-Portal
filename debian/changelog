@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.21.0-2) bullseye; urgency=medium
+
+  * Fix transition to last page in miniscreen app (#452)
+  * [pre-commit.ci] pre-commit autoupdate (#440)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 12 Jul 2024 16:03:09 +0000
+
 pi-top-os-web-portal (0.21.0-1) bullseye; urgency=medium
 
   * Add MAC addresses in onboarding miniscreen app (#449)
