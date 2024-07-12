@@ -14,6 +14,7 @@ from .pages import (
     FwInfoPage,
     GetDevicePage,
     HelpURLPage,
+    MacAddressesPage,
     NetworksPage,
     OpenBrowserPage,
     OsInfoPage,
@@ -53,6 +54,7 @@ class MenuPageList(PageList):
                 OsInfoPage,
                 FwInfoPage,
                 NetworksPage,
+                MacAddressesPage,
             ],
         )
 
@@ -91,7 +93,7 @@ class RootComponent(Component):
                 return
 
             # Only do automatic update if on 'Open Browser' page
-            if len(self.active_component.rows) == 2:
+            if self.active_component.distance_to_bottom == 1:
                 self.stack.active_component.scroll_down()
 
         subscribe(AppEvents.READY_TO_BE_A_MAKER, soft_transition_to_last_page)
