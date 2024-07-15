@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.21.1-2) bullseye; urgency=medium
+
+  * Use ConnectionManager only on pi-top[4] (#454)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 15 Jul 2024 21:52:26 +0000
+
 pi-top-os-web-portal (0.21.1-1) bullseye; urgency=medium
 
   * Fix transition to last page in miniscreen app (#452)
