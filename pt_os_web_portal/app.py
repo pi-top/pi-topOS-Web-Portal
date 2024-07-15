@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 class App:
     def __init__(self, test_mode):
+        try:
+            self.device = device_type()
+        except Exception:
+            self.device = ""
+
         self.os_updater = OSUpdater()
         self.wsgi_server = WSGIServer(
             ("", 80),
@@ -35,22 +40,20 @@ class App:
         )
 
         self.miniscreen_onboarding = None
-        self.connection_manager = ConnectionManager()
+        self.connection_manager = None
+
+        if self.device == DeviceName.pi_top_4.value:
+            self.connection_manager = ConnectionManager()
 
     def start(self):
         self.os_updater.start()
-
-        try:
-            device = device_type()
-        except Exception:
-            device = ""
 
         if (
             is_pi_top_os()
             and state.get("app", "onboarded", fallback="false") == "false"
         ):
             logger.info("Onboarding not completed ...")
-            if device == DeviceName.pi_top_4.value:
+            if self.device == DeviceName.pi_top_4.value:
                 logger.debug("Setting ENV VAR to use miniscreen as system...")
                 environ["PT_MINISCREEN_SYSTEM"] = "1"
 
@@ -62,7 +65,9 @@ class App:
                 disable_ap_mode()
 
         setup_device_registration_event_handlers()
-        self.connection_manager.start()
+
+        if self.connection_manager:
+            self.connection_manager.start()
 
         self.wsgi_server.start()
 
@@ -78,7 +83,7 @@ class App:
                 self.os_updater.stop,
                 lambda: self.miniscreen_onboarding
                 and self.miniscreen_onboarding.stop(),
-                self.connection_manager.stop,
+                lambda: self.connection_manager and self.connection_manager.stop(),
                 stop_wsgi_server,
             ]:
                 executor.submit(stop_func)
