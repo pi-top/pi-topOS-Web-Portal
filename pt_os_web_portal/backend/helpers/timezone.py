@@ -22,7 +22,7 @@ def get_all_timezones() -> list:
 
         if not use_test_path():
             command = "timedatectl list-timezones"
-            available_timezones = run_command(command, timeout=2).split("\n")
+            available_timezones = run_command(command, timeout=10).split("\n")
             timezones = [t for t in timezones if t["timezone"] in available_timezones]
 
         return timezones
@@ -35,7 +35,7 @@ def get_current_timezone() -> str:
     if use_test_path():
         return "Europe/London"
 
-    for line in run_command("timedatectl", timeout=2).split("\n"):
+    for line in run_command("timedatectl", timeout=10).split("\n"):
         if "Time zone:" in line:
             tz_string = line.split(":")[1].split("(")[0].strip()
             break
@@ -53,4 +53,4 @@ def set_timezone(tz_string):
         return None
 
     command = f"raspi-config nonint do_change_timezone {tz_string}"
-    return run_command(command, timeout=5)
+    return run_command(command, timeout=10)
