@@ -32,7 +32,7 @@ def test_current_keyboard(app, mocker):
     body = json.loads(response.data)
     run_mock.assert_called_once_with(
         "setxkbmap -query",
-        timeout=2,
+        timeout=10,
     )
     assert response.status_code == 200
     assert body == keyboard_current

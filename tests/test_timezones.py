@@ -28,7 +28,7 @@ def test_set_locale_success(app, mocker):
     successful_response = app.post("/set-timezone", json={"timezone": valid_timezone})
     run_mock.assert_called_once_with(
         f"raspi-config nonint do_change_timezone {valid_timezone}",
-        timeout=5,
+        timeout=10,
     )
     assert successful_response.status_code == 200
     assert successful_response.data == b"OK"

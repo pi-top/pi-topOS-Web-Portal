@@ -15,7 +15,7 @@ def current_keyboard_layout() -> Tuple[str, Optional[str]]:
     variant = None
 
     command = "setxkbmap -query"
-    for line in run_command(command, timeout=2).split("\n"):
+    for line in run_command(command, timeout=10).split("\n"):
         if "layout:" in line:
             layout_code = line.split(":")[1].strip()
         elif "variant:" in line:
