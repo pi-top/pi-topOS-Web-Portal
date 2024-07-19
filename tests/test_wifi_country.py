@@ -41,7 +41,7 @@ def test_set_wifi_country_success(app, mocker):
     )
     run_mock.assert_called_once_with(
         f"raspi-config nonint do_wifi_country {valid_country_code}",
-        timeout=5,
+        timeout=15,
     )
     assert successful_response.status_code == 200
     assert successful_response.data == b"OK"
