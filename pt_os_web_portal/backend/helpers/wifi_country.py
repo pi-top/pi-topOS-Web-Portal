@@ -42,4 +42,4 @@ def set_wifi_country(wifi_country_code):
         logger.error("Unable to set Wi-Fi country - Not available: %s" % code)
         return None
 
-    return run_command("raspi-config nonint do_wifi_country %s" % code, timeout=5)
+    return run_command("raspi-config nonint do_wifi_country %s" % code, timeout=15)
