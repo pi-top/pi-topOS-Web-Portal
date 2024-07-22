@@ -369,77 +369,6 @@ describe("WifiPageContainer", () => {
     ).toBeInTheDocument();
   });
 
-  it("prompts user to reconnect to pi-top network if disconnected while connecting to Wi-Fi", async () => {
-    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
-
-    mount();
-
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(fetchingNetworksMessage)
-    );
-
-    // open the select
-    fireEvent.keyDown(queryReactSelect(document.body)!, {
-      keyCode: KeyCode.DownArrow,
-    });
-
-    // click the wifi option
-    fireEvent.click(screen.getByText(network.ssid));
-
-    // enter correct password
-    const passwordInputLabel = screen.getByLabelText("Enter password below");
-    fireEvent.change(passwordInputLabel, {
-      target: { value: "correct-password" },
-    });
-
-    // simulate wifi-creds failing and then  request hanging due to connection to pi-top being disrupted
-    server.use(
-      rest.post<{ bssid: string; password: string }>(
-        "/wifi-credentials",
-        (_, res, ctx) => {
-          return res(ctx.status(500));
-        }
-      ),
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.delay(5000), ctx.status(400));
-      })
-    );
-
-    // join network
-    fireEvent.click(screen.getByText("Join"));
-
-    // reconnect to pi-top hotspot dialog should be shown
-    expect(
-      await screen.findByText("Reconnect to pi-top hotspot")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        textContentMatcher(
-          /Your computer has disconnected from the pi-top-XXXX Wi-Fi hotspot\. Please reconnect to it to continue onboarding/
-        )
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByAltText("Reconnect to pitop hotspot")
-    ).toBeInTheDocument();
-
-    // simulate user reconnecting to pitop hotspot
-    server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.json(network.bssid));
-      })
-    );
-
-    // connected message should be shown eventually
-    expect(
-      await screen.findByText(
-        textContentMatcher(
-          `Great, your pi-top is connected to ${network.ssid}!`
-        )
-      )
-    ).toBeInTheDocument();
-  });
-
   it("renders error when incorrect password is used to connect to network", async () => {
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
 
@@ -522,6 +451,12 @@ describe("WifiPageContainer", () => {
   });
 
   it("clears incorrect password error when retry is clicked", async () => {
+    server.use(
+      rest.get("/current-wifi-bssid", (_, res, ctx) => {
+        return res(ctx.json(""));
+      })
+    );
+
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
 
     mount();
@@ -565,6 +500,13 @@ describe("WifiPageContainer", () => {
         `There was an error connecting to ${network.ssid}... please check your password and try again`
       )
     ).not.toBeInTheDocument();
+
+    // server reports it's connected to the network
+    server.use(
+      rest.get("/current-wifi-bssid", (_, res, ctx) => {
+        return res(ctx.json(network.bssid));
+      })
+    );
 
     // retried request succeeds
     expect(

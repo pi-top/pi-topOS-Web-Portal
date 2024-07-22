@@ -4,6 +4,7 @@ import WifiPage from "./WifiPage";
 import { Network } from "../../types/Network";
 import getNetworks from "../../services/getNetworks";
 import connectedBSSID from "../../services/connectedBSSID";
+import HotspotDisconnectDialog from "../hotspotDisconnectDialog/HotspotDisconnectDialog";
 
 export default () => {
   const [connectedNetwork, setConnectedNetwork] = useState<Network>();
@@ -35,15 +36,18 @@ export default () => {
   }, []);
 
   return (
-    <WifiPage
-      onRefreshClick={fetchNetworks}
-      networks={networks}
-      isFetchingNetworks={isFetchingNetworks}
-      isConnected={!!connectedNetwork}
-      connectedNetwork={connectedNetwork}
-      setConnectedNetwork={setConnectedNetwork}
-      fetchNetworksError={fetchNetworksError}
-      showSkipWarning={false}
-    />
+    <>
+      <WifiPage
+        onRefreshClick={fetchNetworks}
+        networks={networks}
+        isFetchingNetworks={isFetchingNetworks}
+        isConnected={!!connectedNetwork}
+        connectedNetwork={connectedNetwork}
+        setConnectedNetwork={setConnectedNetwork}
+        fetchNetworksError={fetchNetworksError}
+        showSkipWarning={false}
+      />
+      <HotspotDisconnectDialog />
+    </>
   );
 };

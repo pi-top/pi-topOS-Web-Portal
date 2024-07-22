@@ -4,6 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
 import { server } from "../src/msw/server";
+import { setConnectedNetwork } from './msw/handlers';
 
 const Adapter = require('enzyme-adapter-react-16');
 const { configure } = require('enzyme');
@@ -15,6 +16,7 @@ beforeAll(() => {
   server.listen()
 });
 afterEach(() => {
+  setConnectedNetwork(undefined);
   server.resetHandlers();
 });
 afterAll(() => {

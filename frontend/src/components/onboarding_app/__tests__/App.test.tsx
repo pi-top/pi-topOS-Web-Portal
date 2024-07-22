@@ -43,7 +43,10 @@ import connectToNetwork from "../../../services/connectToNetwork";
 
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
+import isConnectedThroughAp from "../../../services/isConnectedThroughAp";
+import { UpgradePageExplanation } from "../../../pages/upgradePage/UpgradePage";
 
+import { waitFor } from "../../../../test/helpers/waitFor";
 import wsBaseUrl from "../../../services/wsBaseUrl";
 
 jest.mock("../../../services/getNetworks");
@@ -67,6 +70,7 @@ jest.mock("../../../services/setRegistration");
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
+jest.mock("../../../services/isConnectedThroughAp");
 
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
@@ -89,8 +93,7 @@ const connectToNetworkMock = connectToNetwork as jest.Mock;
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
-
-import { UpgradePageExplanation } from "../../../pages/upgradePage/UpgradePage";
+const isConnectedThroughApMock = isConnectedThroughAp as jest.Mock;
 
 const keyboardVariants = {
   us: {
@@ -213,10 +216,15 @@ describe("App", () => {
     setKeyboardMock.mockResolvedValue("OK");
     setRegistrationMock.mockResolvedValue("OK");
     getNetworksMock.mockResolvedValue([
-      { ssid: "wifi network", bssid: "wifi network bssid", passwordRequired: false },
+      {
+        ssid: "wifi network",
+        bssid: "wifi network bssid",
+        passwordRequired: false,
+      },
     ]);
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
     connectToNetworkMock.mockResolvedValue("OK");
+    isConnectedThroughApMock.mockResolvedValue({ isUsingAp: false });
 
     // upgrade page mocks
     serverStatusMock.mockResolvedValue("OK");
@@ -280,6 +288,104 @@ describe("App", () => {
     await waitForSplashPage();
 
     expect(queryByAltText("intro-screen")).toBeInTheDocument();
+  });
+
+  it("when using AP mode, displays reconnect to AP dialog", async () => {
+    jest.setTimeout(30_000);
+    isConnectedThroughApMock.mockResolvedValue({ isUsingAp: true });
+
+    const {
+      upgrade,
+      getByText,
+      getByTestId,
+      waitForSplashPage,
+      waitForLanguagePage,
+      waitForCountryPage,
+      waitForKeyboardPage,
+      waitForTermsPage,
+      waitForWifiPage,
+      waitForUpgradePage,
+      waitForRegistrationPage,
+      waitForRestartPage,
+    } = mount();
+
+    const checkForDialog = async () => {
+      await act(async () => {
+        expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
+
+        serverStatusMock.mockRejectedValue("Error");
+        await waitFor(() =>
+          expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass("hidden")
+        );
+
+        serverStatusMock.mockResolvedValue("OK");
+        await waitFor(() =>
+          expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden")
+        );
+      });
+    };
+
+    // on splash page
+    await waitForSplashPage();
+    await checkForDialog();
+    fireEvent.click(getByText("Yes"));
+
+    // on language page
+    await waitForLanguagePage();
+    await checkForDialog();
+    fireEvent.click(getByText("Next"));
+
+    // on country page
+    await waitForCountryPage();
+    await checkForDialog();
+    fireEvent.click(getByText("Next"));
+
+    // on keyboard page
+    await waitForKeyboardPage();
+    await checkForDialog();
+    fireEvent.click(getByText("Next"));
+
+    // on terms page
+    await waitForTermsPage();
+    await checkForDialog();
+    fireEvent.click(getByText("Agree"));
+
+    // on terms page
+    await waitForWifiPage();
+    await checkForDialog();
+    fireEvent.click(getByText("Next"));
+
+    // on upgrade page
+    await waitForUpgradePage();
+    await checkForDialog();
+
+    // mock upgrade and go to registration page
+    await upgrade();
+    jest.useFakeTimers();
+    fireEvent.click(getByText("Next"));
+    jest.runOnlyPendingTimers();
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+    await waitForRegistrationPage();
+
+    // on registration page
+    await waitForRegistrationPage();
+    await checkForDialog();
+    fireEvent.click(getByText("Skip"));
+
+    // on restart page
+    await waitForRestartPage();
+
+    // dialog is NOT displayed on this page
+    expect(await getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
+
+    serverStatusMock.mockRejectedValue("Error");
+    await new Promise((r) => setTimeout(r, 1000));
+    expect(await getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
+
+    serverStatusMock.mockResolvedValue("OK");
+    await new Promise((r) => setTimeout(r, 1000));
+    expect(await getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
   });
 
   describe("SplashPage", () => {
