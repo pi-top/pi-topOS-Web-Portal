@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def check_relevant_pi_top_os_version_updates():
-    URL = "https://backend-test.pi-top.com/utils/v1/OS/checkUpdate"
+    URL = "https://backend.pi-top.com/utils/v1/OS/checkUpdate"
     BUILD_INFO_TO_API_LOOKUP = {
         "build_os_version": "currentOSVersion",
         "build_commit": "buildCommit",
