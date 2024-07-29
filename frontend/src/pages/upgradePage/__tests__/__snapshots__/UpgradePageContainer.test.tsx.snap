@@ -232,7 +232,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
           class="link unstyled"
           type="button"
         >
-          https://pi-top.com/help/out-of-date
+          https://www.pi-top.com/resources/download-os
         </button>
       </span>
       <br />
@@ -504,7 +504,7 @@ exports[`UpgradePageContainer when there are major OS updates available and user
           class="link unstyled"
           type="button"
         >
-          https://pi-top.com/help/out-of-date
+          https://www.pi-top.com/resources/download-os
         </button>
       </span>
       <br />

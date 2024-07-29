@@ -57,7 +57,7 @@ export default ({
 
         <span className={styles.osUpgradeWarning}>
           {OsBurnExplanation.GoToWebsite}
-          {getFormattedLink("https://pi-top.com/help/out-of-date")}
+          {getFormattedLink("https://www.pi-top.com/resources/download-os")}
         </span>
         <br></br>
 
