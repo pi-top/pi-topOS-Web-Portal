@@ -23,6 +23,7 @@ export default () => (
         <Route path="/onboarding" component={OnboardingApp} />
         <Route path="/about" component={AboutPageContainer} />
         <Route path="/wifi" component={StandaloneWifiPageContainer} />
+
         <Route
           path="/updater"
           render={() => <UpgradePageContainer hideSkip />}

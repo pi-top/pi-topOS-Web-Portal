@@ -1,0 +1,30 @@
+.banner {
+  height: 70vh;
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+}
+
+.progress {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text {
+  composes: text from '../../globalStyles/Typography.module.css';
+  padding: 20px;
+  font-size: 16px;
+  color: var(--green);
+  overflow: hidden;
+  max-height: 10vh;
+  text-align: center;
+}
+
+.link {
+  color: var(--green);
+  text-decoration: none;
+}

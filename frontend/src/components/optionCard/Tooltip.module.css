@@ -1,0 +1,17 @@
+.tooltip {
+  composes: fontSub from '../../globalStyles/Typography.module.css';
+  font-size: 1.4rem;
+  --tooltipBackground: var(--mediumNavy);
+  padding: 1rem;
+}
+
+.tooltip a {
+  color: var(--darkGrey);
+  font-weight: bold;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(to top, var(--darkGreen) 100%, transparent);
+  background-size: 100% 0.3rem;
+  background-position: 0 100%;
+  background-repeat: repeat-x;
+}

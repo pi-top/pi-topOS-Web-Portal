@@ -1,4 +1,5 @@
 import logging
+import os
 from ipaddress import ip_address
 from json import dumps as jdumps
 from threading import Thread
@@ -8,6 +9,7 @@ from flask import abort
 from flask import current_app as app
 from flask import redirect, request, send_from_directory
 from further_link.start_further import get_further_url
+from pitop.common.command_runner import run_command
 from pitop.common.formatting import is_url
 from pitop.common.pt_os import is_pi_top_os
 from pitop.common.sys_info import (
@@ -646,3 +648,33 @@ def get_vnc_service_state():
             )
         }
     )
+
+
+# Use handlers and a lookup to limit the files that the /upload-file endpoint can receive
+def usb_setup_file_handler(usb_file):
+    path = "/tmp"
+    usb_file.save(os.path.join(path, usb_file.filename))
+    escaped_mount_point = run_command(f"systemd-escape -- {path}", timeout=5).strip()
+    service_start(name=f"pt-usb-setup@{escaped_mount_point}")
+
+
+upload_file_handlers = {"pi-top-usb-setup.tar.gz": usb_setup_file_handler}
+
+
+@app.route("/upload-file", methods=["POST"])
+def post_upload_file():
+    logger.debug("Route '/upload-file'")
+
+    file = request.files.get("file")
+    if file is None or file.filename == "":
+        logger.error("Error: no file in request")
+        return abort(400)
+
+    file_handler = upload_file_handlers.get(file.filename)
+    if file_handler is None:
+        logger.error(f"Error: file {file.filename} is not supported by this endpoint")
+        return abort(400)
+
+    logger.info(f"Executing handler for {file.filename}")
+    file_handler(file)
+    return "OK"
