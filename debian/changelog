@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.21.1-5) bullseye; urgency=medium
+pi-top-os-web-portal (0.22.0-1) bullseye; urgency=medium
 
   * Use prod endpoint to check for OS version updates (#462)
   * Update workflows
