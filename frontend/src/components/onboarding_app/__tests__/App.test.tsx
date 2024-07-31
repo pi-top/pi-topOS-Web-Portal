@@ -266,6 +266,7 @@ describe("App", () => {
   afterEach(() => {
     act(() => server.close());
     cleanup();
+    jest.useRealTimers();
   });
 
   it("does not render build information on mount", async () => {
@@ -291,6 +292,7 @@ describe("App", () => {
   });
 
   it("when using AP mode, displays reconnect to AP dialog", async () => {
+    jest.useFakeTimers();
     jest.setTimeout(30_000);
     isConnectedThroughApMock.mockResolvedValue({ isUsingAp: true });
 
@@ -311,17 +313,28 @@ describe("App", () => {
 
     const checkForDialog = async () => {
       await act(async () => {
+        jest.useFakeTimers();
+
         expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
 
         serverStatusMock.mockRejectedValue("Error");
+        // Advance time to wait for 5 failed requests for dialog to appear
+        jest.advanceTimersByTime(6_000);
+        jest.useRealTimers();
         await waitFor(() =>
           expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass("hidden")
-        );
+        , {timeout: 10_000});
 
         serverStatusMock.mockResolvedValue("OK");
+        // Advance time and wait for dialog to dissapear
+        jest.useFakeTimers();
+        jest.advanceTimersByTime(1_000);
+        jest.useRealTimers();
         await waitFor(() =>
           expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden")
-        );
+        , {timeout: 10_000});
+
+        jest.useRealTimers();
       });
     };
 
