@@ -30,6 +30,7 @@ def _patch_modules():
         "pt_web_vnc",
         "pt_web_vnc.vnc",
         "nmcli",
+        "gevent",
     ]
     for module in modules_to_patch:
         modules[module] = Mock()
