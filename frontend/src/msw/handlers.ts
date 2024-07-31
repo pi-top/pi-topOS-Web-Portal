@@ -1,5 +1,12 @@
 import { rest } from "msw";
 import networks from "./data/networks.json";
+import { Network } from "../types/Network";
+
+let connectedNetwork: Network | undefined = undefined;
+
+export const setConnectedNetwork = (network: Network | undefined) => {
+  connectedNetwork = network;
+}
 
 export default [
   rest.post("/disable-landing", (_, res, ctx) => {
@@ -50,8 +57,8 @@ export default [
   rest.get("/wifi-ssids", (_, res, ctx) => {
     return res(ctx.json(networks));
   }),
-  rest.get('/current-wifi-bssid', (_, res, ctx) => {
-    return res(ctx.json(""))
+  rest.get("/current-wifi-bssid", (_, res, ctx) => {
+    return res(ctx.json(connectedNetwork?.bssid || ""));
   }),
   rest.post<{ bssid: string; password: string }>(
     "/wifi-credentials",
@@ -59,7 +66,26 @@ export default [
       if (req.body.password === "incorrect-password") {
         return res(ctx.status(401));
       }
+      setConnectedNetwork(networks.find((n) => n.bssid === req.body.bssid));
       return res(ctx.status(200));
     }
   ),
+  rest.get("/status", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.post("/onboarding-miniscreen-ready-to-be-a-maker", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.get("/os-updates", (_, res, ctx) => {
+    return res(ctx.json({ shouldBurn: false, requireBurn: false }));
+  }),
+  rest.post("/start-vnc-wifi-advanced-connection", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.post("/stop-vnc-wifi-advanced-connection", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.get("/vnc-wifi-advanced-connection-url", (_, res, ctx) => {
+    return res(ctx.json({ url: "http://localhost" }));
+  }),
 ];

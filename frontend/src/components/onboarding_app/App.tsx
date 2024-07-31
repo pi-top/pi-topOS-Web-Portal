@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useLocation } from "react-router-dom";
 
 import styles from './App.module.css';
 import SplashPage from "../../pages/splashPage/SplashPage";
@@ -20,6 +20,7 @@ import getBuildInfo from "../../services/getBuildInfo";
 import { BuildInfo } from "../../types/Build";
 import { Page, PageRoute } from "../../types/Page";
 import { Network } from "../../types/Network";
+import HotspotDisconnectDialog from "../../pages/hotspotDisconnectDialog/HotspotDisconnectDialog";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -181,6 +182,7 @@ export default () => {
         <Route component={ErrorPage} />
       </Switch>
       <BuildInformation info={buildInfo} className={styles.buildInfo} />
+      <HotspotDisconnectDialog enabled={useLocation().pathname !== PageRoute.Restart} />
     </>
   );
 };

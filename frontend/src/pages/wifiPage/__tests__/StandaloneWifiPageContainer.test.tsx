@@ -20,6 +20,15 @@ import { KeyCode } from "../../../../test/types/Keys";
 import { server } from "../../../msw/server";
 import networks from "../../../msw/data/networks.json";
 import textContentMatcher from "../../../../test/helpers/textContentMatcher";
+import { act } from "react-dom/test-utils";
+
+import serverStatus from "../../../services/serverStatus";
+import isConnectedThroughAp from "../../../services/isConnectedThroughAp";
+import { waitFor } from "../../../../test/helpers/waitFor";
+jest.mock("../../../services/serverStatus");
+jest.mock("../../../services/isConnectedThroughAp");
+const serverStatusMock = serverStatus as jest.Mock;
+const isConnectedThroughApMock = isConnectedThroughAp as jest.Mock;
 
 let mockUserAgent = "not-web-renderer";
 Object.defineProperty(window.navigator, "userAgent", {
@@ -29,7 +38,7 @@ Object.defineProperty(window.navigator, "userAgent", {
 });
 
 const setRunningOnWebRenderer = (onWebRenderer = true) => {
-  mockUserAgent = onWebRenderer ? "web-renderer" : "not-web-renderer"
+  mockUserAgent = onWebRenderer ? "web-renderer" : "not-web-renderer";
 };
 
 // increase timeout so failure messages are not timeout messages
@@ -38,14 +47,16 @@ jest.setTimeout(10000);
 const fetchingNetworksMessage = "fetching networks...";
 
 type ExtendedRenderResult = RenderResult & {
-  queryByTestId: BoundFunction<QueryByBoundAttribute>,
+  queryByTestId: BoundFunction<QueryByBoundAttribute>;
 };
 
 describe("StandaloneWifiPageContainer", () => {
   let mount: () => ExtendedRenderResult;
 
   beforeEach(async () => {
-    setRunningOnWebRenderer(false)
+    setRunningOnWebRenderer(false);
+    isConnectedThroughApMock.mockResolvedValue({ isUsingAp: false });
+    serverStatusMock.mockResolvedValue("OK");
     mount = () => render(<StandaloneWifiPageContainer />);
   });
 
@@ -71,7 +82,7 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("does not render buttons when using browser", async () => {
     const { getByTestId } = mount();
-    const layout = getByTestId('layout')
+    const layout = getByTestId("layout");
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)
@@ -79,14 +90,14 @@ describe("StandaloneWifiPageContainer", () => {
 
     expect(within(layout).queryByText("Back")).not.toBeInTheDocument();
     expect(within(layout).queryByText("Next")).not.toBeInTheDocument();
-    expect(within(layout).queryByText('Skip')).not.toBeInTheDocument()
+    expect(within(layout).queryByText("Skip")).not.toBeInTheDocument();
   });
 
   it("does not render navigation buttons when using web-renderer", async () => {
-    setRunningOnWebRenderer(true)
+    setRunningOnWebRenderer(true);
 
     const { getByTestId } = mount();
-    const layout = getByTestId('layout')
+    const layout = getByTestId("layout");
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(fetchingNetworksMessage)
@@ -94,7 +105,7 @@ describe("StandaloneWifiPageContainer", () => {
 
     expect(within(layout).queryByText("Back")).not.toBeInTheDocument();
     expect(within(layout).queryByText("Next")).not.toBeInTheDocument();
-    expect(within(layout).queryByText('Skip')).not.toBeInTheDocument()
+    expect(within(layout).queryByText("Skip")).not.toBeInTheDocument();
   });
 
   it("renders correct explanation when not connected to network", async () => {
@@ -127,7 +138,7 @@ describe("StandaloneWifiPageContainer", () => {
     ).toBeInTheDocument();
   });
 
-  it('shows correct connected network when already connected to network', async () => {
+  it("shows correct connected network when already connected to network", async () => {
     server.use(
       rest.get("/current-wifi-bssid", (_, res, ctx) => {
         return res(ctx.json(networks[0].bssid));
@@ -136,8 +147,8 @@ describe("StandaloneWifiPageContainer", () => {
 
     mount();
 
-    expect(await screen.findAllByText(networks[0].ssid)).toHaveLength(2)
-  })
+    expect(await screen.findAllByText(networks[0].ssid)).toHaveLength(2);
+  });
 
   it("renders error message when unable to get network", async () => {
     server.use(
@@ -241,8 +252,6 @@ describe("StandaloneWifiPageContainer", () => {
     expect(screen.getByText("Depto 606")).toBeInTheDocument();
   });
 
-
-
   it("shows the connect dialog when network option is clicked", async () => {
     mount();
 
@@ -317,77 +326,6 @@ describe("StandaloneWifiPageContainer", () => {
     expect(
       screen.getByText(textContentMatcher(`Connecting to ${network.ssid}...`))
     ).toBeInTheDocument();
-
-    // connected message should be shown eventually
-    expect(
-      await screen.findByText(
-        textContentMatcher(
-          `Great, your pi-top is connected to ${network.ssid}!`
-        )
-      )
-    ).toBeInTheDocument();
-  });
-
-  it("prompts user to reconnect to pi-top network if disconnected while connecting to Wi-Fi", async () => {
-    const network = networks.find(({ passwordRequired }) => passwordRequired)!;
-
-    mount();
-
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(fetchingNetworksMessage)
-    );
-
-    // open the select
-    fireEvent.keyDown(queryReactSelect(document.body)!, {
-      keyCode: KeyCode.DownArrow,
-    });
-
-    // click the wifi option
-    fireEvent.click(screen.getByText(network.ssid));
-
-    // enter correct password
-    const passwordInputLabel = screen.getByLabelText("Enter password below");
-    fireEvent.change(passwordInputLabel, {
-      target: { value: "correct-password" },
-    });
-
-    // simulate wifi-creds failing and then  request hanging due to connection to pi-top being disrupted
-    server.use(
-      rest.post<{ bssid: string; password: string }>(
-        "/wifi-credentials",
-        (_, res, ctx) => {
-          return res(ctx.status(500));
-        }
-      ),
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.delay(5000), ctx.status(400));
-      })
-    );
-
-    // join network
-    fireEvent.click(screen.getByText("Join"));
-
-    // reconnect to pi-top hotspot dialog should be shown
-    expect(
-      await screen.findByText("Reconnect to pi-top hotspot")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        textContentMatcher(
-          /Your computer has disconnected from the pi-top-XXXX Wi-Fi hotspot\. Please reconnect to it to continue onboarding/
-        )
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByAltText("Reconnect to pitop hotspot")
-    ).toBeInTheDocument();
-
-    // simulate user reconnecting to pitop hotspot
-    server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.json(network.bssid));
-      })
-    );
 
     // connected message should be shown eventually
     expect(
@@ -525,6 +463,11 @@ describe("StandaloneWifiPageContainer", () => {
       )
     ).not.toBeInTheDocument();
 
+    server.use(
+      rest.get("/current-wifi-bssid", (_, res, ctx) => {
+        return res(ctx.json(network.bssid));
+      })
+    );
     // retried request succeeds
     expect(
       await screen.findByText(/Great, your pi-top is connected/)
@@ -577,5 +520,26 @@ describe("StandaloneWifiPageContainer", () => {
 
     // network should not be the selected option in the networks select
     expect(screen.queryByText(network.ssid)).not.toBeInTheDocument();
+  });
+
+  it("when using AP mode, displays reconnect to AP dialog", async () => {
+    jest.setTimeout(30_000);
+    isConnectedThroughApMock.mockResolvedValue({ isUsingAp: true });
+
+    const { getByTestId } = mount();
+
+    await act(async () => {
+      expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
+
+      serverStatusMock.mockRejectedValue("Error");
+      await waitFor(() =>
+        expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass("hidden")
+      );
+
+      serverStatusMock.mockResolvedValue("OK");
+      await waitFor(() =>
+        expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden")
+      );
+    });
   });
 });
