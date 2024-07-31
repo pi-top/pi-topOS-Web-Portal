@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 
 import ConnectDialog from "./ConnectDialog";
 
@@ -19,7 +19,15 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectError, setConnectError] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [connectivityCheckInterval, setConnectivityCheckInterval] = useState<NodeJS.Timeout | undefined>(undefined);
+
+  let checkConnectionInterval = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  const clearCheckConnectionInterval = () => {
+    if (checkConnectionInterval.current) {
+      clearInterval(checkConnectionInterval.current);
+      checkConnectionInterval.current = undefined;
+    }
+  }
 
   useEffect(() => {
     setIsConnected(false);
@@ -28,18 +36,13 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
   const requestTimeoutMs = 1500;
   const requestIntervalMs = 500;
 
-  const clearCheckConnectionInterval = useCallback(() => {
-    connectivityCheckInterval && clearInterval(connectivityCheckInterval);
-    setConnectivityCheckInterval(undefined);
-  }, [connectivityCheckInterval]);
-
   const checkConnection = useCallback((network: Network) => {
-    if (connectivityCheckInterval) {
+    if (checkConnectionInterval.current) {
       return ;
     }
-    setConnectivityCheckInterval(setInterval(async () => {
-      try {
-        await connectedBSSID(requestTimeoutMs).then((bssid) => {
+    checkConnectionInterval.current = setInterval(async () => {
+      await connectedBSSID(requestTimeoutMs)
+        .then((bssid) => {
           const connectedToBssid = bssid === network.bssid;
           setIsConnected(connectedToBssid);
           if (connectedToBssid) {
@@ -47,11 +50,10 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
             setConnectedNetwork(network);
             clearCheckConnectionInterval();
           }
-        });
-      } catch (_) {}
-    }, requestIntervalMs));
-  }, [connectivityCheckInterval, setConnectedNetwork, clearCheckConnectionInterval]);
-
+        })
+        .catch ((_) => {})
+    }, requestIntervalMs);
+  }, [setConnectedNetwork, setConnectError]);
 
   const connect = useCallback(
     (network: Network, password: string) => {
@@ -66,9 +68,7 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
 
       connectToNetwork({ bssid: network.bssid, password: password }, 30000)
         .then(() => {
-          clearCheckConnectionInterval();
-          setIsConnected(true);
-          setConnectedNetwork(network);
+          // do nothing, 'checkConnection' handles state
         })
         .catch(() => {
           setConnectError(true);
@@ -77,7 +77,7 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
           setIsConnecting(false);
         });
     },
-    [setConnectedNetwork, checkConnection, clearCheckConnectionInterval]
+    [setConnectedNetwork, checkConnection]
   );
 
   return (

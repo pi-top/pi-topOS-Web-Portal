@@ -36,11 +36,7 @@ import getCurrentKeyboard from "../../../services/getCurrentKeyboard";
 import setKeyboard from "../../../services/setKeyboard";
 import setRegistration from "../../../services/setRegistration";
 import getAvailableSpace from "../../../services/getAvailableSpace";
-
-import getNetworks from "../../../services/getNetworks";
 import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
-import connectToNetwork from "../../../services/connectToNetwork";
-
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 import isConnectedThroughAp from "../../../services/isConnectedThroughAp";
@@ -49,9 +45,7 @@ import { UpgradePageExplanation } from "../../../pages/upgradePage/UpgradePage";
 import { waitFor } from "../../../../test/helpers/waitFor";
 import wsBaseUrl from "../../../services/wsBaseUrl";
 
-jest.mock("../../../services/getNetworks");
 jest.mock("../../../services/isConnectedToNetwork");
-jest.mock("../../../services/connectToNetwork");
 jest.mock("../../../services/getBuildInfo");
 jest.mock("../../../services/getLocales");
 jest.mock("../../../services/getCurrentLocale");
@@ -87,9 +81,7 @@ const getCurrentTimezoneMock = getCurrentTimezone as jest.Mock;
 const setCountryMock = setCountry as jest.Mock;
 const setCurrentTimezone = setTimezone as jest.Mock;
 const setRegistrationMock = setRegistration as jest.Mock;
-const getNetworksMock = getNetworks as jest.Mock;
 const isConnectedToNetworkMock = isConnectedToNetwork as jest.Mock;
-const connectToNetworkMock = connectToNetwork as jest.Mock;
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
@@ -215,15 +207,7 @@ describe("App", () => {
     currentKeyboardMock.mockResolvedValue({ layout: "us" });
     setKeyboardMock.mockResolvedValue("OK");
     setRegistrationMock.mockResolvedValue("OK");
-    getNetworksMock.mockResolvedValue([
-      {
-        ssid: "wifi network",
-        bssid: "wifi network bssid",
-        passwordRequired: false,
-      },
-    ]);
     isConnectedToNetworkMock.mockResolvedValue({ connected: true });
-    connectToNetworkMock.mockResolvedValue("OK");
     isConnectedThroughApMock.mockResolvedValue({ isUsingAp: false });
 
     // upgrade page mocks
@@ -637,14 +621,14 @@ describe("App", () => {
           queryReactSelect,
         } = mount(PageRoute.Wifi);
         await waitForWifiPage();
-
+        await waitFor(() => expect(getByText("Please select WiFi network...")).toBeInTheDocument());
         fireEvent.keyDown(queryReactSelect()!, {
           keyCode: KeyCode.DownArrow,
         });
-        fireEvent.click(getByText("wifi network"));
 
+        fireEvent.click(getByText("Depto 606"));
         fireEvent.click(getByText("Join"));
-        await waitForElement(() => getByText("OK"));
+        await waitFor(() => expect(getByText("OK")).toBeInTheDocument());
         fireEvent.click(getByText("OK"));
 
         await waitForUpgradePage();

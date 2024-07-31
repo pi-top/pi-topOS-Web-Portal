@@ -21,6 +21,7 @@ import connectToNetwork from "../../../../services/connectToNetwork";
 import isConnectedThroughAp from "../../../../services/isConnectedThroughAp";
 import connectedBSSID from "../../../../services/connectedBSSID";
 import { act } from "react-dom/test-utils";
+import { waitFor } from "../../../../../test/helpers/waitFor";
 
 jest.mock("../../../../services/connectToNetwork");
 jest.mock("../../../../services/isConnectedThroughAp");
@@ -38,9 +39,12 @@ describe("ConnectDialogContainer", () => {
   let getByText: BoundFunction<GetByText>;
   let getByLabelText: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
+  let mockBssid = "";
 
   beforeEach(async () => {
-    isConnectedThroughApMock.mockResolvedValue(false)
+    mockBssid = ""
+    isConnectedThroughApMock.mockResolvedValue({ isUsingAp: false })
+    connectedBSSIDMock.mockImplementation(() => Promise.resolve(mockBssid));
     connectToNetworkMock.mockImplementation(
       (creds: NetworkCredentials) =>
         new Promise((res, rej) => {
@@ -48,9 +52,10 @@ describe("ConnectDialogContainer", () => {
             creds.bssid === "unsecured-bssid" ||
             creds.password === "correct-password"
           ) {
-            return res();
+            mockBssid = creds.bssid;
+            return res(void 0);
           }
-
+          mockBssid = "";
           rej();
         })
     );
@@ -100,11 +105,10 @@ describe("ConnectDialogContainer", () => {
 
   it("renders connected message after joining successfully", async () => {
     fireEvent.click(getByText("Join"));
-
-    await wait();
-
-    const message = screen.getByText(/Great, your pi-top is connected to/)
-    expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
+    await waitFor(() => {
+      const message = screen.getByText(/Great, your pi-top is connected to/)
+      expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
+    });
   });
 
   describe("when there's an error connecting to a network", ()  => {
@@ -168,8 +172,10 @@ describe("ConnectDialogContainer", () => {
       });
 
       it("renders connected message", async () => {
-        const message = screen.getByText(/Great, your pi-top is connected to/)
-        expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
+        await waitFor(() => {
+          const message = screen.getByText(/Great, your pi-top is connected to/)
+          expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
+        });
       });
 
       describe("when new network is passed", () => {
@@ -197,7 +203,7 @@ describe("ConnectDialogContainer", () => {
 
   describe("when user is onboarding using AP mode", () => {
     beforeEach(() => {
-      isConnectedThroughApMock.mockResolvedValue(true)
+      isConnectedThroughApMock.mockResolvedValue({ isUsingAp: true })
     });
 
     describe("and the connect-to-wifi request times outs", () => {
@@ -239,28 +245,26 @@ describe("ConnectDialogContainer", () => {
       });
 
       it("keeps checking if connected to network", () => {
-        expect(connectedBSSIDMock).toHaveBeenCalledTimes(0);
-        jest.runOnlyPendingTimers();
-        expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(1);
+        let callCount = connectedBSSIDMock.mock.calls.length;
+        jest.advanceTimersByTime(5000);
+        expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(callCount);
       });
 
       it("updates message if consecuential checks determine that connection was successful", async () => {
-        jest.runOnlyPendingTimers();
-        expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(1);
-
         connectedBSSIDMock.mockResolvedValue("unsecured-bssid")
         connectToNetworkMock.mockImplementation(
           (creds: NetworkCredentials) =>
             new Promise((res) => {
-              return res();
+              return res(void 0);
             })
         );
 
-        jest.runOnlyPendingTimers();
-        await wait()
+        jest.advanceTimersByTime(5000);
+        jest.useRealTimers();
 
-        const message = screen.getByText(/Great, your pi-top is connected to/)
-        expect(within(message).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
+        await waitFor(() => {
+          expect(within(screen.getByText(/Great, your pi-top is connected to/)).getByText(defaultProps!.network!.ssid)).toBeInTheDocument()
+        });
       });
 
     });
