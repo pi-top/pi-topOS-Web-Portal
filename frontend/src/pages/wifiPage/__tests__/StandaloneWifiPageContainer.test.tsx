@@ -60,6 +60,10 @@ describe("StandaloneWifiPageContainer", () => {
     mount = () => render(<StandaloneWifiPageContainer />);
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("renders spinner while loading", async () => {
     const { container: standaloneWifiPageContainer } = mount();
 
@@ -523,7 +527,8 @@ describe("StandaloneWifiPageContainer", () => {
   });
 
   it("when using AP mode, displays reconnect to AP dialog", async () => {
-    jest.setTimeout(30_000);
+    jest.useFakeTimers();
+    jest.setTimeout(10_000);
     isConnectedThroughApMock.mockResolvedValue({ isUsingAp: true });
 
     const { getByTestId } = mount();
@@ -532,14 +537,21 @@ describe("StandaloneWifiPageContainer", () => {
       expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
 
       serverStatusMock.mockRejectedValue("Error");
+      // Advance time to wait for 5 failed requests for dialog to appear
+      jest.advanceTimersByTime(6_000);
+      jest.useRealTimers();
       await waitFor(() =>
         expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass("hidden")
-      );
+      , {timeout: 10_000});
 
       serverStatusMock.mockResolvedValue("OK");
+      // Advance time and wait for dialog to dissapear
+      jest.useFakeTimers();
+      jest.advanceTimersByTime(1_000);
+      jest.useRealTimers();
       await waitFor(() =>
         expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden")
-      );
+      , {timeout: 10_000});
     });
   });
 });
