@@ -11,18 +11,23 @@ import {
   QueryByBoundAttribute,
   within,
 } from "@testing-library/react";
-import { AllByText, wait } from "@testing-library/dom";
+import { AllByText } from "@testing-library/dom";
 
 import WifiPage, { Props, ErrorMessage, ExplanationMessage } from "../WifiPage";
 import queryReactSelect from "../../../../test/helpers/queryReactSelect";
 import reactSelectIsDisabled from "../../../../test/helpers/reactSelectIsDisabled";
 import { KeyCode } from "../../../../test/types/Keys";
-import { Network } from "../../../types/Network";
+import { Network, NetworkCredentials } from "../../../types/Network";
 import querySpinner from "../../../../test/helpers/querySpinner";
 import connectToNetwork from "../../../services/connectToNetwork";
+import connectedBSSID from "../../../services/connectedBSSID";
+import { waitFor } from "../../../../test/helpers/waitFor";
 
 jest.mock("../../../services/connectToNetwork");
+jest.mock("../../../services/connectedBSSID");
+
 const connectToNetworkMock = connectToNetwork as jest.Mock;
+const connectedBSSIDMock = connectedBSSID as jest.Mock;
 
 describe("WifiPage", () => {
   let defaultProps: Props;
@@ -37,6 +42,8 @@ describe("WifiPage", () => {
   let queryByLabelText: BoundFunction<QueryByBoundAttribute>;
   let getByLabelText: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
+  let mockBssid = "";
+
   beforeEach(() => {
     defaultProps = {
       networks: [],
@@ -54,24 +61,38 @@ describe("WifiPage", () => {
       advancedConfigError: false,
     };
 
-    connectToNetworkMock.mockResolvedValue("OK")(
-      ({
-        container: wifiPage,
-        getByAltText,
-        queryByText,
-        queryAllByText,
-        queryByAltText,
-        queryByLabelText,
-        getAllByText,
-        getByLabelText,
-        getByTestId,
-        getByText,
-        rerender,
-      } = render(<WifiPage {...defaultProps} />))
+    mockBssid = ""
+    connectedBSSIDMock.mockImplementation(() => Promise.resolve(mockBssid));
+    connectToNetworkMock.mockImplementation(
+      (creds: NetworkCredentials) =>
+        new Promise((res, rej) => {
+          if (
+            creds.bssid === "unsecured-bssid" ||
+            creds.password === "correct-password"
+          ) {
+            mockBssid = creds.bssid;
+            return res(void 0);
+          }
+          mockBssid = "";
+          rej();
+        })
     );
+
+    ({
+      container: wifiPage,
+      getByAltText,
+      queryByText,
+      queryAllByText,
+      queryByAltText,
+      queryByLabelText,
+      getAllByText,
+      getByLabelText,
+      getByTestId,
+      getByText,
+      rerender,
+    } = render(<WifiPage {...defaultProps} />))
   });
   afterEach(() => {
-    connectToNetworkMock.mockRestore();
   });
 
   it("renders the correct banner image", () => {
@@ -344,16 +365,15 @@ describe("WifiPage", () => {
       });
 
       describe("when finished connecting to network", () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           fireEvent.click(getByText("Join"));
-
-          await wait();
         });
 
-        it("hides the connect dialog on OK click", () => {
+        it("hides the connect dialog on OK click", async () => {
+          await waitFor(() => expect(getByText("OK")).toBeInTheDocument());
           fireEvent.click(getByText("OK"));
 
-          expect(getByTestId("connect-dialog")).toHaveClass("hidden");
+          waitFor(() => expect(getByTestId("connect-dialog")).toHaveClass("hidden"));
         });
       });
     });
