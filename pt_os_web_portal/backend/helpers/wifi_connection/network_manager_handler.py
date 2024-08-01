@@ -74,9 +74,25 @@ class NetworkManagerHandler:
             raise Exception(f"Unable to find network matching BSSID '{bssid}'")
 
         logger.warning(f"Connecting to '{network_profile.ssid}'")
-        nmcli.device.wifi_connect(
-            ifname=self.ifname, ssid=network_profile.ssid, password=password, wait=30
-        )
+        try:
+            nmcli.device.wifi_connect(
+                ifname=self.ifname,
+                ssid=network_profile.ssid,
+                password=password,
+                wait=30,
+            )
+            return
+        except Exception as e:
+            logger.error(f"Error connecting: {e}")
+
+        # If something failed, a connection is created anyway, which causes some issues.
+        # We need to manually delete it
+        try:
+            nmcli.connection.delete(network_profile.ssid)
+        except Exception as e:
+            logger.error(f"Error connecting: {e}")
+
+        raise Exception(f"Couldn't connect to '{network_profile.ssid}'")
 
     def bssid_connected(self) -> str:
         try:
