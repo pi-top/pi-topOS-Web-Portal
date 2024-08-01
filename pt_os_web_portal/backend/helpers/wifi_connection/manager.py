@@ -45,3 +45,6 @@ class WifiManager:
 
     def get_formatted_ssids(self):
         return self.handler.get_formatted_ssids()
+
+    def ssid_connected(self) -> str:
+        return self.handler.ssid_connected()

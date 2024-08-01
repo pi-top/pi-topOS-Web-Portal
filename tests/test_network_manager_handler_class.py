@@ -111,7 +111,7 @@ def test_connect_failure_on_invalid_bssid(network_manager_handler):
     assert handler.is_connected() is False
 
 
-def test_connect_excepts_on_failure(network_manager_handler, mocker, nmcli_mock):
+def test_connect_doesnt_except_on_failure(network_manager_handler, mocker, nmcli_mock):
     mocker.patch.object(
         nmcli_mock.device,
         "wifi_connect",
@@ -119,8 +119,7 @@ def test_connect_excepts_on_failure(network_manager_handler, mocker, nmcli_mock)
     )
     handler = network_manager_handler()
 
-    with pytest.raises(Exception):
-        handler.connect(bssid="F0:9B:B8:2D:20:4C", password="valid-password")
+    handler.connect(bssid="F0:9B:B8:2D:20:4C", password="valid-password")
 
 
 def test_bssid_connected_function_output(network_manager_handler):

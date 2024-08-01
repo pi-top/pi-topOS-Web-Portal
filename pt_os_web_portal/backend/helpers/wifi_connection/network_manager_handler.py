@@ -73,32 +73,59 @@ class NetworkManagerHandler:
         if network_profile is None:
             raise Exception(f"Unable to find network matching BSSID '{bssid}'")
 
-        logger.warning(f"Connecting to '{network_profile.ssid}'")
-        try:
-            nmcli.device.wifi_connect(
-                ifname=self.ifname,
-                ssid=network_profile.ssid,
-                password=password,
-                wait=30,
-            )
-            return
-        except Exception as e:
-            logger.error(f"Error connecting: {e}")
+        def do_connect():
+            try:
+                logger.info(
+                    f"Deleting existing profile for '{network_profile.ssid}'..."
+                )
+                nmcli.connection.delete(network_profile.ssid)
+            except Exception as e:
+                logger.error(f"Error deleting network '{network_profile.ssid}': {e}")
 
-        # If something failed, a connection is created anyway, which causes some issues.
-        # We need to manually delete it
-        try:
-            nmcli.connection.delete(network_profile.ssid)
-        except Exception as e:
-            logger.error(f"Error connecting: {e}")
+            try:
+                logger.info(f"Connecting to '{network_profile.ssid}'...")
+                nmcli.device.wifi_connect(
+                    ifname=self.ifname,
+                    ssid=network_profile.ssid,
+                    password=password,
+                    wait=30,
+                )
+                return
+            except Exception as e:
+                logger.error(f"Error connecting: {e}")
 
-        raise Exception(f"Couldn't connect to '{network_profile.ssid}'")
+            # If something failed, a connection is created anyway, which causes some issues.
+            # We need to manually delete it
+            try:
+                nmcli.connection.delete(network_profile.ssid)
+            except Exception as e:
+                logger.error(f"Error deleting network '{network_profile.ssid}': {e}")
+
+            logger.error(f"Couldn't connect to '{network_profile.ssid}'")
+
+        from threading import Thread
+
+        t = Thread(
+            target=do_connect,
+            args=(),
+            daemon=True,
+        )
+        t.start()
 
     def bssid_connected(self) -> str:
         try:
             for connection in nmcli.device.wifi(ifname=self.ifname, rescan=False):
                 if connection.in_use:
                     return connection.bssid
+        except Exception:
+            pass
+        return ""
+
+    def ssid_connected(self) -> str:
+        try:
+            for connection in nmcli.device.wifi(ifname=self.ifname, rescan=False):
+                if connection.in_use:
+                    return connection.ssid
         except Exception:
             pass
         return ""

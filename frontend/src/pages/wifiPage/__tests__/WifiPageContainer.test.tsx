@@ -370,6 +370,7 @@ describe("WifiPageContainer", () => {
   });
 
   it("renders error when incorrect password is used to connect to network", async () => {
+    jest.useFakeTimers();
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
 
     mount();
@@ -394,6 +395,8 @@ describe("WifiPageContainer", () => {
 
     // join network
     fireEvent.click(screen.getByText("Join"));
+
+    jest.advanceTimersByTime(35_000);
 
     expect(
       await screen.findByText(
@@ -403,6 +406,7 @@ describe("WifiPageContainer", () => {
   });
 
   it("clears incorrect password error when cancel is clicked and new network selected", async () => {
+    jest.useFakeTimers()
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
 
     mount();
@@ -427,6 +431,8 @@ describe("WifiPageContainer", () => {
 
     // join network
     fireEvent.click(screen.getByText("Join"));
+
+    jest.advanceTimersByTime(35_000);
 
     expect(
       await screen.findByText(
@@ -451,6 +457,7 @@ describe("WifiPageContainer", () => {
   });
 
   it("clears incorrect password error when retry is clicked", async () => {
+    jest.useFakeTimers();
     server.use(
       rest.get("/current-wifi-bssid", (_, res, ctx) => {
         return res(ctx.json(""));
@@ -482,6 +489,8 @@ describe("WifiPageContainer", () => {
     // join network
     fireEvent.click(screen.getByText("Join"));
 
+    jest.advanceTimersByTime(35_000);
+
     expect(
       await screen.findByText(
         `There was an error connecting to ${network.ssid}... please check your password and try again`
@@ -493,6 +502,8 @@ describe("WifiPageContainer", () => {
       target: { value: "correct-password" },
     });
     fireEvent.click(screen.getByText("Retry"));
+
+    jest.advanceTimersByTime(1_000);
 
     // it hides the error as soon as retry button is clicked
     expect(
@@ -507,6 +518,8 @@ describe("WifiPageContainer", () => {
         return res(ctx.json(network.bssid));
       })
     );
+
+    jest.advanceTimersByTime(5_000);
 
     // retried request succeeds
     expect(

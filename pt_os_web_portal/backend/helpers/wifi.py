@@ -35,3 +35,8 @@ def attempt_connection(bssid: str, password: str, on_connection=None) -> None:
 def current_wifi_bssid() -> str:
     logger.info("Attempting to determine to which bSSID we're connected to")
     return get_wifi_manager_instance().bssid_connected()
+
+
+def current_wifi_ssid() -> str:
+    logger.info("Attempting to determine to which SSID we're connected to")
+    return get_wifi_manager_instance().ssid_connected()

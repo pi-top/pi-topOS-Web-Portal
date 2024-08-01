@@ -302,8 +302,8 @@ describe("App", () => {
         expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
 
         serverStatusMock.mockRejectedValue("Error");
-        // Advance time to wait for 5 failed requests for dialog to appear
-        jest.advanceTimersByTime(6_000);
+        // Advance time to wait for 3 failed requests for dialog to appear
+        jest.advanceTimersByTime(11_000);
         jest.useRealTimers();
         await waitFor(() =>
           expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass("hidden")
@@ -347,7 +347,7 @@ describe("App", () => {
     await checkForDialog();
     fireEvent.click(getByText("Agree"));
 
-    // on terms page
+    // on wifi page
     await waitForWifiPage();
     await checkForDialog();
     fireEvent.click(getByText("Next"));

@@ -101,9 +101,10 @@ export type Props = {
   goToPreviousPage?: () => void;
   hideSkip?: boolean;
   isCompleted?: boolean;
+  setEnableDisconnectedFromApDialog?: (enable: boolean) => void;
 };
 
-export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props) => {
+export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnableDisconnectedFromApDialog }: Props) => {
   const [message, setMessage] = useState<OSUpdaterMessage>();
   const [isOpen, setIsOpen] = useState(false);
   document.title = "pi-topOS System Update"
@@ -325,6 +326,8 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
     ) {
       if (checkingWebPortalRef.current) {
         setState(UpdateState.WaitingForServer);
+        // stop checking for hotspot disconnections while the service restarts
+        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(false)
         restartWebPortalService()
           .catch(() => setError(ErrorType.None)) // ignored, request will fail since backend server is restarted
           .finally(() => setTimeout(waitUntilServerIsOnline, 300));
@@ -358,9 +361,18 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted }: Props
 
   return (
     <UpgradePage
-      onNextClick={goToNextPage}
-      onSkipClick={goToNextPage}
-      onBackClick={goToPreviousPage}
+      onNextClick={() => {
+        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(true);
+        goToNextPage && goToNextPage()
+      }}
+      onSkipClick={() => {
+        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(true);
+        goToNextPage && goToNextPage()
+      }}
+      onBackClick={() => {
+        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(true);
+        goToPreviousPage && goToPreviousPage()
+      }}
       hideSkip={hideSkip}
       onStartUpgradeClick={() => {
         if (isOpen) {

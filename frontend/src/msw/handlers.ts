@@ -60,6 +60,9 @@ export default [
   rest.get("/current-wifi-bssid", (_, res, ctx) => {
     return res(ctx.json(connectedNetwork?.bssid || ""));
   }),
+  rest.get("/current-wifi-ssid", (_, res, ctx) => {
+    return res(ctx.json(connectedNetwork?.ssid || ""));
+  }),
   rest.post<{ bssid: string; password: string }>(
     "/wifi-credentials",
     (req, res, ctx) => {
