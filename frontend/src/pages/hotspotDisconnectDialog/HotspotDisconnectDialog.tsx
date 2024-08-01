@@ -13,7 +13,7 @@ export type Props = {
 export default ({ enabled = true }: Props) => {
   const [disconnectedFromAp, setDisconnectedFromAp] = useState(false);
   const [requestFailures, setRequestFailures] = useState(0);
-  const MAX_DISCONNECT_REQUESTS = 5;
+  const MAX_DISCONNECT_REQUESTS = 3;
 
   // preload 'connect-to-wifi' image since it can't be loaded when it is shown
   useEffect(() => {
@@ -26,6 +26,10 @@ export default ({ enabled = true }: Props) => {
   }, [requestFailures]);
 
   useEffect(() => {
+    setRequestFailures(0);
+  }, [enabled]);
+
+  useEffect(() => {
     // when connected to the pi-top hotspot, monitor disconnections
     isConnectedThroughAp()
       .then((connectedViaAp) => {
@@ -34,10 +38,10 @@ export default ({ enabled = true }: Props) => {
         }
 
         setInterval(async () => {
-          serverStatus({ timeout: 1000 })
+          serverStatus({ timeout: 7000 })
             .then(() => setRequestFailures(0))
             .catch(() => setRequestFailures(prevCount => prevCount + 1));
-        }, 1000);
+        }, 2000);
       })
       .catch(() => null);
   }, [setDisconnectedFromAp, setRequestFailures]);

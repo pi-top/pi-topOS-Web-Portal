@@ -195,3 +195,19 @@ class WpaSupplicantHandler:
             }
             for r in self.scan_and_get_results()
         ]
+
+    def ssid_connected(self) -> str:
+        try:
+            if self.get_status() != IfaceStatus.CONNECTED:
+                return ""
+
+            # query the network to wpa_cli
+            response = self.wifi_interface._wifi_ctrl._send_cmd_to_wpas(
+                self.ifname, "STATUS", True
+            )
+            for line in response.split("\n"):
+                if line.startswith("ssid="):
+                    return line.replace("ssid=", "")
+        except Exception:
+            pass
+        return ""

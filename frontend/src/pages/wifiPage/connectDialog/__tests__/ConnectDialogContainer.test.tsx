@@ -44,7 +44,11 @@ describe("ConnectDialogContainer", () => {
   beforeEach(async () => {
     mockBssid = ""
     isConnectedThroughApMock.mockResolvedValue({ isUsingAp: false })
-    connectedBSSIDMock.mockImplementation(() => Promise.resolve(mockBssid));
+
+    connectedBSSIDMock.mockImplementation(() => {
+      return Promise.resolve(mockBssid);
+    });
+
     connectToNetworkMock.mockImplementation(
       (creds: NetworkCredentials) =>
         new Promise((res, rej) => {
@@ -84,6 +88,7 @@ describe("ConnectDialogContainer", () => {
       rerender,
     } = render(<ConnectDialogContainer {...defaultProps} />));
   });
+
   afterEach(() => {
     connectToNetworkMock.mockRestore();
     ReactDom.createPortal = originalCreatePortal;
@@ -113,18 +118,29 @@ describe("ConnectDialogContainer", () => {
 
   describe("when there's an error connecting to a network", ()  => {
     beforeEach(async () => {
-      connectToNetworkMock.mockRejectedValue(new Error(`oh oh`));
-      rerender(<ConnectDialogContainer {...defaultProps} />);
+
+      const props = {
+        ...defaultProps,
+        network: {
+          ssid: "invalid-ssid",
+          bssid: "invalid-bssid",
+          passwordRequired: false,
+        },
+      }
+
+      rerender(<ConnectDialogContainer {...props} />);
+      jest.useFakeTimers();
       fireEvent.click(getByText("Join"));
-      await wait();
+      jest.advanceTimersByTime(35_000);
+      jest.useRealTimers();
     })
 
     it("renders an error message", async () => {
-      expect(
-        queryByText(
-          "There was an error connecting to unsecured-ssid... please check your password and try again"
+      await waitFor(() => expect(
+        getByText(
+          "There was an error connecting to invalid-ssid... please check your password and try again"
         )
-      ).toBeInTheDocument();
+      ).toBeInTheDocument());
     });
 
     it("doesn't tell user to reconnect to AP", async () => {
@@ -209,6 +225,7 @@ describe("ConnectDialogContainer", () => {
     describe("and the connect-to-wifi request times outs", () => {
       beforeEach(async () => {
         connectToNetworkMock.mockRejectedValue(new Error(`Timeout`));
+        connectedBSSIDMock.mockResolvedValue("")
 
         defaultProps = {
           ...defaultProps,
@@ -218,11 +235,12 @@ describe("ConnectDialogContainer", () => {
             passwordRequired: false,
           },
         };
-        jest.useFakeTimers();
 
         rerender(<ConnectDialogContainer {...defaultProps} />);
+        jest.useFakeTimers();
         fireEvent.click(getByText("Join"));
-        await wait();
+        jest.advanceTimersByTime(35_000);
+        jest.useRealTimers();
       });
       afterEach(() => {
         jest.useRealTimers();
@@ -246,20 +264,14 @@ describe("ConnectDialogContainer", () => {
 
       it("keeps checking if connected to network", () => {
         let callCount = connectedBSSIDMock.mock.calls.length;
-        jest.advanceTimersByTime(5000);
+        jest.advanceTimersByTime(3_000);
         expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(callCount);
       });
 
       it("updates message if consecuential checks determine that connection was successful", async () => {
         connectedBSSIDMock.mockResolvedValue("unsecured-bssid")
-        connectToNetworkMock.mockImplementation(
-          (creds: NetworkCredentials) =>
-            new Promise((res) => {
-              return res(void 0);
-            })
-        );
 
-        jest.advanceTimersByTime(5000);
+        jest.advanceTimersByTime(5_000);
         jest.useRealTimers();
 
         await waitFor(() => {

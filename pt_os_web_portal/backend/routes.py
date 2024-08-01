@@ -71,7 +71,12 @@ from .helpers.system import (
 from .helpers.timezone import get_all_timezones, get_current_timezone, set_timezone
 from .helpers.vnc import PtWebVncDisplayId
 from .helpers.vnc_advanced_wifi_gui import get_advanced_wifi_gui_url
-from .helpers.wifi import attempt_connection, current_wifi_bssid, get_ssids
+from .helpers.wifi import (
+    attempt_connection,
+    current_wifi_bssid,
+    current_wifi_ssid,
+    get_ssids,
+)
 from .helpers.wifi_country import (
     current_wifi_country,
     list_wifi_countries,
@@ -273,6 +278,12 @@ def get_is_connected():
 def get_is_connected_to_bssid():
     logger.debug("Route '/current-wifi-bssid'")
     return jdumps(current_wifi_bssid())
+
+
+@app.route("/current-wifi-ssid", methods=["GET"])
+def get_is_connected_to_ssid():
+    logger.debug("Route '/current-wifi-ssid'")
+    return jdumps(current_wifi_ssid())
 
 
 @app.route("/is-connected-through-ap", methods=["GET"])

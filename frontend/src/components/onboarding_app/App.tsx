@@ -29,6 +29,7 @@ export default () => {
   const [email, setEmail] = useState("");
   const [connectedNetwork, setConnectedNetwork] = useState<Network>();
   const [skipUpgradePage, setSkipUpgradePage] = useState(false);
+  const [enableDisconnectedFromApDialog, setEnableDisconnectedFromApDialog] = useState(true);
 
   useEffect(() => {
     getBuildInfo()
@@ -147,6 +148,7 @@ export default () => {
                 history.push(PageRoute.Registration);
                 window.location.reload();
               }}
+              setEnableDisconnectedFromApDialog={setEnableDisconnectedFromApDialog}
             />
           )}
         />
@@ -182,7 +184,7 @@ export default () => {
         <Route component={ErrorPage} />
       </Switch>
       <BuildInformation info={buildInfo} className={styles.buildInfo} />
-      <HotspotDisconnectDialog enabled={useLocation().pathname !== PageRoute.Restart} />
+      <HotspotDisconnectDialog enabled={useLocation().pathname !== PageRoute.Restart && enableDisconnectedFromApDialog} />
     </>
   );
 };

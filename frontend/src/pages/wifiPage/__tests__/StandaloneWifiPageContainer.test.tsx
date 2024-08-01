@@ -343,7 +343,7 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("renders error when incorrect password is used to connect to network", async () => {
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
-
+    jest.useFakeTimers();
     mount();
 
     await waitForElementToBeRemoved(() =>
@@ -367,6 +367,8 @@ describe("StandaloneWifiPageContainer", () => {
     // join network
     fireEvent.click(screen.getByText("Join"));
 
+    jest.advanceTimersByTime(35_000);
+    // jest.useRealTimers();
     expect(
       await screen.findByText(
         `There was an error connecting to ${network.ssid}... please check your password and try again`
@@ -376,6 +378,7 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("clears incorrect password error when cancel is clicked and new network selected", async () => {
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+    jest.useFakeTimers();
 
     mount();
 
@@ -399,6 +402,8 @@ describe("StandaloneWifiPageContainer", () => {
 
     // join network
     fireEvent.click(screen.getByText("Join"));
+
+    jest.advanceTimersByTime(35_000);
 
     expect(
       await screen.findByText(
@@ -424,6 +429,7 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("clears incorrect password error when retry is clicked", async () => {
     const network = networks.find(({ passwordRequired }) => passwordRequired)!;
+    jest.useFakeTimers();
 
     mount();
 
@@ -448,6 +454,8 @@ describe("StandaloneWifiPageContainer", () => {
     // join network
     fireEvent.click(screen.getByText("Join"));
 
+    jest.advanceTimersByTime(35_000);
+
     expect(
       await screen.findByText(
         `There was an error connecting to ${network.ssid}... please check your password and try again`
@@ -459,6 +467,8 @@ describe("StandaloneWifiPageContainer", () => {
       target: { value: "correct-password" },
     });
     fireEvent.click(screen.getByText("Retry"));
+
+    jest.advanceTimersByTime(1_000);
 
     // it hides the error as soon as retry button is clicked
     expect(
@@ -472,6 +482,9 @@ describe("StandaloneWifiPageContainer", () => {
         return res(ctx.json(network.bssid));
       })
     );
+
+    jest.advanceTimersByTime(1_000);
+
     // retried request succeeds
     expect(
       await screen.findByText(/Great, your pi-top is connected/)
