@@ -96,8 +96,6 @@ class NetworkManagerHandler:
 
     def bssid_connected(self) -> str:
         try:
-            if not self.is_connected():
-                return ""
             for connection in nmcli.device.wifi(ifname=self.ifname, rescan=False):
                 if connection.in_use:
                     return connection.bssid
