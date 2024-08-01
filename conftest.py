@@ -31,6 +31,8 @@ def _patch_modules():
         "pt_web_vnc.vnc",
         "nmcli",
         "gevent",
+        "zmq",
+        "zmq.green",
     ]
     for module in modules_to_patch:
         modules[module] = Mock()
