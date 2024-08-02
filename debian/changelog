@@ -1,3 +1,12 @@
+pi-top-os-web-portal (0.22.0-4) bullseye; urgency=medium
+
+  * Patch std library before everything else (#468)
+  * Display hotspot dialog on top of all other dialogs (#470)
+  * Get wi-fi connection info from new endpoint (#471)
+  * Install rover controller script separately (#472)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 02 Aug 2024 22:20:34 +0000
+
 pi-top-os-web-portal (0.22.0-3) bullseye; urgency=medium
 
   * Display hotspot disconnection dialog after 5 failures
