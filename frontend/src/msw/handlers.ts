@@ -57,11 +57,12 @@ export default [
   rest.get("/wifi-ssids", (_, res, ctx) => {
     return res(ctx.json(networks));
   }),
-  rest.get("/current-wifi-bssid", (_, res, ctx) => {
-    return res(ctx.json(connectedNetwork?.bssid || ""));
-  }),
-  rest.get("/current-wifi-ssid", (_, res, ctx) => {
-    return res(ctx.json(connectedNetwork?.ssid || ""));
+  rest.get("/wifi-connection-info", (_, res, ctx) => {
+    return res(ctx.json({
+      ssid: connectedNetwork?.ssid || "",
+      bssid: connectedNetwork?.bssid || "",
+      bssidsForSsid: [connectedNetwork?.bssid || ""],
+    }));
   }),
   rest.post<{ bssid: string; password: string }>(
     "/wifi-credentials",

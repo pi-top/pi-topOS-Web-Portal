@@ -126,8 +126,12 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("renders correct explanation when connected to network", async () => {
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.json(networks[0].bssid));
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
+        return res(ctx.json({
+          ssid: networks[0].ssid,
+          bssid: networks[0].bssid,
+          bssidsForSsid: []
+          }));
       })
     );
 
@@ -144,8 +148,12 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("shows correct connected network when already connected to network", async () => {
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.json(networks[0].bssid));
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
+        return res(ctx.json({
+          ssid: networks[0].ssid,
+          bssid: networks[0].bssid,
+          bssidsForSsid: []
+          }));
       })
     );
 
@@ -170,9 +178,9 @@ describe("StandaloneWifiPageContainer", () => {
     expect(screen.queryByText(ErrorMessage.FetchNetworks)).toBeInTheDocument();
   });
 
-  it("renders error message when unable to get current bssid", async () => {
+  it("renders error message when unable to get current wifi information", async () => {
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
         return res(ctx.status(401));
       })
     );
@@ -231,7 +239,7 @@ describe("StandaloneWifiPageContainer", () => {
 
   it("can refresh networks list when loading current bssid fails", async () => {
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
         return res(ctx.status(401));
       })
     );
@@ -478,8 +486,12 @@ describe("StandaloneWifiPageContainer", () => {
     ).not.toBeInTheDocument();
 
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.json(network.bssid));
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
+        return res(ctx.json({
+          ssid: network.ssid,
+          bssid: network.bssid,
+          bssidsForSsid: []
+          }));
       })
     );
 

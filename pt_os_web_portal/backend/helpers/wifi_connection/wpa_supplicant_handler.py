@@ -211,3 +211,11 @@ class WpaSupplicantHandler:
         except Exception:
             pass
         return ""
+
+    def connection_information(self) -> Dict:
+        bssid = self.bssid_connected()
+        return {
+            "ssid": self.ssid_connected(),
+            "bssid": bssid,
+            "bssidsForSsid": [bssid] if bssid else [],
+        }

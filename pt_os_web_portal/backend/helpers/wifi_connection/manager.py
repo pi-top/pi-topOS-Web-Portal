@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 from pitop.common.command_runner import run_command
 
@@ -48,3 +49,6 @@ class WifiManager:
 
     def ssid_connected(self) -> str:
         return self.handler.ssid_connected()
+
+    def connection_information(self) -> Dict:
+        return self.handler.connection_information()

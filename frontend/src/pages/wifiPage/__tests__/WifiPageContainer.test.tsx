@@ -459,7 +459,7 @@ describe("WifiPageContainer", () => {
   it("clears incorrect password error when retry is clicked", async () => {
     jest.useFakeTimers();
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
         return res(ctx.json(""));
       })
     );
@@ -514,8 +514,12 @@ describe("WifiPageContainer", () => {
 
     // server reports it's connected to the network
     server.use(
-      rest.get("/current-wifi-bssid", (_, res, ctx) => {
-        return res(ctx.json(network.bssid));
+      rest.get("/wifi-connection-info", (_, res, ctx) => {
+        return res(ctx.json({
+          ssid: network.ssid,
+          bssid: network.bssid,
+          bssidsForSsid: []
+          }));
       })
     );
 
