@@ -130,6 +130,28 @@ class NetworkManagerHandler:
             pass
         return ""
 
+    def connection_information(self) -> Dict:
+        bssids_for_ssid: Dict = {}
+        info = {
+            "bssidsForSsid": [],
+            "bssid": "",
+            "ssid": "",
+        }
+        try:
+            for connection in nmcli.device.wifi(ifname=self.ifname, rescan=False):
+                if bssids_for_ssid.get(connection.ssid) is None:
+                    bssids_for_ssid[connection.ssid] = []
+                bssids_for_ssid[connection.ssid].append(connection.bssid)
+
+                if connection.in_use:
+                    info["bssid"] = connection.bssid
+                    info["ssid"] = connection.ssid
+            if info.get("ssid"):
+                info["bssidsForSsid"] = bssids_for_ssid.get(info["ssid"], [])
+        except Exception:
+            pass
+        return info
+
     def get_formatted_ssids(self):
         return [
             {

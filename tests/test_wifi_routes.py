@@ -100,7 +100,7 @@ def test_get_is_connected_response_if_disconnected(app, mocker):
     assert json.loads(response.data)["connected"] is False
 
 
-def get_is_connected_to_ssid_response_when_connected_to_network(
+def test_get_is_connected_to_ssid_response_when_connected_to_network(
     app, mocker, wpa_supplicant_handler
 ):
     mocker.patch(
@@ -108,39 +108,43 @@ def get_is_connected_to_ssid_response_when_connected_to_network(
         return_value=wpa_cli_status,
     )
     mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler.WpaSupplicantHandler.get_status",
         return_value=wpa_supplicant_handler.IfaceStatus.CONNECTED,  # noqa: F821
     )
 
-    response = app.get("/current-wifi-ssid")
+    response = app.get("/wifi-connection-info")
 
     assert response.status_code == 200
-    assert json.loads(response.data) == "my_network"
+    assert json.loads(response.data) == {
+        "bssid": "e0:cc:7a:fd:84:50",
+        "bssidsForSsid": ["e0:cc:7a:fd:84:50"],
+        "ssid": "Depto 606-5G",
+    }
 
 
-def get_is_connected_to_ssid_response_when_not_connected_to_network(
+def test_get_is_connected_to_ssid_response_when_not_connected_to_network(
     app, mocker, wpa_supplicant_handler
 ):
     mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler.WpaSupplicantHandler.get_status",
         return_value=wpa_supplicant_handler.IfaceStatus.INACTIVE,  # noqa: F821
     )
 
-    response = app.get("/current-wifi-ssid")
+    response = app.get("/wifi-connection-info")
 
     assert response.status_code == 200
-    assert json.loads(response.data) == ""
+    assert json.loads(response.data) == {"bssid": "", "bssidsForSsid": [], "ssid": ""}
 
 
-def get_is_connected_to_ssid_response_on_internal_failure(app, mocker):
+def test_get_is_connected_to_ssid_response_on_internal_failure(app, mocker):
     mocker.patch(
-        "pt_os_web_portal.backend.helpers.wifi.WifiManager.get_status",
+        "pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler.WpaSupplicantHandler.get_status",
         side_effect=Exception("Internal failure..."),
     )
-    response = app.get("/current-wifi-ssid")
+    response = app.get("/wifi-connection-info")
 
     assert response.status_code == 200
-    assert json.loads(response.data) == ""
+    assert json.loads(response.data) == {"bssid": "", "bssidsForSsid": [], "ssid": ""}
 
 
 @pytest.mark.parametrize(

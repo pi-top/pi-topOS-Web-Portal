@@ -3,8 +3,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import ConnectDialog from "./ConnectDialog";
 
 import connectToNetwork from "../../../services/connectToNetwork";
-import connectedBSSID from "../../../services/connectedBSSID";
-import connectedSSID from "../../../services/connectedSSID";
+import wifiConnectionInformation from "../../../services/wifiConnectionInformation";
 
 import { Network } from "../../../types/Network";
 
@@ -60,19 +59,9 @@ export default ({ setConnectedNetwork, ...props }: Props) => {
         elapsedWaitingTimeMs.current += requestIntervalMs;
       }
 
-      // check for BSSID
-      await connectedBSSID(requestTimeoutMs)
-        .then((bssid) => {
-          if (bssid === network.bssid) {
-            onConnection(network);
-          }
-        })
-        .catch ((_) => {})
-
-      // check for SSID
-      await connectedSSID(requestTimeoutMs)
-        .then((ssid) => {
-          if (ssid === network.ssid) {
+      await wifiConnectionInformation(requestTimeoutMs)
+        .then(({ssid, bssid, bssidsForSsid }) => {
+          if (ssid === network.ssid || bssid === network.bssid || bssidsForSsid.includes(network.bssid)) {
             onConnection(network);
           }
         })

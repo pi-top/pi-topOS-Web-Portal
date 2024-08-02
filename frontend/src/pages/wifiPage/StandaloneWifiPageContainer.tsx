@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import WifiPage from "./WifiPage";
 import { Network } from "../../types/Network";
 import getNetworks from "../../services/getNetworks";
-import connectedBSSID from "../../services/connectedBSSID";
+import wifiConnectionInformation from "../../services/wifiConnectionInformation";
 import HotspotDisconnectDialog from "../hotspotDisconnectDialog/HotspotDisconnectDialog";
 
 export default () => {
@@ -16,12 +16,12 @@ export default () => {
     setIsFetchingNetworks(true);
     setFetchNetworksError(false);
 
-    Promise.all([getNetworks(), connectedBSSID()])
-      .then(([getNetworksResponse, connectedBSSIDResponse]) => {
+    Promise.all([getNetworks(), wifiConnectionInformation()])
+      .then(([getNetworksResponse, wifiConnectionInformationResponse]) => {
         setNetworks(getNetworksResponse);
 
         const currentConnectedNetwork = getNetworksResponse.find(
-          (network) => network.bssid === connectedBSSIDResponse
+          (network) => network.bssid === wifiConnectionInformationResponse.bssid || network.ssid === wifiConnectionInformationResponse.ssid || wifiConnectionInformationResponse.bssidsForSsid.includes(network.bssid)
         );
         if (currentConnectedNetwork) {
           setConnectedNetwork(currentConnectedNetwork);

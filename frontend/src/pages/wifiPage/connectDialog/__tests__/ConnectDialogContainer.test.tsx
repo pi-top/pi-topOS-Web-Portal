@@ -19,17 +19,17 @@ import { NetworkCredentials } from "../../../../types/Network";
 import querySpinner from "../../../../../test/helpers/querySpinner";
 import connectToNetwork from "../../../../services/connectToNetwork";
 import isConnectedThroughAp from "../../../../services/isConnectedThroughAp";
-import connectedBSSID from "../../../../services/connectedBSSID";
-import { act } from "react-dom/test-utils";
+import wifiConnectionInformation from "../../../../services/wifiConnectionInformation";
 import { waitFor } from "../../../../../test/helpers/waitFor";
+import { WifiConnectionInfo } from "../../../../types/WifiConnectionInfo";
 
 jest.mock("../../../../services/connectToNetwork");
 jest.mock("../../../../services/isConnectedThroughAp");
-jest.mock("../../../../services/connectedBSSID");
+jest.mock("../../../../services/wifiConnectionInformation");
 
 const connectToNetworkMock = connectToNetwork as jest.Mock;
 const isConnectedThroughApMock = isConnectedThroughAp as jest.Mock;
-const connectedBSSIDMock = connectedBSSID as jest.Mock;
+const wifiConnectionInformationMock = wifiConnectionInformation as jest.Mock;
 const originalCreatePortal = ReactDom.createPortal;
 
 describe("ConnectDialogContainer", () => {
@@ -39,14 +39,22 @@ describe("ConnectDialogContainer", () => {
   let getByText: BoundFunction<GetByText>;
   let getByLabelText: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
-  let mockBssid = "";
+  let wifiInfo: WifiConnectionInfo = {
+    ssid: "",
+    bssid: "",
+    bssidsForSsid: [],
+  };
+  const setWifiInfo = (ssid: string, bssid: string, bssidsForSsid: string[]) => {
+    wifiInfo.ssid = ssid;
+    wifiInfo.bssid = bssid;
+    wifiInfo.bssidsForSsid = bssidsForSsid;
+  }
 
   beforeEach(async () => {
-    mockBssid = ""
     isConnectedThroughApMock.mockResolvedValue({ isUsingAp: false })
 
-    connectedBSSIDMock.mockImplementation(() => {
-      return Promise.resolve(mockBssid);
+    wifiConnectionInformationMock.mockImplementation(() => {
+      return Promise.resolve(wifiInfo);
     });
 
     connectToNetworkMock.mockImplementation(
@@ -56,10 +64,10 @@ describe("ConnectDialogContainer", () => {
             creds.bssid === "unsecured-bssid" ||
             creds.password === "correct-password"
           ) {
-            mockBssid = creds.bssid;
+            setWifiInfo("", creds.bssid, [creds.bssid]);
             return res(void 0);
           }
-          mockBssid = "";
+          setWifiInfo("", "", []);
           rej();
         })
     );
@@ -225,7 +233,7 @@ describe("ConnectDialogContainer", () => {
     describe("and the connect-to-wifi request times outs", () => {
       beforeEach(async () => {
         connectToNetworkMock.mockRejectedValue(new Error(`Timeout`));
-        connectedBSSIDMock.mockResolvedValue("")
+        setWifiInfo("", "", []);
 
         defaultProps = {
           ...defaultProps,
@@ -263,13 +271,13 @@ describe("ConnectDialogContainer", () => {
       });
 
       it("keeps checking if connected to network", () => {
-        let callCount = connectedBSSIDMock.mock.calls.length;
+        let callCount = wifiConnectionInformationMock.mock.calls.length;
         jest.advanceTimersByTime(3_000);
-        expect(connectedBSSIDMock.mock.calls.length).toBeGreaterThan(callCount);
+        expect(wifiConnectionInformationMock.mock.calls.length).toBeGreaterThan(callCount);
       });
 
       it("updates message if consecuential checks determine that connection was successful", async () => {
-        connectedBSSIDMock.mockResolvedValue("unsecured-bssid")
+        setWifiInfo("", "unsecured-bssid", ["unsecured-bssid"]);
 
         jest.advanceTimersByTime(5_000);
         jest.useRealTimers();

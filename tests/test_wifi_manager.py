@@ -84,7 +84,7 @@ def test_connect_excepts_on_backend_failure(wifi_manager, mocker):
         )
 
 
-def test_current_wifi_bssid_function_output(wifi_manager, mocker):
+def test_wifi_connection_info_function_output(wifi_manager, mocker):
     from pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler import (
         IfaceStatus,
     )
@@ -98,10 +98,14 @@ def test_current_wifi_bssid_function_output(wifi_manager, mocker):
         return_value=IfaceStatus.CONNECTED,
     )
 
-    assert wifi_manager.current_wifi_bssid() == "e0:cc:7a:fd:84:50"
+    assert wifi_manager.wifi_connection_info() == {
+        "bssid": "e0:cc:7a:fd:84:50",
+        "bssidsForSsid": ["e0:cc:7a:fd:84:50"],
+        "ssid": "Depto 606-5G",
+    }
 
 
-def test_current_wifi_bssid_function_returns_empty_string_if_disconnected(
+def test_wifi_connection_info_function_returns_empty_string_if_disconnected(
     wifi_manager, mocker
 ):
     from pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler import (
@@ -114,14 +118,22 @@ def test_current_wifi_bssid_function_returns_empty_string_if_disconnected(
     )
 
     assert wifi_manager.get_wifi_manager_instance().is_connected() is False
-    assert wifi_manager.current_wifi_bssid() == ""
+    assert wifi_manager.wifi_connection_info() == {
+        "bssid": "",
+        "bssidsForSsid": [],
+        "ssid": "",
+    }
 
 
-def test_current_wifi_bssid_function_returns_empty_string_on_exception(
+def test_wifi_connection_info_function_returns_empty_string_on_exception(
     wifi_manager, mocker
 ):
     mocker.patch(
         "pt_os_web_portal.backend.helpers.wifi_connection.wpa_supplicant_handler.WpaSupplicantHandler.get_status",
         side_effect=Exception("Internal failure..."),
     )
-    assert wifi_manager.current_wifi_bssid() == ""
+    assert wifi_manager.wifi_connection_info() == {
+        "bssid": "",
+        "bssidsForSsid": [],
+        "ssid": "",
+    }

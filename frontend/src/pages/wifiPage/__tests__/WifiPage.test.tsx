@@ -18,16 +18,17 @@ import queryReactSelect from "../../../../test/helpers/queryReactSelect";
 import reactSelectIsDisabled from "../../../../test/helpers/reactSelectIsDisabled";
 import { KeyCode } from "../../../../test/types/Keys";
 import { Network, NetworkCredentials } from "../../../types/Network";
+import { WifiConnectionInfo } from "../../../types/WifiConnectionInfo";
 import querySpinner from "../../../../test/helpers/querySpinner";
 import connectToNetwork from "../../../services/connectToNetwork";
-import connectedBSSID from "../../../services/connectedBSSID";
+import wifiConnectionInformation from "../../../services/wifiConnectionInformation";
 import { waitFor } from "../../../../test/helpers/waitFor";
 
 jest.mock("../../../services/connectToNetwork");
-jest.mock("../../../services/connectedBSSID");
+jest.mock("../../../services/wifiConnectionInformation");
 
 const connectToNetworkMock = connectToNetwork as jest.Mock;
-const connectedBSSIDMock = connectedBSSID as jest.Mock;
+const wifiConnectionInformationMock = wifiConnectionInformation as jest.Mock;
 
 describe("WifiPage", () => {
   let defaultProps: Props;
@@ -42,7 +43,7 @@ describe("WifiPage", () => {
   let queryByLabelText: BoundFunction<QueryByBoundAttribute>;
   let getByLabelText: BoundFunction<GetByBoundAttribute>;
   let rerender: RenderResult["rerender"];
-  let mockBssid = "";
+  let wifiInfo: WifiConnectionInfo;
 
   beforeEach(() => {
     defaultProps = {
@@ -61,8 +62,12 @@ describe("WifiPage", () => {
       advancedConfigError: false,
     };
 
-    mockBssid = ""
-    connectedBSSIDMock.mockImplementation(() => Promise.resolve(mockBssid));
+    wifiInfo = {
+      ssid: "",
+      bssid: "",
+      bssidsForSsid: [],
+    }
+    wifiConnectionInformationMock.mockImplementation(() => Promise.resolve(wifiInfo))
     connectToNetworkMock.mockImplementation(
       (creds: NetworkCredentials) =>
         new Promise((res, rej) => {
@@ -70,10 +75,18 @@ describe("WifiPage", () => {
             creds.bssid === "unsecured-bssid" ||
             creds.password === "correct-password"
           ) {
-            mockBssid = creds.bssid;
+            wifiInfo = {
+              ssid: creds.bssid,
+              bssid: creds.bssid,
+              bssidsForSsid: [creds.bssid],
+            }
             return res(void 0);
           }
-          mockBssid = "";
+          wifiInfo = {
+            ssid: "",
+            bssid: "",
+            bssidsForSsid: [],
+          };
           rej();
         })
     );
