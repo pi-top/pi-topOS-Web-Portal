@@ -628,6 +628,7 @@ describe("App", () => {
 
         fireEvent.click(getByText("Depto 606"));
         fireEvent.click(getByText("Join"));
+        await waitFor(() => expect(getByText("We've connected successfully.")).toBeInTheDocument());
         await waitFor(() => expect(getByText("OK")).toBeInTheDocument());
         fireEvent.click(getByText("OK"));
 
