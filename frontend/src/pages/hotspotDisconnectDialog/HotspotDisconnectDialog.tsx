@@ -51,6 +51,7 @@ export default ({ enabled = true }: Props) => {
       active={enabled && disconnectedFromAp}
       title="Reconnect to pi-top hotspot"
       testId="reconnect-ap-dialog"
+      backdropClassName={styles.hotspotDisconnectDialog}
       message={
         <>
           Your computer has disconnected from the{" "}

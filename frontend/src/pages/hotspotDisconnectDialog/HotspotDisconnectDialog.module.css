@@ -1,3 +1,7 @@
 .reconnectImage {
   margin-bottom: 40px;
 }
+
+.hotspotDisconnectDialog {
+  z-index: 1000;
+}
