@@ -483,7 +483,7 @@ describe("StandaloneWifiPageContainer", () => {
       })
     );
 
-    jest.advanceTimersByTime(1_000);
+    jest.advanceTimersByTime(10_000);
 
     // retried request succeeds
     expect(
