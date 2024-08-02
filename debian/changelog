@@ -1,3 +1,15 @@
+pi-top-os-web-portal (0.22.0-3) bullseye; urgency=medium
+
+  * Display hotspot disconnection dialog after 5 failures
+  * Clear check-connection interval on success
+  * Monkey patch python standard library for gevent
+  * Delete NetworkManager connection on failure to connect
+  * Patch SDK to use zmq.green for gevent compatibility
+  * Get connected bssid directly from nmcli
+  * Handle ConnectDialog state when checking connection
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 02 Aug 2024 01:54:18 +0000
+
 pi-top-os-web-portal (0.22.0-2) bullseye; urgency=medium
 
   * Monitor hotspot disconnections (#461)
