@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.22.0-6) bullseye; urgency=medium
+
+  * Don't display AP disconnect dialog on upgrade (#475)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 13 Aug 2024 18:46:15 +0000
+
 pi-top-os-web-portal (0.22.0-5) bullseye; urgency=medium
 
   * Mock std library on web-portal main script (#473)
