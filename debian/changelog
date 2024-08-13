@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.22.0-5) bullseye; urgency=medium
+
+  * Mock std library on web-portal main script (#473)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 13 Aug 2024 15:49:40 +0000
+
 pi-top-os-web-portal (0.22.0-4) bullseye; urgency=medium
 
   * Patch std library before everything else (#468)
