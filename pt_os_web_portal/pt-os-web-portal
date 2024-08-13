@@ -1,13 +1,24 @@
-import logging
-from os import geteuid
-from signal import SIGINT, SIGTERM
-from sys import exit
+#!/usr/bin/env python3
+from gevent import monkey
 
-import click
-import click_logging
-from gevent import signal_handler, wait
+monkey.patch_all()
 
-from .app import App
+import pitop.common.ptdm  # noqa: E402
+import zmq.green  # noqa: E402
+
+# Use zmq.green for gevent compatibility
+pitop.common.ptdm.zmq = zmq.green
+
+import logging  # noqa: E402
+from os import geteuid  # noqa: E402
+from signal import SIGINT, SIGTERM  # noqa: E402
+from sys import exit  # noqa: E402
+
+import click  # noqa: E402
+import click_logging  # noqa: E402
+from gevent import signal_handler, wait  # noqa: E402
+
+from pt_os_web_portal.app import App  # noqa: E402
 
 logger = logging.getLogger()
 click_logging.basic_config(logger)
