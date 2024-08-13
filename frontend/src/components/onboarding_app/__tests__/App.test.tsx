@@ -354,7 +354,6 @@ describe("App", () => {
 
     // on upgrade page
     await waitForUpgradePage();
-    await checkForDialog();
 
     // mock upgrade and go to registration page
     await upgrade();

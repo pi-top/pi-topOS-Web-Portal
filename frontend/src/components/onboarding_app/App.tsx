@@ -43,6 +43,10 @@ export default () => {
     }
   };
 
+  const pathDisplaysApDisconnectDialog = (path: string) => {
+    return ![PageRoute.Upgrade.toString(), PageRoute.Restart.toString()].includes(path);
+  };
+
   return (
     <>
       <Switch>
@@ -184,7 +188,7 @@ export default () => {
         <Route component={ErrorPage} />
       </Switch>
       <BuildInformation info={buildInfo} className={styles.buildInfo} />
-      <HotspotDisconnectDialog enabled={useLocation().pathname !== PageRoute.Restart && enableDisconnectedFromApDialog} />
+      <HotspotDisconnectDialog enabled={pathDisplaysApDisconnectDialog(useLocation().pathname) && enableDisconnectedFromApDialog} />
     </>
   );
 };
