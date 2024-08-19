@@ -5,12 +5,9 @@ from typing import List
 from geventwebsocket.exceptions import WebSocketError
 from geventwebsocket.websocket import WebSocket
 
-from ..backend.helpers.modules import get_apt
 from .types import EventNames, MessageType
 
 logger = logging.getLogger(__name__)
-
-(apt, apt.progress, apt_pkg) = get_apt()
 
 
 class OSUpdaterFrontendMessageHandler:

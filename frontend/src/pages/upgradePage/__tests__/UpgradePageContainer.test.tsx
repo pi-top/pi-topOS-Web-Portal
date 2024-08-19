@@ -237,12 +237,10 @@ describe("UpgradePageContainer", () => {
       expect(textAreaElement).toMatchSnapshot();
     });
 
-    it("renders progress bar correctly", async () => {
-      const { findByTestId, queryByTestId } = mount();
+    it("doesn't render progress bar", async () => {
+      const { container: upgradePage } = mount();
 
-      await findByTestId("progress");
-      const progressBar = queryByTestId("progress");
-      expect(progressBar).toMatchSnapshot();
+      expect(upgradePage.querySelector(".progress")).not.toBeInTheDocument();
     });
 
     it("doesn't render the Skip button", async () => {
@@ -1011,14 +1009,12 @@ describe("UpgradePageContainer", () => {
       await waitForInstallingPackages();
     });
 
-    it("renders progress bar correctly", async () => {
+    it("doesn't render the progress bar", async () => {
       const { getByText, waitForPreparation, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
-      await waitForElement(() => upgradePage.querySelector(".progress"));
-      const progressBar = upgradePage.querySelector(".progress");
-      expect(progressBar).toMatchSnapshot();
+      expect(upgradePage.querySelector(".progress")).not.toBeInTheDocument();
     });
 
     it("renders the textarea component", async () => {
@@ -1295,13 +1291,13 @@ describe("UpgradePageContainer", () => {
       await waitForUpgradeFinish();
     });
 
-    it("renders progress bar correctly", async () => {
+    it("doesn't render the progress bar", async () => {
       const { getByText, waitForPreparation, waitForUpgradeFinish, container: upgradePage } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
 
-      expect(upgradePage.querySelector(".progress")).toMatchSnapshot();
+      expect(upgradePage.querySelector(".progress")).not.toBeInTheDocument();
     });
 
     it("renders the textarea component", async () => {

@@ -39,6 +39,9 @@ export default [
   rest.get("/further-url", (_, res, ctx) => {
     return res(ctx.json({ url: "https://further.pi-top.com" }));
   }),
+  rest.get("/available-space", (_, res, ctx) => {
+    return res(ctx.body("20378521600"));
+  }),
   rest.get("/rover-controller-status", (_, res, ctx) => {
     return res(ctx.json({ status: "inactive" }));
   }),
@@ -46,6 +49,9 @@ export default [
     return res(ctx.body("OK"));
   }),
   rest.post("/rover-controller-stop", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.post("/restart-web-portal-service", (_, res, ctx) => {
     return res(ctx.body("OK"));
   }),
   rest.get("/is-connected", (_, res, ctx) => {

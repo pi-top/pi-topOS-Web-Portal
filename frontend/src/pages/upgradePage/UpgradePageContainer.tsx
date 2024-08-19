@@ -46,8 +46,6 @@ export enum SocketMessage {
   PREPARE_WEB_PORTAL_UPGRADE = "prepare_web_portal",
   UPDATE_SOURCES = "update_sources",
   START_UPGRADE = "start",
-  USE_DEFAULT_UPDATER = "default-updater-backend",
-  USE_LEGACY_UPDATER = "legacy-updater-backend",
   GET_UPGRADE_SIZE = "size",
   GET_STATE = "state",
 }
@@ -196,14 +194,13 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnab
   }, [isOpen, state]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const doRetry = useCallback(
-    (defaultBackend: boolean) => {
-      socket.send(defaultBackend ? SocketMessage.USE_DEFAULT_UPDATER : SocketMessage.USE_LEGACY_UPDATER);
+    () => {
       setError(ErrorType.None);
       setUpdateSize({downloadSize: 0, requiredSpace: 0});
       checkingWebPortalRef.current = true;
       setState(UpdateState.UpdatingSources);
     },
-    [socket],
+    [setError, setUpdateSize, setState],
   )
 
   useEffect(() => {
@@ -284,7 +281,6 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnab
       if (message.payload.busy) {
         setState(UpdateState.Reattaching);
       } else {
-        socket.send(SocketMessage.USE_DEFAULT_UPDATER);
         setState(UpdateState.UpdatingSources);
       }
     }
@@ -361,18 +357,9 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnab
 
   return (
     <UpgradePage
-      onNextClick={() => {
-        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(true);
-        goToNextPage && goToNextPage()
-      }}
-      onSkipClick={() => {
-        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(true);
-        goToNextPage && goToNextPage()
-      }}
-      onBackClick={() => {
-        setEnableDisconnectedFromApDialog && setEnableDisconnectedFromApDialog(true);
-        goToPreviousPage && goToPreviousPage()
-      }}
+      onNextClick={goToNextPage}
+      onSkipClick={goToNextPage}
+      onBackClick={goToPreviousPage}
       hideSkip={hideSkip}
       onStartUpgradeClick={() => {
         if (isOpen) {
@@ -381,9 +368,7 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnab
         }
         setError(ErrorType.GenericError);
       }}
-      onRetry={(useDefaultBackend: boolean) => {
-        doRetry(useDefaultBackend)
-      }}
+      onRetry={doRetry}
       isCompleted={isCompleted}
       message={message}
       updateState={state}

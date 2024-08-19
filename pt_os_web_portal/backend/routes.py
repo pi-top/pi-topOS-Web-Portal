@@ -308,8 +308,6 @@ def os_upgrade(ws):
         "prepare_web_portal": get_os_updater().stage_web_portal,
         "start": get_os_updater().start_os_upgrade,
         "size": get_os_updater().upgrade_size,
-        "legacy-updater-backend": get_os_updater().use_legacy_backend,
-        "default-updater-backend": get_os_updater().use_default_backend,
         "state": get_os_updater().state,
     }
 
