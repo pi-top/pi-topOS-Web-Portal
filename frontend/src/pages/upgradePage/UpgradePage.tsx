@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Line as ProgressBar } from "rc-progress";
 import prettyBytes from "pretty-bytes";
 
-import CheckBox from "../../components/atoms/checkBox/CheckBox";
 import Layout from "../../components/layout/Layout";
 import Spinner from "../../components/atoms/spinner/Spinner";
 
@@ -21,7 +20,7 @@ import UpgradeHistoryTextArea from "../../components/upgradeHistoryTextArea/Upgr
 
 export enum ErrorMessage {
   NoSpaceAvailable = "There's not enough space on the device to install updates. Please, free up space and try updating again.",
-  GenericError = "There was a problem during system update.\nIf this is the first time, please try again using the recommended method.\nIf you're experiencing repeated issues, try another method.",
+  GenericError = "There was a problem during system update.\nPlease try again later.\nIf you're experiencing repeated issues, contact pi-top support.",
   CloseOtherWindow = "The OS Updater application is already running in another window.",
 }
 
@@ -43,7 +42,7 @@ export type Props = {
   onSkipClick?: () => void;
   onBackClick?: () => void;
   onStartUpgradeClick: () => void;
-  onRetry: (defaultBackend: boolean) => void;
+  onRetry: () => void;
   isCompleted?: boolean;
   message?: OSUpdaterMessage;
   updateState: UpdateState;
@@ -70,8 +69,9 @@ export default ({
   error,
 }: Props) => {
   const [isNewOsDialogActive, setIsNewOsDialogActive] = useState(false);
-  const [isUsingDefaultBackend, setIsUsingDefaultBackend] = useState(true);
   const [isRetrying, setIsRetrying] = useState(false);
+
+  const displayProgressBar = false;
 
   useEffect(() => {
     setIsNewOsDialogActive(requireBurn || shouldBurn);
@@ -206,7 +206,7 @@ export default ({
   const onNextButtonClick = () => {
     if (hasError()) {
       setIsRetrying(true);
-      onRetry(isUsingDefaultBackend);
+      onRetry();
     } else if (updateState === UpdateState.WaitingForUserInput) {
       onStartUpgradeClick();
     } else {
@@ -260,18 +260,6 @@ export default ({
                   );
                 })}
             </span>
-
-            {error !== ErrorType.UpdaterAlreadyRunning && (
-              <CheckBox
-                name="legacy-backend"
-                label="Use alternate update method"
-                checked={!isUsingDefaultBackend}
-                onChange={() =>
-                  setIsUsingDefaultBackend(!isUsingDefaultBackend)
-                }
-                className={styles.checkbox}
-              />
-            )}
           </>
         )}
 
@@ -306,7 +294,7 @@ export default ({
           message?.type === OSUpdaterMessageType.UpdateSources) &&
           updateState !== UpdateState.WaitingForServer &&
           !hasError() &&
-          isUsingDefaultBackend && (
+          displayProgressBar && (
             <div data-testid="progress" className={styles.progress}>
               <ProgressBar
                 percent={message.payload.percent}
