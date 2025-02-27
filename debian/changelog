@@ -1,9 +1,5 @@
-pi-top-os-web-portal (0.22.0-8) bullseye; urgency=medium
+pi-top-os-web-portal (0.22.1-1) bullseye; urgency=medium
 
-  * Updated master workflow files
-  * Updated master workflow files
-  * Updated master workflow files
-  * Updated master workflow files
   * Don't restart networking services on system upgrade (#481)
 
  -- pi-top <deb-maintainers@pi-top.com>  Thu, 27 Feb 2025 14:35:56 +0000
