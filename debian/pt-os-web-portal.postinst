@@ -11,6 +11,12 @@ get_reverse_dependencies() {
 	apt-cache rdepends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --installed $1 2>/dev/null | uniq | grep -v -E "Reverse Depends:|$1" | xargs
 }
 
+is_installed() {
+	package_name="$1"
+	[ -n "$(apt-cache policy "$package_name" 2>/dev/null | grep -E '^[[:space:]]*Installed:')" ]
+	return $?
+}
+
 case "$1" in
   configure)
 	# if network-manager-gnome was manually installed, skip
@@ -22,6 +28,20 @@ case "$1" in
 				echo "Hidden=true" >> /etc/xdg/autostart/nm-applet.desktop
 			fi
 		fi
+	fi
+
+	# don't restart networking services during upgrade to avoid client disconnects
+	if is_installed hostapd; then
+		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add hostapd
+		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add hostapd.service
+	fi
+	if is_installed isc-dhcp-server; then
+		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add isc-dhcp-server
+		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add isc-dhcp-server.service
+	fi
+	if is_installed network-manager; then
+		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add NetworkManager
+		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add NetworkManager.service
 	fi
 
   ;;

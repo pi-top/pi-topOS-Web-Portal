@@ -1,2 +1,3 @@
 pt_os_web_portal/rover_controller/pt-os-web-portal-rover-controller       /usr/bin/
 pt_os_web_portal/pt-os-web-portal                                         /usr/bin/
+debian/extra/handle-service-restart-in-policy                             /usr/lib/pt-os-web-portal

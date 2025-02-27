@@ -1,0 +1,127 @@
+#!/bin/bash
+###############################################################
+#                Unofficial 'Bash strict mode'                #
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/  #
+###############################################################
+set -euo pipefail
+IFS=$'\n\t'
+###############################################################
+
+POLICY_FILE="${POLICY_FILE:-/usr/sbin/policy-rc.d}"
+
+check_root() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run as root"
+        return 1
+    fi
+    return 0
+}
+
+validate_args() {
+    local command="$1"
+    local service_name="$2"
+
+    if [ -z "$command" ] || [ -z "$service_name" ]; then
+        echo "Please provide both command and service name"
+        echo "Usage: $0 <add|remove> <service-name>"
+        return 1
+    fi
+
+    if [ "$command" != "add" ] && [ "$command" != "remove" ]; then
+        echo "Invalid command. Use 'add' or 'remove'"
+        return 1
+    fi
+    return 0
+}
+
+init_policy_file() {
+    if [ ! -f "$POLICY_FILE" ]; then
+        echo '#!/bin/sh' > "$POLICY_FILE"
+        echo '' >> "$POLICY_FILE"
+    fi
+}
+
+is_service_in_policy() {
+    local service_name="$1"
+    grep -q "if \[ \"\$1\" = \"$service_name\"" "$POLICY_FILE"
+    return $?
+}
+
+add_service_to_policy() {
+    local service_name="$1"
+
+    if is_service_in_policy "$service_name"; then
+        echo "Service $service_name already in policy - skipping ..."
+        return 0
+    fi
+
+    if grep -q "exit 0" "$POLICY_FILE"; then
+        # Insert before exit 0
+        sed -i "\$i\\if [ \"\$1\" = \"$service_name\" ]; then\\n    echo \"Skipping service $service_name restart...\" 1>&2\\n    exit 101\\nfi\\n" "$POLICY_FILE"
+    else
+        # Append to end of file
+        echo "if [ \"\$1\" = \"$service_name\" ]; then" >> "$POLICY_FILE"
+        echo "    echo \"Skipping service $service_name restart...\" 1>&2" >> "$POLICY_FILE"
+        echo "    exit 101" >> "$POLICY_FILE"
+        echo "fi" >> "$POLICY_FILE"
+        echo "" >> "$POLICY_FILE"
+        echo "exit 0" >> "$POLICY_FILE"
+    fi
+    echo "Policy added for $service_name into $POLICY_FILE"
+}
+
+remove_service_from_policy() {
+    local service_name="$1"
+
+    if ! is_service_in_policy "$service_name"; then
+        echo "Service $service_name not found in policy - skipping ..."
+        return 0
+    fi
+
+    # Remove the service entry
+    sed -i "/if \[ \"\$1\" = \"$service_name\" ]/,+3d" "$POLICY_FILE"
+    # Remove any extra blank lines
+    sed -i '/^$/N;/^\n$/D' "$POLICY_FILE"
+    # Ensure file ends with exit 0 if not empty
+    if [ -s "$POLICY_FILE" ] && ! grep -q "exit 0" "$POLICY_FILE"; then
+        echo "" >> "$POLICY_FILE"
+        echo "exit 0" >> "$POLICY_FILE"
+    fi
+    echo "Policy removed for $service_name from $POLICY_FILE"
+}
+
+set_policy_permissions() {
+    chmod 755 "$POLICY_FILE"
+    chown root:root "$POLICY_FILE"
+}
+
+handle_operation() {
+    local command="$1"
+    local service_name="$2"
+
+    if [ "$command" = "add" ]; then
+        init_policy_file
+        add_service_to_policy "$service_name"
+    else
+        [ ! -f "$POLICY_FILE" ] && {
+            echo "Policy file does not exist, nothing to remove"
+            exit 0
+        }
+        remove_service_from_policy "$service_name"
+    fi
+
+}
+
+handle_service_policy() {
+    local command="$1"
+    local service_name="$2"
+
+    check_root || return 1
+    validate_args "$command" "$service_name" || return 1
+
+    handle_operation "$command" "$service_name"
+
+    set_policy_permissions
+}
+
+handle_service_policy "$1" "$2"
