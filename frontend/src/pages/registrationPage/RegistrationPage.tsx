@@ -9,6 +9,7 @@ import Button, { Props as ButtonProps } from "../../components/atoms/button/Butt
 import registrationScreen from "../../assets/images/registration-screen.png";
 import styles from "./RegistrationPage.module.css";
 import PrivacyPolicyDialogContainer from "./privacyPolicyDialog/PrivacyPolicyDialogContainer";
+import TermsDialog from "./termsDialog/TermsDialog";
 
 export enum ErrorMessage {
   RegistrationError = "There was a problem registering your device - please skip (we can help you register your device later)"
@@ -37,6 +38,8 @@ export default ({
 }: Props) => {
   const [isOverAge, setIsOverAge] = useState(true);
   const [isPrivacyPolicyDialogActive, setIsPrivacyPolicyDialogActive] = useState(false);
+  const [isTermsDialogActive, setIsTermsDialogActive] = useState(false);
+
   const formRef = useRef<HTMLFormElement>(null);
 
   let nextButtonProps: Partial<ButtonProps> = {
@@ -64,8 +67,10 @@ export default ({
       }}
       prompt={
         <>
-          Hey, would you like to be kept{" "}
-          <span className="green">up to date</span>?
+          Please, {" "}
+          <span className="green">register</span>
+          {" "}
+          your device.
         </>
       }
       explanation={explanation}
@@ -111,11 +116,21 @@ export default ({
         See our <Button className={styles.privacyPolicyButton} unstyled onClick= {() => setIsPrivacyPolicyDialogActive(true)}>Privacy Policy</Button> for more information
       </span>
 
+      <span className={styles.message}>
+        By using pi-topOS, you are agreeing to our <Button className={styles.privacyPolicyButton} unstyled onClick= {() => setIsTermsDialogActive(true)}>Terms & Conditions</Button>.
+      </span>
+
+
       {errorMessage && <span className={styles.error}>{errorMessage}</span>}
 
       <PrivacyPolicyDialogContainer
         active={isPrivacyPolicyDialogActive}
         onClose={() => setIsPrivacyPolicyDialogActive(false)}
+      />
+
+      <TermsDialog
+        active={isTermsDialogActive}
+        onClose={() => setIsTermsDialogActive(false)}
       />
     </Layout>
   );

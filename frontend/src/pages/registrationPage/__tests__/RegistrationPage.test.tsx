@@ -8,6 +8,7 @@ import {
   GetByText,
   RenderResult,
   QueryByBoundAttribute,
+  within,
 } from "@testing-library/react";
 
 import RegistrationPage, { Props, ErrorMessage, explanation } from "../RegistrationPage";
@@ -122,11 +123,11 @@ describe("RegistrationPage", () => {
   })
 
   it("renders the privacy policy dialog", () => {
-    expect(queryByTestId("dialog")).toBeInTheDocument();
+    expect(queryByTestId("privacy-policy-dialog")).toBeInTheDocument();
   });
 
   it("hides the privacy policy dialog", () => {
-    expect(queryByTestId("dialog")).toHaveClass("hidden");
+    expect(queryByTestId("privacy-policy-dialog")).toHaveClass("hidden");
   });
 
   describe("when clicking over privacy policy", () => {
@@ -135,16 +136,16 @@ describe("RegistrationPage", () => {
     });
 
     it("shows the privacy policy dialog", () => {
-      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+      expect(queryByTestId("privacy-policy-dialog")).not.toHaveClass("hidden");
     });
 
     it("renders dialog message correctly", () => {
-      expect(queryByTestId("dialog-message")).toMatchSnapshot();
+      expect(within(queryByTestId("privacy-policy-dialog")!).queryByTestId("dialog-message")).toMatchSnapshot();
     });
 
     it("hides the dialog on Close click", () => {
-      fireEvent.click(getByText("Close"));
-      expect(queryByTestId("dialog")).toHaveClass("hidden");
+      fireEvent.click(within(queryByTestId("privacy-policy-dialog")!).getByText("Close"));
+      expect(queryByTestId("privacy-policy-dialog")).toHaveClass("hidden");
     });
   });
 

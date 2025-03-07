@@ -8,8 +8,6 @@ import WifiPageContainer from "../../pages/wifiPage/WifiPageContainer";
 import UpgradePageContainer from "../../pages/upgradePage/UpgradePageContainer";
 import LanguagePageContainer from "../../pages/languagePage/LanguagePageContainer";
 import CountryPageContainer from "../../pages/countryPage/CountryPageContainer";
-import KeyboardPageContainer from "../../pages/keyboardPage/KeyboardPageContainer";
-import TermsPageContainer from "../../pages/termsPage/TermsPageContainer";
 import RegistrationPageContainer from "../../pages/registrationPage/RegistrationPageContainer";
 import RestartPageContainer from "../../pages/restartPage/RestartPageContainer";
 import ErrorPage from "../../pages/errorPage/ErrorPage";
@@ -85,38 +83,6 @@ export default () => {
               goToNextPage={() => {
                 addCompleted(Page.Country);
 
-                history.push(PageRoute.Keyboard);
-              }}
-            />
-          )}
-        />
-
-        <Route
-          exact
-          path={PageRoute.Keyboard}
-          render={({ history }) => (
-            <KeyboardPageContainer
-              isCompleted={completedPages.includes(Page.Keyboard)}
-              goToPreviousPage={() => history.push(PageRoute.Country)}
-              goToNextPage={() => {
-                addCompleted(Page.Keyboard);
-
-                history.push(PageRoute.Terms);
-              }}
-            />
-          )}
-        />
-
-        <Route
-          exact
-          path={PageRoute.Terms}
-          render={({ history }) => (
-            <TermsPageContainer
-              isCompleted={completedPages.includes(Page.Terms)}
-              goToPreviousPage={() => history.push(PageRoute.Keyboard)}
-              goToNextPage={() => {
-                addCompleted(Page.Terms);
-
                 history.push(PageRoute.Wifi);
               }}
             />
@@ -130,7 +96,7 @@ export default () => {
             <WifiPageContainer
               connectedNetwork={connectedNetwork}
               setConnectedNetwork={setConnectedNetwork}
-              goToPreviousPage={() => history.push(PageRoute.Terms)}
+              goToPreviousPage={() => history.push(PageRoute.Country)}
               goToNextPage={(isConnected: boolean) => {
                 history.push(isConnected ? PageRoute.Upgrade : PageRoute.Registration);
                 setSkipUpgradePage(!isConnected);
