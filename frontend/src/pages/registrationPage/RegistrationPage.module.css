@@ -2,15 +2,6 @@
   --bannerHeight: 50vh;
 }
 
-.termsContainer {
-  margin-top: 3vh;
-  height: 25vh;
-  overflow-y: scroll;
-  border-radius: 5px;
-  border: 1px solid var(--font80);
-  padding: 10px;
-}
-
 .hidden {
   display: none;
 }
@@ -45,6 +36,7 @@
 .message {
   composes: text from '../../globalStyles/Typography.module.css';
   margin-right: auto;
+  margin-top: 10px;
 }
 
 .privacyPolicyButton {

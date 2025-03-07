@@ -14,14 +14,15 @@ exports[`RegistrationPage renders prompt correctly 1`] = `
 <h1
   class="prompt"
 >
-  Hey, would you like to be kept
+  Please, 
    
   <span
     class="green"
   >
-    up to date
+    register
   </span>
-  ?
+   
+  your device.
 </h1>
 `;
 
