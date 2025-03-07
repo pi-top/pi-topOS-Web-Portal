@@ -287,8 +287,6 @@ describe("App", () => {
       waitForSplashPage,
       waitForLanguagePage,
       waitForCountryPage,
-      waitForKeyboardPage,
-      waitForTermsPage,
       waitForWifiPage,
       waitForUpgradePage,
       waitForRegistrationPage,

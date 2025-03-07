@@ -130,6 +130,7 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnab
   const [checkOsVersionUpdate, setCheckOsVersionUpdate] = useState(false);
 
   const checkingWebPortalRef = useRef(window.location.search !== "?all");
+  const shouldSkipSystemUpgradeRef = useRef(window.location.search !== "?all" && (window?.location?.pathname || "").startsWith("/onboarding/"));
   const previousState = usePrevious(state);
 
   useEffect(() => {
@@ -151,6 +152,12 @@ export default ({ goToNextPage, goToPreviousPage, hideSkip, isCompleted, setEnab
           })
     }
   }, [checkOsVersionUpdate]);
+
+  useEffect(() => {
+    if (!shouldSkipSystemUpgradeRef.current) {
+      goToNextPage && goToNextPage();
+    }
+  }, [shouldSkipSystemUpgradeRef.current, goToNextPage]);
 
   useEffect(() => {
     getAvailableSpace()

@@ -22,6 +22,7 @@ import axios from "axios";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 import getMajorOsUpdates from "../../../services/getMajorOsUpdates";
 import { OsVersionUpdate } from "../../../types/OsVersionUpdate";
+import { waitFor } from "../../../../test/helpers/waitFor";
 
 
 jest.mock("axios")
@@ -55,8 +56,8 @@ const createServer = () => {
 
 Object.defineProperty(window, "location", {
   writable: true,
-  value: { replace: jest.fn() }
-} );
+  value: { replace: jest.fn(), pathname: "/upgrade", search: "" }
+});
 
 
 describe("UpgradePageContainer", () => {
@@ -189,6 +190,16 @@ describe("UpgradePageContainer", () => {
     expect(queryByTestId("dialog")).toHaveClass("hidden");
   });
 
+  it("calls goToNextPage when trying to upgrade system during onboarding", async () => {
+    window.location.pathname = "/onboarding/upgrade"
+    window.location.search = "?all"
+
+    mount();
+    await waitFor(() => {
+      expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    })
+  })
+
   describe("while updating sources", () => {
     beforeEach(async () => {
       server = createServer();
@@ -315,8 +326,10 @@ describe("UpgradePageContainer", () => {
         const { getByText, container: upgradePage } = mount();
         await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
 
-        const textAreaElement = upgradePage.querySelector(".textarea");
-        expect(textAreaElement).toBeInTheDocument()
+        await waitFor(() => {
+          const textAreaElement = upgradePage.querySelector(".textarea");
+          expect(textAreaElement).toBeInTheDocument()
+        })
       });
 
       it("textarea component displays web-portal upgrade messages", async () => {
