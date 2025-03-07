@@ -337,16 +337,6 @@ describe("App", () => {
     await checkForDialog();
     fireEvent.click(getByText("Next"));
 
-    // on keyboard page
-    await waitForKeyboardPage();
-    await checkForDialog();
-    fireEvent.click(getByText("Next"));
-
-    // on terms page
-    await waitForTermsPage();
-    await checkForDialog();
-    fireEvent.click(getByText("Agree"));
-
     // on wifi page
     await waitForWifiPage();
     await checkForDialog();
@@ -441,14 +431,14 @@ describe("App", () => {
       expect(getByText(getName("GB")!)).toBeInTheDocument();
     });
 
-    it("navigates to KeyboardPage on next button click", async () => {
-      const { getByText, waitForCountryPage, waitForKeyboardPage } = mount(
+    it("navigates to WifiPage on next button click", async () => {
+      const { getByText, waitForCountryPage, waitForWifiPage } = mount(
         PageRoute.Country
       );
       await waitForCountryPage();
 
       fireEvent.click(getByText("Next"));
-      await waitForKeyboardPage();
+      await waitForWifiPage();
     });
 
     it("navigate to LanguagePage on back button click", async () => {
@@ -461,101 +451,19 @@ describe("App", () => {
       await waitForLanguagePage();
     });
 
-    it("allows skipping to Keyboard when already completed", async () => {
-      const { getByText, waitForCountryPage, waitForKeyboardPage } = mount(
+    it("allows skipping to WifiPage when already completed", async () => {
+      const { getByText, waitForCountryPage, waitForWifiPage } = mount(
         PageRoute.Country
       );
       await waitForCountryPage();
 
-      // complete CountryPage by navigating to KeyboardPage
+      // complete CountryPage by navigating to WifiPage
       fireEvent.click(getByText("Next"));
-      await waitForKeyboardPage();
+      await waitForWifiPage();
 
       // go back to CountryPage
       fireEvent.click(getByText("Back"));
       await waitForCountryPage();
-
-      // skip to KeyboardPage
-      fireEvent.click(getByText("Skip"));
-      await waitForKeyboardPage();
-    });
-  });
-
-  describe("KeyboardPage", () => {
-    it("navigates to WifiPage on next button click", async () => {
-      const { getByText, waitForKeyboardPage, waitForTermsPage } = mount(
-        PageRoute.Keyboard
-      );
-      await waitForKeyboardPage();
-
-      fireEvent.click(getByText("Next"));
-      await waitForTermsPage();
-    });
-
-    it("navigate to CountryPage on back button click", async () => {
-      const { getByText, waitForKeyboardPage, waitForCountryPage } = mount(
-        PageRoute.Keyboard
-      );
-      await waitForKeyboardPage();
-
-      fireEvent.click(getByText("Back"));
-      await waitForCountryPage();
-    });
-
-    it("allows skipping to TermsPage when already completed", async () => {
-      const { getByText, waitForKeyboardPage, waitForTermsPage } = mount(
-        PageRoute.Keyboard
-      );
-      await waitForKeyboardPage();
-
-      // complete KeyboardPage by navigating to TermsPage
-      fireEvent.click(getByText("Next"));
-      await waitForTermsPage();
-
-      // go back to KeyboardPage
-      fireEvent.click(getByText("Back"));
-      await waitForKeyboardPage();
-
-      // skip to TermsPage
-      fireEvent.click(getByText("Skip"));
-      await waitForTermsPage();
-    });
-  });
-
-  describe("TermsPage", () => {
-    it("navigates to WifiPage on next button click", async () => {
-      const { getByText, waitForTermsPage, waitForWifiPage } = mount(
-        PageRoute.Terms
-      );
-      await waitForTermsPage();
-
-      fireEvent.click(getByText("Agree"));
-      await waitForWifiPage();
-    });
-
-    it("navigates to KeyboardPage on back button click", async () => {
-      const { getByText, waitForTermsPage, waitForKeyboardPage } = mount(
-        PageRoute.Terms
-      );
-      await waitForTermsPage();
-
-      fireEvent.click(getByText("Back"));
-      await waitForKeyboardPage();
-    });
-
-    it("allows skipping to WifiPage when already completed", async () => {
-      const { getByText, waitForTermsPage, waitForWifiPage } = mount(
-        PageRoute.Terms
-      );
-      await waitForTermsPage();
-
-      // complete TermsPage by navigating to WifiPage
-      fireEvent.click(getByText("Agree"));
-      await waitForWifiPage();
-
-      // go back to TermsPage
-      fireEvent.click(getByText("Back"));
-      await waitForTermsPage();
 
       // skip to WifiPage
       fireEvent.click(getByText("Skip"));
@@ -574,14 +482,14 @@ describe("App", () => {
       await waitForUpgradePage();
     });
 
-    it("navigates to TermsPage on back button click", async () => {
-      const { getByText, waitForWifiPage, waitForTermsPage } = mount(
+    it("navigates to CountryPage on back button click", async () => {
+      const { getByText, waitForWifiPage, waitForCountryPage } = mount(
         PageRoute.Wifi
       );
       await waitForWifiPage();
 
       fireEvent.click(getByText("Back"));
-      await waitForTermsPage();
+      await waitForCountryPage();
     });
 
     it("allows skipping to UpgradePage if already completed", async () => {
