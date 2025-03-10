@@ -115,9 +115,6 @@ const buildInfo: BuildInfo = {
   buildCommit: "07706af4337c60f4007ef9910c33c6e4daab1646",
 };
 
-const upgradePageText =
-  "100 kB of new packages need to be installed. This might take a few minutes.";
-
 const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
   const result = render(
     <MemoryRouter initialEntries={[pageRoute]}>
@@ -127,8 +124,6 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
 
   const waitForAltText = (altText: string) =>
     waitForElement(() => result.getByAltText(altText));
-  const waitForText = (text: string) =>
-    waitForElement(() => result.getByText(text));
 
   return {
     ...result,
@@ -141,22 +136,11 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForKeyboardPage: () => waitForAltText("keyboard-screen"),
     waitForTermsPage: () => waitForAltText("terms-screen-banner"),
     waitForWifiPage: () => waitForAltText("wifi-page-banner"),
-    waitForUpgradePage: () => waitForText(upgradePageText),
+    waitForUpgradePage: () => waitForAltText("upgrade-page-banner"),
     waitForUpgradePageBanner: () => waitForAltText("upgrade-page-banner"),
     waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
     waitForRestartPage: () => waitForAltText("reboot-screen"),
     // Actions
-    upgrade: async () => {
-      fireEvent.click(result.getByText("Update"));
-      await Promise.all(
-        UpgradePageExplanation.Finish.replace("{continueButtonLabel}", "Next")
-          .replace("{continueButtonAction}", "continue")
-          .split("\n")
-          .map(async (text, _): Promise<any> => {
-            text && (await waitForElement(() => result.getByText(text)));
-          })
-      );
-    },
     registerEmail: (email: string) => {
       const emailInput = result.getByPlaceholderText(
         "Please enter your email..."
@@ -214,39 +198,20 @@ describe("App", () => {
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
 
-    let nextSizeMessage = Messages.NoSize;
     server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
       socket.on("message", (data) => {
         if (data === "update_sources") {
-          socket.send(JSON.stringify(Messages.UpdateSourcesStart));
-          socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
-          socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          // return an error to be able to interact with the page
+          socket.send(JSON.stringify(Messages.UpdateSourcesError));
         }
-
-        if (data === "prepare" || data === "prepare_web_portal") {
-          nextSizeMessage =
-            data === "prepare_web_portal" ? Messages.NoSize : Messages.Size;
-          socket.send(JSON.stringify(Messages.PrepareStart));
-          socket.send(JSON.stringify(Messages.PrepareFinish));
-        }
-
-        if (data === "size") {
-          socket.send(JSON.stringify(nextSizeMessage));
-        }
-
-        if (data === "start") {
-          socket.send(JSON.stringify(Messages.UpgradeStart));
-          socket.send(JSON.stringify(Messages.UpgradeStatus));
-          socket.send(JSON.stringify(Messages.UpgradeFinish));
-        }
-
         if (data === "state") {
           socket.send(JSON.stringify(Messages.StateNotBusy));
         }
       });
     });
   });
+
   afterEach(() => {
     act(() => server.close());
     cleanup();
@@ -281,14 +246,11 @@ describe("App", () => {
     isConnectedThroughApMock.mockResolvedValue({ isUsingAp: true });
 
     const {
-      upgrade,
       getByText,
       getByTestId,
       waitForSplashPage,
       waitForLanguagePage,
       waitForCountryPage,
-      waitForKeyboardPage,
-      waitForTermsPage,
       waitForWifiPage,
       waitForUpgradePage,
       waitForRegistrationPage,
@@ -305,18 +267,24 @@ describe("App", () => {
         // Advance time to wait for 3 failed requests for dialog to appear
         jest.advanceTimersByTime(11_000);
         jest.useRealTimers();
-        await waitFor(() =>
-          expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass("hidden")
-        , {timeout: 10_000});
+        await waitFor(
+          () =>
+            expect(getByTestId("reconnect-ap-dialog")).not.toHaveClass(
+              "hidden"
+            ),
+          { timeout: 10_000 }
+        );
 
         serverStatusMock.mockResolvedValue("OK");
         // Advance time and wait for dialog to dissapear
         jest.useFakeTimers();
         jest.advanceTimersByTime(1_000);
         jest.useRealTimers();
-        await waitFor(() =>
-          expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden")
-        , {timeout: 10_000});
+        await waitFor(
+          () =>
+            expect(getByTestId("reconnect-ap-dialog")).toHaveClass("hidden"),
+          { timeout: 10_000 }
+        );
 
         jest.useRealTimers();
       });
@@ -344,15 +312,8 @@ describe("App", () => {
 
     // on upgrade page
     await waitForUpgradePage();
-
-    // mock upgrade and go to registration page
-    await upgrade();
-    jest.useFakeTimers();
-    fireEvent.click(getByText("Next"));
-    jest.runOnlyPendingTimers();
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
-    await waitForRegistrationPage();
+    await waitFor(() => expect(getByText("Skip")).toBeInTheDocument());
+    fireEvent.click(getByText("Skip"));
 
     // on registration page
     await waitForRegistrationPage();
@@ -502,6 +463,7 @@ describe("App", () => {
       await waitForUpgradePage();
 
       // go back to WifiPage
+      await waitFor(() => expect(getByText("Back")).toBeInTheDocument());
       fireEvent.click(getByText("Back"));
       await waitForWifiPage();
 
@@ -528,7 +490,9 @@ describe("App", () => {
           queryReactSelect,
         } = mount(PageRoute.Wifi);
         await waitForWifiPage();
-        await waitFor(() => expect(getByText("Please select WiFi network...")).toBeInTheDocument());
+        await waitFor(() =>
+          expect(getByText("Please select WiFi network...")).toBeInTheDocument()
+        );
         fireEvent.keyDown(queryReactSelect()!, {
           keyCode: KeyCode.DownArrow,
         });
@@ -560,30 +524,22 @@ describe("App", () => {
       const {
         getByText,
         waitForUpgradePage,
-        upgrade,
         waitForRegistrationPage,
       } = mount(PageRoute.Upgrade);
       await waitForUpgradePage();
 
-      await upgrade();
-
-      jest.useFakeTimers();
-      fireEvent.click(getByText("Next"));
-      await wait();
-      jest.runOnlyPendingTimers();
-      jest.runOnlyPendingTimers();
-      jest.useRealTimers();
+      await waitFor(() => expect(getByText("Skip")).toBeInTheDocument());
+      fireEvent.click(getByText("Skip"));
       await waitForRegistrationPage();
     });
 
     it("navigates to WifiPage on back button click", async () => {
-      const { getByText, waitForUpgradePage, upgrade, waitForWifiPage } = mount(
+      const { getByText, waitForUpgradePage, waitForWifiPage } = mount(
         PageRoute.Upgrade
       );
       await waitForUpgradePage();
 
-      await upgrade();
-
+      await waitFor(() => expect(getByText("Back")).toBeInTheDocument());
       fireEvent.click(getByText("Back"));
       await waitForWifiPage();
     });
@@ -592,20 +548,14 @@ describe("App", () => {
       const {
         getByText,
         waitForUpgradePage,
-        upgrade,
         waitForRegistrationPage,
         waitForUpgradePageBanner,
       } = mount(PageRoute.Upgrade);
       await waitForUpgradePage();
-      await upgrade();
 
       // go to RegistrationPage
-      jest.useFakeTimers();
-      fireEvent.click(getByText("Next"));
-      await wait();
-      jest.runOnlyPendingTimers();
-      jest.runOnlyPendingTimers();
-      await wait();
+      await waitFor(() => expect(getByText("Skip")).toBeInTheDocument());
+      fireEvent.click(getByText("Skip"));
       await waitForRegistrationPage();
 
       // go back to UpgradePage

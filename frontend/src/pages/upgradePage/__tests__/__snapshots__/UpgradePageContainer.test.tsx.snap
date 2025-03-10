@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`UpgradePageContainer after web-portal is updated and there are no system updates renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Your system is 
+  <span
+    class="green"
+  >
+    up to date
+  </span>
+  !
+</h1>
+`;
+
 exports[`UpgradePageContainer renders prompt correctly 1`] = `
 <h1
   class="prompt"
@@ -21,6 +35,19 @@ exports[`UpgradePageContainer renders the correct banner image 1`] = `
   src="upgrade-page.png"
   style="max-height: 100%; max-width: 100%;"
 />
+`;
+
+exports[`UpgradePageContainer when sources are updated and there are no updates to the web-portal package renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  OK, I need to be 
+  <span
+    class="green"
+  >
+    updated
+  </span>
+</h1>
 `;
 
 exports[`UpgradePageContainer when sources are updated and there are updates to the web-portal package renders prompt correctly 1`] = `

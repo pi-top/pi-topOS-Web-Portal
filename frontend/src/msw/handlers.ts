@@ -6,7 +6,7 @@ let connectedNetwork: Network | undefined = undefined;
 
 export const setConnectedNetwork = (network: Network | undefined) => {
   connectedNetwork = network;
-}
+};
 
 export default [
   rest.post("/disable-landing", (_, res, ctx) => {
@@ -64,11 +64,13 @@ export default [
     return res(ctx.json(networks));
   }),
   rest.get("/wifi-connection-info", (_, res, ctx) => {
-    return res(ctx.json({
-      ssid: connectedNetwork?.ssid || "",
-      bssid: connectedNetwork?.bssid || "",
-      bssidsForSsid: [connectedNetwork?.bssid || ""],
-    }));
+    return res(
+      ctx.json({
+        ssid: connectedNetwork?.ssid || "",
+        bssid: connectedNetwork?.bssid || "",
+        bssidsForSsid: [connectedNetwork?.bssid || ""],
+      })
+    );
   }),
   rest.post<{ bssid: string; password: string }>(
     "/wifi-credentials",
@@ -97,5 +99,15 @@ export default [
   }),
   rest.get("/vnc-wifi-advanced-connection-url", (_, res, ctx) => {
     return res(ctx.json({ url: "http://localhost" }));
+  }),
+  rest.get("/should-switch-networks", (_, res, ctx) => {
+    return res(
+      ctx.json({
+        clientIp: "192.168.64.10",
+        piTopIp: "192.168.64.1",
+        shouldSwitchNetwork: false,
+        shouldDisplayDialog: false,
+      })
+    );
   }),
 ];
