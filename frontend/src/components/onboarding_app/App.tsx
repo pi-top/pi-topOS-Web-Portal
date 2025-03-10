@@ -112,6 +112,7 @@ export default () => {
           render={({ history }) => (
             <UpgradePageContainer
               isCompleted={completedPages.includes(Page.Upgrade)}
+              skipSystemUpgrade={true}
               goToPreviousPage={() => history.push(PageRoute.Wifi)}
               goToNextPage={() => {
                 addCompleted(Page.Upgrade);

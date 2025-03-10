@@ -9,7 +9,6 @@ import {
   QueryByBoundAttribute,
 } from "@testing-library/react";
 
-import { act } from "react-dom/test-utils";
 import { Server } from "mock-socket";
 
 import UpgradePageContainer, { Props } from "../UpgradePageContainer";
@@ -22,13 +21,12 @@ import axios from "axios";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 import getMajorOsUpdates from "../../../services/getMajorOsUpdates";
 import { OsVersionUpdate } from "../../../types/OsVersionUpdate";
+import { waitFor } from "../../../../test/helpers/waitFor";
 
-
-jest.mock("axios")
+jest.mock("axios");
 jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/restartWebPortalService");
 jest.mock("../../../services/getMajorOsUpdates");
-
 
 const axiosGetMock = axios.get as jest.Mock;
 const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
@@ -36,11 +34,11 @@ const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
 const getMajorOsUpdatesMock = getMajorOsUpdates as jest.Mock;
 
 type ExtendedRenderResult = RenderResult & {
-  waitForPreparation: () => Promise<HTMLElement>,
-  waitForGenericError: () => any,
-  waitForInstallingPackages: () => any,
-  waitForUpgradeFinish: () => any,
-  queryByTestId: BoundFunction<QueryByBoundAttribute>,
+  waitForPreparation: () => Promise<HTMLElement>;
+  waitForGenericError: () => any;
+  waitForInstallingPackages: () => any;
+  waitForUpgradeFinish: () => any;
+  queryByTestId: BoundFunction<QueryByBoundAttribute>;
 };
 
 let server: Server;
@@ -52,18 +50,18 @@ const createServer = () => {
   return new Server(`${wsBaseUrl}/os-upgrade`);
 };
 
-
 Object.defineProperty(window, "location", {
   writable: true,
-  value: { replace: jest.fn() }
-} );
-
+  value: { replace: jest.fn(), search: "" },
+});
 
 describe("UpgradePageContainer", () => {
   let defaultProps: Props;
   let mount: (props?: Props) => ExtendedRenderResult;
 
   beforeEach(async () => {
+    window.location.search = "";
+
     // we want to have enough space on the device by default
     getAvailableSpaceMock.mockResolvedValue(
       Messages.Size.payload.size.requiredSpace +
@@ -78,7 +76,7 @@ describe("UpgradePageContainer", () => {
       requireBurn: false,
       latestOSVersion: "",
       update: false,
-    }
+    };
 
     axiosGetMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
@@ -102,30 +100,42 @@ describe("UpgradePageContainer", () => {
         waitForPreparation: async () =>
           waitForElement(() =>
             result.getByText(
-              UpgradePageExplanation.UpgradePreparedWithDownload
-                .replace("{size}", "100 kB")
-                .replace("{time}", "a few")
+              UpgradePageExplanation.UpgradePreparedWithDownload.replace(
+                "{size}",
+                "100 kB"
+              ).replace("{time}", "a few")
             )
           ),
         waitForUpgradeFinish: async () => {
-          await Promise.all(UpgradePageExplanation.Finish
-            .replace("{continueButtonLabel}", "Next")
-            .replace("{continueButtonAction}", "continue")
-            .split("\n").map(async (text, _): Promise<any> => {
-            text && await waitForElement(() => result.getByText(text))
-          }))
+          await Promise.all(
+            UpgradePageExplanation.Finish.replace(
+              "{continueButtonLabel}",
+              "Next"
+            )
+              .replace("{continueButtonAction}", "continue")
+              .split("\n")
+              .map(async (text, _): Promise<any> => {
+                text && (await waitForElement(() => result.getByText(text)));
+              })
+          );
         },
         waitForGenericError: async () => {
-          await Promise.all(ErrorMessage.GenericError
-            .split("\n").map(async (text, _): Promise<any> => {
-            text && await waitForElement(() => result.getByText(text))
-          }))
+          await Promise.all(
+            ErrorMessage.GenericError.split("\n").map(
+              async (text, _): Promise<any> => {
+                text && (await waitForElement(() => result.getByText(text)));
+              }
+            )
+          );
         },
         waitForInstallingPackages: async () => {
-          await Promise.all(UpgradePageExplanation.InProgress
-            .split("\n").map(async (text, _): Promise<any> => {
-            text && await waitForElement(() => result.getByText(text))
-          }))
+          await Promise.all(
+            UpgradePageExplanation.InProgress.split("\n").map(
+              async (text, _): Promise<any> => {
+                text && (await waitForElement(() => result.getByText(text)));
+              }
+            )
+          );
         },
       };
     };
@@ -136,7 +146,6 @@ describe("UpgradePageContainer", () => {
     getAvailableSpaceMock.mockRestore();
     axiosGetMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockRestore();
-    server.close();
   });
 
   it("renders the correct banner image", async () => {
@@ -205,11 +214,11 @@ describe("UpgradePageContainer", () => {
       });
     });
 
-    afterEach(() => server.close());
-
     it("renders prompt correctly", async () => {
       const { getByText, container: upgradePage } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingSources)
+      );
 
       const prompt = upgradePage.querySelector(".prompt");
       expect(prompt).toMatchSnapshot();
@@ -217,9 +226,13 @@ describe("UpgradePageContainer", () => {
 
     it("renders the 'updating sources' message", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingSources)
+      );
 
-      expect(getByText(UpgradePageExplanation.UpdatingSources)).toBeInTheDocument();
+      expect(
+        getByText(UpgradePageExplanation.UpdatingSources)
+      ).toBeInTheDocument();
     });
 
     it("renders the textarea component", async () => {
@@ -245,149 +258,205 @@ describe("UpgradePageContainer", () => {
 
     it("doesn't render the Skip button", async () => {
       const { queryByText, getByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingSources)
+      );
 
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingSources)
+      );
 
-      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty(
+        "disabled",
+        true
+      );
     });
 
     it("Back button isn't present", async () => {
-      const { queryByText } = mount();
+      const { queryByText, getByText } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingSources)
+      );
 
       expect(queryByText("Back")).not.toBeInTheDocument();
     });
-
   });
 
-  describe("when sources are updated", () => {
-    describe("and there are updates to the web-portal package", () => {
-      beforeEach(async () => {
-        server = createServer();
-        server.on("connection", (socket) => {
-          socket.on("message", (data) => {
-            if (data === "update_sources") {
-              socket.send(JSON.stringify(Messages.UpdateSourcesStart));
-              socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
-              socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
-            }
+  describe("when sources are updated and there are updates to the web-portal package", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
 
-            if (data === "prepare_web_portal") {
-              socket.send(JSON.stringify(Messages.PrepareStart));
-              socket.send(JSON.stringify(Messages.PrepareFinish));
-            }
+          if (data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
 
-            if (data === "size") {
-              socket.send(JSON.stringify(Messages.Size));
-            }
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
 
-            if (data === "start") {
-              socket.send(JSON.stringify(Messages.UpgradeStart));
-              socket.send(JSON.stringify(Messages.UpgradeStatus));
-            }
+          if (data === "start") {
+            socket.send(JSON.stringify(Messages.UpgradeStart));
+            socket.send(JSON.stringify(Messages.UpgradeStatus));
+          }
 
-            if (data === "state") {
-              socket.send(JSON.stringify(Messages.StateNotBusy));
-            }
-          });
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
         });
-      });
-
-      it("renders prompt correctly", async () => {
-        const { getByText, container: upgradePage } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
-
-        const prompt = upgradePage.querySelector(".prompt");
-        expect(prompt).toMatchSnapshot();
-      });
-
-      it("renders the 'preparing your system to be updated' message", async () => {
-        const { getByText } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
-      });
-
-      it("renders the textarea component", async () => {
-        const { getByText, container: upgradePage } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
-
-        const textAreaElement = upgradePage.querySelector(".textarea");
-        expect(textAreaElement).toBeInTheDocument()
-      });
-
-      it("textarea component displays web-portal upgrade messages", async () => {
-        const { getByText, findByTestId, queryByTestId } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
-
-        await findByTestId("textarea");
-        const textAreaElement = queryByTestId("textarea");
-        expect(textAreaElement).toMatchSnapshot();
-      });
-
-      it("Update button is disabled", async () => {
-        const { getByText } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
-
-        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
       });
     });
 
-    describe("and there are no updates to the web-portal package", () => {
-      beforeEach(async () => {
-        let times = 0;
-        server = createServer();
-        server.on("connection", (socket) => {
-          socket.on("message", (data) => {
-            if (data === "update_sources") {
-              socket.send(JSON.stringify(Messages.UpdateSourcesStart));
-              socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
-              socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
-            }
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
-            if (data === "prepare_web_portal" || data === "prepare") {
-              if(times == 0) {
-                socket.send(JSON.stringify(Messages.PrepareStart));
-                socket.send(JSON.stringify(Messages.PrepareFinish));
-                times = times + 1;
-              } else {
-                socket.send(JSON.stringify(Messages.PrepareStart));
-              }
-            }
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
 
-            if (data === "size") {
-              socket.send(JSON.stringify(Messages.NoSize));
-            }
+    it("renders the 'preparing your system to be updated' message", async () => {
+      const { getByText } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
+    });
 
-            if (data === "state") {
-              socket.send(JSON.stringify(Messages.StateNotBusy));
-            }
-          });
+    it("renders the textarea component", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
+
+      await waitFor(() => {
+        const textAreaElement = upgradePage.querySelector(".textarea");
+        expect(textAreaElement).toBeInTheDocument();
+      });
+    });
+
+    it("textarea component displays web-portal upgrade messages", async () => {
+      const { getByText, findByTestId, queryByTestId } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
+
+      await findByTestId("textarea");
+      const textAreaElement = queryByTestId("textarea");
+      expect(textAreaElement).toMatchSnapshot();
+    });
+
+    it("Update button is disabled", async () => {
+      const { getByText } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
+
+      expect(getByText("Update").parentElement).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+  });
+
+  describe("when sources are updated and there are no updates to the web-portal package", () => {
+    beforeEach(async () => {
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare_web_portal") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.NoSize));
+          }
         });
       });
+    });
 
-      it("renders the 'checking size of update' message", async () => {
-        const { getByText } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
-      });
+    it("renders the 'please wait' message while restarting the web-portal service", async () => {
+      const { getByText } = mount();
+      await waitFor(() =>
+        expect(
+          getByText(UpgradePageExplanation.WaitingForServer)
+        ).toBeInTheDocument()
+      );
+    });
 
-      it("doesn't render the textarea component", async () => {
-        const { getByText, container: upgradePage } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
+    it("renders prompt correctly", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitFor(() => getByText(UpgradePageExplanation.WaitingForServer));
 
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
+    it("doesn't render the textarea component", async () => {
+      const { getByText, container: upgradePage } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.WaitingForServer)
+      );
+
+      await waitFor(() => {
         const textAreaElement = upgradePage.querySelector(".textarea");
-        expect(textAreaElement).not.toBeInTheDocument()
+        expect(textAreaElement).not.toBeInTheDocument();
       });
+    });
 
-      it("Update button is disabled", async () => {
-        const { getByText } = mount();
-        await waitForElement(() => getByText(UpgradePageExplanation.Preparing))
+    it("Update button is disabled", async () => {
+      const { getByText } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.WaitingForServer)
+      );
 
-        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
-      });
+      expect(getByText("Update").parentElement).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+
+    it("calls window.location.replace to reload the page", async () => {
+      const { getByText } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.WaitingForServer)
+      );
+      await waitFor(() =>
+        expect(window.location.replace).toHaveBeenCalledWith(
+          window.location.href + "?all"
+        )
+      );
+    });
+
+    it("calls goToNextPage if skipSystemUpgrade flag is set", async () => {
+      mount({ skipSystemUpgrade: true, ...defaultProps });
+      await waitFor(() =>
+        expect(defaultProps.goToNextPage).toHaveBeenCalled()
+      );
     });
   });
 
@@ -482,9 +551,11 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError();
 
       expect(queryByText("Retry")).toBeInTheDocument();
-      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty(
+        "disabled",
+        false
+      );
     });
-
 
     describe("and the Retry button is pressed", () => {
       beforeEach(async () => {
@@ -514,19 +585,26 @@ describe("UpgradePageContainer", () => {
         fireEvent.click(getByText("Retry"));
         await wait();
 
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
         expect(
           queryByText(UpgradePageExplanation.UpdatingSources)
         ).toBeInTheDocument();
       });
 
-
       it("renders prompt correctly", async () => {
-        const { waitForGenericError, getByText, container: upgradePage } = mount();
+        const {
+          waitForGenericError,
+          getByText,
+          container: upgradePage,
+        } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         const prompt = upgradePage.querySelector(".prompt");
         expect(prompt).toMatchSnapshot();
@@ -537,34 +615,43 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
       });
 
       it("renders the textarea component", async () => {
-        const { waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
+        const { waitForGenericError, getByText, findByTestId, queryByTestId } =
+          mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         await findByTestId("textarea");
         expect(queryByTestId("textarea")).toBeInTheDocument();
       });
 
       it("messages are displayed in the textarea component", async () => {
-        const { container: upgradePage, getByText, findByTestId, queryByTestId, waitForGenericError } = mount();
+        const { getByText, findByTestId, queryByTestId, waitForGenericError } =
+          mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
         await wait();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         await findByTestId("textarea");
-        await wait();
-        const textAreaElement = queryByTestId("textarea");
-        expect(textAreaElement).toMatchSnapshot();
+        await waitFor(() => {
+          const textAreaElement = queryByTestId("textarea");
+          expect(textAreaElement).toMatchSnapshot();
+        });
       });
 
       it("doesn't render the 'preparing updates' message", async () => {
@@ -572,7 +659,9 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         expect(
           queryByText(UpgradePageExplanation.Preparing)
@@ -584,7 +673,9 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         expect(queryByText("Skip")).not.toBeInTheDocument();
       });
@@ -594,7 +685,9 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         expect(queryByText("Back")).not.toBeInTheDocument();
       });
@@ -604,7 +697,9 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         expect(queryByText("Update")).toBeInTheDocument();
       });
@@ -614,12 +709,17 @@ describe("UpgradePageContainer", () => {
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         await waitForElement(() => getByText("Update"));
-        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+        expect(getByText("Update").parentElement).toHaveProperty(
+          "disabled",
+          true
+        );
       });
-    })
+    });
   });
 
   describe("while updating web-portal", () => {
@@ -656,7 +756,9 @@ describe("UpgradePageContainer", () => {
 
     it("renders prompt correctly", async () => {
       const { getByText, container: upgradePage } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
       const prompt = upgradePage.querySelector(".prompt");
       expect(prompt).toMatchSnapshot();
@@ -664,12 +766,16 @@ describe("UpgradePageContainer", () => {
 
     it("renders the updating web-portal message", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
     });
 
     it("renders the textarea component", async () => {
       const { getByText, findByTestId, queryByTestId } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
       await findByTestId("textarea");
       expect(queryByTestId("textarea")).toBeInTheDocument();
@@ -677,7 +783,9 @@ describe("UpgradePageContainer", () => {
 
     it("textarea component displays web-portal upgrade messages", async () => {
       const { getByText, findByTestId, queryByTestId } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
       await findByTestId("textarea");
       const textAreaElement = queryByTestId("textarea");
@@ -686,32 +794,42 @@ describe("UpgradePageContainer", () => {
 
     it("Update button is present", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
       expect(queryByText("Update")).toBeInTheDocument();
     });
 
     it("Update button is disabled", async () => {
       const { getByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal))
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty(
+        "disabled",
+        true
+      );
     });
 
     it("Skip button is not present", async () => {
       const { getByText, queryByText } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal));
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingWebPortal)
+      );
 
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
-
   });
 
   describe("when updating web-portal succeeds", () => {
     beforeEach(async () => {
       // we expect restartWebPortalService to fail since the backend server restarts
-      restartWebPortalServiceMock.mockRejectedValue(new Error("backend server restarted"));
+      restartWebPortalServiceMock.mockRejectedValue(
+        new Error("backend server restarted")
+      );
       axiosGetMock.mockResolvedValue("OK");
 
       server = createServer();
@@ -744,11 +862,16 @@ describe("UpgradePageContainer", () => {
       });
     });
 
-    afterEach(() => server.close());
-
     it("probes backend server to determine if its online", async () => {
-      const { queryByText, queryByTestId, getByText, container: upgradePage } = mount();
-      await waitForElement(() => getByText(UpgradePageExplanation.WaitingForServer))
+      const {
+        queryByText,
+        queryByTestId,
+        getByText,
+        container: upgradePage,
+      } = mount();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.WaitingForServer)
+      );
 
       expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
 
@@ -758,18 +881,16 @@ describe("UpgradePageContainer", () => {
       const prompt = upgradePage.querySelector(".prompt");
       expect(prompt).toMatchSnapshot();
 
-      expect(queryByTestId("textarea")).not.toBeInTheDocument();
+      await waitFor(() => expect(queryByTestId("textarea")).not.toBeInTheDocument());
 
-      expect(querySpinner(upgradePage)).toBeInTheDocument();
+      await waitFor(() => expect(querySpinner(upgradePage)).toBeInTheDocument());
 
       await wait(() => expect(window.location.replace).toHaveBeenCalled());
     });
-
   });
 
   describe("when updating web-portal fails", () => {
     beforeEach(async () => {
-      server = createServer();
       let times = 0;
       server = createServer();
       server.on("connection", (socket) => {
@@ -846,7 +967,10 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError();
 
       expect(queryByText("Retry")).toBeInTheDocument();
-      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty(
+        "disabled",
+        false
+      );
     });
 
     it("renders the textarea component", async () => {
@@ -858,7 +982,11 @@ describe("UpgradePageContainer", () => {
 
     describe("and the Retry button is pressed", () => {
       it("renders prompt correctly", async () => {
-        const { waitForGenericError, getByText, container: upgradePage } = mount();
+        const {
+          waitForGenericError,
+          getByText,
+          container: upgradePage,
+        } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
@@ -873,8 +1001,12 @@ describe("UpgradePageContainer", () => {
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
 
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
-        expect(queryByText(UpgradePageExplanation.UpdatingSources)).toBeInTheDocument();
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
+        expect(
+          queryByText(UpgradePageExplanation.UpdatingSources)
+        ).toBeInTheDocument();
       });
 
       it("doesn't render the error message", async () => {
@@ -883,28 +1015,36 @@ describe("UpgradePageContainer", () => {
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
 
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
         expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
       });
 
       it("renders the textarea component", async () => {
-        const { waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
+        const { waitForGenericError, getByText, findByTestId, queryByTestId } =
+          mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
 
         await findByTestId("textarea");
         expect(queryByTestId("textarea")).toBeInTheDocument();
       });
 
       it("messages are displayed in the textarea component", async () => {
-        const { waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
+        const { waitForGenericError, getByText, findByTestId, queryByTestId } =
+          mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
         await wait();
-        await waitForElement(() => getByText(UpgradePageExplanation.UpdatingSources));
+        await waitForElement(() =>
+          getByText(UpgradePageExplanation.UpdatingSources)
+        );
         await wait();
 
         await waitForElement(() => findByTestId("textarea"));
@@ -946,18 +1086,152 @@ describe("UpgradePageContainer", () => {
         fireEvent.click(getByText("Retry"));
 
         await waitForElement(() => getByText("Update"));
-        expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+        expect(getByText("Update").parentElement).toHaveProperty(
+          "disabled",
+          true
+        );
       });
-    })
-
+    });
   });
 
-  // describe("when updating web-portal succeeds and there are system updates", () => {
-  // describe("when updating web-portal succeeds and there are no system updates", () => {
+  describe("after web-portal is updated", () => {
+    beforeEach(async () => {
+      window.location.search = "?all";
+
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+          if (data === "size") {
+            socket.send(JSON.stringify(Messages.Size));
+          }
+        });
+      });
+    });
+
+    it("calls goToNextPage when skipSystemUpgrade is true", async () => {
+      mount({
+        ...defaultProps,
+        skipSystemUpgrade: true,
+      });
+      await waitFor(() => expect(defaultProps.goToNextPage).toHaveBeenCalled());
+    });
+
+    it("checks for system updates when skipSystemUpgrade is false", async () => {
+      const { waitForPreparation } = mount({
+        ...defaultProps,
+        skipSystemUpgrade: false,
+      });
+      await waitForPreparation();
+      expect(defaultProps.goToNextPage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("after web-portal is updated and there are no system updates", () => {
+    beforeEach(async () => {
+      window.location.search = "?all";
+
+      server = createServer();
+      server.on("connection", (socket) => {
+        socket.on("message", (data) => {
+          if (data === "state") {
+            socket.send(JSON.stringify(Messages.StateNotBusy));
+          }
+          if (data === "update_sources") {
+            socket.send(JSON.stringify(Messages.UpdateSourcesStart));
+            socket.send(JSON.stringify(Messages.UpdateSourcesStatus));
+            socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
+          }
+
+          if (data === "prepare") {
+            socket.send(JSON.stringify(Messages.PrepareStart));
+            socket.send(JSON.stringify(Messages.PrepareFinish));
+          }
+
+          if (data === "size") {
+            // no updates are available
+            socket.send(JSON.stringify(Messages.NoSize));
+          }
+        });
+      });
+    });
+
+    it("calls goToNextPage when skipSystemUpgrade is true", async () => {
+      mount({
+        ...defaultProps,
+        skipSystemUpgrade: true,
+      });
+      await waitFor(() => expect(defaultProps.goToNextPage).toHaveBeenCalled());
+    });
+
+    it("renders prompt correctly", async () => {
+      const { waitForUpgradeFinish, container: upgradePage } = mount();
+      await waitForUpgradeFinish();
+
+      const prompt = upgradePage.querySelector(".prompt");
+      expect(prompt).toMatchSnapshot();
+    });
+
+    it("doesn't render the progress bar", async () => {
+      const { waitForUpgradeFinish, container: upgradePage } = mount();
+      await waitForUpgradeFinish();
+
+      expect(upgradePage.querySelector(".progress")).not.toBeInTheDocument();
+    });
+
+    it("doesn't render the textarea component", async () => {
+      const { waitForUpgradeFinish, queryByTestId } = mount();
+      await waitForUpgradeFinish();
+
+      expect(queryByTestId("textarea")).not.toBeInTheDocument();
+    });
+
+    it("Next button is present", async () => {
+      const { getByText, waitForUpgradeFinish } = mount();
+      await waitForUpgradeFinish();
+
+      expect(getByText("Next")).toBeInTheDocument();
+    });
+
+    it("pressing the Next button calls goToNextPage", async () => {
+      const { getByText, waitForUpgradeFinish } = mount();
+      await waitForUpgradeFinish();
+
+      fireEvent.click(getByText("Next"));
+
+      expect(defaultProps.goToNextPage).toHaveBeenCalled();
+    });
+
+    it("Back button is rendered", async () => {
+      const { getByText, waitForUpgradeFinish } = mount();
+      await waitForUpgradeFinish();
+
+      expect(getByText("Back")).toBeInTheDocument();
+    });
+
+    it("Skip button is not present", async () => {
+      const { queryByText, waitForUpgradeFinish } = mount();
+      await waitForUpgradeFinish();
+
+      expect(queryByText("Skip")).not.toBeInTheDocument();
+    });
+  });
 
   describe("when the system is being updated", () => {
     beforeEach(async () => {
-      let times = 0;
+      window.location.search = "?all";
+
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
@@ -976,12 +1250,7 @@ describe("UpgradePageContainer", () => {
           }
 
           if (data === "size") {
-            if (times == 0) {
-              socket.send(JSON.stringify(Messages.NoSize));
-              times = times + 1;
-            } else {
-              socket.send(JSON.stringify(Messages.Size));
-            }
+            socket.send(JSON.stringify(Messages.Size));
           }
 
           if (data === "start") {
@@ -1002,7 +1271,8 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the 'upgrade is in progress' message", async () => {
-      const { getByText, waitForPreparation, waitForInstallingPackages } = mount();
+      const { getByText, waitForPreparation, waitForInstallingPackages } =
+        mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
@@ -1018,7 +1288,8 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const { waitForPreparation, getByText, findByTestId, queryByTestId } =
+        mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
@@ -1027,7 +1298,8 @@ describe("UpgradePageContainer", () => {
     });
 
     it("messages are displayed in the textarea component", async () => {
-      const { waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const { waitForPreparation, getByText, findByTestId, queryByTestId } =
+        mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
@@ -1037,17 +1309,26 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Update button is disabled", async () => {
-      const { getByText, waitForPreparation, waitForInstallingPackages } = mount();
+      const { getByText, waitForPreparation, waitForInstallingPackages } =
+        mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForInstallingPackages();
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty(
+        "disabled",
+        true
+      );
     });
 
     it("Back button is not rendered", async () => {
-      const { getByText, queryByText, waitForInstallingPackages, waitForPreparation } = mount();
+      const {
+        getByText,
+        queryByText,
+        waitForInstallingPackages,
+        waitForPreparation,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForInstallingPackages();
@@ -1064,7 +1345,8 @@ describe("UpgradePageContainer", () => {
 
   describe("when the system upgrade fails", () => {
     beforeEach(async () => {
-      let times = 0;
+      window.location.search = "?all";
+
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
@@ -1077,35 +1359,31 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
           }
 
-          if (data === "prepare" || data === "prepare_web_portal") {
+          if (data === "prepare") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
 
           if (data === "size") {
-            if (times == 0) {
-              socket.send(JSON.stringify(Messages.NoSize));
-              times = times + 1;
-            } else {
-              socket.send(JSON.stringify(Messages.Size));
-            }
-
+            socket.send(JSON.stringify(Messages.Size));
           }
 
           if (data === "start") {
             socket.send(JSON.stringify(Messages.UpgradeStart));
             socket.send(JSON.stringify(Messages.UpgradeStatus));
-            if (times == 1) {
-              socket.send(JSON.stringify(Messages.UpgradeError));
-              times = times + 1;
-            }
+            socket.send(JSON.stringify(Messages.UpgradeError));
           }
         });
       });
     });
 
     it("renders prompt correctly", async () => {
-      const { waitForGenericError, container: upgradePage, getByText, waitForPreparation } = mount();
+      const {
+        waitForGenericError,
+        container: upgradePage,
+        getByText,
+        waitForPreparation,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
 
@@ -1124,19 +1402,33 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't render the 'is upgrading' message", async () => {
-      const { getByText, waitForPreparation, waitForGenericError, queryByText } = mount();
+      const {
+        getByText,
+        waitForPreparation,
+        waitForGenericError,
+        queryByText,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForGenericError();
 
-      await Promise.all(UpgradePageExplanation.InProgress
-        .split("\n").map(async (text, _): Promise<any> => {
-        text && expect(queryByText(text)).not.toBeInTheDocument()
-      }))
+      await Promise.all(
+        UpgradePageExplanation.InProgress.split("\n").map(
+          async (text, _): Promise<any> => {
+            text && expect(queryByText(text)).not.toBeInTheDocument();
+          }
+        )
+      );
     });
 
     it("renders the textarea component", async () => {
-      const { waitForPreparation, waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
+      const {
+        waitForPreparation,
+        waitForGenericError,
+        getByText,
+        findByTestId,
+        queryByTestId,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForGenericError();
@@ -1146,7 +1438,13 @@ describe("UpgradePageContainer", () => {
     });
 
     it("messages are displayed in the textarea component", async () => {
-      const { waitForPreparation, waitForGenericError, getByText, findByTestId, queryByTestId } = mount();
+      const {
+        waitForPreparation,
+        waitForGenericError,
+        getByText,
+        findByTestId,
+        queryByTestId,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForGenericError();
@@ -1188,7 +1486,12 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Update button isn't present", async () => {
-      const { waitForGenericError, queryByText, getByText, waitForPreparation } = mount();
+      const {
+        waitForGenericError,
+        queryByText,
+        getByText,
+        waitForPreparation,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForGenericError();
@@ -1197,7 +1500,12 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Retry button is present", async () => {
-      const { waitForGenericError, queryByText, getByText, waitForPreparation } = mount();
+      const {
+        waitForGenericError,
+        queryByText,
+        getByText,
+        waitForPreparation,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForGenericError();
@@ -1213,7 +1521,10 @@ describe("UpgradePageContainer", () => {
       await waitForGenericError();
 
       await waitForElement(() => getByText("Retry"));
-      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty(
+        "disabled",
+        false
+      );
     });
 
     it("restarts the update process when Retry button is pressed", async () => {
@@ -1224,14 +1535,19 @@ describe("UpgradePageContainer", () => {
       await waitForElement(() => getByText("Retry"));
       fireEvent.click(getByText("Retry"));
 
-      await waitForElement(() => getByText(UpgradePageExplanation.UpdatingWebPortal));
-      expect(getByText(UpgradePageExplanation.UpdatingWebPortal)).toBeInTheDocument();
+      await waitForElement(() =>
+        getByText(UpgradePageExplanation.UpdatingSources)
+      );
+      expect(
+        getByText(UpgradePageExplanation.UpdatingSources)
+      ).toBeInTheDocument();
     });
   });
 
   describe("when the upgrade finishes", () => {
     beforeEach(() => {
-      let times = 0;
+      window.location.search = "?all";
+
       server = createServer();
       server.on("connection", (socket) => {
         socket.on("message", (data) => {
@@ -1244,19 +1560,13 @@ describe("UpgradePageContainer", () => {
             socket.send(JSON.stringify(Messages.UpdateSourcesFinish));
           }
 
-          if (data === "prepare" || data === "prepare_web_portal") {
+          if (data === "prepare") {
             socket.send(JSON.stringify(Messages.PrepareStart));
             socket.send(JSON.stringify(Messages.PrepareFinish));
           }
 
           if (data === "size") {
-            if (times == 0) {
-              socket.send(JSON.stringify(Messages.NoSize));
-              times = times + 1;
-            } else {
-              socket.send(JSON.stringify(Messages.Size));
-            }
-
+            socket.send(JSON.stringify(Messages.Size));
           }
 
           if (data === "start") {
@@ -1271,11 +1581,15 @@ describe("UpgradePageContainer", () => {
       jest.useRealTimers();
       restartWebPortalServiceMock.mockRestore();
       axiosGetMock.mockResolvedValue("OK");
-      server.close();
     });
 
     it("renders prompt correctly", async () => {
-      const { container: upgradePage, getByText, waitForPreparation, waitForUpgradeFinish } = mount();
+      const {
+        container: upgradePage,
+        getByText,
+        waitForPreparation,
+        waitForUpgradeFinish,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
@@ -1292,7 +1606,12 @@ describe("UpgradePageContainer", () => {
     });
 
     it("doesn't render the progress bar", async () => {
-      const { getByText, waitForPreparation, waitForUpgradeFinish, container: upgradePage } = mount();
+      const {
+        getByText,
+        waitForPreparation,
+        waitForUpgradeFinish,
+        container: upgradePage,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
@@ -1301,7 +1620,13 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the textarea component", async () => {
-      const { waitForUpgradeFinish, waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const {
+        waitForUpgradeFinish,
+        waitForPreparation,
+        getByText,
+        findByTestId,
+        queryByTestId,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
@@ -1311,7 +1636,13 @@ describe("UpgradePageContainer", () => {
     });
 
     it("messages are displayed in the textarea component", async () => {
-      const { waitForUpgradeFinish, waitForPreparation, getByText, findByTestId, queryByTestId } = mount();
+      const {
+        waitForUpgradeFinish,
+        waitForPreparation,
+        getByText,
+        findByTestId,
+        queryByTestId,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
@@ -1322,7 +1653,12 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Upgrade button is not present", async () => {
-      const { getByText, waitForPreparation, waitForUpgradeFinish, queryByText } = mount();
+      const {
+        getByText,
+        waitForPreparation,
+        waitForUpgradeFinish,
+        queryByText,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
@@ -1331,7 +1667,12 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Next button is present", async () => {
-      const { getByText, waitForPreparation, waitForUpgradeFinish, queryByText } = mount();
+      const {
+        getByText,
+        waitForPreparation,
+        waitForUpgradeFinish,
+        queryByText,
+      } = mount();
       await waitForPreparation();
       fireEvent.click(getByText("Update"));
       await waitForUpgradeFinish();
@@ -1358,10 +1699,8 @@ describe("UpgradePageContainer", () => {
 
       fireEvent.click(getByText("Next"));
       await wait();
-      act(() => {
-        jest.runOnlyPendingTimers();
-        jest.runOnlyPendingTimers();
-      })
+      jest.runOnlyPendingTimers();
+      jest.runOnlyPendingTimers();
       await wait();
       expect(restartWebPortalServiceMock).not.toHaveBeenCalled();
     });
@@ -1385,11 +1724,12 @@ describe("UpgradePageContainer", () => {
       fireEvent.click(getByText("Back"));
       expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
     });
-
   });
 
   describe("when there's not enough space left on device", () => {
     beforeEach(async () => {
+      window.location.search = "?all";
+
       getAvailableSpaceMock.mockResolvedValue(
         Messages.Size.payload.size.requiredSpace +
           Messages.Size.payload.size.downloadSize -
@@ -1398,7 +1738,6 @@ describe("UpgradePageContainer", () => {
 
       server = createServer();
       server.on("connection", (socket) => {
-        let times = 0;
         socket.on("message", (data) => {
           if (data === "state") {
             socket.send(JSON.stringify(Messages.StateNotBusy));
@@ -1415,12 +1754,7 @@ describe("UpgradePageContainer", () => {
           }
 
           if (data === "size") {
-            if (times == 0) {
-              socket.send(JSON.stringify(Messages.NoSize));
-              times = times + 1;
-            } else {
-              socket.send(JSON.stringify(Messages.Size));
-            }
+            socket.send(JSON.stringify(Messages.Size));
           }
         });
       });
@@ -1459,7 +1793,10 @@ describe("UpgradePageContainer", () => {
       const { getByText } = mount();
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+      expect(getByText("Update").parentElement).toHaveProperty(
+        "disabled",
+        true
+      );
     });
   });
 
@@ -1501,19 +1838,19 @@ describe("UpgradePageContainer", () => {
     it("renders the error message", async () => {
       const { waitForGenericError, getByText } = mount();
 
-      await waitForGenericError()
+      await waitForGenericError();
     });
 
     it("Skip button exists", async () => {
       const { waitForGenericError, getByText } = mount();
-      await waitForGenericError()
+      await waitForGenericError();
 
       await waitForElement(() => getByText("Skip"));
     });
 
     it("calls goToNextPage when Skip button clicked", async () => {
       const { waitForGenericError, getByText } = mount();
-      await waitForGenericError()
+      await waitForGenericError();
 
       await waitForElement(() => getByText("Skip"));
       fireEvent.click(getByText("Skip"));
@@ -1523,17 +1860,20 @@ describe("UpgradePageContainer", () => {
 
     it("Update button isn't present", async () => {
       const { waitForGenericError, queryByText } = mount();
-      await waitForGenericError()
+      await waitForGenericError();
 
       expect(queryByText("Update")).not.toBeInTheDocument();
     });
 
     it("Retry button is present", async () => {
       const { waitForGenericError, queryByText, getByText } = mount();
-      await waitForGenericError()
+      await waitForGenericError();
 
       expect(queryByText("Retry")).toBeInTheDocument();
-      expect(getByText("Retry").parentElement).toHaveProperty("disabled", false);
+      expect(getByText("Retry").parentElement).toHaveProperty(
+        "disabled",
+        false
+      );
     });
   });
 
@@ -1574,35 +1914,40 @@ describe("UpgradePageContainer", () => {
         requireBurn: false,
         latestOSVersion: "",
         update: false,
-      }
+      };
       axiosGetMock.mockResolvedValue("OK");
       restartWebPortalServiceMock.mockResolvedValue("OK");
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
     it("shows the OS version update dialog", async () => {
-      const { queryByTestId, waitForPreparation } = mount();
-      await waitForPreparation();
+      const { queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+      await waitFor(() =>
+        expect(queryByTestId("dialog")).not.toHaveClass("hidden")
+      );
     });
 
-    it("hides the dialog on Close click", async() => {
-      const { queryByTestId, waitForPreparation, getByText } = mount();
-      await waitForPreparation();
+    it("hides the dialog on Close click", async () => {
+      const { queryByTestId, getByText } = mount();
+
+      await waitFor(() =>
+        expect(queryByTestId("dialog")).not.toHaveClass("hidden")
+      );
+
       fireEvent.click(getByText("Close"));
 
-      expect(queryByTestId("dialog")).toHaveClass("hidden");
+      await waitFor(() =>
+        expect(queryByTestId("dialog")).toHaveClass("hidden")
+      );
     });
 
     it("renders the correct message", async () => {
-      const { waitForPreparation, queryByTestId } = mount();
-      await waitForPreparation();
+      const { queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).toMatchSnapshot();
+      await waitFor(() => expect(queryByTestId("dialog")).toMatchSnapshot());
     });
-
-  })
+  });
 
   describe("when there are major OS updates available and user 'requireBurn'", () => {
     beforeEach(async () => {
@@ -1641,34 +1986,36 @@ describe("UpgradePageContainer", () => {
         requireBurn: true,
         latestOSVersion: "",
         update: false,
-      }
+      };
       axiosGetMock.mockResolvedValue("OK");
       restartWebPortalServiceMock.mockResolvedValue("OK");
       getMajorOsUpdatesMock.mockResolvedValue(osUpdatesResponse);
     });
 
     it("shows the OS version update dialog", async () => {
-      const { waitForPreparation, queryByTestId } = mount();
-      await waitForPreparation();
+      const { queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).not.toHaveClass("hidden");
+      await waitFor(() =>
+        expect(queryByTestId("dialog")).not.toHaveClass("hidden")
+      );
     });
 
-    it("hides the dialog on Close click", async() => {
-      const { waitForPreparation, getByText, queryByTestId } = mount();
-      await waitForPreparation();
+    it("hides the dialog on Close click", async () => {
+      const { getByText, queryByTestId } = mount();
+      await waitFor(() =>
+        expect(queryByTestId("dialog")).not.toHaveClass("hidden")
+      );
       fireEvent.click(getByText("Close"));
 
       expect(queryByTestId("dialog")).toHaveClass("hidden");
     });
 
     it("renders the correct message", async () => {
-      const { waitForPreparation, queryByTestId } = mount();
-      await waitForPreparation();
+      const { queryByTestId } = mount();
 
-      expect(queryByTestId("dialog")).toMatchSnapshot();
+      await waitFor(() => expect(queryByTestId("dialog")).toMatchSnapshot());
     });
-  })
+  });
 
   describe("when checking for major OS updates fails", () => {
     beforeEach(async () => {
@@ -1712,5 +2059,5 @@ describe("UpgradePageContainer", () => {
 
       expect(queryByTestId("dialog")).toHaveClass("hidden");
     });
-  })
+  });
 });
