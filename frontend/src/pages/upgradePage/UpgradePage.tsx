@@ -108,7 +108,7 @@ export default ({
     }
     return (
       <>
-        OK, I need to be <span className="green">updated</span>
+        OK, checking for <span className="green">updates</span>
       </>
     );
   };
@@ -171,24 +171,13 @@ export default ({
 
   const showNextButton =
     (hasError() && error !== ErrorType.UpdaterAlreadyRunning) ||
-    updateState !== UpdateState.Finished ||
-    !!onNextClick;
+    (updateState === UpdateState.Finished && !!onNextClick) ||
+    updateState === UpdateState.WaitingForUserInput;
   const nextButtonLabel = hasError()
     ? "Retry"
     : updateState !== UpdateState.Finished
     ? "Update"
     : "Next";
-  const nextButtonDisabledStates = [
-    UpdateState.WaitingForServer,
-    UpdateState.None,
-    UpdateState.UpdatingSources,
-    UpdateState.PreparingSystemUpgrade,
-    UpdateState.PreparingWebPortal,
-    UpdateState.UpgradingSystem,
-    UpdateState.UpgradingWebPortal,
-    UpdateState.Connect,
-    UpdateState.Reattaching,
-  ];
   const backButtonDisabledStates = [
     UpdateState.UpdatingSources,
     UpdateState.UpgradingSystem,
@@ -226,8 +215,6 @@ export default ({
         nextButton={{
           onClick: onNextButtonClick,
           label: nextButtonLabel,
-          disabled:
-            !hasError() && nextButtonDisabledStates.includes(updateState),
           hidden: !showNextButton,
         }}
         skipButton={{ onClick: onSkipClick }}
