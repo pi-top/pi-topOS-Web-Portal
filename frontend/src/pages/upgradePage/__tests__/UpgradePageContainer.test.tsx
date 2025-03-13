@@ -39,6 +39,7 @@ type ExtendedRenderResult = RenderResult & {
   waitForInstallingPackages: () => any;
   waitForUpgradeFinish: () => any;
   queryByTestId: BoundFunction<QueryByBoundAttribute>;
+  waitForNotEnoughSpaceError: () => any;
 };
 
 let server: Server;
@@ -128,6 +129,15 @@ describe("UpgradePageContainer", () => {
             )
           );
         },
+        waitForNotEnoughSpaceError: async () => {
+          await Promise.all(
+            ErrorMessage.NoSpaceAvailable.split("\n").map(
+              async (text, _): Promise<any> => {
+                text && (await waitForElement(() => result.getByText(text)));
+              }
+            )
+          );
+        },
         waitForInstallingPackages: async () => {
           await Promise.all(
             UpgradePageExplanation.InProgress.split("\n").map(
@@ -168,10 +178,10 @@ describe("UpgradePageContainer", () => {
     expect(getByText("Update")).toBeInTheDocument();
   });
 
-  it("Update button is disabled", async () => {
+  it("Update button is hidden", async () => {
     const { getByText } = mount();
 
-    expect(getByText("Update").parentElement).toHaveProperty("disabled", true);
+    expect(getByText("Update").parentElement).toHaveClass("hidden");
   });
 
   it("Back button isn't present", async () => {
@@ -265,16 +275,13 @@ describe("UpgradePageContainer", () => {
       expect(queryByText("Skip")).not.toBeInTheDocument();
     });
 
-    it("Update button is disabled", async () => {
+    it("Update button is hidden", async () => {
       const { getByText } = mount();
       await waitForElement(() =>
         getByText(UpgradePageExplanation.UpdatingSources)
       );
 
-      expect(getByText("Update").parentElement).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(getByText("Update").parentElement).toHaveClass("hidden");
     });
 
     it("Back button isn't present", async () => {
@@ -359,16 +366,13 @@ describe("UpgradePageContainer", () => {
       expect(textAreaElement).toMatchSnapshot();
     });
 
-    it("Update button is disabled", async () => {
+    it("Update button is hidden", async () => {
       const { getByText } = mount();
       await waitForElement(() =>
         getByText(UpgradePageExplanation.UpdatingWebPortal)
       );
 
-      expect(getByText("Update").parentElement).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(getByText("Update").parentElement).toHaveClass("hidden");
     });
   });
 
@@ -428,16 +432,13 @@ describe("UpgradePageContainer", () => {
       });
     });
 
-    it("Update button is disabled", async () => {
+    it("Update button is hidden", async () => {
       const { getByText } = mount();
       await waitForElement(() =>
         getByText(UpgradePageExplanation.WaitingForServer)
       );
 
-      expect(getByText("Update").parentElement).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(getByText("Update").parentElement).toHaveClass("hidden");
     });
 
     it("calls window.location.replace to reload the page", async () => {
@@ -692,8 +693,8 @@ describe("UpgradePageContainer", () => {
         expect(queryByText("Back")).not.toBeInTheDocument();
       });
 
-      it("Update button is present", async () => {
-        const { waitForGenericError, getByText, queryByText } = mount();
+      it("Retry button isn't rendered", async () => {
+        const { queryByText, waitForGenericError, getByText } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
@@ -701,10 +702,10 @@ describe("UpgradePageContainer", () => {
           getByText(UpgradePageExplanation.UpdatingSources)
         );
 
-        expect(queryByText("Update")).toBeInTheDocument();
+        expect(queryByText("Retry")).not.toBeInTheDocument();
       });
 
-      it("Update button is disabled", async () => {
+      it("Update button is hidden", async () => {
         const { waitForGenericError, getByText } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
@@ -714,10 +715,7 @@ describe("UpgradePageContainer", () => {
         );
 
         await waitForElement(() => getByText("Update"));
-        expect(getByText("Update").parentElement).toHaveProperty(
-          "disabled",
-          true
-        );
+        expect(getByText("Update").parentElement).toHaveClass("hidden");
       });
     });
   });
@@ -792,26 +790,14 @@ describe("UpgradePageContainer", () => {
       expect(textAreaElement).toMatchSnapshot();
     });
 
-    it("Update button is present", async () => {
-      const { getByText, queryByText } = mount();
-      await waitForElement(() =>
-        getByText(UpgradePageExplanation.UpdatingWebPortal)
-      );
-
-      expect(queryByText("Update")).toBeInTheDocument();
-    });
-
-    it("Update button is disabled", async () => {
+    it("Update button is hidden", async () => {
       const { getByText } = mount();
       await waitForElement(() =>
         getByText(UpgradePageExplanation.UpdatingWebPortal)
       );
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(getByText("Update").parentElement).toHaveClass("hidden");
     });
 
     it("Skip button is not present", async () => {
@@ -876,7 +862,7 @@ describe("UpgradePageContainer", () => {
       expect(queryByText(ErrorMessage.GenericError)).not.toBeInTheDocument();
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toBeDisabled();
+      expect(getByText("Update").parentElement).toHaveClass("hidden");
 
       const prompt = upgradePage.querySelector(".prompt");
       expect(prompt).toMatchSnapshot();
@@ -1070,26 +1056,23 @@ describe("UpgradePageContainer", () => {
         expect(queryByText("Back")).not.toBeInTheDocument();
       });
 
-      it("Update button is present", async () => {
+      it("Retry button isn't rendered", async () => {
         const { waitForGenericError, getByText, queryByText } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
 
-        expect(queryByText("Update")).toBeInTheDocument();
+        expect(queryByText("Retry")).not.toBeInTheDocument();
       });
 
-      it("Update button is disabled", async () => {
+      it("Update button is hidden", async () => {
         const { waitForGenericError, getByText } = mount();
         await waitForGenericError();
         await waitForElement(() => getByText("Retry"));
         fireEvent.click(getByText("Retry"));
 
         await waitForElement(() => getByText("Update"));
-        expect(getByText("Update").parentElement).toHaveProperty(
-          "disabled",
-          true
-        );
+        expect(getByText("Update").parentElement).toHaveClass("hidden");
       });
     });
   });
@@ -1308,7 +1291,7 @@ describe("UpgradePageContainer", () => {
       expect(textAreaElement).toMatchSnapshot();
     });
 
-    it("Update button is disabled", async () => {
+    it("Update button is hidden", async () => {
       const { getByText, waitForPreparation, waitForInstallingPackages } =
         mount();
       await waitForPreparation();
@@ -1316,10 +1299,7 @@ describe("UpgradePageContainer", () => {
       await waitForInstallingPackages();
 
       await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(getByText("Update").parentElement).toHaveClass("hidden");
     });
 
     it("Back button is not rendered", async () => {
@@ -1775,13 +1755,15 @@ describe("UpgradePageContainer", () => {
     });
 
     it("Skip button exists", async () => {
-      const { getByText } = mount();
+      const { waitForNotEnoughSpaceError, getByText } = mount();
+      await waitForNotEnoughSpaceError();
 
       await waitForElement(() => getByText("Skip"));
     });
 
     it("calls goToNextPage when Skip button clicked", async () => {
-      const { getByText } = mount();
+      const { waitForNotEnoughSpaceError, getByText } = mount();
+      await waitForNotEnoughSpaceError();
 
       await waitForElement(() => getByText("Skip"));
       fireEvent.click(getByText("Skip"));
@@ -1789,15 +1771,21 @@ describe("UpgradePageContainer", () => {
       expect(defaultProps.goToNextPage).toHaveBeenCalled();
     });
 
-    it("Update button is disabled", async () => {
-      const { getByText } = mount();
+    it("Update button isn't present", async () => {
+      const { waitForNotEnoughSpaceError, queryByText } = mount();
+      await waitForNotEnoughSpaceError();
 
-      await waitForElement(() => getByText("Update"));
-      expect(getByText("Update").parentElement).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(queryByText("Update")).not.toBeInTheDocument();
     });
+
+    it("Retry button is present", async () => {
+      const { waitForNotEnoughSpaceError, getByText } = mount();
+      await waitForNotEnoughSpaceError();
+
+      await waitForElement(() => getByText("Retry"));
+      expect(getByText("Retry")).toBeInTheDocument();
+    });
+
   });
 
   describe("when unable to get available space", () => {
@@ -1836,7 +1824,7 @@ describe("UpgradePageContainer", () => {
     });
 
     it("renders the error message", async () => {
-      const { waitForGenericError, getByText } = mount();
+      const { waitForGenericError } = mount();
 
       await waitForGenericError();
     });
