@@ -35,6 +35,9 @@ Depends:
 # Advanced Wi-Fi configuration over VNC
  wpagui,
  network-manager-gnome,
+# Other pi-top dependencies
+ pi-topd,
+ pt-firmware-updater,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
