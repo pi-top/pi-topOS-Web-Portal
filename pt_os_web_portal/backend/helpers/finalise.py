@@ -8,8 +8,10 @@ from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
 from pitop.common.sys_info import (
     InterfaceNetworkData,
+    NetworkInterface,
     get_address_for_ptusb_connected_device,
     get_internal_ip,
+    interface_is_up,
 )
 from pitop.system import device_type
 from pt_fw_updater.core.firmware_updater import PTInvalidFirmwareFile
@@ -193,13 +195,15 @@ def should_switch_network(request) -> Dict:
         client_ip = client_ip.ipv4_mapped  # type: ignore
 
     pi_top_non_ap_ip = get_non_ap_ip()
-    wlan_ap0_iface = InterfaceNetworkData("wlan_ap0")
-    client_is_in_ap_network = client_ip in wlan_ap0_iface.network
+    pi_top_ip = pi_top_non_ap_ip
     is_connected_only_through_ap = len(pi_top_non_ap_ip) == 0
 
-    pi_top_ip = pi_top_non_ap_ip
-    if len(pi_top_ip) == 0:
-        pi_top_ip = wlan_ap0_iface.ip.exploded
+    client_is_in_ap_network = False
+    if interface_is_up(NetworkInterface.wlan_ap0.name):
+        wlan_ap0_iface = InterfaceNetworkData(NetworkInterface.wlan_ap0.name)
+        client_is_in_ap_network = client_ip in wlan_ap0_iface.network
+        if len(pi_top_ip) == 0:
+            pi_top_ip = wlan_ap0_iface.ip.exploded
 
     response = {
         "clientIp": client_ip.exploded,
