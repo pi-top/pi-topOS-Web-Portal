@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function updateEeprom() {
-    await axios.post(
-        `${apiBaseUrl}/update-eeprom`,
-        {}
-    );
+  await api.post(`/update-eeprom`, {});
 }

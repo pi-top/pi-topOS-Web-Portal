@@ -1,12 +1,9 @@
-import axios from "axios";
+import api from "./api";
 
-import apiBaseUrl from "./apiBaseUrl";
-import { KeyboardsData } from '../types/Keyboard';
+import { KeyboardsData } from "../types/Keyboard";
 
 export default async function getKeyboards() {
-  const { data } = await axios.get<KeyboardsData>(
-    `${apiBaseUrl}/list-keyboard-layout-codes`
-  );
+  const { data } = await api.get<KeyboardsData>(`/list-keyboard-layout-codes`);
 
   return data;
 }

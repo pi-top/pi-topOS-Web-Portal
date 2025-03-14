@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getCurrentCountry() {
-  const { data } = await axios.get<string>(
-    `${apiBaseUrl}/current-wifi-country`
-  );
+  const { data } = await api.get<string>(`/current-wifi-country`);
 
   return data;
 }

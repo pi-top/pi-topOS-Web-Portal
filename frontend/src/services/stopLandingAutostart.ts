@@ -1,10 +1,5 @@
- import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function stopLandingAutostart() {
-  await axios.post(
-    `${apiBaseUrl}/disable-landing`,
-    {}
-  );
+  await api.post(`/disable-landing`, {});
 }

@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getHubFirmwareUpdateIsDue() {
-  const { data } = await axios.get<boolean>(
-    `${apiBaseUrl}/hub-firmware-update-is-due`
-  );
+  const { data } = await api.get<boolean>(`/hub-firmware-update-is-due`);
 
   return data;
 }

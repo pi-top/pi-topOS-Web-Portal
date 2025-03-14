@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function reboot() {
-  await axios.post(
-    `${apiBaseUrl}/reboot`,
-    {}
-  );
+  await api.post(`/reboot`, {});
 }

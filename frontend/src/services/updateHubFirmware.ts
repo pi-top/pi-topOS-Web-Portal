@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function updateHubFirmware() {
-    await axios.post(
-        `${apiBaseUrl}/update-hub-firmware`,
-        {}
-    );
+  await api.post(`/update-hub-firmware`, {});
 }

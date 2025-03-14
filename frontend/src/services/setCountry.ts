@@ -1,9 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function setCountry(wifi_country: string) {
-  await axios.post(`${apiBaseUrl}/set-wifi-country`, {
-    wifi_country
+  await api.post(`/set-wifi-country`, {
+    wifi_country,
   });
 }

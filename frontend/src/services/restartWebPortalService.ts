@@ -1,10 +1,5 @@
- import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function restartWebPortalService() {
-  await axios.post(
-    `${apiBaseUrl}/restart-web-portal-service`,
-    {}
-  );
+  await api.post(`/restart-web-portal-service`, {});
 }

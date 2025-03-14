@@ -1,12 +1,9 @@
-import axios from "axios";
+import api from "./api";
 
-import apiBaseUrl from "./apiBaseUrl";
-import { Keyboard } from '../types/Keyboard';
+import { Keyboard } from "../types/Keyboard";
 
 export default async function getCurrentKeyboard() {
-  const { data } = await axios.get<Keyboard>(
-    `${apiBaseUrl}/current-keyboard-layout`
-  );
+  const { data } = await api.get<Keyboard>(`/current-keyboard-layout`);
 
   return data;
 }

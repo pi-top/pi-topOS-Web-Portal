@@ -1,9 +1,7 @@
-import axios from "axios";
+import api from "./api";
 
-import apiBaseUrl from "./apiBaseUrl";
-
-import { Keyboard } from '../types/Keyboard';
+import { Keyboard } from "../types/Keyboard";
 
 export default async function setKeyboard(keyboard: Keyboard) {
-  await axios.post(`${apiBaseUrl}/set-keyboard-layout`, keyboard);
+  await api.post(`/set-keyboard-layout`, keyboard);
 }

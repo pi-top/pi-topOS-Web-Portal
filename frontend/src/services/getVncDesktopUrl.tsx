@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getVncDesktopUrl() {
-  const { data } = await axios.get<{ [s: string]: string }>(
-    `${apiBaseUrl}/vnc-desktop-url`
-  );
+  const { data } = await api.get<{ [s: string]: string }>(`/vnc-desktop-url`);
 
   return data;
 }

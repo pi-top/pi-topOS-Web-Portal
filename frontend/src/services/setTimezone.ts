@@ -1,9 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function setTimezone(timezone: string) {
-  await axios.post(`${apiBaseUrl}/set-timezone`, {
-    timezone
+  await api.post(`/set-timezone`, {
+    timezone,
   });
 }

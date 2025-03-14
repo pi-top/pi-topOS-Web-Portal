@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function closeWifiWindow() {
-  await axios.post(
-    `${apiBaseUrl}/close-wifi-window`,
-    {},
-  );
+  await api.post(`/close-wifi-window`, {});
 }

@@ -1,10 +1,5 @@
- import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function openKnowledgeBase() {
-  await axios.post(
-    `${apiBaseUrl}/open-knowledge-base`,
-    {}
-  );
+  await api.post(`/open-knowledge-base`, {});
 }

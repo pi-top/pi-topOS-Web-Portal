@@ -1,13 +1,13 @@
-import axios from 'axios'
+import api from "../api";
 
-import configureLanding from '../configureLanding';
+import configureLanding from "../configureLanding";
 
-jest.mock('axios');
+jest.mock("../api");
 
-describe('configureLanding', () => {
-  it('posts to route correctly', async () => {
-    await configureLanding()
+describe("configureLanding", () => {
+  it("posts to route correctly", async () => {
+    await configureLanding();
 
-    expect(axios.post).toHaveBeenCalledWith('/configure-landing', {});
-  })
+    expect(api.post).toHaveBeenCalledWith("/configure-landing", {});
+  });
 });

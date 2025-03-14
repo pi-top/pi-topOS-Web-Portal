@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getCurrentLocale() {
-  const { data } = await axios.get<string>(
-    `${apiBaseUrl}/current-locale`
-  );
+  const { data } = await api.get<string>(`/current-locale`);
 
   return data;
 }

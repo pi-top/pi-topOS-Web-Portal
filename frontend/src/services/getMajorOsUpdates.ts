@@ -1,12 +1,8 @@
-import axios from "axios";
+import api from "./api";
 
-import apiBaseUrl from "./apiBaseUrl";
 import { OsVersionUpdate } from "../types/OsVersionUpdate";
 
 export default async function getMajorOsUpdates() {
-  const { data } = await axios.get<OsVersionUpdate>(
-    `${apiBaseUrl}/os-updates`,
-    {}
-  );
+  const { data } = await api.get<OsVersionUpdate>(`/os-updates`, {});
   return data;
 }

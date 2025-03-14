@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function closeOsUpdaterWindow() {
-  await axios.post(
-    `${apiBaseUrl}/close-os-updater-window`,
-    {},
-  );
+  await api.post(`/close-os-updater-window`, {});
 }

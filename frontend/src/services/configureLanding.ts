@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function configureLanding() {
-  await axios.post(
-    `${apiBaseUrl}/configure-landing`,
-    {}
-  );
+  await api.post(`/configure-landing`, {});
 }
