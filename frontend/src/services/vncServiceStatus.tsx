@@ -1,10 +1,8 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function vncServiceStatus() {
-  const { data } = await axios.get<{ [s: string]: boolean }>(
-    `${apiBaseUrl}/vnc-service-state`
+  const { data } = await api.get<{ [s: string]: boolean }>(
+    `/vnc-service-state`,
   );
 
   return data;

@@ -1,14 +1,9 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 import { Network } from "../types/Network";
 
-
 export default async function getNetworks() {
-  const { data } = await axios.get<Network[]>(
-    `${apiBaseUrl}/wifi-ssids`
-  );
+  const { data } = await api.get<Network[]>(`/wifi-ssids`);
 
   return data;
 }

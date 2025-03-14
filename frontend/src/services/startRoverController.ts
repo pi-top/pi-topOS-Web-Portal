@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function startRoverController() {
-    await axios.post(
-        `${apiBaseUrl}/rover-controller-start`,
-        {}
-    );
+  await api.post(`/rover-controller-start`, {});
 }

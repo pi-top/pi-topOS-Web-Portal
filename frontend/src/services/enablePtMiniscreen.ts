@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function enablePtMiniscreen() {
-    await axios.post(
-        `${apiBaseUrl}/enable-pt-miniscreen`,
-        {}
-    );
+  await api.post(`/enable-pt-miniscreen`, {});
 }

@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function closePtOsLandingWindow() {
-  await axios.post(
-    `${apiBaseUrl}/close-pt-os-landing-window`,
-    {},
-  );
+  await api.post(`/close-pt-os-landing-window`, {});
 }

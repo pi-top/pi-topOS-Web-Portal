@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function stopOnboardingAutostart() {
-  await axios.post(
-    `${apiBaseUrl}/stop-onboarding-autostart`,
-    {}
-  );
+  await api.post(`/stop-onboarding-autostart`, {});
 }

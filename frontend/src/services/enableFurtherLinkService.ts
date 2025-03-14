@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function enableFurtherLinkService() {
-    await axios.post(
-        `${apiBaseUrl}/enable-further-link-service`,
-        {}
-    );
+  await api.post(`/enable-further-link-service`, {});
 }

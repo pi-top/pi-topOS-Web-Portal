@@ -1,10 +1,5 @@
- import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function openWifi() {
-  await axios.post(
-    `${apiBaseUrl}/open-wifi`,
-    {}
-  );
+  await api.post(`/open-wifi`, {});
 }

@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function triggerReadyToBeAMakerEvent() {
-  await axios.post(
-    `${apiBaseUrl}/onboarding-miniscreen-ready-to-be-a-maker`,
-    {}
-  );
+  await api.post(`/onboarding-miniscreen-ready-to-be-a-maker`, {});
 }

@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getCurrentTimezone() {
-  const { data } = await axios.get<string>(
-    `${apiBaseUrl}/current-timezone`
-  );
+  const { data } = await api.get<string>(`/current-timezone`);
 
   return data;
 }

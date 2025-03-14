@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getFurtherUrl() {
-  const { data } = await axios.get<{ [s: string]: string }>(
-    `${apiBaseUrl}/further-url`
-  );
+  const { data } = await api.get<{ [s: string]: string }>(`/further-url`);
 
   return data;
 }

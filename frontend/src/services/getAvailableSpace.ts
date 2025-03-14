@@ -1,11 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getAvailableSpace() {
-  const { data } = await axios.get<string>(
-    `${apiBaseUrl}/available-space`
-  );
+  const { data } = await api.get<string>(`/available-space`);
   try {
     const availableSpace = parseInt(data, 10);
     if (Number.isNaN(availableSpace)) {
@@ -14,5 +10,5 @@ export default async function getAvailableSpace() {
     return availableSpace;
   } catch (_) {
     return 0;
-  };
+  }
 }

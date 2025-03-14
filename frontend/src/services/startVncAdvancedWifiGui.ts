@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function startVncAdvancedWifiGui() {
-    await axios.post(
-        `${apiBaseUrl}/start-vnc-wifi-advanced-connection`,
-        {}
-    );
+  await api.post(`/start-vnc-wifi-advanced-connection`, {});
 }

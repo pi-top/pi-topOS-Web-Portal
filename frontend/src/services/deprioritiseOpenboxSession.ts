@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function deprioritiseOpenboxSession() {
-  await axios.post(
-    `${apiBaseUrl}/deprioritise-openbox-session`,
-    {}
-  );
+  await api.post(`/deprioritise-openbox-session`, {});
 }

@@ -1,10 +1,8 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getPythonSDKDocsUrl() {
-  const { data } = await axios.get<{ [s: string]: string }>(
-    `${apiBaseUrl}/python-sdk-docs-url`
+  const { data } = await api.get<{ [s: string]: string }>(
+    `/python-sdk-docs-url`,
   );
 
   return data;

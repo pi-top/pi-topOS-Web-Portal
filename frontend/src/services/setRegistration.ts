@@ -1,9 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function setRegistration(email: string) {
-  await axios.post(`${apiBaseUrl}/set-registration`, {
-    email
+  await api.post(`/set-registration`, {
+    email,
   });
 }

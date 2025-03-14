@@ -1,10 +1,8 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getLocales() {
-  const { data } = await axios.get<{ [s: string]: string }>(
-    `${apiBaseUrl}/list-wifi-countries`
+  const { data } = await api.get<{ [s: string]: string }>(
+    `/list-wifi-countries`,
   );
 
   return data;

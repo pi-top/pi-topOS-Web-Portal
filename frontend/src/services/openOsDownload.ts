@@ -1,10 +1,5 @@
- import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function openOsDownload() {
-  await axios.post(
-    `${apiBaseUrl}/open-os-download`,
-    {}
-  );
+  await api.post(`/open-os-download`, {});
 }

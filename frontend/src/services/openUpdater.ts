@@ -1,10 +1,5 @@
- import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function openUpdater() {
-  await axios.post(
-    `${apiBaseUrl}/open-updater`,
-    {}
-  );
+  await api.post(`/open-updater`, {});
 }

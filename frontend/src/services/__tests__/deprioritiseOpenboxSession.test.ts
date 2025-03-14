@@ -1,13 +1,16 @@
-import axios from 'axios'
+import api from "../api";
 
-import deprioritiseOpenboxSession from '../deprioritiseOpenboxSession';
+import deprioritiseOpenboxSession from "../deprioritiseOpenboxSession";
 
-jest.mock('axios');
+jest.mock("../api");
 
-describe('deprioritiseOpenboxSession', () => {
-  it('posts to route correctly', async () => {
-    await deprioritiseOpenboxSession()
+describe("deprioritiseOpenboxSession", () => {
+  it("posts to route correctly", async () => {
+    await deprioritiseOpenboxSession();
 
-    expect(axios.post).toHaveBeenCalledWith('/deprioritise-openbox-session', {});
-  })
+    expect(api.post).toHaveBeenCalledWith(
+      "/deprioritise-openbox-session",
+      {},
+    );
+  });
 });

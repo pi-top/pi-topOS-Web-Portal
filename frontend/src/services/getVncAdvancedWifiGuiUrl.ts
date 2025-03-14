@@ -1,10 +1,8 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function getVncAdvancedWifiGuiUrl() {
-  const { data } = await axios.get<{ [s: string]: string }>(
-    `${apiBaseUrl}/vnc-wifi-advanced-connection-url`
+  const { data } = await api.get<{ [s: string]: string }>(
+    `/vnc-wifi-advanced-connection-url`,
   );
 
   return data;

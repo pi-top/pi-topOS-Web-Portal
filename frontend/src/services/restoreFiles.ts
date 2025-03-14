@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function restoreFiles() {
-    await axios.post(
-        `${apiBaseUrl}/restore-files`,
-        {}
-    );
+  await api.post(`/restore-files`, {});
 }

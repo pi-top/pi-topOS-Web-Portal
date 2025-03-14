@@ -1,10 +1,8 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function isConnectedThroughAp() {
-  const { data } = await axios.get<{isUsingAp: boolean}>(
-    `${apiBaseUrl}/is-connected-through-ap`
+  const { data } = await api.get<{ isUsingAp: boolean }>(
+    `/is-connected-through-ap`,
   );
 
   return data.isUsingAp;

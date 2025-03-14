@@ -1,9 +1,7 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function setLocale(locale_code: string) {
-  await axios.post(`${apiBaseUrl}/set-locale`, {
-    locale_code
+  await api.post(`/set-locale`, {
+    locale_code,
   });
 }

@@ -1,10 +1,5 @@
-import axios from "axios";
-
-import apiBaseUrl from "./apiBaseUrl";
+import api from "./api";
 
 export default async function enableFirmwareUpdaterService() {
-    await axios.post(
-        `${apiBaseUrl}/enable-firmware-updater-service`,
-        {}
-    );
+  await api.post(`/enable-firmware-updater-service`, {});
 }

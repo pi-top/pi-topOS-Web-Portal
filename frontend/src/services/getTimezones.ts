@@ -1,12 +1,9 @@
-import axios from "axios";
+import api from "./api";
 
-import apiBaseUrl from "./apiBaseUrl";
-import { Timezone } from '../types/Timezone';
+import { Timezone } from "../types/Timezone";
 
 export default async function getTimezones() {
-  const { data } = await axios.get<Timezone[]>(
-    `${apiBaseUrl}/list-timezones`
-  );
+  const { data } = await api.get<Timezone[]>(`/list-timezones`);
 
   return data;
 }
