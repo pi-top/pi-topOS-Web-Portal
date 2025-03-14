@@ -33,7 +33,7 @@ export enum UpgradePageExplanation {
   WaitingForServer = "Please wait...",
   UpdatingSources = "Checking to see if there are updates available...",
   Preparing = "Preparing all packages to be updated...",
-  PreparingWebPortal = "Preparing to update myself...",
+  PreparingWebPortal = "Please wait...",
   UpdatingWebPortal = "I'm updating myself, please wait...",
 }
 
