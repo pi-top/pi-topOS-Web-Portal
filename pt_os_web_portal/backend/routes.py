@@ -1,7 +1,7 @@
 import logging
 from ipaddress import ip_address
 from json import dumps as jdumps
-from threading import Thread
+from threading import Lock, Thread
 from urllib.request import Request, urlopen
 
 from flask import abort
@@ -80,6 +80,9 @@ from .helpers.wifi_country import (
 
 logger = logging.getLogger(__name__)
 
+# Create a lock for the build info route
+build_info_lock = Lock()
+
 
 def get_os_updater():
     return app.config["OS_UPDATER"]
@@ -123,7 +126,9 @@ def roboto(filename):
 @app.route("/build-info", methods=["GET"])
 def get_build_info():
     logger.debug("Route '/build-info'")
-    return abort_on_no_data(os_build_info())
+    # Try to acquire the lock, will block if another request is processing
+    with build_info_lock:
+        return abort_on_no_data(os_build_info())
 
 
 # Language
