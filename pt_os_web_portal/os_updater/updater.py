@@ -1,4 +1,5 @@
 import logging
+import subprocess
 from time import sleep
 
 from ..event import AppEvents, post_event
@@ -67,8 +68,25 @@ class OSUpdater:
             post_event(AppEvents.OS_UPDATER_PREPARE, "failed")
             callback(message_type=MessageType.ERROR, percent=0.0, status_message=f"{e}")
 
+    def get_package_dependencies(self, package_name: str) -> list:
+        cmd = f"apt-cache depends {package_name} | grep 'Depends:' | awk '{{print $2}}' | sed 's/<.*>//g' | grep -v '^$'"
+        try:
+            result = subprocess.run(
+                cmd, shell=True, capture_output=True, text=True, check=True
+            )
+            dependencies = result.stdout.strip().split("\n")
+            return [dep.strip() for dep in dependencies]
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error: {e}")
+            return []
+
     def stage_web_portal(self, ws=None):
-        self.stage_packages(ws, packages=["pt-os-web-portal"])
+        web_portal_package = "pt-os-web-portal"
+        # Stage the web portal and all its dependencies
+        dependencies = self.get_package_dependencies(web_portal_package)
+        packages = [web_portal_package] + dependencies
+        logger.info(f"Staging pt-os-web-portal and dependencies for update: {packages}")
+        self.stage_packages(ws, packages=packages)
 
     def upgrade_size(self, ws=None):
         callback = self.message_handler.create_emit_os_size_message(ws)

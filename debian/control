@@ -21,9 +21,9 @@ Depends:
 # "Roboto" font used in web app
  fonts-roboto-unhinted,
 # Service enabling
- further-link,
+ further-link (>= 5.9.2-4),
 # For miniscreen onboarding guide
- pt-miniscreen,
+ pt-miniscreen (>= 0.34.1-1),
 # Needed to update the EEPROM
  pt-os-notify-services,
 # Get system information
@@ -36,8 +36,8 @@ Depends:
  wpagui,
  network-manager-gnome,
 # Other pi-top dependencies
- pi-topd,
- pt-firmware-updater,
+ pi-topd (>= 5.7.0-1),
+ pt-firmware-updater (>= 4.2.0-1),
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
