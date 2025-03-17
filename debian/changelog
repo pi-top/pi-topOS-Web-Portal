@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.22.1-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.23.0-1) bullseye; urgency=medium
 
   * Add pi-topd and pt-firmware-updater as debian dependencies (#483)
   * Remove Terms and Keyboard pages
