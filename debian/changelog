@@ -1,3 +1,19 @@
+pi-top-os-web-portal (0.22.1-2) bullseye; urgency=medium
+
+  * Add pi-topd and pt-firmware-updater as debian dependencies (#483)
+  * Remove Terms and Keyboard pages
+  * Include terms in Registration Page
+  * Dont upgrade system on onboarding
+  * Safely check for wlan_ap0 ip to determine if should switch networks
+  * Don't display 'next/update' button during upgrade
+  * Add cache control headers to index.html and backend response
+  * Update copy when preparing web-portal
+  * Centralize axios instance and enforce no-cache policy
+  * Add thread safety to build-info route
+  * Update web-portal and its dependencies
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 17 Mar 2025 16:25:46 +0000
+
 pi-top-os-web-portal (0.22.1-1) bullseye; urgency=medium
 
   * Don't restart networking services on system upgrade (#481)
