@@ -25,3 +25,21 @@
   background-repeat: no-repeat;
   background-position: left;
 }
+
+
+.closeButtonDiv {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  width: 53px;
+  height: 53px;
+}
+
+.closeButton {
+  background-color: #505050;
+  min-width: 53px;
+}
+
+.closeButton:hover:enabled {
+  background-color: #00AD9F;
+}

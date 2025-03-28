@@ -18,7 +18,7 @@ from pitop.common.sys_info import (
 from pt_web_vnc.vnc import clients as vnc_clients
 from pt_web_vnc.vnc import connection_details as vnc_connection_details
 
-from ..app_window import LandingAppWindow
+from ..app_window import LandingAppWindow, OnboardingAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -26,7 +26,6 @@ from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
-    configure_landing,
     deprioritise_openbox_session,
     disable_ap_mode,
     do_firmware_update,
@@ -47,6 +46,7 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.landing import (
+    disable_first_boot_app,
     disable_landing,
     open_forum,
     open_further,
@@ -353,13 +353,6 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
-@app.route("/configure-landing", methods=["POST"])
-def post_configure_landing():
-    logger.debug("Route '/configure-landing'")
-    configure_landing()
-    return "OK"
-
-
 @app.route("/deprioritise-openbox-session", methods=["POST"])
 def post_deprioritise_openbox_session():
     logger.debug("Route '/deprioritise-openbox-session'")
@@ -432,6 +425,17 @@ def get_python_sdk_docs_url():
 def post_disable_landing():
     logger.debug("Route '/disable-landing'")
     disable_landing()
+    # for backward compatibility
+    disable_first_boot_app()
+    return "OK"
+
+
+@app.route("/disable-onboarding", methods=["POST"])
+def post_disable_onboarding():
+    logger.debug("Route '/disable-onboarding'")
+    disable_first_boot_app()
+    # for backward compatibility
+    disable_landing()
     return "OK"
 
 
@@ -439,6 +443,13 @@ def post_disable_landing():
 def post_close_pt_os_landing_window():
     logger.debug("Route '/close-pt-os-landing-window'")
     LandingAppWindow().close()
+    return "OK"
+
+
+@app.route("/close-onboarding-window", methods=["POST"])
+def post_close_onboarding_window():
+    logger.debug("Route '/close-onboarding-window'")
+    OnboardingAppWindow().close()
     return "OK"
 
 

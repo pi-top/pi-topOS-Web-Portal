@@ -1,5 +1,5 @@
 from enum import Enum
-from os import path
+from unittest.mock import call
 
 from flask import json
 
@@ -27,25 +27,6 @@ def test_available_space(app, mocker):
     assert body == str(available_space)
 
 
-def test_configure_landing_success(app, mocker):
-    run_mock = mocker.patch(
-        "pt_os_web_portal.backend.helpers.finalise.run_command", return_value=""
-    )
-
-    response = app.post("/configure-landing")
-    desktop_file_path = path.abspath(
-        path.dirname(path.realpath(__file__))
-        + "/../pt_os_web_portal/resources/pt-os-landing.desktop"
-    )
-    run_mock.assert_called_once_with(
-        f"ln -s {desktop_file_path} /etc/xdg/autostart",
-        timeout=60,
-        lower_priority=True,
-    )
-    assert response.status_code == 200
-    assert response.data == b"OK"
-
-
 def test_deprioritise_openbox_session_success(app, mocker):
     run_mock = mocker.patch(
         "pt_os_web_portal.backend.helpers.finalise.run_command", return_value=""
@@ -63,10 +44,15 @@ def test_deprioritise_openbox_session_success(app, mocker):
 
 
 def test_stop_onboarding_autostart_success(app, mocker):
-    remove_mock = mocker.patch("pt_os_web_portal.backend.helpers.finalise.remove")
+    remove_mock = mocker.patch("pt_os_web_portal.backend.helpers.landing.remove")
     response = app.post("/stop-onboarding-autostart")
 
-    remove_mock.assert_called_once_with("/etc/xdg/autostart/pt-os-setup.desktop")
+    remove_mock.assert_has_calls(
+        [
+            call("/etc/xdg/autostart/pt-first-boot-app.desktop"),
+            call("/etc/xdg/autostart/pt-os-setup.desktop"),
+        ]
+    )
     assert response.status_code == 200
     assert response.data == b"OK"
 

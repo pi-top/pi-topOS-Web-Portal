@@ -4,7 +4,7 @@ import styles from "./Landing.module.css";
 
 import Button from "../atoms/button/Button";
 
-import stopLandingAutostart from "../../services/stopLandingAutostart";
+import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 
 export type LandingPageElement = {
   title: string;
@@ -20,7 +20,7 @@ export default ({ pages }: Props) => {
   const [selectedElement, setSelectedElement] = useState(pages[0]);
 
   useEffect(() => {
-    stopLandingAutostart().catch(() => null);
+    stopOnboardingAutostart().catch(() => null);
   }, []);
 
   return (

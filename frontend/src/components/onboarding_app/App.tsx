@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Route, Switch, useLocation } from "react-router-dom";
 
-import styles from './App.module.css';
+import styles from "./App.module.css";
 import SplashPage from "../../pages/splashPage/SplashPage";
 import WifiPageContainer from "../../pages/wifiPage/WifiPageContainer";
 import UpgradePageContainer from "../../pages/upgradePage/UpgradePageContainer";
@@ -19,6 +19,10 @@ import { BuildInfo } from "../../types/Build";
 import { Page, PageRoute } from "../../types/Page";
 import { Network } from "../../types/Network";
 import HotspotDisconnectDialog from "../../pages/hotspotDisconnectDialog/HotspotDisconnectDialog";
+import closeOnboardingWindow from "../../services/closeOnboardingWindow";
+import { runningOnWebRenderer } from "../../helpers/utils";
+import CloseButton from "../closeButton/CloseButton";
+import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -27,13 +31,24 @@ export default () => {
   const [email, setEmail] = useState("");
   const [connectedNetwork, setConnectedNetwork] = useState<Network>();
   const [skipUpgradePage, setSkipUpgradePage] = useState(false);
-  const [enableDisconnectedFromApDialog, setEnableDisconnectedFromApDialog] = useState(true);
+  const [enableDisconnectedFromApDialog, setEnableDisconnectedFromApDialog] =
+    useState(true);
+  const [showCloseButton, setShowCloseButton] = useState(false);
 
   useEffect(() => {
     getBuildInfo()
       .then(setBuildInfo)
       .catch(() => null);
   }, []);
+
+  useEffect(() => {
+    setShowCloseButton(runningOnWebRenderer());
+  }, []);
+
+  const onCloseButtonClick = async () => {
+    await stopOnboardingAutostart().catch(() => null);
+    await closeOnboardingWindow().catch(() => null);
+  };
 
   const addCompleted = (page: Page) => {
     if (!completedPages.includes(page)) {
@@ -154,6 +169,8 @@ export default () => {
 
         <Route component={ErrorPage} />
       </Switch>
+
+      {showCloseButton && <CloseButton onClose={onCloseButtonClick} />}
       <BuildInformation info={buildInfo} className={styles.buildInfo} />
       <HotspotDisconnectDialog enabled={pathDisplaysApDisconnectDialog(useLocation().pathname) && enableDisconnectedFromApDialog} />
     </>

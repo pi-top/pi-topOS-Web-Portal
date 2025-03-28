@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import cx from "classnames";
 
 import styles from "./LandingPage.module.css";
@@ -23,6 +23,10 @@ import openWifi from "../../services/openWifi";
 import openUpdater from "../../services/openUpdater";
 import openOsDownload from "../../services/openOsDownload";
 import WebVncDesktopLanding from "../../components/webVncDesktopLanding/WebVncDesktopLanding";
+import CloseButton from "../../components/closeButton/CloseButton";
+import { runningOnWebRenderer } from "../../helpers/utils";
+import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
+import closeOnboardingWindow from "../../services/closeOnboardingWindow";
 
 
 const landingPages = [
@@ -204,8 +208,20 @@ const landingPages = [
 ];
 
 export default () => {
+  const [showCloseButton, setShowCloseButton] = useState(false);
+
+  useEffect(() => {
+    setShowCloseButton(runningOnWebRenderer());
+  }, []);
+
+  const onCloseButtonClick = async () => {
+    await stopOnboardingAutostart().catch(() => null);
+    await closeOnboardingWindow().catch(() => null);
+  };
+
   return (
     <div className={cx(styles.layout)}>
+      {showCloseButton && <CloseButton onClose={onCloseButtonClick} />}
       <LandingHeader />
       <Landing pages={landingPages} />
     </div>

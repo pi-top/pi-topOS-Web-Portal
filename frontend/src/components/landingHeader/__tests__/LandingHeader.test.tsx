@@ -1,12 +1,7 @@
 import React from "react";
-import { fireEvent, getByRole, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 
 import LandingHeader from "../LandingHeader";
-import closePtOsLandingWindow from "../../../services/closePtOsLandingWindow";
-
-jest.mock("../../../services/closePtOsLandingWindow");
-
-const closePtOsLandingWindowMock = closePtOsLandingWindow as jest.Mock;
 
 let mockUserAgent = "any-browser";
 Object.defineProperty(global.navigator, "userAgent", {
@@ -24,7 +19,6 @@ describe("LandingHeader", () => {
   let getByRole: any;
   let rerender: any;
   beforeEach(() => {
-    closePtOsLandingWindowMock.mockResolvedValue("OK");
     ({
       container: layout,
       queryByAltText,
@@ -43,26 +37,4 @@ describe("LandingHeader", () => {
   it("renders prompt message", () => {
     expect(layout.querySelector(".logoContainer")).toMatchSnapshot();
   });
-
-  it("doesn't render close button (on regular browser)", () => {
-    expect(layout.querySelector(".closeButtonDiv")).not.toBeInTheDocument();
-  });
-
-  describe("when running app on web-renderer", () => {
-    beforeEach(() => {
-        mockUserAgent = "web-renderer";
-        rerender(<LandingHeader />);
-    })
-
-    it("renders close button (on regular browser)", () => {
-      expect(layout.querySelector(".closeButtonDiv")).toBeInTheDocument();
-    });
-
-    it("closes landing app window when clicking close button", () => {
-      fireEvent.click(getByRole("button", "close-window"));
-      expect(closePtOsLandingWindowMock).toHaveBeenCalled();
-    });
-
-  });
-
 });

@@ -16,6 +16,20 @@ def disable_landing():
         logger.debug("Landing already disabled.")
 
 
+def disable_first_boot_app():
+    logger.info("Function: disable_first_boot_app()")
+    try:
+        remove("/etc/xdg/autostart/pt-first-boot-app.desktop")
+    except FileNotFoundError:
+        logger.debug("First boot app already disabled.")
+
+    # for backward compatibility:
+    try:
+        remove("/etc/xdg/autostart/pt-os-setup.desktop")
+    except FileNotFoundError:
+        logger.debug("pt-os-setup already disabled.")
+
+
 def python_sdk_docs_url():
     logger.info("Function: python_sdk_docs_url()")
     return run_command("pi-top support links docs -p", timeout=10, check=False).strip()

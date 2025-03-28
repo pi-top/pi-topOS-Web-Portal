@@ -3,11 +3,11 @@ import { fireEvent, getAllByText, render, wait, waitForElement } from "@testing-
 
 import Landing, { Props } from "../Landing";
 import LandingPageTemplate from "../../landingPageTemplate/LandingPageTemplate";
-import stopLandingAutostart from "../../../services/stopLandingAutostart";
+import stopOnboardingAutostart from "../../../services/stopOnboardingAutostart";
 
-jest.mock("../../../services/stopLandingAutostart");
+jest.mock("../../../services/stopOnboardingAutostart");
 
-const stopLandingAutostartMock = stopLandingAutostart as jest.Mock;
+const stopOnboardingAutostartMock = stopOnboardingAutostart as jest.Mock;
 
 
 const firstPageContent = {
@@ -77,7 +77,7 @@ describe("Landing", () => {
   let getByText: any;
   let rerender: any;
   beforeEach(() => {
-    stopLandingAutostartMock.mockResolvedValue("OK");
+    stopOnboardingAutostartMock.mockResolvedValue("OK");
 
     defaultProps = {
       pages: landingPages,
@@ -124,7 +124,7 @@ describe("Landing", () => {
   });
 
   it("stops landing from autostarting on boot", () => {
-    expect(stopLandingAutostartMock).toHaveBeenCalled();
+    expect(stopOnboardingAutostartMock).toHaveBeenCalled();
   });
 
   describe("when clicking another page from the list", () => {
