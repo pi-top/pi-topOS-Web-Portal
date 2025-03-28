@@ -6,10 +6,9 @@ from urllib.request import Request, urlopen
 
 from flask import abort
 from flask import current_app as app
-from flask import redirect, request, send_from_directory
+from flask import request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.formatting import is_url
-from pitop.common.pt_os import is_pi_top_os
 from pitop.common.sys_info import (
     InterfaceNetworkData,
     NetworkInterface,
@@ -35,7 +34,6 @@ from .helpers.finalise import (
     enable_further_link_service,
     enable_pt_miniscreen,
     fw_update_is_due,
-    onboarding_completed,
     reboot,
     restore_files,
     should_switch_network,
@@ -101,11 +99,6 @@ def favicon():
 
 @app.route("/", methods=["GET"])
 def index():
-    logger.debug("Route '/'")
-    if is_pi_top_os() and not onboarding_completed():
-        logger.info("Onboarding not completed yet. Redirecting...")
-        return redirect("/onboarding")
-
     return app.send_static_file("index.html")
 
 
