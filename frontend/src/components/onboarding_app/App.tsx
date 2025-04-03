@@ -9,7 +9,7 @@ import UpgradePageContainer from "../../pages/upgradePage/UpgradePageContainer";
 import LanguagePageContainer from "../../pages/languagePage/LanguagePageContainer";
 import CountryPageContainer from "../../pages/countryPage/CountryPageContainer";
 import RegistrationPageContainer from "../../pages/registrationPage/RegistrationPageContainer";
-import RestartPageContainer from "../../pages/restartPage/RestartPageContainer";
+import FinalOnboardingPageContainer from "../../pages/finalOnboardingPage/FinalOnboardingPageContainer";
 import ErrorPage from "../../pages/errorPage/ErrorPage";
 import BuildInformation from "../buildInformation/BuildInformation";
 
@@ -57,7 +57,7 @@ export default () => {
   };
 
   const pathDisplaysApDisconnectDialog = (path: string) => {
-    return ![PageRoute.Upgrade.toString(), PageRoute.Restart.toString()].includes(path);
+    return ![PageRoute.Upgrade.toString(), PageRoute.Finish.toString()].includes(path);
   };
 
   return (
@@ -152,17 +152,21 @@ export default () => {
               goToNextPage={() => {
                 addCompleted(Page.Registration);
 
-                history.push(PageRoute.Restart);
+                history.push(PageRoute.Finish);
               }}
             />
           )}
         />
 
         <Route
-          path={PageRoute.Restart}
+          path={PageRoute.Finish}
           render={({ history }) => (
-            <RestartPageContainer
+            <FinalOnboardingPageContainer
               goToPreviousPage={() => history.push(PageRoute.Registration)}
+              goToNextPage={() => {
+                history.push(PageRoute.LandingSplash);
+                window.location.reload();
+              }}
             />
           )}
         />

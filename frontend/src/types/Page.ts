@@ -5,7 +5,7 @@ export enum Page {
   Country = "COUNTRY",
   Language = "LANGUAGE",
   Registration = "REGISTRATION",
-  Restart = "RESTART",
+  Finish = "FINISH",
   LandingSplash = "LANDINGSPLASH",
   Links = "LINKS",
 }
@@ -17,7 +17,7 @@ export enum PageRoute {
   Country = "/onboarding/country",
   Language = "/onboarding/language",
   Registration = "/onboarding/registration",
-  Restart = "/onboarding/reboot",
+  Finish = "/onboarding/finish",
   Links = "/landing/links",
   LandingSplash = "/landing"
 }

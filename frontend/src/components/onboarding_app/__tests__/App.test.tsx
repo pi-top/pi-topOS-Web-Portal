@@ -40,7 +40,6 @@ import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 import isConnectedThroughAp from "../../../services/isConnectedThroughAp";
-import { UpgradePageExplanation } from "../../../pages/upgradePage/UpgradePage";
 
 import { waitFor } from "../../../../test/helpers/waitFor";
 import wsBaseUrl from "../../../services/wsBaseUrl";
@@ -139,7 +138,7 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForUpgradePage: () => waitForAltText("upgrade-page-banner"),
     waitForUpgradePageBanner: () => waitForAltText("upgrade-page-banner"),
     waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
-    waitForRestartPage: () => waitForAltText("reboot-screen"),
+    waitForFinalOnboardingPage: () => waitForAltText("reboot-screen"),
     // Actions
     registerEmail: (email: string) => {
       const emailInput = result.getByPlaceholderText(
@@ -254,7 +253,7 @@ describe("App", () => {
       waitForWifiPage,
       waitForUpgradePage,
       waitForRegistrationPage,
-      waitForRestartPage,
+      waitForFinalOnboardingPage,
     } = mount();
 
     const checkForDialog = async () => {
@@ -321,7 +320,7 @@ describe("App", () => {
     fireEvent.click(getByText("Skip"));
 
     // on restart page
-    await waitForRestartPage();
+    await waitForFinalOnboardingPage();
 
     // dialog is NOT displayed on this page
     expect(await getByTestId("reconnect-ap-dialog")).toHaveClass("hidden");
@@ -569,23 +568,23 @@ describe("App", () => {
   });
 
   describe("RegistrationPage", () => {
-    it("navigates to RestartPage on next button click", async () => {
-      const { waitForRegistrationPage, registerEmail, waitForRestartPage } =
+    it("navigates to FinalOnboardingPage on next button click", async () => {
+      const { waitForRegistrationPage, registerEmail, waitForFinalOnboardingPage } =
         mount(PageRoute.Registration);
       await waitForRegistrationPage();
 
       await registerEmail("test@test.com");
-      await waitForRestartPage();
+      await waitForFinalOnboardingPage();
     });
 
-    it("navigates to RestartPage on skip button click", async () => {
-      const { getByText, waitForRegistrationPage, waitForRestartPage } = mount(
+    it("navigates to FinalOnboardingPage on skip button click", async () => {
+      const { getByText, waitForRegistrationPage, waitForFinalOnboardingPage } = mount(
         PageRoute.Registration
       );
       await waitForRegistrationPage();
 
       fireEvent.click(getByText("Skip"));
-      await waitForRestartPage();
+      await waitForFinalOnboardingPage();
     });
 
     it("navigates to UpgradePage on back button click when connected", async () => {
@@ -622,14 +621,14 @@ describe("App", () => {
       const {
         getByText,
         waitForRegistrationPage,
-        waitForRestartPage,
+        waitForFinalOnboardingPage,
         registerEmail,
         queryByDisplayValue,
       } = mount(PageRoute.Registration);
       await waitForRegistrationPage();
 
       await registerEmail("test@test.com");
-      await waitForRestartPage();
+      await waitForFinalOnboardingPage();
 
       fireEvent.click(getByText("Back"));
       await wait();
@@ -638,15 +637,27 @@ describe("App", () => {
     });
   });
 
-  describe("RestartPage", () => {
+  describe("FinalOnboardingPage", () => {
     it("navigates to RegistrationPage on back button click", async () => {
-      const { getByText, waitForRestartPage, waitForRegistrationPage } = mount(
-        PageRoute.Restart
+      const { getByText, waitForFinalOnboardingPage, waitForRegistrationPage } = mount(
+        PageRoute.Finish
       );
-      await waitForRestartPage();
+      await waitForFinalOnboardingPage();
 
       fireEvent.click(getByText("Back"));
       await waitForRegistrationPage();
+    });
+
+    it("navigates to LandingPage on finish button click", async () => {
+      window.location.reload = jest.fn();
+
+      const { getByText, waitForFinalOnboardingPage } = mount(PageRoute.Finish);
+      await waitForFinalOnboardingPage();
+
+      fireEvent.click(getByText("Finish"));
+
+      // window.location.reload should be called
+      expect(window.location.reload).toHaveBeenCalled();
     });
   });
 });

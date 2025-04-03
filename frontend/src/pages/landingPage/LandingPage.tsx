@@ -26,7 +26,7 @@ import WebVncDesktopLanding from "../../components/webVncDesktopLanding/WebVncDe
 import CloseButton from "../../components/closeButton/CloseButton";
 import { runningOnWebRenderer } from "../../helpers/utils";
 import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
-import closeOnboardingWindow from "../../services/closeOnboardingWindow";
+import closePtOsLandingWindow from "../../services/closePtOsLandingWindow";
 
 
 const landingPages = [
@@ -216,7 +216,7 @@ export default () => {
 
   const onCloseButtonClick = async () => {
     await stopOnboardingAutostart().catch(() => null);
-    await closeOnboardingWindow().catch(() => null);
+    await closePtOsLandingWindow().catch(() => null);
   };
 
   return (
