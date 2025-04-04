@@ -8,14 +8,6 @@ from pitop.common.current_session_info import get_user_using_display
 logger = logging.getLogger(__name__)
 
 
-def disable_landing():
-    logger.info("Function: disable_landing()")
-    try:
-        remove("/etc/xdg/autostart/pt-os-landing.desktop")
-    except FileNotFoundError:
-        logger.debug("Landing already disabled.")
-
-
 def disable_first_boot_app():
     logger.info("Function: disable_first_boot_app()")
     try:
@@ -23,7 +15,9 @@ def disable_first_boot_app():
     except FileNotFoundError:
         logger.debug("First boot app already disabled.")
 
-    # for backward compatibility:
+    # for backward compatibility
+    # eg: users who upgraded their web portal during first boot
+    # will have pt-os-setup.desktop in their system
     try:
         remove("/etc/xdg/autostart/pt-os-setup.desktop")
     except FileNotFoundError:

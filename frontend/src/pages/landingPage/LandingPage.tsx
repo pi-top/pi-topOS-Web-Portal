@@ -25,8 +25,8 @@ import openOsDownload from "../../services/openOsDownload";
 import WebVncDesktopLanding from "../../components/webVncDesktopLanding/WebVncDesktopLanding";
 import CloseButton from "../../components/closeButton/CloseButton";
 import { runningOnWebRenderer } from "../../helpers/utils";
-import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
-import closePtOsLandingWindow from "../../services/closePtOsLandingWindow";
+import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart";
+import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 
 
 const landingPages = [
@@ -215,8 +215,8 @@ export default () => {
   }, []);
 
   const onCloseButtonClick = async () => {
-    await stopOnboardingAutostart().catch(() => null);
-    await closePtOsLandingWindow().catch(() => null);
+    await stopFirstBootAppAutostart().catch(() => null);
+    await closeFirstBootAppWindow().catch(() => null);
   };
 
   return (

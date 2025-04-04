@@ -50,13 +50,13 @@ def deprioritise_openbox_session() -> None:
     )
 
 
-def stop_onboarding_autostart() -> None:
-    logger.debug("Function: stop_onboarding_autostart()")
+def stop_first_boot_app_autostart() -> None:
+    logger.debug("Function: stop_first_boot_app_autostart()")
     try:
         state.set("app", "onboarded", "true")
         disable_first_boot_app()
     except Exception as e:
-        logger.error(f"stop_onboarding_autostart: {e}")
+        logger.error(f"stop_first_boot_app_autostart: {e}")
 
 
 def enable_firmware_updater_service():

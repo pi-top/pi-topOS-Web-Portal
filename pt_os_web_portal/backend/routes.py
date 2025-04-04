@@ -36,7 +36,7 @@ from .helpers.finalise import (
     reboot,
     restore_files,
     should_switch_network,
-    stop_onboarding_autostart,
+    stop_first_boot_app_autostart,
     update_eeprom,
 )
 from .helpers.keyboard import (
@@ -46,8 +46,6 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.landing import (
-    disable_first_boot_app,
-    disable_landing,
     open_forum,
     open_further,
     open_knowledge_base,
@@ -360,10 +358,10 @@ def post_deprioritise_openbox_session():
     return "OK"
 
 
-@app.route("/stop-onboarding-autostart", methods=["POST"])
-def post_stop_onboarding_autostart():
-    logger.debug("Route '/stop-onboarding-autostart'")
-    stop_onboarding_autostart()
+@app.route("/stop-first-boot-app-autostart", methods=["POST"])
+def post_stop_first_boot_app_autostart():
+    logger.debug("Route '/stop-first-boot-app-autostart'")
+    stop_first_boot_app_autostart()
     return "OK"
 
 
@@ -421,34 +419,10 @@ def get_python_sdk_docs_url():
     return jdumps({"url": python_sdk_docs_url()})
 
 
-@app.route("/disable-landing", methods=["POST"])
-def post_disable_landing():
-    logger.debug("Route '/disable-landing'")
-    disable_landing()
-    # for backward compatibility
-    disable_first_boot_app()
-    return "OK"
-
-
-@app.route("/disable-onboarding", methods=["POST"])
-def post_disable_onboarding():
-    logger.debug("Route '/disable-onboarding'")
-    disable_first_boot_app()
-    # for backward compatibility
-    disable_landing()
-    return "OK"
-
-
-@app.route("/close-pt-os-landing-window", methods=["POST"])
-def post_close_pt_os_landing_window():
-    logger.debug("Route '/close-pt-os-landing-window'")
+@app.route("/close-first-boot-app-window", methods=["POST"])
+def post_close_first_boot_app_window():
+    logger.debug("Route '/close-first-boot-app-window'")
     LandingAppWindow().close()
-    return "OK"
-
-
-@app.route("/close-onboarding-window", methods=["POST"])
-def post_close_onboarding_window():
-    logger.debug("Route '/close-onboarding-window'")
     OnboardingAppWindow().close()
     return "OK"
 

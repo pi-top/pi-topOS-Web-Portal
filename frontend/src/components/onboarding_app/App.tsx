@@ -19,10 +19,10 @@ import { BuildInfo } from "../../types/Build";
 import { Page, PageRoute } from "../../types/Page";
 import { Network } from "../../types/Network";
 import HotspotDisconnectDialog from "../../pages/hotspotDisconnectDialog/HotspotDisconnectDialog";
-import closeOnboardingWindow from "../../services/closeOnboardingWindow";
+import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 import { runningOnWebRenderer } from "../../helpers/utils";
 import CloseButton from "../closeButton/CloseButton";
-import stopOnboardingAutostart from "../../services/stopOnboardingAutostart";
+import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -46,8 +46,8 @@ export default () => {
   }, []);
 
   const onCloseButtonClick = async () => {
-    await stopOnboardingAutostart().catch(() => null);
-    await closeOnboardingWindow().catch(() => null);
+    await stopFirstBootAppAutostart().catch(() => null);
+    await closeFirstBootAppWindow().catch(() => null);
   };
 
   const addCompleted = (page: Page) => {

@@ -43,9 +43,9 @@ def test_deprioritise_openbox_session_success(app, mocker):
     assert response.data == b"OK"
 
 
-def test_stop_onboarding_autostart_success(app, mocker):
+def test_stop_first_boot_app_autostart_success(app, mocker):
     remove_mock = mocker.patch("pt_os_web_portal.backend.helpers.landing.remove")
-    response = app.post("/stop-onboarding-autostart")
+    response = app.post("/stop-first-boot-app-autostart")
 
     remove_mock.assert_has_calls(
         [
