@@ -78,12 +78,19 @@ def test_onboarding_app_commands(patch_modules, mocker):
     run_mock.assert_has_calls(
         [
             call(
-                "/usr/bin/web-renderer --kiosk --size=1.0x1.0 http://localhost/onboarding",
+                (
+                    "/usr/bin/web-renderer "
+                    "--window-title='pi-topOS Onboarding' "
+                    "--icon='/usr/share/icons/hicolor/scalable/apps/pt-os-about.svg' "
+                    "--hide-frame "
+                    "--size=0.65x0.7 "
+                    "http://localhost/onboarding"
+                ),
                 check=False,
                 timeout=None,
             ),
             call(
-                'wmctrl -v -c ""',
+                'wmctrl -v -c "pi-topOS Onboarding"',
                 timeout=5,
             ),
             call(

@@ -5,7 +5,7 @@ import Spinner from "../atoms/spinner/Spinner";
 
 import styles from "./LandingPageTemplate.module.css";
 import { runningOnWebRenderer } from "../../helpers/utils";
-import closePtOsLandingWindow from "../../services/closePtOsLandingWindow";
+import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 
 export type UrlData = {
   defaultUrl: string;
@@ -51,7 +51,7 @@ export default ({ ...props }: Props) => {
                 setIsOpeningUrl(true);
                 window.setTimeout(() => {
                   setIsOpeningUrl(false);
-                  closePtOsLandingWindow();
+                  closeFirstBootAppWindow();
                 }, 10000);
               })
               .catch(() => setError(true))

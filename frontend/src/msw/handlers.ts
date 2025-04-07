@@ -9,7 +9,10 @@ export const setConnectedNetwork = (network: Network | undefined) => {
 };
 
 export default [
-  rest.post("/disable-landing", (_, res, ctx) => {
+  rest.post("/stop-first-boot-app-autostart", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.post("/close-first-boot-app-window", (_, res, ctx) => {
     return res(ctx.body("OK"));
   }),
   rest.get("/python-sdk-docs-url", (_, res, ctx) => {

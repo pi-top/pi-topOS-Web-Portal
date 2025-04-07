@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=pi-topOS First Boot App
+Name[en_GB]=pi-topOS First Boot App
+GenericName=pi-topOS First Boot App
+GenericName[en_GB]=pi-topOS First Boot App
+Comment=pi-topOS First Boot App
+Comment[en_GB]=pi-topOS First Boot App
+Exec=pt-os-web-portal-frontend
+NotShowIn=GNOME;XFCE;
+StartupNotify=true
+Categories=Settings;DesktopSettings;GTK;X-LXDE-Settings;

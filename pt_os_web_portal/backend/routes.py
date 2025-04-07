@@ -6,10 +6,9 @@ from urllib.request import Request, urlopen
 
 from flask import abort
 from flask import current_app as app
-from flask import redirect, request, send_from_directory
+from flask import request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.formatting import is_url
-from pitop.common.pt_os import is_pi_top_os
 from pitop.common.sys_info import (
     InterfaceNetworkData,
     NetworkInterface,
@@ -19,7 +18,7 @@ from pitop.common.sys_info import (
 from pt_web_vnc.vnc import clients as vnc_clients
 from pt_web_vnc.vnc import connection_details as vnc_connection_details
 
-from ..app_window import LandingAppWindow
+from ..app_window import LandingAppWindow, OnboardingAppWindow
 from ..event import AppEvents, post_event
 from ..pt_os_version_check import check_relevant_pi_top_os_version_updates
 from . import sockets
@@ -27,7 +26,6 @@ from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
-    configure_landing,
     deprioritise_openbox_session,
     disable_ap_mode,
     do_firmware_update,
@@ -35,11 +33,10 @@ from .helpers.finalise import (
     enable_further_link_service,
     enable_pt_miniscreen,
     fw_update_is_due,
-    onboarding_completed,
     reboot,
     restore_files,
     should_switch_network,
-    stop_onboarding_autostart,
+    stop_first_boot_app_autostart,
     update_eeprom,
 )
 from .helpers.keyboard import (
@@ -49,7 +46,6 @@ from .helpers.keyboard import (
     set_keyboard_layout,
 )
 from .helpers.landing import (
-    disable_landing,
     open_forum,
     open_further,
     open_knowledge_base,
@@ -101,11 +97,6 @@ def favicon():
 
 @app.route("/", methods=["GET"])
 def index():
-    logger.debug("Route '/'")
-    if is_pi_top_os() and not onboarding_completed():
-        logger.info("Onboarding not completed yet. Redirecting...")
-        return redirect("/onboarding")
-
     return app.send_static_file("index.html")
 
 
@@ -360,13 +351,6 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
-@app.route("/configure-landing", methods=["POST"])
-def post_configure_landing():
-    logger.debug("Route '/configure-landing'")
-    configure_landing()
-    return "OK"
-
-
 @app.route("/deprioritise-openbox-session", methods=["POST"])
 def post_deprioritise_openbox_session():
     logger.debug("Route '/deprioritise-openbox-session'")
@@ -374,10 +358,10 @@ def post_deprioritise_openbox_session():
     return "OK"
 
 
-@app.route("/stop-onboarding-autostart", methods=["POST"])
-def post_stop_onboarding_autostart():
-    logger.debug("Route '/stop-onboarding-autostart'")
-    stop_onboarding_autostart()
+@app.route("/stop-first-boot-app-autostart", methods=["POST"])
+def post_stop_first_boot_app_autostart():
+    logger.debug("Route '/stop-first-boot-app-autostart'")
+    stop_first_boot_app_autostart()
     return "OK"
 
 
@@ -435,17 +419,11 @@ def get_python_sdk_docs_url():
     return jdumps({"url": python_sdk_docs_url()})
 
 
-@app.route("/disable-landing", methods=["POST"])
-def post_disable_landing():
-    logger.debug("Route '/disable-landing'")
-    disable_landing()
-    return "OK"
-
-
-@app.route("/close-pt-os-landing-window", methods=["POST"])
-def post_close_pt_os_landing_window():
-    logger.debug("Route '/close-pt-os-landing-window'")
+@app.route("/close-first-boot-app-window", methods=["POST"])
+def post_close_first_boot_app_window():
+    logger.debug("Route '/close-first-boot-app-window'")
     LandingAppWindow().close()
+    OnboardingAppWindow().close()
     return "OK"
 
 

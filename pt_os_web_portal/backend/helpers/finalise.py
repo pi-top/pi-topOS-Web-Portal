@@ -1,6 +1,6 @@
 import logging
 from ipaddress import ip_address
-from os import path, remove
+from os import path
 from typing import Dict
 
 from pitop.common.command_runner import run_command, run_command_background
@@ -18,6 +18,7 @@ from pt_fw_updater.core.firmware_updater import PTInvalidFirmwareFile
 from pt_fw_updater.update import main as update_firmware
 
 from ... import state
+from .landing import disable_first_boot_app
 from .paths import use_test_path
 
 logger = logging.getLogger(__name__)
@@ -39,19 +40,6 @@ def available_space() -> str:
     return space
 
 
-def configure_landing() -> None:
-    logger.debug("Function: configure_landing()")
-
-    try:
-        run_command(
-            f"ln -s {path.abspath(path.dirname(path.realpath(__file__))+'/../../resources/pt-os-landing.desktop')} /etc/xdg/autostart",
-            timeout=60,
-            lower_priority=True,
-        )
-    except Exception as e:
-        logger.error(f"configure_tour: {e}")
-
-
 def deprioritise_openbox_session() -> None:
     logger.debug("Function: deprioritise_openbox_session()")
     run_command(
@@ -62,15 +50,13 @@ def deprioritise_openbox_session() -> None:
     )
 
 
-def stop_onboarding_autostart() -> None:
-    logger.debug("Function: stop_onboarding_autostart()")
+def stop_first_boot_app_autostart() -> None:
+    logger.debug("Function: stop_first_boot_app_autostart()")
     try:
         state.set("app", "onboarded", "true")
-        remove("/etc/xdg/autostart/pt-os-setup.desktop")
-    except FileNotFoundError:
-        logger.debug("stop_onboarding_autostart: Onboarding already disabled")
+        disable_first_boot_app()
     except Exception as e:
-        logger.error(f"stop_onboarding_autostart: {e}")
+        logger.error(f"stop_first_boot_app_autostart: {e}")
 
 
 def enable_firmware_updater_service():

@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 
 import { Route, Switch, useLocation } from "react-router-dom";
 
-import styles from './App.module.css';
+import styles from "./App.module.css";
 import SplashPage from "../../pages/splashPage/SplashPage";
 import WifiPageContainer from "../../pages/wifiPage/WifiPageContainer";
 import UpgradePageContainer from "../../pages/upgradePage/UpgradePageContainer";
 import LanguagePageContainer from "../../pages/languagePage/LanguagePageContainer";
 import CountryPageContainer from "../../pages/countryPage/CountryPageContainer";
 import RegistrationPageContainer from "../../pages/registrationPage/RegistrationPageContainer";
-import RestartPageContainer from "../../pages/restartPage/RestartPageContainer";
+import FinalOnboardingPageContainer from "../../pages/finalOnboardingPage/FinalOnboardingPageContainer";
 import ErrorPage from "../../pages/errorPage/ErrorPage";
 import BuildInformation from "../buildInformation/BuildInformation";
 
@@ -19,6 +19,10 @@ import { BuildInfo } from "../../types/Build";
 import { Page, PageRoute } from "../../types/Page";
 import { Network } from "../../types/Network";
 import HotspotDisconnectDialog from "../../pages/hotspotDisconnectDialog/HotspotDisconnectDialog";
+import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
+import { runningOnWebRenderer } from "../../helpers/utils";
+import CloseButton from "../closeButton/CloseButton";
+import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -27,13 +31,24 @@ export default () => {
   const [email, setEmail] = useState("");
   const [connectedNetwork, setConnectedNetwork] = useState<Network>();
   const [skipUpgradePage, setSkipUpgradePage] = useState(false);
-  const [enableDisconnectedFromApDialog, setEnableDisconnectedFromApDialog] = useState(true);
+  const [enableDisconnectedFromApDialog, setEnableDisconnectedFromApDialog] =
+    useState(true);
+  const [showCloseButton, setShowCloseButton] = useState(false);
 
   useEffect(() => {
     getBuildInfo()
       .then(setBuildInfo)
       .catch(() => null);
   }, []);
+
+  useEffect(() => {
+    setShowCloseButton(runningOnWebRenderer());
+  }, []);
+
+  const onCloseButtonClick = async () => {
+    await stopFirstBootAppAutostart().catch(() => null);
+    await closeFirstBootAppWindow().catch(() => null);
+  };
 
   const addCompleted = (page: Page) => {
     if (!completedPages.includes(page)) {
@@ -42,7 +57,7 @@ export default () => {
   };
 
   const pathDisplaysApDisconnectDialog = (path: string) => {
-    return ![PageRoute.Upgrade.toString(), PageRoute.Restart.toString()].includes(path);
+    return ![PageRoute.Upgrade.toString(), PageRoute.Finish.toString()].includes(path);
   };
 
   return (
@@ -137,23 +152,29 @@ export default () => {
               goToNextPage={() => {
                 addCompleted(Page.Registration);
 
-                history.push(PageRoute.Restart);
+                history.push(PageRoute.Finish);
               }}
             />
           )}
         />
 
         <Route
-          path={PageRoute.Restart}
+          path={PageRoute.Finish}
           render={({ history }) => (
-            <RestartPageContainer
+            <FinalOnboardingPageContainer
               goToPreviousPage={() => history.push(PageRoute.Registration)}
+              goToNextPage={() => {
+                history.push(PageRoute.LandingSplash);
+                window.location.reload();
+              }}
             />
           )}
         />
 
         <Route component={ErrorPage} />
       </Switch>
+
+      {showCloseButton && <CloseButton onClose={onCloseButtonClick} />}
       <BuildInformation info={buildInfo} className={styles.buildInfo} />
       <HotspotDisconnectDialog enabled={pathDisplaysApDisconnectDialog(useLocation().pathname) && enableDisconnectedFromApDialog} />
     </>

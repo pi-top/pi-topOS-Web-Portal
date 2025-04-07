@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FinalOnboardingPage renders correct image 1`] = `
+<img
+  alt="reboot-screen"
+  class="image"
+  draggable="false"
+  src="reboot-screen.png"
+  style="max-height: 100%; max-width: 100%;"
+/>
+`;
+
+exports[`FinalOnboardingPage renders prompt correctly 1`] = `
+<h1
+  class="prompt"
+>
+  Great, you're all set! 
+  <span
+    class="green"
+  >
+    Enjoy
+  </span>
+  !
+</h1>
+`;

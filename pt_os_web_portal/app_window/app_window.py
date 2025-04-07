@@ -59,7 +59,11 @@ class AboutAppWindow(AppWindow):
 @dataclass
 class OnboardingAppWindow(AppWindow):
     url: str = "http://localhost/onboarding"
-    kiosk: bool = True
+    width_scalar: float = 0.65
+    height_scalar: float = 0.7
+    title: str = "pi-topOS Onboarding"
+    icon: str = "/usr/share/icons/hicolor/scalable/apps/pt-os-about.svg"
+    hide_frame: bool = True
 
 
 @dataclass
