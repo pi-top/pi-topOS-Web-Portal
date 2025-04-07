@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.23.0-2) bullseye; urgency=medium
+pi-top-os-web-portal (0.24.0-1) bullseye; urgency=medium
 
   * Remove onboarding (#485)
 
