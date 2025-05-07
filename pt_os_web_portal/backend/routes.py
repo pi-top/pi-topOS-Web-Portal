@@ -26,6 +26,7 @@ from .helpers.about import about_device
 from .helpers.build import os_build_info
 from .helpers.finalise import (
     available_space,
+    configure_landing,
     deprioritise_openbox_session,
     disable_ap_mode,
     do_firmware_update,
@@ -33,10 +34,12 @@ from .helpers.finalise import (
     enable_further_link_service,
     enable_pt_miniscreen,
     fw_update_is_due,
+    is_on_openbox_session,
     reboot,
     restore_files,
     should_switch_network,
     stop_first_boot_app_autostart,
+    stop_onboarding_autostart,
     update_eeprom,
 )
 from .helpers.keyboard import (
@@ -351,10 +354,24 @@ def get_available_space():
     return abort_on_no_data(available_space())
 
 
+@app.route("/configure-landing", methods=["POST"])
+def post_configure_landing():
+    logger.debug("Route '/configure-landing'")
+    configure_landing()
+    return "OK"
+
+
 @app.route("/deprioritise-openbox-session", methods=["POST"])
 def post_deprioritise_openbox_session():
     logger.debug("Route '/deprioritise-openbox-session'")
     deprioritise_openbox_session()
+    return "OK"
+
+
+@app.route("/stop-onboarding-autostart", methods=["POST"])
+def post_stop_onboarding_autostart():
+    logger.debug("Route '/stop-onboarding-autostart'")
+    stop_onboarding_autostart()
     return "OK"
 
 
@@ -597,6 +614,12 @@ def get_vnc_wpa_gui_url():
     except Exception:
         url = ""
     return jdumps({"url": url})
+
+
+@app.route("/is-on-openbox-session", methods=["GET"])
+def get_is_on_openbox_session():
+    logger.debug("Route '/is-on-openbox-session'")
+    return jdumps({"isOnOpenboxSession": is_on_openbox_session()})
 
 
 @app.route("/vnc-desktop-url", methods=["GET"])

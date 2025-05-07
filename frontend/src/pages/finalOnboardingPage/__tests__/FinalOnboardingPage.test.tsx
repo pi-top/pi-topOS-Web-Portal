@@ -34,7 +34,7 @@ describe("FinalOnboardingPage", () => {
   });
 
   it("renders correct image", () => {
-    expect(getByAltText("reboot-screen")).toMatchSnapshot();
+    expect(getByAltText("final-screen")).toMatchSnapshot();
   });
 
   it("renders prompt correctly", () => {

@@ -23,6 +23,8 @@ import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 import { runningOnWebRenderer } from "../../helpers/utils";
 import CloseButton from "../closeButton/CloseButton";
 import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart";
+import isOnOpenboxSession from "../../services/isOnOpenboxSession";
+import RestartPageContainer from "../../pages/restartPage/RestartPageContainer";
 
 export default () => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>();
@@ -149,10 +151,10 @@ export default () => {
               goToPreviousPage={() => {
                 history.push(skipUpgradePage ? PageRoute.Wifi : PageRoute.Upgrade);
               }}
-              goToNextPage={() => {
+              goToNextPage={async () => {
                 addCompleted(Page.Registration);
-
-                history.push(PageRoute.Finish);
+                const shouldGoToRestartPage = await isOnOpenboxSession();
+                history.push(shouldGoToRestartPage ? PageRoute.RestartPage : PageRoute.Finish);
               }}
             />
           )}
@@ -167,6 +169,15 @@ export default () => {
                 history.push(PageRoute.LandingSplash);
                 window.location.reload();
               }}
+            />
+          )}
+        />
+
+        <Route
+          path={PageRoute.RestartPage}
+          render={({ history }) => (
+            <RestartPageContainer
+              goToPreviousPage={() => history.push(PageRoute.Registration)}
             />
           )}
         />

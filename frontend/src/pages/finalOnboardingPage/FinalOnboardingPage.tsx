@@ -18,7 +18,7 @@ export default ({ onBackClick, onNextClick }: Props) => {
     <Layout
       banner={{
         src: rebootScreen,
-        alt: "reboot-screen",
+        alt: "final-screen",
       }}
       prompt={
         <>
