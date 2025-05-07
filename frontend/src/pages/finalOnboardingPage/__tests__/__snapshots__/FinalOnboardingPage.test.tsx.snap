@@ -2,7 +2,7 @@
 
 exports[`FinalOnboardingPage renders correct image 1`] = `
 <img
-  alt="reboot-screen"
+  alt="final-screen"
   class="image"
   draggable="false"
   src="reboot-screen.png"

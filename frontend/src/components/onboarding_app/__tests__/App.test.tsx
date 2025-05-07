@@ -40,6 +40,7 @@ import isConnectedToNetwork from "../../../services/isConnectedToNetwork";
 import serverStatus from "../../../services/serverStatus";
 import restartWebPortalService from "../../../services/restartWebPortalService";
 import isConnectedThroughAp from "../../../services/isConnectedThroughAp";
+import isOnOpenboxSession from "../../../services/isOnOpenboxSession";
 
 import { waitFor } from "../../../../test/helpers/waitFor";
 import wsBaseUrl from "../../../services/wsBaseUrl";
@@ -64,6 +65,7 @@ jest.mock("../../../services/getAvailableSpace");
 jest.mock("../../../services/serverStatus");
 jest.mock("../../../services/restartWebPortalService");
 jest.mock("../../../services/isConnectedThroughAp");
+jest.mock("../../../services/isOnOpenboxSession");
 
 const getBuildInfoMock = getBuildInfo as jest.Mock;
 const getLocalesMock = getLocales as jest.Mock;
@@ -85,6 +87,7 @@ const getAvailableSpaceMock = getAvailableSpace as jest.Mock;
 const serverStatusMock = serverStatus as jest.Mock;
 const restartWebPortalServiceMock = restartWebPortalService as jest.Mock;
 const isConnectedThroughApMock = isConnectedThroughAp as jest.Mock;
+const isOnOpenboxSessionMock = isOnOpenboxSession as jest.Mock;
 
 const keyboardVariants = {
   us: {
@@ -138,7 +141,8 @@ const mount = (pageRoute: PageRoute = PageRoute.Splash) => {
     waitForUpgradePage: () => waitForAltText("upgrade-page-banner"),
     waitForUpgradePageBanner: () => waitForAltText("upgrade-page-banner"),
     waitForRegistrationPage: () => waitForAltText("registration-screen-banner"),
-    waitForFinalOnboardingPage: () => waitForAltText("reboot-screen"),
+    waitForFinalOnboardingPage: () => waitForAltText("final-screen"),
+    waitForRestartPage: () => waitForAltText("reboot-screen"),
     // Actions
     registerEmail: (email: string) => {
       const emailInput = result.getByPlaceholderText(
@@ -196,6 +200,9 @@ describe("App", () => {
     // upgrade page mocks
     serverStatusMock.mockResolvedValue("OK");
     restartWebPortalServiceMock.mockResolvedValue("OK");
+
+    // asume we're not on openbox session; this is the default for the new 'no onboarding' flow
+    isOnOpenboxSessionMock.mockResolvedValue(false);
 
     server = new Server(`${wsBaseUrl}/os-upgrade`);
     server.on("connection", (socket) => {
@@ -585,6 +592,27 @@ describe("App", () => {
 
       fireEvent.click(getByText("Skip"));
       await waitForFinalOnboardingPage();
+    });
+
+    it("if on openbox session, navigates to RestartPage on next button click", async () => {
+      isOnOpenboxSessionMock.mockResolvedValue(true);
+      const { waitForRegistrationPage, registerEmail, waitForRestartPage } =
+        mount(PageRoute.Registration);
+      await waitForRegistrationPage();
+
+      await registerEmail("test@test.com");
+      await waitForRestartPage();
+    });
+
+    it("if on openbox session, navigates to RestartPage on skip button click", async () => {
+      isOnOpenboxSessionMock.mockResolvedValue(true);
+      const { getByText, waitForRegistrationPage, waitForRestartPage } = mount(
+        PageRoute.Registration
+      );
+      await waitForRegistrationPage();
+
+      fireEvent.click(getByText("Skip"));
+      await waitForRestartPage();
     });
 
     it("navigates to UpgradePage on back button click when connected", async () => {

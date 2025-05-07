@@ -1,0 +1,26 @@
+.banner {
+}
+
+.progress {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progressBar {
+  color: var(--green);
+}
+
+.message {
+  composes: text from '../../globalStyles/Typography.module.css';
+  padding: 20px;
+  font-size: 16px;
+  color: var(--green);
+}
+
+.error {
+  composes: fontError from '../../globalStyles/Typography.module.css';
+  font-size: 18px;
+}

@@ -1,6 +1,6 @@
 import logging
 from ipaddress import ip_address
-from os import path
+from os import path, remove
 from typing import Dict
 
 from pitop.common.command_runner import run_command, run_command_background
@@ -40,6 +40,18 @@ def available_space() -> str:
     return space
 
 
+def is_on_openbox_session() -> bool:
+    cmd = "update-alternatives --get-selections"
+    try:
+        selections = run_command(cmd, timeout=5).splitlines()
+        for line in selections:
+            if "x-session-manager" in line:
+                return "openbox-session" in line
+    except Exception as e:
+        logger.error(f"is_on_openbox_session: {e}")
+    return False
+
+
 def deprioritise_openbox_session() -> None:
     logger.debug("Function: deprioritise_openbox_session()")
     run_command(
@@ -48,6 +60,30 @@ def deprioritise_openbox_session() -> None:
         timeout=30,
         lower_priority=True,
     )
+
+
+def configure_landing() -> None:
+    logger.debug("Function: configure_landing()")
+
+    try:
+        run_command(
+            f"ln -s {path.abspath(path.dirname(path.realpath(__file__))+'/../../resources/pt-first-boot-app.desktop')} /etc/xdg/autostart",
+            timeout=60,
+            lower_priority=True,
+        )
+    except Exception as e:
+        logger.error(f"configure_landing: {e}")
+
+
+def stop_onboarding_autostart() -> None:
+    logger.debug("Function: stop_onboarding_autostart()")
+    try:
+        state.set("app", "onboarded", "true")
+        remove("/etc/xdg/autostart/pt-os-setup.desktop")
+    except FileNotFoundError:
+        logger.debug("stop_onboarding_autostart: Onboarding already disabled")
+    except Exception as e:
+        logger.error(f"stop_onboarding_autostart: {e}")
 
 
 def stop_first_boot_app_autostart() -> None:

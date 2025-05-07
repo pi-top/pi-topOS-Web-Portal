@@ -18,6 +18,7 @@ export enum PageRoute {
   Language = "/onboarding/language",
   Registration = "/onboarding/registration",
   Finish = "/onboarding/finish",
+  RestartPage = "/onboarding/restart",
   Links = "/landing/links",
-  LandingSplash = "/landing"
+  LandingSplash = "/landing",
 }

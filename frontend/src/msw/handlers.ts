@@ -113,4 +113,10 @@ export default [
       })
     );
   }),
+  rest.post("/reboot", (_, res, ctx) => {
+    return res(ctx.body("OK"));
+  }),
+  rest.get("/is-on-openbox-session", (_, res, ctx) => {
+    return res(ctx.json({ isOnOpenboxSession: false }));
+  }),
 ];
