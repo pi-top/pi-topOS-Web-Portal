@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.24.0-2) bullseye; urgency=medium
+
+  * Show restart page for devices with onboarding
+  * Add pt-unattended-upgrades as dependency for pt-os-web-portal
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 09 May 2025 18:00:54 +0000
+
 pi-top-os-web-portal (0.24.0-1) bullseye; urgency=medium
 
   * Remove onboarding (#485)
