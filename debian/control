@@ -38,7 +38,7 @@ Depends:
 # Other pi-top dependencies
  pi-topd (>= 5.7.0-1),
  pt-firmware-updater (>= 4.2.0-1),
- pt-unattended-upgrades,
+ pt-os-update-monitor,
 Description: pi-topOS Web Portal
  pi-topOS's web portal. Provides means to interact and configure the device
  over a web application.
