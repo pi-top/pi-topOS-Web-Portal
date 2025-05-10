@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.24.1-2) bullseye; urgency=medium
+
+  * Fix dependency name to pt-os-update-monitor (#489)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Sat, 10 May 2025 00:50:39 +0000
+
 pi-top-os-web-portal (0.24.1-1) bullseye; urgency=medium
 
   * Show restart page for devices with onboarding
