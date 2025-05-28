@@ -18,14 +18,14 @@ is_installed() {
 }
 
 case "$1" in
-  configure)
+configure)
 	# if network-manager-gnome was manually installed, skip
-	if [ $(apt show network-manager-gnome 2>/dev/null| grep APT-Manual-Installed | awk '{print $2}') = "no" ]; then
+	if [ $(apt show network-manager-gnome 2>/dev/null | grep APT-Manual-Installed | awk '{print $2}') = "no" ]; then
 		# prevent nm-applet from auto starting if pt-os-web-portal is the only package that has network-manager-gnome as a dependency
 		PACKAGES=$(get_reverse_dependencies network-manager-gnome)
 		if [[ $PACKAGES == "pt-os-web-portal" ]]; then
 			if grep -q -v "Hidden=true" /etc/xdg/autostart/nm-applet.desktop; then
-				echo "Hidden=true" >> /etc/xdg/autostart/nm-applet.desktop
+				echo "Hidden=true" >>/etc/xdg/autostart/nm-applet.desktop
 			fi
 		fi
 	fi
@@ -44,13 +44,27 @@ case "$1" in
 		/usr/lib/pt-os-web-portal/handle-service-restart-in-policy add NetworkManager.service
 	fi
 
-  ;;
+	LAST_UPDATE_FOLDER="/var/lib/pt-os-web-portal"
+	STATE_FILE="${LAST_UPDATE_FOLDER}/state.cfg"
 
-\
-  abort-upgrade | abort-remove | abort-deconfigure | try-restart | triggered) ;;
+ 	# if upgrading from a previous version...
+	if [ ! -z "$2" ]; then
+		# and the state file doesn't exist (probably upgrading during onboarding)
+		if [ ! -f "${STATE_FILE}" ]; then
+			# the miniscreen onboarding app should run ....
+			mkdir -p "${LAST_UPDATE_FOLDER}"
+			cat >"${STATE_FILE}" <<EOL
+[onboarding]
+start_miniscreen_app = true
+EOL
+		fi
+	fi
 
-\
-	*)
+	;;
+
+abort-upgrade | abort-remove | abort-deconfigure | try-restart | triggered) ;;
+
+*)
 	echo "postinst called with unknown argument \`$1'" >&2
 	exit 1
 	;;

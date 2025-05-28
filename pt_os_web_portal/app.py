@@ -53,9 +53,13 @@ class App:
             and state.get("app", "onboarded", fallback="false") == "false"
         ):
             logger.info("Onboarding not completed ...")
-            if self.device == DeviceName.pi_top_4.value:
-                logger.debug("Setting ENV VAR to use miniscreen as system...")
+            if (
+                self.device == DeviceName.pi_top_4.value
+                and state.get("onboarding", "start_miniscreen_app", fallback="false")
+                == "true"
+            ):
                 environ["PT_MINISCREEN_SYSTEM"] = "1"
+                logger.debug("Setting ENV VAR to use miniscreen as system...")
 
                 logger.info("Starting miniscreen onboarding application")
                 self.miniscreen_onboarding = OnboardingAssistantApp()
