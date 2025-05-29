@@ -50,8 +50,8 @@ configure)
 	# only when upgrading the pt-os-web-portal package...
 	# ($2 is the old version when calling this postinst script)
 	if [ -n "$2" ]; then
-		# web-portal won't have a state file unless the pi-top has already been onboarded
-		if [ ! -f "${STATE_FILE}" ]; then
+		# state file won't exist or it will be empty unless the pi-top has already been onboarded
+		if [ ! -f "${STATE_FILE}" ] || [ ! -s "${STATE_FILE}" ]; then
 			# create a state file to ensure the onboarding and miniscreen onboarding assistant app runs
 			mkdir -p "${LAST_UPDATE_FOLDER}"
 			cat >"${STATE_FILE}" <<EOL
