@@ -48,25 +48,31 @@ class App:
     def start(self):
         self.os_updater.start()
 
-        if (
+        is_onboarding = (
             is_pi_top_os()
             and state.get("app", "onboarded", fallback="false") == "false"
-        ):
+        )
+
+        if is_onboarding:
             logger.info("Onboarding not completed ...")
-            if (
-                self.device == DeviceName.pi_top_4.value
-                and state.get("onboarding", "start_miniscreen_app", fallback="false")
+
+            is_pi_top_4 = self.device == DeviceName.pi_top_4.value
+            should_start_miniscreen_app = (
+                state.get("onboarding", "start_miniscreen_app", fallback="false")
                 == "true"
-            ):
-                environ["PT_MINISCREEN_SYSTEM"] = "1"
+            )
+
+            if not is_pi_top_4:
+                logger.info("Not a pi-top[4] - disabling AP mode")
+                disable_ap_mode()
+
+            if is_pi_top_4 and should_start_miniscreen_app:
                 logger.debug("Setting ENV VAR to use miniscreen as system...")
+                environ["PT_MINISCREEN_SYSTEM"] = "1"
 
                 logger.info("Starting miniscreen onboarding application")
                 self.miniscreen_onboarding = OnboardingAssistantApp()
                 self.miniscreen_onboarding.start()
-            else:
-                logger.info("Not a pi-top[4] - disabling AP mode")
-                disable_ap_mode()
 
         setup_device_registration_event_handlers()
 

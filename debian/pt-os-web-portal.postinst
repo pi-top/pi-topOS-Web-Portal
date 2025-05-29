@@ -47,13 +47,17 @@ configure)
 	LAST_UPDATE_FOLDER="/var/lib/pt-os-web-portal"
 	STATE_FILE="${LAST_UPDATE_FOLDER}/state.cfg"
 
- 	# if upgrading from a previous version...
-	if [ ! -z "$2" ]; then
-		# and the state file doesn't exist (probably upgrading during onboarding)
+	# only when upgrading the pt-os-web-portal package...
+	# ($2 is the old version when calling this postinst script)
+	if [ -n "$2" ]; then
+		# web-portal won't have a state file unless the pi-top has already been onboarded
 		if [ ! -f "${STATE_FILE}" ]; then
-			# the miniscreen onboarding app should run ....
+			# create a state file to ensure the onboarding and miniscreen onboarding assistant app runs
 			mkdir -p "${LAST_UPDATE_FOLDER}"
 			cat >"${STATE_FILE}" <<EOL
+[app]
+onboarded = false
+
 [onboarding]
 start_miniscreen_app = true
 EOL
