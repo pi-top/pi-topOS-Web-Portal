@@ -1,14 +1,22 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from os import environ
 
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
+from pitop.common.pt_os import is_pi_top_os
 from pitop.system import device_type
 
+from pt_os_web_portal.backend.helpers.finalise import disable_ap_mode
+
+from . import state
 from .backend import create_app
 from .connection_manager import ConnectionManager
 from .device_registration.listener import setup_device_registration_event_handlers
+from .miniscreen_onboarding_assistant.onboarding_assistant_app import (
+    OnboardingAssistantApp,
+)
 from .os_updater import OSUpdater
 
 logger = logging.getLogger(__name__)
@@ -31,6 +39,7 @@ class App:
             handler_class=WebSocketHandler,
         )
 
+        self.miniscreen_onboarding = None
         self.connection_manager = None
 
         if self.device == DeviceName.pi_top_4.value:
@@ -38,6 +47,32 @@ class App:
 
     def start(self):
         self.os_updater.start()
+
+        is_onboarding = (
+            is_pi_top_os()
+            and state.get("app", "onboarded", fallback="false") == "false"
+        )
+
+        if is_onboarding:
+            logger.info("Onboarding not completed ...")
+
+            is_pi_top_4 = self.device == DeviceName.pi_top_4.value
+            should_start_miniscreen_app = (
+                state.get("onboarding", "start_miniscreen_app", fallback="false")
+                == "true"
+            )
+
+            if not is_pi_top_4:
+                logger.info("Not a pi-top[4] - disabling AP mode")
+                disable_ap_mode()
+
+            if is_pi_top_4 and should_start_miniscreen_app:
+                logger.debug("Setting ENV VAR to use miniscreen as system...")
+                environ["PT_MINISCREEN_SYSTEM"] = "1"
+
+                logger.info("Starting miniscreen onboarding application")
+                self.miniscreen_onboarding = OnboardingAssistantApp()
+                self.miniscreen_onboarding.start()
 
         setup_device_registration_event_handlers()
 
@@ -56,6 +91,8 @@ class App:
         with ThreadPoolExecutor() as executor:
             for stop_func in [
                 self.os_updater.stop,
+                lambda: self.miniscreen_onboarding
+                and self.miniscreen_onboarding.stop(),
                 lambda: self.connection_manager and self.connection_manager.stop(),
                 stop_wsgi_server,
             ]:
