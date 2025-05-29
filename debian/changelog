@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.25.0-2) bullseye; urgency=medium
+
+  * Handle empty state files in postinst (#493)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 29 May 2025 20:29:55 +0000
+
 pi-top-os-web-portal (0.25.0-1) bullseye; urgency=medium
 
   * Add onboarding miniscreen app (#491)
