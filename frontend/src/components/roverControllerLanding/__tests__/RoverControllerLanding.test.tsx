@@ -237,3 +237,64 @@ describe("RoverControllerLanding", () => {
     expect(await screen.findByText(matchers.stopped)).toBeInTheDocument();
   });
 });
+
+it("when controller is ready, button opens controller in new tab", async () => {
+  setControllerStatus("active");
+
+  render(<RoverControllerLanding />);
+
+  expect(await screen.findByText(matchers.started)).toBeInTheDocument();
+
+  const openLink = screen.getByText(matchers.openLink, {
+    selector: "a",
+  });
+  expect(openLink).toHaveAttribute("href", "http://localhost:8070");
+  expect(openLink).toHaveAttribute("target", "_blank");
+  expect(openLink).toHaveAttribute("rel", "noopener noreferrer");
+});
+
+describe("when standalone prop is set", () => {
+  afterEach(() => {
+    runningOnWebRendererMock.mockImplementation(() => false)
+  })
+
+  it("renders banner image", () => {
+    render(<RoverControllerLanding standalone />);
+
+    expect(screen.getByAltText("rover controller banner")).toBeInTheDocument();
+  });
+
+  it("when controller starts, shows correct message", async () => {
+    setControllerStatus("active");
+
+    render(<RoverControllerLanding standalone />);
+
+    expect(await screen.findByText(matchers.started)).toBeInTheDocument();
+  });
+
+  it("when controller starts, button opens controller in same tab", async () => {
+    setControllerStatus("active");
+
+    render(<RoverControllerLanding standalone />);
+
+    await screen.findByText(matchers.started);
+
+    const openLink = screen.getByText(matchers.openLink, {
+      selector: "a",
+    });
+    expect(openLink).toHaveAttribute("href", "http://localhost:8070");
+    // In standalone mode, link should NOT have target="_blank"
+    expect(openLink).not.toHaveAttribute("target");
+    expect(openLink).not.toHaveAttribute("rel");
+  });
+
+  it("does not initialize controller state when on web renderer in standalone mode", () => {
+    runningOnWebRendererMock.mockImplementation(() => true);
+
+    render(<RoverControllerLanding standalone />);
+
+    expect(screen.getByText(matchers.useDifferentDeviceWarning)).toBeInTheDocument();
+    // Should not show initializing message when on web renderer
+    expect(screen.queryByText(matchers.initialising)).not.toBeInTheDocument();
+  });
+});

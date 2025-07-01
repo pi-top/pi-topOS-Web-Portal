@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import cx from "classnames";
 import styles from "./Landing.module.css";
 
@@ -12,13 +12,18 @@ export type LandingPageElement = {
   detail: JSX.Element;
 };
 
+export type LandingPageObjs = {
+  [key: string]: LandingPageElement;
+}
+
+
 export type Props = {
-  pages: LandingPageElement[];
+  pages: LandingPageObjs;
+  selectedElementId: string;
+  onSelectElement: (id: string) => void;
 };
 
-export default ({ pages }: Props) => {
-  const [selectedElement, setSelectedElement] = useState(pages[0]);
-
+export default ({ pages, selectedElementId, onSelectElement }: Props) => {
   useEffect(() => {
     stopFirstBootAppAutostart().catch(() => null);
   }, []);
@@ -26,17 +31,17 @@ export default ({ pages }: Props) => {
   return (
     <div className={cx(styles.container)}>
       <div className={styles.landingList}>
-        {pages.map((element) => (
+        {Object.values(pages).map((element) => (
           <div key={element.id} className={styles.elementDiv}>
             <Button
               unstyled
               className={cx(
                 styles.element,
-                selectedElement.id === element.id
+                selectedElementId === element.id
                   ? styles.selectedElement
                   : ""
               )}
-              onClick={() => setSelectedElement(element)}
+              onClick={() => onSelectElement(element.id)}
             >
               <span className={styles.elementText}>{element.title}</span>
             </Button>
@@ -46,7 +51,7 @@ export default ({ pages }: Props) => {
 
       <div className={styles.landingPage}>
         <div className={styles.detailContainer}>
-          {selectedElement.detail}
+          {pages[selectedElementId].detail}
         </div>
       </div>
     </div>
