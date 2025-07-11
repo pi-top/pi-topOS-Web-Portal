@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import cx from "classnames";
+import { useHistory, useLocation } from "react-router-dom";
 
 import styles from "./LandingPage.module.css";
 
@@ -29,8 +30,8 @@ import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart"
 import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 
 
-const landingPages = [
-  {
+const landingPagesObj = {
+  further: {
     title: "Learn by making on Further",
     id: "further",
     detail: (
@@ -60,12 +61,12 @@ const landingPages = [
       />
     ),
   },
-  {
+  desktop: {
     title: "Remote Desktop",
-    id: "vnc",
+    id: "desktop",
     detail: <WebVncDesktopLanding />,
   },
-  {
+  updater: {
     title: "pi-top System Update",
     id: "updater",
     detail: (
@@ -92,7 +93,7 @@ const landingPages = [
       />
     ),
   },
-  {
+  wifi: {
     title: "Wi-Fi Settings",
     id: "wifi",
     detail: (
@@ -115,7 +116,7 @@ const landingPages = [
       />
     ),
   },
-  {
+  sdk: {
     title: "Python SDK",
     id: "sdk",
     detail: (
@@ -146,12 +147,12 @@ const landingPages = [
       />
     ),
   },
-  {
+  rover: {
     title: "Rover Controller",
     id: "rover",
     detail: <RoverControllerLanding />,
   },
-  {
+  kb: {
     title: "pi-top Knowledge Base",
     id: "kb",
     detail: (
@@ -179,7 +180,7 @@ const landingPages = [
       />
     ),
   },
-  {
+  "reinstall-os": {
     title: "Reinstall pi-topOS",
     id: "reinstall-os",
     detail: (
@@ -205,9 +206,38 @@ const landingPages = [
       />
     ),
   },
-];
+};
 
 export default () => {
+  const history = useHistory();
+  const location = useLocation();
+  const landingPageRoutes = Object.keys(landingPagesObj);
+
+  // Get page from query string
+  const params = new URLSearchParams(location.search);
+  const pageId = params.get("p");
+
+  const [selectedElementId, setSelectedElementId] = useState(
+    pageId && landingPageRoutes.includes(pageId)
+      ? pageId
+      : landingPageRoutes[0]
+  );
+
+  useEffect(() => {
+    if (pageId && landingPageRoutes.includes(pageId)) {
+      setSelectedElementId(pageId);
+    }
+  }, [pageId, landingPageRoutes]);
+
+  const handleSelectElement = (id: string) => {
+    // Update the query string using history.push
+    history.push({
+      pathname: location.pathname,
+      search: `?p=${id}`,
+    });
+    setSelectedElementId(id);
+  };
+
   const [showCloseButton, setShowCloseButton] = useState(false);
 
   useEffect(() => {
@@ -223,7 +253,11 @@ export default () => {
     <div className={cx(styles.layout)}>
       {showCloseButton && <CloseButton onClose={onCloseButtonClick} />}
       <LandingHeader />
-      <Landing pages={landingPages} />
+      <Landing
+        pages={landingPagesObj}
+        selectedElementId={selectedElementId}
+        onSelectElement={handleSelectElement}
+      />
     </div>
   );
 };
