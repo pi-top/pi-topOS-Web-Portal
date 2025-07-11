@@ -1,6 +1,6 @@
 from os.path import isfile
 from threading import Event
-from time import sleep
+from time import sleep, time
 
 
 class dotdict(dict):
@@ -39,3 +39,10 @@ class SleepMocker:
         self.sleep_event.set()
         while sleep_mock.call_count == current:
             sleep(0.01)
+
+
+def wait_for_condition(condition, timeout=10):
+    start_time = time()
+    while not condition() and time() - start_time < timeout:
+        sleep(0.1)
+    return condition()
