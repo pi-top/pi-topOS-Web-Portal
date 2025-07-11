@@ -9,7 +9,6 @@ import { runningOnWebRenderer } from "../../helpers/utils";
 import getVncDesktopUrl from "../../services/getVncDesktopUrl";
 import vncServiceStatus from "../../services/vncServiceStatus";
 
-
 enum VncServiceState {
   Stopped = "STOPPED",
   Running = "RUNNING",
@@ -17,9 +16,10 @@ enum VncServiceState {
   Unknown = "UNKNOWN",
 }
 
-
-const WebVncDesktopLanding = () => {
-  const [vncServiceState, setVncServiceState] = useState<VncServiceState>(VncServiceState.Unknown);
+const WebVncDesktopLanding = ({ standalone }: { standalone?: boolean }) => {
+  const [vncServiceState, setVncServiceState] = useState<VncServiceState>(
+    VncServiceState.Unknown
+  );
   const [url, setUrl] = useState("");
 
   const initialiseVncServiceState = useCallback(async () => {
@@ -28,7 +28,9 @@ const WebVncDesktopLanding = () => {
       if (serviceData.isRunning) {
         const urlData = await getVncDesktopUrl();
         setUrl(urlData.url);
-        setVncServiceState(urlData.url !== "" ? VncServiceState.Running: VncServiceState.Stopped);
+        setVncServiceState(
+          urlData.url !== "" ? VncServiceState.Running : VncServiceState.Stopped
+        );
       } else {
         setVncServiceState(VncServiceState.Stopped);
       }
@@ -41,23 +43,41 @@ const WebVncDesktopLanding = () => {
     useMemo(() => {
       switch (vncServiceState) {
         case VncServiceState.Running:
-        return {
-          buttonLabel: "Let's Go!",
-          onButtonClick: () => window.open(url),
-          content: (
-            <>
-              Access programs and resources on your pi-top as if you were actually working on it!
-            </>
-          ), };
+          const isHttps = window.location.protocol === "https:";
+          if (standalone && !isHttps) {
+            window.location.href = url;
+            return {
+              content: (
+                <>
+                  <p>Redirecting to desktop...</p>
+                  <Spinner size={45} />
+                </>
+              ),
+              buttonLabel: "Let's Go!",
+              buttonDisabled: true,
+            };
+          }
+          return {
+            buttonLabel: "Let's Go!",
+            onButtonClick: () => window.open(url),
+            content: (
+              <>
+                Access programs and resources on your pi-top as if you were
+                actually working on it!
+              </>
+            ),
+          };
         case VncServiceState.Stopped:
           return {
             buttonLabel: "Let's Go!",
             buttonDisabled: true,
             content: (
               <>
-                The VNC service is not enabled in your device. Make sure to enable it and try again.
+                The VNC service is not enabled in your device. Make sure to
+                enable it and try again.
                 <br />
-                If your device is a pi-top[4], you can do this by navigating to the Settings menu in you miniscreen.
+                If your device is a pi-top[4], you can do this by navigating to
+                the Settings menu in you miniscreen.
               </>
             ),
           };
@@ -68,7 +88,8 @@ const WebVncDesktopLanding = () => {
             buttonDisabled: true,
             content: (
               <>
-                There was an error while fetching your device state. Please try again later.
+                There was an error while fetching your device state. Please try
+                again later.
               </>
             ),
           };
@@ -85,7 +106,7 @@ const WebVncDesktopLanding = () => {
             buttonDisabled: true,
           };
       }
-    }, [vncServiceState, url]);
+    }, [vncServiceState, url, standalone]);
 
   // initialise state on mount
   useEffect(() => {
@@ -111,7 +132,7 @@ const WebVncDesktopLanding = () => {
         disabled: buttonDisabled,
         onClick: onButtonClick,
       }}
-      className={styles.root}
+      className={standalone ? undefined : styles.root}
       showHeader={false}
     >
       {

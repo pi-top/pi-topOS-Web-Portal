@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import cx from "classnames";
 import styles from "./Landing.module.css";
 
@@ -6,19 +6,23 @@ import Button from "../atoms/button/Button";
 
 import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart";
 
-export type LandingPageElement = {
+export type LandingTabContent = {
   title: string;
   id: string;
   detail: JSX.Element;
 };
 
+export type LandingTabs = {
+  [key: string]: LandingTabContent;
+}
+
 export type Props = {
-  pages: LandingPageElement[];
+  tabs: LandingTabs;
+  selectedTabId: string;
+  onSelectTab: (id: string) => void;
 };
 
-export default ({ pages }: Props) => {
-  const [selectedElement, setSelectedElement] = useState(pages[0]);
-
+export default ({ tabs, selectedTabId, onSelectTab }: Props) => {
   useEffect(() => {
     stopFirstBootAppAutostart().catch(() => null);
   }, []);
@@ -26,19 +30,19 @@ export default ({ pages }: Props) => {
   return (
     <div className={cx(styles.container)}>
       <div className={styles.landingList}>
-        {pages.map((element) => (
-          <div key={element.id} className={styles.elementDiv}>
+        {Object.values(tabs).map((tab) => (
+          <div key={tab.id} className={styles.elementDiv}>
             <Button
               unstyled
               className={cx(
                 styles.element,
-                selectedElement.id === element.id
+                selectedTabId === tab.id
                   ? styles.selectedElement
                   : ""
               )}
-              onClick={() => setSelectedElement(element)}
+              onClick={() => onSelectTab(tab.id)}
             >
-              <span className={styles.elementText}>{element.title}</span>
+              <span className={styles.elementText}>{tab.title}</span>
             </Button>
           </div>
         ))}
@@ -46,7 +50,7 @@ export default ({ pages }: Props) => {
 
       <div className={styles.landingPage}>
         <div className={styles.detailContainer}>
-          {selectedElement.detail}
+          {tabs[selectedTabId].detail}
         </div>
       </div>
     </div>

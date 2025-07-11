@@ -47,11 +47,19 @@ const pollControllerStatus = ({
   };
 };
 
-const RoverControllerLink = () => (
+
+const getRoverControllerUrl = () => {
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = protocol === "http:" ? 8070 : 8071;
+  return `${protocol}//${hostname}:${port}`;
+};
+
+
+export const RoverControllerLink = ({ standalone }: { standalone?: boolean }) => (
   <Link
-    href={`http://${window.location.hostname}:8070`}
-    target="_blank"
-    rel="noopener noreferrer"
+    href={getRoverControllerUrl()}
+    {...(!standalone && { target: "_blank", rel: "noreferrer" })}
   >
     Open Rover Controller
   </Link>
@@ -67,7 +75,7 @@ enum ControllerState {
   Crashed = "CRASHED",
 }
 
-const RoverControllerLanding = () => {
+const RoverControllerLanding = ({ standalone }: { standalone?: boolean }) => {
   const [controllerState, setControllerState] = useState<ControllerState>();
   const previousControllerState = usePrevious(controllerState);
 
@@ -109,7 +117,7 @@ const RoverControllerLanding = () => {
                   If you have not built your rover yet there is an instructional{" "}
                   <Link
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noreferrer"
                     href="https://static.pi-top.com/documents/pi-top_RoboticsKit_AlexBuild_22012021.pdf"
                   >
                     booklet
@@ -117,7 +125,7 @@ const RoverControllerLanding = () => {
                   and{" "}
                   <Link
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noreferrer"
                     href="https://www.youtube.com/watch?v=8c-T1KmL0lY"
                   >
                     video
@@ -136,7 +144,7 @@ const RoverControllerLanding = () => {
               <>
                 <p>Rover controller is running!</p>
                 <p>
-                  <RoverControllerLink />
+                  <RoverControllerLink standalone={standalone} />
                 </p>
               </>
             ),
@@ -181,7 +189,7 @@ const RoverControllerLanding = () => {
               <>
                 <p>Failed to stop rover controller!</p>
                 <p>
-                  <RoverControllerLink />
+                  <RoverControllerLink standalone={standalone} />
                 </p>
               </>
             ),
@@ -216,7 +224,7 @@ const RoverControllerLanding = () => {
             buttonDisabled: true,
           };
       }
-    }, [controllerState, start, stop]);
+    }, [controllerState, start, stop, standalone]);
 
   // initialise controller state on mount
   useEffect(() => {
@@ -297,7 +305,7 @@ const RoverControllerLanding = () => {
         disabled: buttonDisabled,
         onClick: onButtonClick,
       }}
-      className={styles.root}
+      className={standalone ? undefined : styles.root}
       showHeader={false}
     >
       {
