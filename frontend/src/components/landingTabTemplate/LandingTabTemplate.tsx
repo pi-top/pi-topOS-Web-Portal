@@ -3,7 +3,7 @@ import React, { useEffect, useState, ReactElement } from "react";
 import Layout from "../layout/Layout";
 import Spinner from "../atoms/spinner/Spinner";
 
-import styles from "./LandingPageTemplate.module.css";
+import styles from "./LandingTabTemplate.module.css";
 import { runningOnWebRenderer } from "../../helpers/utils";
 import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 

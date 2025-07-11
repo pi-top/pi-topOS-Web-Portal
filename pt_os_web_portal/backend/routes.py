@@ -2,8 +2,8 @@ import logging
 from ipaddress import ip_address
 from json import dumps as jdumps
 from threading import Lock, Thread
-from urllib.request import Request, urlopen
 
+import requests
 from flask import abort
 from flask import current_app as app
 from flask import request, send_from_directory
@@ -540,11 +540,21 @@ def get_rover_controller_status():
     status = service_is_active(SystemService.RoverController, timeout=1)
     if status == "active":
         try:
-            response = urlopen(Request("http://localhost:8070"))
-            if response.getcode() != 200:
+
+            protocol = "https" if request.is_secure else "http"
+            port = 8070 if protocol == "http" else 8071
+            url = f"{protocol}://localhost:{port}"
+            response = requests.get(
+                url,
+                timeout=2,
+                verify=False,  # Skip SSL verification for localhost
+                allow_redirects=False,
+            )
+            if response.status_code != 200:
                 status = "inactive"
 
-        except Exception:
+        except Exception as e:
+            logger.debug(f"Rover controller check failed: {e}")
             status = "inactive"
 
     return jdumps({"status": status})

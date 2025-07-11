@@ -2,6 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
+from tests.utils import wait_for_condition
+
 
 def test_constructor_excepts_when_interface_doesnt_exist(network_manager_handler):
     with pytest.raises(Exception):
@@ -81,6 +83,7 @@ def test_on_connection_success_state_is_updated(network_manager_handler):
     handler = network_manager_handler()
     assert handler.is_connected() is False
     handler.connect(bssid="F0:9B:B8:2D:20:4C", password="valid-password")
+    wait_for_condition(lambda: handler.is_connected() is True)
     assert handler.is_connected() is True
 
 

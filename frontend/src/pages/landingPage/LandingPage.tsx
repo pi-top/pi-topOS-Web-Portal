@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import cx from "classnames";
+import { useHistory, useLocation } from "react-router-dom";
 
 import styles from "./LandingPage.module.css";
 
 import LandingHeader from "../../components/landingHeader/LandingHeader";
 import Landing from "../../components/landing/Landing";
-import LandingPageTemplate from "../../components/landingPageTemplate/LandingPageTemplate";
+import LandingTabTemplate from "../../components/landingTabTemplate/LandingTabTemplate";
 import introScreen from "../../assets/images/intro-screen.png";
 import registrationScreen from "../../assets/images/registration-screen.png";
 import keyboardScreen from "../../assets/images/keyboard-screen.png";
@@ -29,12 +30,12 @@ import stopFirstBootAppAutostart from "../../services/stopFirstBootAppAutostart"
 import closeFirstBootAppWindow from "../../services/closeFirstBootAppWindow";
 
 
-const landingPages = [
-  {
+const tabs = {
+  further: {
     title: "Learn by making on Further",
     id: "further",
     detail: (
-      <LandingPageTemplate
+      <LandingTabTemplate
         key="further"
         title="Learn by making on Further"
         urlInfo={{
@@ -60,16 +61,16 @@ const landingPages = [
       />
     ),
   },
-  {
+  desktop: {
     title: "Remote Desktop",
-    id: "vnc",
+    id: "desktop",
     detail: <WebVncDesktopLanding />,
   },
-  {
+  updater: {
     title: "pi-top System Update",
     id: "updater",
     detail: (
-      <LandingPageTemplate
+      <LandingTabTemplate
         key="updater"
         title="pi-top System Update"
         urlInfo={{
@@ -92,11 +93,11 @@ const landingPages = [
       />
     ),
   },
-  {
+  wifi: {
     title: "Wi-Fi Settings",
     id: "wifi",
     detail: (
-      <LandingPageTemplate
+      <LandingTabTemplate
         key="wifi"
         title="Wi-Fi Settings"
         urlInfo={{
@@ -115,11 +116,11 @@ const landingPages = [
       />
     ),
   },
-  {
+  sdk: {
     title: "Python SDK",
     id: "sdk",
     detail: (
-      <LandingPageTemplate
+      <LandingTabTemplate
         key="sdk"
         title="Python SDK"
         urlInfo={{
@@ -146,17 +147,17 @@ const landingPages = [
       />
     ),
   },
-  {
+  rover: {
     title: "Rover Controller",
     id: "rover",
     detail: <RoverControllerLanding />,
   },
-  {
+  'knowledge-base': {
     title: "pi-top Knowledge Base",
-    id: "kb",
+    id: "knowledge-base",
     detail: (
-      <LandingPageTemplate
-        key="kb"
+      <LandingTabTemplate
+        key="knowledge-base"
         title="pi-top Knowledge Base"
         urlInfo={{
           defaultUrl: "https://knowledgebase.pi-top.com",
@@ -179,11 +180,11 @@ const landingPages = [
       />
     ),
   },
-  {
+  "reinstall-os": {
     title: "Reinstall pi-topOS",
     id: "reinstall-os",
     detail: (
-      <LandingPageTemplate
+      <LandingTabTemplate
         key="reinstall-os"
         title="Reinstall pi-topOS"
         urlInfo={{
@@ -205,9 +206,37 @@ const landingPages = [
       />
     ),
   },
-];
+};
 
 export default () => {
+  const history = useHistory();
+  const location = useLocation();
+  const landingRoutes = Object.keys(tabs);
+
+  // Get page from query string
+  const params = new URLSearchParams(location.search);
+  const tabId = params.get("p");
+
+  const [selectedTabId, setSelectedTabId] = useState(
+    tabId && landingRoutes.includes(tabId)
+      ? tabId
+      : landingRoutes[0]
+  );
+
+  useEffect(() => {
+    if (tabId && landingRoutes.includes(tabId)) {
+      setSelectedTabId(tabId);
+    }
+  }, [tabId, landingRoutes]);
+
+  const handleSelectTab = (id: string) => {
+    // Update the query string using history.push
+    history.push({
+      pathname: location.pathname,
+      search: `?p=${id}`,
+    });
+  };
+
   const [showCloseButton, setShowCloseButton] = useState(false);
 
   useEffect(() => {
@@ -223,7 +252,11 @@ export default () => {
     <div className={cx(styles.layout)}>
       {showCloseButton && <CloseButton onClose={onCloseButtonClick} />}
       <LandingHeader />
-      <Landing pages={landingPages} />
+      <Landing
+        tabs={tabs}
+        selectedTabId={selectedTabId}
+        onSelectTab={handleSelectTab}
+      />
     </div>
   );
 };

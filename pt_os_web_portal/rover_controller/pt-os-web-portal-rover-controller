@@ -1,16 +1,59 @@
 #!/usr/bin/env python3
-import click
-from pitop.camera import Camera
-from pitop.labs import RoverWebController
-from pitop.robotics import DriveController
+from gevent import monkey
+
+# Monkey patch - set thread to False to avoid issues with camera locking
+monkey.patch_all(thread=False)
+
+import pitop.common.ptdm  # noqa: E402
+import zmq.green  # noqa: E402
+
+# Use zmq.green for gevent compatibility
+pitop.common.ptdm.zmq = zmq.green
+
+import logging  # noqa: E402
+from signal import SIGINT, SIGTERM  # noqa: E402
+from sys import exit  # noqa: E402
+
+import click  # noqa: E402
+from further_link.util.ssl_context import ssl_context  # noqa: E402
+from gevent import signal_handler, wait  # noqa: E402
+from pitop.camera import Camera  # noqa: E402
+from pitop.labs import RoverWebController  # noqa: E402
+from pitop.robotics import DriveController  # noqa: E402
+
+logger = logging.getLogger()
+
+
+def configure_interrupt_signals(app):
+    def handler(*_):
+        logger.info("Stopping...")
+        app.stop()
+        logger.debug("Stopped!")
+        exit(0)
+
+    signal_handler(SIGINT, handler)
+    signal_handler(SIGTERM, handler)
 
 
 @click.command()
 def main():
     drive = DriveController()
     camera = Camera()
-    controller = RoverWebController(get_frame=camera.get_frame, drive=drive)
-    controller.serve_forever()
+    # Prepare http and https web controllers
+    http_controller = RoverWebController(
+        get_frame=camera.get_frame,
+        drive=drive,
+        port=8070,
+    )
+    https_controller = RoverWebController(
+        get_frame=camera.get_frame, drive=drive, ssl_context=ssl_context(), port=8071
+    )
+
+    for controller in [http_controller, https_controller]:
+        configure_interrupt_signals(controller)
+        controller.start()
+
+    wait()
 
 
 if __name__ == "__main__":
