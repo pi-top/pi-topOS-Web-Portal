@@ -77,9 +77,9 @@ def test_rover_controller_status_controller_starting(app, mocker):
         "pt_os_web_portal.backend.helpers.system.run_command",
         return_value="active",
     )
-    # urlopen raises an exception when controller is still starting
-    urlopen_mock = mocker.patch(
-        "pt_os_web_portal.backend.routes.urlopen", side_effect=Exception()
+    # requests.get raises an exception when controller is still starting
+    requests_get_mock = mocker.patch(
+        "pt_os_web_portal.backend.routes.requests.get", side_effect=Exception()
     )
 
     response = app.get("/rover-controller-status")
@@ -89,7 +89,7 @@ def test_rover_controller_status_controller_starting(app, mocker):
         timeout=1,
         check=False,
     )
-    urlopen_mock.assert_called_once()
+    requests_get_mock.assert_called_once()
 
     assert response.status_code == 200
     assert response.data == b'{"status": "inactive"}'
@@ -100,9 +100,9 @@ def test_rover_controller_status_active(app, mocker):
         "pt_os_web_portal.backend.helpers.system.run_command",
         return_value="active",
     )
-    urlopen_mock = mocker.patch(
-        "pt_os_web_portal.backend.routes.urlopen",
-        return_value=dotdict({"getcode": lambda: 200}),
+    requests_get_mock = mocker.patch(
+        "pt_os_web_portal.backend.routes.requests.get",
+        return_value=dotdict({"status_code": 200}),
     )
 
     response = app.get("/rover-controller-status")
@@ -113,9 +113,9 @@ def test_rover_controller_status_active(app, mocker):
         check=False,
     )
 
-    urlopen_mock.assert_called_once()
-    urlopen_request = urlopen_mock.call_args_list[0][0][0]
-    assert urlopen_request.full_url == "http://localhost:8070"
+    requests_get_mock.assert_called_once()
+    url = requests_get_mock.call_args_list[0][0][0]
+    assert url == "http://localhost:8070"
 
     assert response.status_code == 200
     assert response.data == b'{"status": "active"}'

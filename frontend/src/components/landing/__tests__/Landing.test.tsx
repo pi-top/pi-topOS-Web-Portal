@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, getAllByText, render, wait, waitForElement } from "@testing-library/react";
+import { fireEvent, render, wait } from "@testing-library/react";
 
 import Landing, { Props } from "../Landing";
 import LandingPageTemplate from "../../landingPageTemplate/LandingPageTemplate";
@@ -8,7 +8,6 @@ import stopFirstBootAppAutostart from "../../../services/stopFirstBootAppAutosta
 jest.mock("../../../services/stopFirstBootAppAutostart");
 
 const stopFirstBootAppAutostartMock = stopFirstBootAppAutostart as jest.Mock;
-
 
 const firstPageContent = {
   title: "This is the title of the first page",
@@ -36,9 +35,8 @@ const secondPageContent = {
   image: "Second image"
 }
 
-
-const landingPages = [
-  {
+const landingPages = {
+  kb: {
     title: firstPageContent.title,
     id: firstPageContent.id,
     detail: (
@@ -52,7 +50,7 @@ const landingPages = [
       />
     )
   },
-  {
+  sdk: {
     title: secondPageContent.title,
     id: secondPageContent.id,
     detail: (
@@ -65,29 +63,30 @@ const landingPages = [
         image={secondPageContent.image}
       />
     )
-  },
-]
+  }
+}
 
 describe("Landing", () => {
   let layout: HTMLElement;
   let defaultProps: Props;
   let queryByAltText: any;
   let queryByText: any;
-  let queryByLabelText: any;
   let getByText: any;
   let rerender: any;
+
   beforeEach(() => {
     stopFirstBootAppAutostartMock.mockResolvedValue("OK");
 
     defaultProps = {
       pages: landingPages,
+      selectedElementId: "kb",
+      onSelectElement: jest.fn(),
     };
 
     ({
       container: layout,
       queryByAltText,
       queryByText,
-      queryByLabelText,
       getByText,
       rerender,
     } = render(<Landing {...defaultProps} />));
@@ -98,7 +97,7 @@ describe("Landing", () => {
   });
 
   it("renders all the provided pages in the list of pages", () => {
-    landingPages.forEach((page) => {
+    Object.values(landingPages).forEach((page) => {
       expect(queryByText(page.title)).toBeInTheDocument()
     });
   });
@@ -127,10 +126,23 @@ describe("Landing", () => {
     expect(stopFirstBootAppAutostartMock).toHaveBeenCalled();
   });
 
-  describe("when clicking another page from the list", () => {
+  it("when clicking a page from the list, calls onSelectElement with the correct id", async () => {
+    fireEvent.click(getByText(secondPageContent.title));
+    await wait();
+
+    expect(defaultProps.onSelectElement).toHaveBeenCalledWith("sdk");
+  });
+
+
+  describe("when a different page is selected", () => {
     beforeEach(async () => {
-      fireEvent.click(getByText(secondPageContent.title))
-      wait();
+      rerender(
+        <Landing
+          {...defaultProps}
+          selectedElementId="sdk"
+        />
+      );
+      await wait();
     });
 
     it("clicked page is set as active in the list of pages", () => {
@@ -153,5 +165,4 @@ describe("Landing", () => {
       expect(layout.querySelector(".prompt")).toMatchSnapshot();
     });
   });
-
 });

@@ -9,6 +9,8 @@ import AboutPageContainer from "./pages/aboutPage/AboutPageContainer";
 import UpgradePageContainer from "./pages/upgradePage/UpgradePageContainer";
 import LandingPage from "./pages/landingPage/LandingPage";
 import StandaloneWifiPageContainer from "./pages/wifiPage/StandaloneWifiPageContainer";
+import RoverControllerLandingPage from "./components/roverControllerLanding/RoverControllerLanding";
+import WebVncDesktopLanding from "./components/webVncDesktopLanding/WebVncDesktopLanding";
 
 export default () => (
   <ErrorBoundary
@@ -22,7 +24,9 @@ export default () => (
       <Switch>
         <Route path="/onboarding" component={OnboardingApp} />
         <Route path="/about" component={AboutPageContainer} />
-        <Route path="/wifi" component={StandaloneWifiPageContainer} />
+        <Route path="/wifi" render={() => <StandaloneWifiPageContainer />} />
+        <Route path="/desktop" render={() => <WebVncDesktopLanding standalone/>} />
+        <Route path="/rover" render={() => <RoverControllerLandingPage standalone />} />
         <Route
           path="/updater"
           render={() => <UpgradePageContainer hideSkip />}

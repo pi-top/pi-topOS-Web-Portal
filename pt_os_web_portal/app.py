@@ -2,6 +2,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
 
+from further_link.util.ssl_context import ssl_context
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from pitop.common.common_names import DeviceName
@@ -30,12 +31,21 @@ class App:
             self.device = ""
 
         self.os_updater = OSUpdater()
-        self.wsgi_server = WSGIServer(
+
+        app = create_app(
+            test_mode=test_mode,
+            os_updater=self.os_updater,
+        )
+
+        self.wsgi_server_https = WSGIServer(
+            ("", 443),
+            app,
+            ssl_context=ssl_context(),
+            handler_class=WebSocketHandler,
+        )
+        self.wsgi_server_http = WSGIServer(
             ("", 80),
-            create_app(
-                test_mode=test_mode,
-                os_updater=self.os_updater,
-            ),
+            app,
             handler_class=WebSocketHandler,
         )
 
@@ -79,12 +89,15 @@ class App:
         if self.connection_manager:
             self.connection_manager.start()
 
-        self.wsgi_server.start()
+        self.wsgi_server_https.start()
+        self.wsgi_server_http.start()
 
     def stop(self):
         def stop_wsgi_server():
-            self.wsgi_server.stop()
-            logger.info("Stopped: WSGI Server")
+            self.wsgi_server_https.stop()
+            logger.info("Stopped: WSGI Server HTTPS")
+            self.wsgi_server_http.stop()
+            logger.info("Stopped: WSGI Server HTTP")
 
         # Using thread pool with context will cause it to behave
         # as if Executor.shutdown() were called with `wait=True`
