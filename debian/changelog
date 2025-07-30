@@ -1,3 +1,10 @@
+pi-top-os-web-portal (0.25.0-3) bullseye; urgency=medium
+
+  * Web-app supports HTTP and HTTPS
+  * Add standalone desktop and rover pages
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 30 Jul 2025 21:58:11 +0000
+
 pi-top-os-web-portal (0.25.0-2) bullseye; urgency=medium
 
   * Handle empty state files in postinst (#493)
