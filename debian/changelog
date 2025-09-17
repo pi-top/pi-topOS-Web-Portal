@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.26.1-1) bullseye; urgency=medium
+
+  * Fix update failures due to package with interactive prompt (#498)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 17 Sep 2025 14:37:32 +0000
+
 pi-top-os-web-portal (0.26.0-1) bullseye; urgency=medium
 
   * Web-app supports HTTP and HTTPS
