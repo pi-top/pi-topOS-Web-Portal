@@ -1,4 +1,5 @@
 import logging
+from os import environ
 from subprocess import PIPE, CalledProcessError, Popen
 from typing import Callable, List
 
@@ -63,7 +64,9 @@ class AptCommands:
 
 def run_command(cmd: List, callback: Callable, check: bool = True):
     logger.info(f"run_command: executing '{cmd}'")
-    with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
+    env = environ.copy()
+    env["DEBIAN_FRONTEND"] = "noninteractive"
+    with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True, env=env) as p:
         for line in p.stdout:
             line = line.strip()
             if callable(callback):
