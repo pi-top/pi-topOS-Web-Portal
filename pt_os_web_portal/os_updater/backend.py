@@ -72,6 +72,7 @@ def run_command(cmd: List, callback: Callable, check: bool = True):
             if callable(callback):
                 callback(line)
             logger.info(f"run_command: {line}")
+        p.wait()
     if check and p.returncode != 0:
         raise CalledProcessError(p.returncode, p.args)
 
