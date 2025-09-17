@@ -32,9 +32,12 @@ class AptCommands:
     def dist_upgrade(cls):
         return [
             "apt-get",
-            '-o Dpkg::Options::="--force-confdef"',
-            '-o Dpkg::Options::="--force-confold"',
-            "-o APT::Get::Upgrade-Allow-New=true",
+            "-o",
+            "Dpkg::Options::=--force-confdef",
+            "-o",
+            "Dpkg::Options::=--force-confold",
+            "-o",
+            "APT::Get::Upgrade-Allow-New=true",
             "dist-upgrade",
             "--quiet",
             "--yes",
@@ -48,9 +51,12 @@ class AptCommands:
     def install_packages(cls, packages):
         return [
             "apt-get",
-            '-o Dpkg::Options::="--force-confdef"',
-            '-o Dpkg::Options::="--force-confold"',
-            "-o APT::Get::Upgrade-Allow-New=true",
+            "-o",
+            "Dpkg::Options::=--force-confdef",
+            "-o",
+            "Dpkg::Options::=--force-confold",
+            "-o",
+            "APT::Get::Upgrade-Allow-New=true",
             "install",
             *packages,
             "--quiet",
