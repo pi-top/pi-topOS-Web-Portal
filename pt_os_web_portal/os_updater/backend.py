@@ -1,4 +1,5 @@
 import logging
+from os import environ
 from subprocess import PIPE, CalledProcessError, Popen
 from typing import Callable, List
 
@@ -31,9 +32,12 @@ class AptCommands:
     def dist_upgrade(cls):
         return [
             "apt-get",
-            '-o Dpkg::Options::="--force-confdef"',
-            '-o Dpkg::Options::="--force-confold"',
-            "-o APT::Get::Upgrade-Allow-New=true",
+            "-o",
+            "Dpkg::Options::=--force-confdef",
+            "-o",
+            "Dpkg::Options::=--force-confold",
+            "-o",
+            "APT::Get::Upgrade-Allow-New=true",
             "dist-upgrade",
             "--quiet",
             "--yes",
@@ -47,9 +51,12 @@ class AptCommands:
     def install_packages(cls, packages):
         return [
             "apt-get",
-            '-o Dpkg::Options::="--force-confdef"',
-            '-o Dpkg::Options::="--force-confold"',
-            "-o APT::Get::Upgrade-Allow-New=true",
+            "-o",
+            "Dpkg::Options::=--force-confdef",
+            "-o",
+            "Dpkg::Options::=--force-confold",
+            "-o",
+            "APT::Get::Upgrade-Allow-New=true",
             "install",
             *packages,
             "--quiet",
@@ -63,12 +70,15 @@ class AptCommands:
 
 def run_command(cmd: List, callback: Callable, check: bool = True):
     logger.info(f"run_command: executing '{cmd}'")
-    with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
+    env = environ.copy()
+    env["DEBIAN_FRONTEND"] = "noninteractive"
+    with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True, env=env) as p:
         for line in p.stdout:
             line = line.strip()
             if callable(callback):
                 callback(line)
             logger.info(f"run_command: {line}")
+        p.wait()
     if check and p.returncode != 0:
         raise CalledProcessError(p.returncode, p.args)
 
