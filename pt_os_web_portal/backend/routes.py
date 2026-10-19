@@ -4,9 +4,8 @@ from json import dumps as jdumps
 from threading import Lock, Thread
 
 import requests
-from flask import abort
+from flask import abort, request, send_from_directory
 from flask import current_app as app
-from flask import request, send_from_directory
 from further_link.start_further import get_further_url
 from pitop.common.formatting import is_url
 from pitop.common.sys_info import (
