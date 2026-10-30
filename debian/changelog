@@ -1,3 +1,9 @@
+pi-top-os-web-portal (0.26.1-2) bullseye; urgency=medium
+
+  * Regenerate Debian workflows: drop bullseye (#507)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 30 Oct 2026 16:24:20 +0000
+
 pi-top-os-web-portal (0.26.1-1) bullseye; urgency=medium
 
   * Fix update failures due to package with interactive prompt (#498)
