@@ -1,3 +1,13 @@
+pi-top-os-web-portal (0.26.1-2) bullseye; urgency=medium
+
+  * Regenerate Debian workflows: drop bullseye (#507)
+  * Remove debian/bullseye-overrides (#509)
+  * Create releases with the workflow's own token (#510)
+  * Replace the CodeQL workflow with a current one (#511)
+  * Remove the Dependabot config (#518)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 05 Nov 2026 19:09:45 +0000
+
 pi-top-os-web-portal (0.26.1-1) bullseye; urgency=medium
 
   * Fix update failures due to package with interactive prompt (#498)
