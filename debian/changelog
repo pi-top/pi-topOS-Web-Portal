@@ -1,4 +1,4 @@
-pi-top-os-web-portal (0.26.2-1) bookworm; urgency=medium
+pi-top-os-web-portal (0.27.0-1) bookworm; urgency=medium
 
   * Regenerate Debian workflows: drop bullseye (#507)
   * Remove debian/bullseye-overrides (#509)
