@@ -649,10 +649,10 @@ describe("UpgradePageContainer", () => {
         );
 
         await findByTestId("textarea");
-        await waitFor(() => {
-          const textAreaElement = queryByTestId("textarea");
-          expect(textAreaElement).toMatchSnapshot();
-        });
+        await waitFor(() =>
+          expect(queryByTestId("textarea")).toHaveTextContent("Updating blah")
+        );
+        expect(queryByTestId("textarea")).toMatchSnapshot();
       });
 
       it("doesn't render the 'preparing updates' message", async () => {
@@ -1034,8 +1034,10 @@ describe("UpgradePageContainer", () => {
         await wait();
 
         await waitForElement(() => findByTestId("textarea"));
-        const textAreaElement = queryByTestId("textarea");
-        expect(textAreaElement).toMatchSnapshot();
+        await waitFor(() =>
+          expect(queryByTestId("textarea")).toHaveTextContent("Updating blah")
+        );
+        expect(queryByTestId("textarea")).toMatchSnapshot();
       });
 
       it("Skip button isn't rendered", async () => {
