@@ -134,9 +134,7 @@ def test_handle_operation_add_remove():
     result = run_bash_function("handle_operation", "add", "test-service")
     assert result.returncode == 0
     assert "Policy added for test-service" in result.stdout
-    assert (
-        get_policy_file_content()
-        == """#!/bin/sh
+    assert get_policy_file_content() == """#!/bin/sh
 
 if [ "$1" = "test-service" ]; then
     echo "Skipping service test-service restart..." 1>&2
@@ -145,15 +143,12 @@ fi
 
 exit 0
 """
-    )
 
     # Add the same service again
     result = run_bash_function("handle_operation", "add", "test-service")
     assert result.returncode == 0
     assert "Service test-service already in policy - skipping" in result.stdout
-    assert (
-        get_policy_file_content()
-        == """#!/bin/sh
+    assert get_policy_file_content() == """#!/bin/sh
 
 if [ "$1" = "test-service" ]; then
     echo "Skipping service test-service restart..." 1>&2
@@ -162,14 +157,11 @@ fi
 
 exit 0
 """
-    )
     # Add another service
     result = run_bash_function("handle_operation", "add", "another-service")
     assert result.returncode == 0
     assert "Policy added for another-service" in result.stdout
-    assert (
-        get_policy_file_content()
-        == """#!/bin/sh
+    assert get_policy_file_content() == """#!/bin/sh
 
 if [ "$1" = "test-service" ]; then
     echo "Skipping service test-service restart..." 1>&2
@@ -183,15 +175,12 @@ fi
 
 exit 0
 """
-    )
 
     # Remove the services
     result = run_bash_function("handle_operation", "remove", "another-service")
     assert result.returncode == 0
     assert "Policy removed for another-service" in result.stdout
-    assert (
-        get_policy_file_content()
-        == """#!/bin/sh
+    assert get_policy_file_content() == """#!/bin/sh
 
 if [ "$1" = "test-service" ]; then
     echo "Skipping service test-service restart..." 1>&2
@@ -200,26 +189,19 @@ fi
 
 exit 0
 """
-    )
     result = run_bash_function("handle_operation", "remove", "test-service")
     assert result.returncode == 0
     assert "Policy removed for test-service" in result.stdout
-    assert (
-        get_policy_file_content()
-        == """#!/bin/sh
+    assert get_policy_file_content() == """#!/bin/sh
 
 exit 0
 """
-    )
 
     # Run remove again
     result = run_bash_function("handle_operation", "remove", "test-service")
     assert result.returncode == 0
     assert "Service test-service not found in policy - skipping ..." in result.stdout
-    assert (
-        get_policy_file_content()
-        == """#!/bin/sh
+    assert get_policy_file_content() == """#!/bin/sh
 
 exit 0
 """
-    )
