@@ -1,3 +1,11 @@
+pi-top-os-web-portal (0.27.1-1) bookworm; urgency=medium
+
+  * Wait for the restarted update's output before snapshotting it (#521)
+  * Name GitHub releases after their tag and add changelog notes (#523)
+  * Never remove packages from the Updater (#525)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 20 Nov 2026 17:44:49 +0000
+
 pi-top-os-web-portal (0.27.0-1) bookworm; urgency=medium
 
   * Regenerate Debian workflows: drop bullseye (#507)
