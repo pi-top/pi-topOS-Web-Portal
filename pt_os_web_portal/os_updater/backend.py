@@ -23,13 +23,15 @@ def size_str_to_bytes(size):
     return int(float(number) * units[unit])
 
 
+# The updater never removes packages: an upgrade that needs a removal is held
+# back, as unattended-upgrades does, instead of taking pi-top packages with it.
 class AptCommands:
     @classmethod
     def update(cls):
         return ["apt-get", "update"]
 
     @classmethod
-    def dist_upgrade(cls):
+    def upgrade(cls):
         return [
             "apt-get",
             "-o",
@@ -38,14 +40,20 @@ class AptCommands:
             "Dpkg::Options::=--force-confold",
             "-o",
             "APT::Get::Upgrade-Allow-New=true",
-            "dist-upgrade",
+            "upgrade",
             "--quiet",
             "--yes",
         ]
 
     @classmethod
     def update_size(cls):
-        return ["apt-get", "dist-upgrade", "--assume-no"]
+        return [
+            "apt-get",
+            "-o",
+            "APT::Get::Upgrade-Allow-New=true",
+            "upgrade",
+            "--assume-no",
+        ]
 
     @classmethod
     def install_packages(cls, packages):
@@ -59,13 +67,14 @@ class AptCommands:
             "APT::Get::Upgrade-Allow-New=true",
             "install",
             *packages,
+            "--no-remove",
             "--quiet",
             "--yes",
         ]
 
     @classmethod
     def install_size(cls, packages):
-        return ["apt-get", "install", "--assume-no", *packages]
+        return ["apt-get", "install", "--no-remove", "--assume-no", *packages]
 
 
 def run_command(cmd: List, callback: Callable, check: bool = True):
@@ -147,7 +156,7 @@ class OsUpdaterBackend:
         run_command(AptCommands.install_packages(self.packages), callback)
 
     def _do_upgrade(self, callback):
-        run_command(AptCommands.dist_upgrade(), callback)
+        run_command(AptCommands.upgrade(), callback)
 
     def _do_get_install_size(self):
         if len(self.packages) > 0:
